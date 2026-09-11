@@ -1,0 +1,58 @@
+---
+title: "Component backlinks"
+description: "The stable URL graph that ties every registry component to its documentation, source, version history and health probe."
+sidebarTitle: "Backlinks"
+icon: "link"
+---
+
+Every component in the registry has a stable set of canonical URLs on `mzizi.dev`. The portal
+page, JSON API, source view, version history, per-component health probe and chaos manifest
+all resolve for any registry component name.
+
+## URL structure
+
+| Endpoint | URL pattern | Purpose |
+| --- | --- | --- |
+| Portal | `mzizi.dev/components/{name}` | Documentation page |
+| Source | `mzizi.dev/source/{name}` | Full source view |
+| Changelog | `mzizi.dev/changelog/{name}` | Per-component version history |
+| API — component | `mzizi.dev/api/v1/ui/{name}` | Component metadata and source, shadcn format |
+| API — docs | `mzizi.dev/api/v1/ui/{name}/docs` | Use cases, variants, accessibility notes |
+| API — versions | `mzizi.dev/api/v1/ui/{name}/versions` | Per-component version JSON |
+| Health | `mzizi.dev/api/health/{name}` | Per-component health probe |
+| Chaos | `mzizi.dev/api/chaos/{name}` | Supported-fault manifest |
+
+The site-wide health probe is at `/api/v1/health`. All eight patterns above were checked
+against `button` on 11 September 2026 and returned `200`.
+
+## Status semantics
+
+For `/api/health/{name}`:
+
+- `200` — the component exists.
+- `404` — no component by that name.
+
+For `/api/chaos/{name}`:
+
+- `GET 200` — returns the supported-fault manifest for the component: render error, slow
+  render, missing data, network timeout.
+- `POST 405` — by design. Chaos injection is in-process; install the N8 `chaos` library into
+  your own application rather than pointing faults at the portal.
+
+## DOM integration
+
+Every rendered component carries a `data-portal` attribute pointing at its portal page:
+
+```html
+<div data-slot="mzizi-section" data-portal="https://mzizi.dev/components/mzizi-section">
+```
+
+That single attribute is what makes several things possible at once:
+
+- DevTools inspection clicks through to the component's documentation.
+- Error tracking enriches a stack trace with a documentation link.
+- N8 chaos testing looks up the supported-fault manifest by stable URL.
+- The N9 fundi rung resolves a rendered component back to its canonical documentation.
+
+The attribute is emitted by the component itself, so it stays correct without anyone
+maintaining a mapping table.

@@ -1,0 +1,135 @@
+---
+title: "Consuming the registry"
+description: "How to install Mzizi components into your application, customise them afterwards, and take updates without losing your changes."
+sidebarTitle: "Consuming"
+icon: "download"
+---
+
+This guide covers installing components from the Mzizi registry, customising them after
+installation, and keeping them updated.
+
+## Prerequisites
+
+Before installing components, your project needs:
+
+1. A `components.json` file — created by `npx shadcn@latest init`.
+2. The `cn()` utility in `lib/utils.ts`.
+3. Tailwind CSS with the Mzizi design tokens in your global stylesheet.
+
+## Installing
+
+### A single component
+
+```bash
+npx shadcn@latest add https://mzizi.dev/api/v1/ui/button
+```
+
+### Several at once
+
+```bash
+npx shadcn@latest add \
+  https://mzizi.dev/api/v1/ui/card \
+  https://mzizi.dev/api/v1/ui/badge \
+  https://mzizi.dev/api/v1/ui/dialog
+```
+
+### Hooks and libraries
+
+Hooks and library utilities install the same way — the item type in the manifest decides where
+the file lands.
+
+```bash
+npx shadcn@latest add https://mzizi.dev/api/v1/ui/use-toast
+npx shadcn@latest add https://mzizi.dev/api/v1/ui/utils
+npx shadcn@latest add https://mzizi.dev/api/v1/ui/circuit-breaker
+```
+
+## Dependency resolution
+
+Installing a component makes the CLI do two things automatically:
+
+1. **Install npm dependencies** — packages such as `radix-ui`, `class-variance-authority` or
+   `recharts`.
+2. **Install registry dependencies** — other registry items the component needs. Installing
+   `dialog` pulls in `button`.
+
+You do not resolve dependencies by hand.
+
+## What you get
+
+Components install as **local files**. A typical install creates:
+
+```
+components/
+  ui/
+    button.tsx    <- full source, in your repository, yours to edit
+```
+
+The file contains TypeScript with full type annotations, CVA variant definitions, Radix UI
+primitives where the component is interactive, `cn()` class composition, and `data-slot`
+attributes for stable styling hooks.
+
+## Customising after install
+
+Because the file is yours, you edit it directly.
+
+### Adding a variant
+
+```tsx
+// components/ui/button.tsx
+const buttonVariants = cva("...", {
+  variants: {
+    variant: {
+      default: "...",
+      outline: "...",
+      cobalt: "bg-[var(--color-cobalt)] text-white hover:bg-[var(--color-cobalt)]/90",
+    },
+  },
+})
+```
+
+### Extending props
+
+```tsx
+interface ButtonProps
+  extends React.ComponentProps<"button">,
+    VariantProps<typeof buttonVariants> {
+  loading?: boolean
+}
+```
+
+## Updating
+
+To take the latest registry version of a component, run the same add command again:
+
+```bash
+npx shadcn@latest add https://mzizi.dev/api/v1/ui/button
+```
+
+This **overwrites** the local file. If you have customised it:
+
+1. Commit your current state.
+2. Run the update.
+3. Read the diff and re-apply your changes.
+
+There is no merge step and there is not meant to be one — the whole point of a file you own is
+that your version control, not the registry, arbitrates.
+
+## Using the API directly
+
+You do not need the CLI. The JSON response carries the complete source in `files[].content`:
+
+```bash
+curl https://mzizi.dev/api/v1/ui/button
+curl https://mzizi.dev/api/v1/ui
+```
+
+## Practices worth keeping
+
+1. **Install from the registry** rather than copying code out of documentation — the docs
+   paraphrase, the API does not.
+2. **Keep `cn()`.** Components depend on it from `@/lib/utils`.
+3. **Keep the token layer.** Components reference CSS custom properties; without them they
+   render with whatever your project's fallbacks happen to be.
+4. **Test after updating.** Check appearance and behaviour, not just that the build passes.
+5. **Track changes in version control** so an update diff is legible.
