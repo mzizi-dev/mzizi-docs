@@ -21,12 +21,12 @@ schema](https://ui.shadcn.com/schema/registry.json).
 }
 ```
 
-| Field | Type | Description |
-| --- | --- | --- |
-| `$schema` | string | Schema URL for validation |
-| `name` | string | Registry identifier — `mzizi` |
-| `homepage` | string | Registry homepage |
-| `items` | array | The registry items |
+| Field      | Type   | Description                   |
+| ---------- | ------ | ----------------------------- |
+| `$schema`  | string | Schema URL for validation     |
+| `name`     | string | Registry identifier — `mzizi` |
+| `homepage` | string | Registry homepage             |
+| `items`    | array  | The registry items            |
 
 ## An item
 
@@ -46,21 +46,21 @@ schema](https://ui.shadcn.com/schema/registry.json).
 }
 ```
 
-| Field | Type | Required | Description |
-| --- | --- | --- | --- |
-| `name` | string | Yes | Unique kebab-case identifier |
-| `type` | string | Yes | Item type — see below |
-| `description` | string | Yes | Human-readable description |
-| `dependencies` | string[] | Yes | npm package names |
-| `registryDependencies` | string[] | Yes | Other registry item names |
-| `files` | object[] | Yes | The files composing the item |
+| Field                  | Type     | Required | Description                  |
+| ---------------------- | -------- | -------- | ---------------------------- |
+| `name`                 | string   | Yes      | Unique kebab-case identifier |
+| `type`                 | string   | Yes      | Item type — see below        |
+| `description`          | string   | Yes      | Human-readable description   |
+| `dependencies`         | string[] | Yes      | npm package names            |
+| `registryDependencies` | string[] | Yes      | Other registry item names    |
+| `files`                | object[] | Yes      | The files composing the item |
 
 ### The file object
 
-| Field | Type | Description |
-| --- | --- | --- |
-| `path` | string | Path from the repository root |
-| `type` | string | File type, matching the parent item type |
+| Field     | Type   | Description                                               |
+| --------- | ------ | --------------------------------------------------------- |
+| `path`    | string | Path from the repository root                             |
+| `type`    | string | File type, matching the parent item type                  |
 | `content` | string | Source — populated by the API, not stored in the manifest |
 
 ## Item types
@@ -68,14 +68,14 @@ schema](https://ui.shadcn.com/schema/registry.json).
 Counts read from `GET https://mzizi.dev/api/v1/ui` on 11 September 2026. They move; read the
 endpoint rather than this table.
 
-| Type | Count | Installs to | What it is |
-| --- | --- | --- | --- |
-| `registry:ui` | 419 | `components/ui/` | React components — CVA variants, Radix primitives, `cn()` composition |
-| `registry:block` | 105 | composed sections | Higher-level compositions of several components |
-| `registry:lib` | 46 | `lib/` | Pure functions, patterns and infrastructure — `utils`, `observability`, `circuit-breaker`, `retry`, `timeout`, `fallback-chain`, `chaos`, `ai-safety` |
-| `registry:hook` | 3 | `hooks/` | `use-toast`, `use-mobile`, `use-memory-pressure` |
-| `registry:base` | 1 | the base layer | |
-| `registry:theme` | 1 | the theme | |
+| Type             | Count | Installs to       | What it is                                                                                                                                            |
+| ---------------- | ----- | ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `registry:ui`    | 419   | `components/ui/`  | React components — CVA variants, Radix primitives, `cn()` composition                                                                                 |
+| `registry:block` | 105   | composed sections | Higher-level compositions of several components                                                                                                       |
+| `registry:lib`   | 46    | `lib/`            | Pure functions, patterns and infrastructure — `utils`, `observability`, `circuit-breaker`, `retry`, `timeout`, `fallback-chain`, `chaos`, `ai-safety` |
+| `registry:hook`  | 3     | `hooks/`          | `use-toast`, `use-mobile`, `use-memory-pressure`                                                                                                      |
+| `registry:base`  | 1     | the base layer    |                                                                                                                                                       |
+| `registry:theme` | 1     | the theme         |                                                                                                                                                       |
 
 ## API response format
 

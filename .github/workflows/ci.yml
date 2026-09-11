@@ -112,7 +112,13 @@ jobs:
       - name: Check for overclaiming
         run: |
           set -uo pipefail
-          pattern='production[- ]ready|generally available|contracts are (checked|evaluated|enforced)|compiles to (rust|wasm) today|(mzizi|mz) is stable|the benchmark (shows|showed|proves|proved)'
+          # Built up in pieces so no single line exceeds the 140-char yamllint limit.
+          pattern='production[- ]ready'
+          pattern="$pattern|generally available"
+          pattern="$pattern|contracts are (checked|evaluated|enforced)"
+          pattern="$pattern|compiles to (rust|wasm) today"
+          pattern="$pattern|(mzizi|mz) is stable"
+          pattern="$pattern|the benchmark (shows|showed|proves|proved)"
           hits=$(grep -rniE "$pattern" --include='*.mdx' . | grep -vE '^\./status\.mdx:' || true)
           if [ -n "$hits" ]; then
             echo "::error::Overclaiming found. mzizi-lang is a Phase 0 prototype — see status.mdx:"

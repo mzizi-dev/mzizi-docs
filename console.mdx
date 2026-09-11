@@ -60,11 +60,11 @@ are **seven**. That naming was removed from the framework repository and guarded
 there; the guard does not reach a separate repository, which is how the wrong count survived
 in a client.
 
-| | Svelte app | The port |
-| --- | --- | --- |
-| API base | `mzizi.dev/api/v1` | `api.mzizi.dev/v1` |
-| `GET /ui` | typed as an array | a registry document, components under `items` |
-| A failed request | rendered an empty list | shows the status and the URL |
+|                  | Svelte app             | The port                                      |
+| ---------------- | ---------------------- | --------------------------------------------- |
+| API base         | `mzizi.dev/api/v1`     | `api.mzizi.dev/v1`                            |
+| `GET /ui`        | typed as an array      | a registry document, components under `items` |
+| A failed request | rendered an empty list | shows the status and the URL                  |
 
 That last row matters most. A `410` and an empty registry looked identical, so a permanently
 broken route presented itself as "no data".
@@ -73,11 +73,11 @@ broken route presented itself as "no data".
 
 Measured against production rather than assumed — the API does not use one shape:
 
-| Endpoint | Shape |
-| --- | --- |
-| `/architecture` | `{ "data": { … }, "meta": … }` |
-| `/ui` | a shadcn registry document — components under `items` |
-| `/brand` | no envelope; fields top-level, keys camelCase |
+| Endpoint        | Shape                                                 |
+| --------------- | ----------------------------------------------------- |
+| `/architecture` | `{ "data": { … }, "meta": … }`                        |
+| `/ui`           | a shadcn registry document — components under `items` |
+| `/brand`        | no envelope; fields top-level, keys camelCase         |
 
 Assuming a single convention decodes two of the three to nothing, and nothing renders as an
 empty page rather than as an error.

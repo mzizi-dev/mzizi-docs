@@ -14,11 +14,11 @@ Three published packages let an agent work against the Mzizi registry. They are 
 **private** tooling repository, so this page links the published artefacts rather than the
 source.
 
-| Package | Latest | What it is |
-| --- | --- | --- |
-| [`@nyuchi/mzizi-mcp`](https://www.npmjs.com/package/@nyuchi/mzizi-mcp) | `0.9.1` | The MCP server — a Cloudflare Worker at `mcp.mzizi.dev` plus an npm stdio binary |
-| [`@nyuchi/mzizi-cli`](https://www.npmjs.com/package/@nyuchi/mzizi-cli) | `0.4.0` | The agent SDK and a CLI whose binary is named `fundi` |
-| [`@nyuchi/mzizi-skills`](https://www.npmjs.com/package/@nyuchi/mzizi-skills) | `0.5.1` | The skills bundle — nine agent skills, data only |
+| Package                                                                      | Latest  | What it is                                                                       |
+| ---------------------------------------------------------------------------- | ------- | -------------------------------------------------------------------------------- |
+| [`@nyuchi/mzizi-mcp`](https://www.npmjs.com/package/@nyuchi/mzizi-mcp)       | `0.9.1` | The MCP server — a Cloudflare Worker at `mcp.mzizi.dev` plus an npm stdio binary |
+| [`@nyuchi/mzizi-cli`](https://www.npmjs.com/package/@nyuchi/mzizi-cli)       | `0.4.0` | The agent SDK and a CLI whose binary is named `fundi`                            |
+| [`@nyuchi/mzizi-skills`](https://www.npmjs.com/package/@nyuchi/mzizi-skills) | `0.5.1` | The skills bundle — nine agent skills, data only                                 |
 
 Versions read from the npm registry on 11 September 2026.
 
@@ -37,12 +37,12 @@ pnpm add -D @nyuchi/mzizi-cli
 The binary is `fundi`. Its job is to take a project from "I want to use Mzizi" to "Mzizi is
 wired in correctly", and the loop is **explore → plan → apply**.
 
-| Command | Needs | Does |
-| --- | --- | --- |
-| `fundi explore` | nothing — runs offline | Reads a small set of disk markers (`package.json`, `tsconfig.json`, the global stylesheet, the Tailwind config, `components.json`) and prints a project snapshot. No model call. |
-| `fundi plan <goal>` | an Anthropic API key and a sign-in | Plans the minimal Mzizi-aligned edits. **Read-only** — it prints the steps and writes nothing. |
-| `fundi chat <message>` | an Anthropic API key and a sign-in | One-shot chat scoped to Mzizi doctrine. |
-| `fundi login` / `logout` / `whoami` | — | Manages the saved identity used for the gated MCP server. |
+| Command                             | Needs                              | Does                                                                                                                                                                             |
+| ----------------------------------- | ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `fundi explore`                     | nothing — runs offline             | Reads a small set of disk markers (`package.json`, `tsconfig.json`, the global stylesheet, the Tailwind config, `components.json`) and prints a project snapshot. No model call. |
+| `fundi plan <goal>`                 | an Anthropic API key and a sign-in | Plans the minimal Mzizi-aligned edits. **Read-only** — it prints the steps and writes nothing.                                                                                   |
+| `fundi chat <message>`              | an Anthropic API key and a sign-in | One-shot chat scoped to Mzizi doctrine.                                                                                                                                          |
+| `fundi login` / `logout` / `whoami` | —                                  | Manages the saved identity used for the gated MCP server.                                                                                                                        |
 
 As a library:
 
@@ -77,23 +77,23 @@ npx skills add @nyuchi/mzizi-skills
 
 Nine skills, verified against `GET https://mzizi.dev/api/v1/skills` on 11 September 2026:
 
-| Skill | Reach for it when |
-| --- | --- |
-| `nyuchi-design` | Generating a branded interface — minerals, radius, type |
-| `bundu-design` | Cross-brand materials and brand-voice decisions |
-| `mukoko-design` | Producing or exporting mukoko visual identity |
-| `simplify` | Before adding a component or style, and during any refactor |
-| `discoverability` | A shared link shows no preview, or you are adding a route or a site |
-| `scaffold-component` | Authoring a new component into the registry |
-| `ecosystem-app-setup` | Bootstrapping a new ecosystem application against the registry |
-| `cloudflare-worker-rust` | Building a Worker in Rust with `workers-rs` |
-| `mcp-server-cloudflare` | Adding or changing an MCP Worker |
+| Skill                    | Reach for it when                                                   |
+| ------------------------ | ------------------------------------------------------------------- |
+| `nyuchi-design`          | Generating a branded interface — minerals, radius, type             |
+| `bundu-design`           | Cross-brand materials and brand-voice decisions                     |
+| `mukoko-design`          | Producing or exporting mukoko visual identity                       |
+| `simplify`               | Before adding a component or style, and during any refactor         |
+| `discoverability`        | A shared link shows no preview, or you are adding a route or a site |
+| `scaffold-component`     | Authoring a new component into the registry                         |
+| `ecosystem-app-setup`    | Bootstrapping a new ecosystem application against the registry      |
+| `cloudflare-worker-rust` | Building a Worker in Rust with `workers-rs`                         |
+| `mcp-server-cloudflare`  | Adding or changing an MCP Worker                                    |
 
 ### Git is the source of truth
 
 Skills are authored in git as `skills/<name>/SKILL.md` — YAML frontmatter carrying `name` and
 `description`, then the body — and listed in an `index.json`. That bundle is the single home
-for skill content; it is projected *into* the registry's `skills` collection, which the API
+for skill content; it is projected _into_ the registry's `skills` collection, which the API
 serves at `/api/v1/skills` and the MCP serves through `mzizi_get_skills`.
 
 <Warning>

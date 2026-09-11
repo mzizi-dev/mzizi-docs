@@ -15,13 +15,13 @@ The stated standard is **APCA 3.0** — the Advanced Perceptual Contrast Algorit
 the WCAG 2.x contrast ratio. This is not a preference. The two models disagree, and where they
 disagree the perceptual one is the one this system follows.
 
-| Text type | Minimum APCA Lc | Example |
-| --- | --- | --- |
-| Body text, 16px | Lc 75 | `--foreground` on `--background` |
-| Large text, 24px and above | Lc 60 | Headings on cards |
-| UI controls | Lc 60 | Button labels, form inputs |
-| Non-text UI | Lc 30 | The absolute floor |
-| Placeholder text | Lc 45 | Input placeholders |
+| Text type                  | Minimum APCA Lc | Example                          |
+| -------------------------- | --------------- | -------------------------------- |
+| Body text, 16px            | Lc 75           | `--foreground` on `--background` |
+| Large text, 24px and above | Lc 60           | Headings on cards                |
+| UI controls                | Lc 60           | Button labels, form inputs       |
+| Non-text UI                | Lc 30           | The absolute floor               |
+| Placeholder text           | Lc 45           | Input placeholders               |
 
 ### Why the difference matters
 
@@ -49,11 +49,11 @@ relative luminance and colour-blindness simulation in one call. See
 **56px default, 48px minimum.** The minimum is a floor, not a target, and nothing interactive
 goes below it.
 
-| Size | Height | Usage |
-| --- | --- | --- |
+| Size    | Height        | Usage                                 |
+| ------- | ------------- | ------------------------------------- |
 | Default | 56px (`h-14`) | Buttons, inputs, interactive controls |
-| Small | 48px (`h-12`) | Compact variants, secondary actions |
-| Minimum | 48px | The absolute floor |
+| Small   | 48px (`h-12`) | Compact variants, secondary actions   |
+| Minimum | 48px          | The absolute floor                    |
 
 ```tsx
 <Button size="default">Submit</Button>   {/* 56px */}
