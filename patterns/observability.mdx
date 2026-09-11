@@ -1,0 +1,135 @@
+---
+title: "Observability"
+description: "Structured logging, performance measurement and error tracking — every line behind one grep-able prefix."
+sidebarTitle: "Observability"
+icon: "activity"
+---
+
+Structured logging, performance measurement and error tracking, shipped as an installable
+library. Every log line carries the `[mzizi]` prefix so one grep finds everything across every
+service.
+
+<Warning>
+  **The prefix is `[mzizi]`, not `[mukoko]`.** Earlier documentation said `[mukoko]`, and a
+  grep pattern copied from it matches nothing. The prefix is set in `lib/observability.ts` in
+  [`mzizi-dev/mzizi-registry`](https://github.com/mzizi-dev/mzizi-registry).
+</Warning>
+
+## Install
+
+```bash
+npx shadcn@latest add https://mzizi.dev/api/v1/ui/observability
+```
+
+## `log`
+
+A structured logger with four levels — debug, info, warn, error. Output is prefixed with
+`[mzizi]` and optionally scoped to a module.
+
+```ts
+log.info("Server started")
+// [mzizi] INFO Server started
+
+log.info("Component served", {
+  module: "registry",
+  data: { name: "button", fileCount: 1 },
+})
+// [mzizi:registry] INFO Component served { name: "button", fileCount: 1 }
+
+log.error("Failed to fetch weather", {
+  module: "weather",
+  error: new Error("timeout"),
+  traceId: "req-abc123",
+})
+// [mzizi:weather] ERROR Failed to fetch weather [trace:req-abc123] Error: timeout
+```
+
+## `createLogger`
+
+Binds a logger to a module name. Use it in any file that logs more than once.
+
+```ts
+const logger = createLogger("registry")
+
+logger.info("Registry index served", { data: { itemCount: 575 } })
+// [mzizi:registry] INFO Registry index served { itemCount: 575 }
+
+logger.warn("File not found, skipping", { data: { filePath: "components/ui/missing.tsx" } })
+// [mzizi:registry] WARN File not found, skipping { filePath: … }
+```
+
+## `measure`
+
+Times a synchronous or asynchronous function, logs the duration on success *and* on failure,
+and returns the function's result.
+
+```ts
+const data = await measure("fetch-weather", async () => {
+  const res = await fetch("https://example.com/weather")
+  return res.json()
+})
+// [mzizi:perf] INFO fetch-weather completed in 142ms { duration: 142, label: "fetch-weather" }
+
+const result = await measure("build-registry", () => buildAllComponents(), {
+  module: "registry",
+})
+// [mzizi:registry] INFO build-registry completed in 3204ms { duration: 3204, … }
+
+await measure("risky-operation", async () => {
+  throw new Error("something broke")
+})
+// [mzizi:perf] ERROR risky-operation failed after 2ms { duration: 2, … } Error: something broke
+```
+
+Logging on failure as well as success is the part that matters. A timing helper that only
+records successes tells you your slow path is fast.
+
+The default module is `perf`; pass a `module` to scope it to your own.
+
+## `trackError`
+
+Records an error without rethrowing it, wrapping a non-`Error` value automatically.
+
+```ts
+try {
+  await riskyOperation()
+} catch (error) {
+  trackError(error, {
+    module: "checkout",
+    data: { action: "payment" },
+  })
+  return <FallbackView />
+}
+```
+
+<Note>
+  Be careful what you put in `data`. It goes to the log, so it is subject to whatever your log
+  retention and access rules are — an identifier is usually enough, and the record it points at
+  is usually not.
+</Note>
+
+## Error boundaries log automatically
+
+`SectionErrorBoundary` calls the logger itself, so wrapping a section is the whole integration:
+
+```
+[mzizi:error-boundary] ERROR Section "Weather overview" crashed
+  { section: "Weather overview", componentStack: [...] }
+```
+
+See [error boundaries](/patterns/error-boundaries).
+
+## Grep patterns
+
+| Pattern | Finds |
+| --- | --- |
+| `grep "\[mzizi\]" logs` | Every unscoped log line |
+| `grep "\[mzizi:registry\]" logs` | The registry module only |
+| `grep "\[mzizi.*ERROR" logs` | Every error, scoped or not |
+| `grep "\[mzizi:error-boundary\]" logs` | Boundary events |
+| `grep "\[mzizi:perf\]" logs` | Performance measurements |
+| `grep "\[trace:req-" logs` | Request traces |
+
+The square brackets need escaping in a basic grep — unescaped, `[mzizi]` is a character class
+matching a single letter, which matches almost every line in the file and looks like it
+worked.

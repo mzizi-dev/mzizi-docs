@@ -1,0 +1,95 @@
+---
+title: "Application layers"
+description: "The five-layer component hierarchy an application built on Mzizi enforces, and why imports only ever flow downward."
+sidebarTitle: "Application layers"
+icon: "layers"
+---
+
+<Warning>
+  **These five layers are not the helix.** This page describes how to structure the components
+  *inside one application*. [The DNA helix](/architecture/overview) describes where a component
+  sits in the *design system*, with nodes numbered N1 to N8 and rungs N9 to N12. Two different
+  models, two different numberings — never quote a count from one while describing the other.
+  The `L` prefix below is local to an application.
+</Warning>
+
+Every application enforces a strict five-layer hierarchy. A component imports from the layer
+below it, never sideways and never upward. That is what makes a section testable in isolation
+and stops one failure cascading.
+
+| Layer | Name | Path |
+| --- | --- | --- |
+| L1 | Shared primitives | `components/ui/` |
+| L2 | Domain composites | `components/weather/`, `components/reports/` |
+| L3 | Page orchestrators | `components/landing/`, `components/dashboard/` |
+| L4 | Error boundaries and loading states | `components/section-error-boundary.tsx` |
+| L5 | Server page wrappers | `app/[route]/page.tsx` |
+
+> Imports flow downward only.
+
+## L1 — shared primitives
+
+`components/ui/`
+
+Foundational components installed from the registry — button, input, card, badge. They never
+import from a higher layer, and they hold no business logic.
+
+```tsx
+// components/ui/button.tsx
+const buttonVariants = cva("inline-flex items-center justify-center …", {
+  variants: {
+    variant: {
+      default: "bg-primary text-primary-foreground",
+      outline: "border-border bg-input/30",
+    },
+  },
+  defaultVariants: { variant: "default" },
+})
+```
+
+## L2 — domain composites
+
+Components that know about your domain — a weather card, a report row — built entirely from
+L1 primitives. This is the first layer allowed to know what the application is about.
+
+## L3 — page orchestrators
+
+Sections that arrange L2 composites into a region of a page. They arrange; they do not
+implement.
+
+## L4 — error boundaries and loading states
+
+Every L3 section is wrapped. A crashing chart shows a fallback where the chart was, and the
+rest of the page keeps working.
+
+```tsx
+<main className="flex flex-col gap-6">
+  <SectionErrorBoundary section="Weather overview">
+    <WeatherOverview />
+  </SectionErrorBoundary>
+
+  <SectionErrorBoundary section="Activity feed">
+    <ActivityFeed />
+  </SectionErrorBoundary>
+</main>
+```
+
+See [error boundaries](/patterns/error-boundaries).
+
+## L5 — server page wrappers
+
+`app/[route]/page.tsx`. Data fetching and the route-level composition. This is where the
+network lives, so it is the layer where a failure is expected rather than exceptional.
+
+## Why downward only
+
+The rule is what buys the isolation. An L1 button that imported an L3 dashboard section would
+make the button untestable, un-installable into another project, and capable of taking a page
+down from inside a design system component. Each of those is a real failure mode; the import
+direction removes all three at once.
+
+<Note>
+  The design portal hosts an interactive demonstration of all five layers, where each section
+  is wrapped in a `SectionErrorBoundary` and you can trigger a crash to watch the isolation
+  hold. That live React surface does not port to this documentation site.
+</Note>

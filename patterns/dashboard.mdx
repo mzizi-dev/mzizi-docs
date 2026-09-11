@@ -1,0 +1,146 @@
+---
+title: "Dashboard pattern"
+description: "Composing stats, charts, sidebars and data tables into a consistent dashboard layout that survives a phone."
+sidebarTitle: "Dashboard"
+icon: "gauge"
+---
+
+The dashboard pattern is for overview pages that aggregate data into summaries, charts and
+quick actions.
+
+## Anatomy
+
+1. **Header** — page title, date range, global actions
+2. **Stats row** — key metrics as stat cards
+3. **Primary chart** — the main visualisation
+4. **Secondary panels** — supporting charts, tables, activity feeds
+5. **Quick actions** — shortcuts to common tasks
+
+## Install
+
+```bash
+npx shadcn@latest add \
+  https://mzizi.dev/api/v1/ui/card \
+  https://mzizi.dev/api/v1/ui/chart \
+  https://mzizi.dev/api/v1/ui/nyuchi-sidebar \
+  https://mzizi.dev/api/v1/ui/stats-card \
+  https://mzizi.dev/api/v1/ui/data-table \
+  https://mzizi.dev/api/v1/ui/date-picker \
+  https://mzizi.dev/api/v1/ui/tabs
+```
+
+## Layout
+
+```tsx
+<SidebarProvider>
+  <Sidebar>
+    <SidebarContent>
+      <SidebarGroup>
+        <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton isActive>Dashboard</SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton>Events</SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarGroup>
+    </SidebarContent>
+  </Sidebar>
+
+  <SidebarInset>
+    <div className="p-4 sm:p-6">{/* dashboard content */}</div>
+  </SidebarInset>
+</SidebarProvider>
+```
+
+## Header
+
+```tsx
+<div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+  <div>
+    <h1 className="font-serif text-2xl font-bold">Dashboard</h1>
+    <p className="text-sm text-muted-foreground">Overview of your activity</p>
+  </div>
+  <DateRangePicker />
+</div>
+```
+
+## Stats row
+
+```tsx
+<div className="mt-6 grid gap-4 grid-cols-2 lg:grid-cols-4">
+  <StatsCard title="Total views" value="12,345" change="+12.5%" />
+  <StatsCard title="Active users" value="1,234" change="+5.2%" />
+  <StatsCard title="Events" value="42" change="+3.4%" />
+  <StatsCard title="Growth" value="+12%" />
+</div>
+```
+
+Two columns on mobile, four from `lg`. Dropping to one column wastes the width a phone has;
+staying at four makes every number unreadable.
+
+## Charts
+
+Charts read their colours from the `--chart-*` tokens, so they follow the theme without any
+per-chart configuration. See [charts](/charts/overview).
+
+```tsx
+const chartConfig = {
+  views: { label: "Views", color: "var(--chart-1)" },
+  users: { label: "Users", color: "var(--chart-2)" },
+}
+
+<ChartContainer config={chartConfig} className="h-[300px]">
+  <AreaChart data={data}>
+    <Area dataKey="views" fill="var(--chart-1)" stroke="var(--chart-1)" />
+    <Area dataKey="users" fill="var(--chart-2)" stroke="var(--chart-2)" />
+    <ChartTooltip content={<ChartTooltipContent />} />
+  </AreaChart>
+</ChartContainer>
+```
+
+## Grid shapes
+
+```tsx
+{/* Large chart left, narrow panel right */}
+<div className="grid gap-4 lg:grid-cols-[2fr_1fr]">
+  <Card className="p-6">{/* primary chart */}</Card>
+  <Card className="p-6">{/* activity feed */}</Card>
+</div>
+
+{/* Three equal */}
+<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+  <Card className="p-6" />
+  <Card className="p-6" />
+  <Card className="p-6" />
+</div>
+```
+
+## On mobile
+
+Dashboards stack. Prioritise: stats first, then the primary chart full width, then secondary
+panels in order of importance, then tables.
+
+```tsx
+{/* Table on desktop, cards on mobile */}
+<div className="hidden sm:block">
+  <DataTable columns={columns} data={data} />
+</div>
+<div className="sm:hidden space-y-3">
+  {data.map((item) => (
+    <Card key={item.id} className="p-4">
+      <p className="font-medium">{item.name}</p>
+      <p className="text-sm text-muted-foreground">{item.value}</p>
+    </Card>
+  ))}
+</div>
+```
+
+## Refreshing
+
+- Show the last refresh time in the header.
+- Use skeletons for the sections that are refreshing.
+- Never a full-page loading state — refresh sections independently, so the reader keeps the
+  numbers that did not change.
