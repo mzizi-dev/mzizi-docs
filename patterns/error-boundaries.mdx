@@ -1,0 +1,90 @@
+---
+title: "Error boundaries"
+description: "Three layers of error isolation, so a crashing chart never takes the whole page down."
+sidebarTitle: "Error boundaries"
+icon: "shield"
+---
+
+Three layers of isolation prevent cascading failures. A crashing chart shows a fallback where
+the chart was; everything else on the page keeps working. This is mandatory, and it is the
+practical expression of the N5 covenant — *failure in one part never breaks the whole*.
+
+## 1. `ErrorBoundary`
+
+The basic boundary, for a small unit such as a component preview.
+
+```tsx
+<ErrorBoundary fallback={<p className="text-xs text-muted-foreground">Preview unavailable</p>}>
+  <ChartPreview />
+</ErrorBoundary>
+```
+
+## 2. `SectionErrorBoundary`
+
+The workhorse. Every page section in the [five-layer
+architecture](/patterns/architecture) gets one. It shows the section name, offers a retry, and
+logs through the observability library without any wiring on your part.
+
+```tsx
+<main className="flex flex-col gap-6">
+  <SectionErrorBoundary section="Weather overview">
+    <WeatherOverview />
+  </SectionErrorBoundary>
+
+  <SectionErrorBoundary section="Activity feed">
+    <ActivityFeed />
+  </SectionErrorBoundary>
+
+  <SectionErrorBoundary
+    section="Analytics"
+    onError={(error, section) => reportError(error, { section })}
+  >
+    <AnalyticsChart />
+  </SectionErrorBoundary>
+</main>
+```
+
+### Props
+
+| Prop | Type | Description |
+| --- | --- | --- |
+| `section` | `string` | Section name, used in the log line and the fallback |
+| `fallback?` | `ReactNode` | Custom fallback; defaults to a card with a retry |
+| `onError?` | `(error: Error, section: string) => void` | Hook for external reporting |
+| `className?` | `string` | Extra styles for the fallback container |
+
+The `section` string is doing two jobs: it names the thing the reader lost, and it is the
+handle you grep for when the log shows up. Make it the name a person would use.
+
+## 3. Route and global boundaries
+
+Next.js provides both. The route boundary (`app/error.tsx`) catches errors within a route
+segment and offers a retry. The global boundary (`app/global-error.tsx`) is the last resort —
+it wraps the whole document, and it uses hardcoded colours because CSS custom properties may
+not have loaded by the time it renders.
+
+That hardcoded-colour exception is the one place the "no raw hex outside N1" rule is
+deliberately broken, and the reason is the same reason the boundary exists: it has to render
+when the rest of the system has not.
+
+## Install
+
+```bash
+npx shadcn@latest add https://mzizi.dev/api/v1/ui/section-error-boundary
+npx shadcn@latest add https://mzizi.dev/api/v1/ui/error-boundary
+```
+
+`section-error-boundary` is an N5 resilience component; it lives at
+`components/registry/n5-resilience/` in the registry repository.
+
+## What gets logged
+
+The boundary logs through the observability library automatically:
+
+```
+[mzizi:error-boundary] ERROR Section "Weather overview" crashed
+  { section: "Weather overview", componentStack: [...] }
+```
+
+No integration step — wrapping the section is the integration. See
+[observability](/patterns/observability).

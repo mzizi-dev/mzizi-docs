@@ -1,0 +1,147 @@
+---
+title: "Resource index pattern"
+description: "List and table pages — filtering, sorting, pagination, loading skeletons and an empty state that gives the reader something to do."
+sidebarTitle: "Resource index"
+icon: "list"
+---
+
+For pages that display a collection people browse and filter — events, articles, locations,
+transactions.
+
+## Anatomy
+
+1. **Page header** — title, description, primary action
+2. **Filter bar** — search, category filters, sort
+3. **Content** — a table or a card grid
+4. **Pagination**
+5. **Empty state** — for when nothing matches
+
+## Layout
+
+```tsx
+<div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+  <div className="flex items-center justify-between">
+    <div>
+      <h1 className="font-serif text-2xl font-bold">Events</h1>
+      <p className="text-sm text-muted-foreground">Browse upcoming events</p>
+    </div>
+    <Button>Create event</Button>
+  </div>
+
+  <FilterBar className="mt-6" />
+
+  <div className="mt-6">
+    <DataTable columns={columns} data={events} />
+  </div>
+
+  <Pagination className="mt-6" />
+</div>
+```
+
+## Table or card grid
+
+| Use a table when | Use a card grid when |
+| --- | --- |
+| Items have many comparable fields | Items are visually distinct |
+| People scan and compare | Items carry images or rich content |
+| Sorting by column matters | The mobile layout needs flexibility |
+| Data density is high | Content lengths vary |
+
+### Table
+
+```tsx
+<DataTable
+  columns={[
+    { accessorKey: "name", header: "Name" },
+    { accessorKey: "date", header: "Date" },
+    { accessorKey: "status", header: "Status" },
+  ]}
+  data={items}
+/>
+```
+
+A wide table scrolls inside its own container. It must never push the page sideways — a
+horizontally scrolling page on a phone is how a reader loses the navigation.
+
+### Card grid
+
+```tsx
+<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+  {items.map((item) => (
+    <Card key={item.id}>
+      <CardHeader><CardTitle>{item.name}</CardTitle></CardHeader>
+      <CardContent>
+        <p className="text-sm text-muted-foreground">{item.description}</p>
+      </CardContent>
+    </Card>
+  ))}
+</div>
+```
+
+## Filtering
+
+```tsx
+<div className="flex flex-col gap-4 sm:flex-row">
+  <SearchBar placeholder="Search events…" onSearch={handleSearch} className="flex-1" />
+  <FilterBar
+    filters={[
+      { key: "category", label: "Category", options: categories },
+      { key: "status", label: "Status", options: statuses },
+    ]}
+    onFilterChange={handleFilterChange}
+  />
+</div>
+```
+
+```bash
+npx shadcn@latest add \
+  https://mzizi.dev/api/v1/ui/filter-bar \
+  https://mzizi.dev/api/v1/ui/search-bar \
+  https://mzizi.dev/api/v1/ui/data-table \
+  https://mzizi.dev/api/v1/ui/empty
+```
+
+## Empty states
+
+Say what the reader can do, not only that there is nothing here.
+
+```tsx
+<Empty>
+  <EmptyHeader>
+    <EmptyMedia>
+      <Search className="size-12 text-muted-foreground" />
+    </EmptyMedia>
+    <EmptyTitle>No events found</EmptyTitle>
+    <EmptyDescription>
+      Try adjusting your filters or create a new event.
+    </EmptyDescription>
+  </EmptyHeader>
+  <EmptyContent>
+    <Button>Create event</Button>
+  </EmptyContent>
+</Empty>
+```
+
+Distinguish "no results for this filter" from "nothing here yet". They need different words and
+different actions, and showing the first when the second is true reads as a bug.
+
+## Loading
+
+Skeletons should match the shape of what is coming, so the layout does not jump when it
+arrives.
+
+```tsx
+{/* Table */}
+<div className="space-y-3">
+  {Array.from({ length: 5 }).map((_, i) => (
+    <Skeleton key={i} className="h-12 w-full" />
+  ))}
+</div>
+
+{/* Card grid */}
+<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+  {Array.from({ length: 6 }).map((_, i) => (
+    <Skeleton key={i} className="h-48 w-full rounded-lg" />
+  ))}
+</div>
+```

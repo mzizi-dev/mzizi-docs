@@ -1,0 +1,157 @@
+---
+title: "Sidebar block"
+description: "A navigation sidebar with grouped links, collapsible sub-menus, a user menu and responsive behaviour."
+sidebarTitle: "Sidebar"
+icon: "panel-left"
+---
+
+The standard navigation pattern for dashboard and admin interfaces: grouped links, collapsible
+sections, a user menu, and a mobile behaviour that does not need separate markup.
+
+## Install
+
+```bash
+npx shadcn@latest add \
+  https://mzizi.dev/api/v1/ui/sidebar \
+  https://mzizi.dev/api/v1/ui/avatar \
+  https://mzizi.dev/api/v1/ui/dropdown-menu \
+  https://mzizi.dev/api/v1/ui/collapsible \
+  https://mzizi.dev/api/v1/ui/separator
+```
+
+For a pre-composed branded sidebar, the registry ships `nyuchi-sidebar` and
+`nyuchi-sidebar-nav` as N7 shell items.
+
+## Basic sidebar
+
+```tsx
+<SidebarProvider>
+  <Sidebar>
+    <SidebarHeader>{/* brand mark */}</SidebarHeader>
+
+    <SidebarContent>
+      <SidebarGroup>
+        <SidebarGroupLabel>Main</SidebarGroupLabel>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton isActive>
+              <Home className="size-4" />
+              Dashboard
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton>
+              <Calendar className="size-4" />
+              Events
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarGroup>
+
+      <SidebarGroup>
+        <SidebarGroupLabel>Settings</SidebarGroupLabel>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton>
+              <Settings className="size-4" />
+              Preferences
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarGroup>
+    </SidebarContent>
+
+    <SidebarFooter>{/* user menu */}</SidebarFooter>
+  </Sidebar>
+
+  <SidebarInset>
+    <header className="flex h-14 items-center gap-2 border-b border-border px-4">
+      <SidebarTrigger />
+      <h1 className="text-sm font-medium">Dashboard</h1>
+    </header>
+    <main className="p-4 sm:p-6">{/* page content */}</main>
+  </SidebarInset>
+</SidebarProvider>
+```
+
+## Collapsible sub-menus
+
+```tsx
+<SidebarMenuItem>
+  <Collapsible>
+    <CollapsibleTrigger asChild>
+      <SidebarMenuButton>
+        <BarChart3 className="size-4" />
+        Analytics
+        <ChevronDown className="ml-auto size-4" />
+      </SidebarMenuButton>
+    </CollapsibleTrigger>
+    <CollapsibleContent>
+      <SidebarMenuSub>
+        <SidebarMenuSubItem>
+          <SidebarMenuSubButton>Overview</SidebarMenuSubButton>
+        </SidebarMenuSubItem>
+        <SidebarMenuSubItem>
+          <SidebarMenuSubButton>Reports</SidebarMenuSubButton>
+        </SidebarMenuSubItem>
+      </SidebarMenuSub>
+    </CollapsibleContent>
+  </Collapsible>
+</SidebarMenuItem>
+```
+
+Use `ml-auto` rather than `ml-auto`-equivalent physical spacing where the layout has to work
+right-to-left; see [layout](/foundations/layout).
+
+## User menu
+
+```tsx
+<SidebarFooter>
+  <SidebarMenu>
+    <SidebarMenuItem>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <SidebarMenuButton className="h-12">
+            <Avatar className="size-6">
+              <AvatarFallback>TM</AvatarFallback>
+            </Avatar>
+            <div className="flex flex-col">
+              <span className="text-sm font-medium">Tendai Moyo</span>
+              <span className="text-xs text-muted-foreground">Account settings</span>
+            </div>
+          </SidebarMenuButton>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start" className="w-56">
+          <DropdownMenuItem>Profile</DropdownMenuItem>
+          <DropdownMenuItem>Settings</DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem>Sign out</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </SidebarMenuItem>
+  </SidebarMenu>
+</SidebarFooter>
+```
+
+## Badge counts
+
+```tsx
+<SidebarMenuItem>
+  <SidebarMenuButton>
+    <Bell className="size-4" />
+    Notifications
+  </SidebarMenuButton>
+  <SidebarMenuBadge>12</SidebarMenuBadge>
+</SidebarMenuItem>
+```
+
+## Responsive behaviour
+
+`SidebarProvider` handles this without a second markup tree:
+
+- **Desktop, `md` and above** — the sidebar is persistent and visible.
+- **Mobile** — the sidebar is hidden behind `SidebarTrigger` and slides in as an overlay.
+
+Place `SidebarTrigger` in the main content header, where a thumb can reach it. On mobile,
+consider a bottom navigation bar instead for the top-level destinations — see
+[mobile-first patterns](/patterns/mobile-first).

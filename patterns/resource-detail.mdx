@@ -1,0 +1,160 @@
+---
+title: "Resource detail pattern"
+description: "Single-item pages — breadcrumb, header, content body, a sidebar that becomes a stack on mobile, and related items."
+sidebarTitle: "Resource detail"
+icon: "file-text"
+---
+
+For pages that show one item in depth — an event, an article, a location, a profile. It
+complements the [resource index](/patterns/resource-index).
+
+## Anatomy
+
+1. **Breadcrumb** — navigation context
+2. **Header** — title, metadata, primary action
+3. **Content body**
+4. **Sidebar** — related information and actions, on desktop
+5. **Related items** — at the bottom
+
+## Layout
+
+```tsx
+<Breadcrumb>
+  <BreadcrumbList>
+    <BreadcrumbItem>
+      <BreadcrumbLink href="/events">Events</BreadcrumbLink>
+    </BreadcrumbItem>
+    <BreadcrumbSeparator />
+    <BreadcrumbItem>
+      <BreadcrumbPage>Harare Jazz Festival</BreadcrumbPage>
+    </BreadcrumbItem>
+  </BreadcrumbList>
+</Breadcrumb>
+
+<div className="mt-6">
+  <Badge variant="outline">Music</Badge>
+  <h1 className="mt-2 font-serif text-3xl font-bold">Harare Jazz Festival</h1>
+  <p className="mt-2 text-muted-foreground">
+    Annual jazz celebration featuring artists from across Southern Africa.
+  </p>
+</div>
+
+<div className="mt-8 grid gap-8 lg:grid-cols-[1fr_300px]">
+  <main>{/* content body */}</main>
+  <aside className="hidden lg:block">{/* sidebar */}</aside>
+</div>
+```
+
+## Header variants
+
+### With status and actions
+
+```tsx
+<div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+  <div>
+    <div className="flex items-center gap-2">
+      <h1 className="font-serif text-3xl font-bold">Event title</h1>
+      <StatusIndicator status="active" />
+    </div>
+    <p className="mt-1 text-muted-foreground">Created 3 days ago</p>
+  </div>
+  <div className="flex gap-2">
+    <Button variant="outline">Edit</Button>
+    <ShareDialog />
+  </div>
+</div>
+```
+
+### With an image
+
+```tsx
+<div className="overflow-hidden rounded-xl">
+  <AspectRatio ratio={16 / 9}>
+    <img src={imageUrl} alt={title} className="size-full object-cover" />
+  </AspectRatio>
+</div>
+<h1 className="mt-6 font-serif text-3xl font-bold">{title}</h1>
+```
+
+`AspectRatio` reserves the space before the image loads, which is what stops the heading
+jumping down the page on a slow connection.
+
+## Sidebar
+
+```tsx
+<aside className="space-y-6">
+  <Card>
+    <CardHeader><CardTitle className="text-base">Details</CardTitle></CardHeader>
+    <CardContent className="space-y-3">
+      <div className="flex items-center gap-2 text-sm">
+        <Calendar className="size-4 text-muted-foreground" />
+        <span>15 June 2026</span>
+      </div>
+      <div className="flex items-center gap-2 text-sm">
+        <MapPin className="size-4 text-muted-foreground" />
+        <span>Harare, Zimbabwe</span>
+      </div>
+    </CardContent>
+  </Card>
+
+  <Card>
+    <CardContent className="pt-6">
+      <Button className="w-full">Register</Button>
+    </CardContent>
+  </Card>
+</aside>
+```
+
+## On mobile
+
+The sidebar moves below the content. Put `<main>` first in the DOM so it is also first in the
+reading and tab order, not only visually.
+
+```tsx
+<div className="grid gap-8 lg:grid-cols-[1fr_300px]">
+  <main>{/* always first */}</main>
+  <aside>{/* below on mobile, right on desktop */}</aside>
+</div>
+```
+
+For a critical sidebar action, repeat it as a sticky bottom bar:
+
+```tsx
+<div className="fixed inset-x-0 bottom-0 border-t border-border bg-background p-4 lg:hidden">
+  <Button className="w-full">Register</Button>
+</div>
+```
+
+If you do this, make sure the page has bottom padding to match — otherwise the bar covers the
+last of the content permanently.
+
+## Related items
+
+```tsx
+<section className="mt-12">
+  <h2 className="text-xl font-semibold">Related events</h2>
+  <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    {relatedItems.map((item) => (
+      <Card key={item.id}>
+        <CardHeader><CardTitle className="text-base">{item.title}</CardTitle></CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground">{item.description}</p>
+        </CardContent>
+      </Card>
+    ))}
+  </div>
+</section>
+```
+
+## Back navigation
+
+Always give a way back to the index. A breadcrumb is context; this is an action.
+
+```tsx
+<Button variant="ghost" size="sm" asChild>
+  <a href="/events" className="gap-2">
+    <ArrowLeft className="size-4" />
+    Back to events
+  </a>
+</Button>
+```

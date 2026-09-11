@@ -1,0 +1,139 @@
+---
+title: "Component patterns"
+description: "CVA variants, Radix UI primitives, cn() composition and data attributes — the mandatory stack behind every registry component."
+sidebarTitle: "Component patterns"
+icon: "component"
+---
+
+Every component in the registry follows the same four patterns. They are not style
+preferences; each one removes a specific failure.
+
+## The four pillars
+
+```tsx
+// components/registry/n2-primitives/example.tsx
+"use client"
+
+// 1. Variants with CVA
+const exampleVariants = cva(
+  "inline-flex items-center justify-center rounded-lg font-medium transition-colors",
+  {
+    variants: {
+      variant: {
+        default: "bg-primary text-primary-foreground hover:bg-primary/80",
+        outline: "border border-border bg-input/30 hover:bg-input/50",
+        ghost: "hover:bg-muted hover:text-foreground",
+      },
+      size: {
+        default: "h-14 px-5 text-sm",
+        sm: "h-12 px-4 text-xs",
+      },
+    },
+    defaultVariants: { variant: "default", size: "default" },
+  }
+)
+
+// 2. Props extend the CVA variants and the HTML element
+interface ExampleProps
+  extends React.ComponentProps<"div">,
+    VariantProps<typeof exampleVariants> {
+  asChild?: boolean
+}
+
+// 3. Named export, never default
+// 4. Export the variants too, for composition elsewhere
+export { exampleVariants }
+```
+
+## CVA
+
+`class-variance-authority` gives a type-safe variant map. Variants compose, and defaults apply
+automatically.
+
+```tsx
+<Button variant="default" size="sm" />
+<Button variant="outline" size="lg" />
+<Button variant="ghost" />              {/* size falls back to the default */}
+
+{/* Use the variants function for a non-button element */}
+<a className={cn(buttonVariants({ variant: "link" }))}>Click here</a>
+```
+
+TypeScript rejects a variant that does not exist, which is the point — a typo in a string
+class name is silent, a typo in a variant is a build error.
+
+## `cn()`
+
+`cn()` is `clsx` plus `tailwind-merge`. It handles conditional classes and resolves Tailwind
+conflicts, last-wins:
+
+```ts
+cn("px-4 py-2", "px-2")
+// "py-2 px-2" — px-4 removed
+
+cn("text-red-500", isActive && "text-blue-500")
+// "text-blue-500" when isActive
+
+cn(buttonVariants({ variant: "outline" }), className)
+// CVA output merged with a caller's className
+```
+
+Without the merge, a caller passing `className="px-2"` gets both paddings in the class list and
+whichever CSS rule happens to win. That is the bug `cn()` exists to prevent.
+
+## Radix and `asChild`
+
+The `asChild` prop renders a different element while keeping the component's styling and
+behaviour. It is how a button becomes a link without duplicating the variants.
+
+```tsx
+<Button>Click me</Button>                            {/* <button> */}
+
+<Button asChild>
+  <a href="/dashboard">Go to dashboard</a>           {/* <a>, styled as a button */}
+</Button>
+```
+
+Internally the component swaps its element for a Radix `Slot`, which merges its props onto the
+child.
+
+Use Radix primitives wherever the component is interactive. Focus management, keyboard
+handling and screen-reader semantics are the parts most likely to be got subtly wrong by hand,
+and the parts a user notices least until they are broken.
+
+## Data attributes
+
+Every component carries data attributes for stable targeting. They are more reliable than
+class selectors, which change when the variants do.
+
+```tsx
+<button data-slot="button" data-variant="outline" data-size="sm">
+```
+
+```css
+[data-slot="button"] { … }
+[data-slot="button"][data-variant="destructive"] { … }
+
+.form-field [data-slot="label"] { font-weight: 600; }
+```
+
+```tsx
+{/* Tailwind's has-data-* modifier */}
+<div className="has-data-[slot=button]:p-4">
+  <Button>Inside a container</Button>
+</div>
+```
+
+Components also carry `data-portal`, pointing at the component's documentation page — see
+[component backlinks](/architecture/backlinks).
+
+## Checklist
+
+- CVA for every visual variant; never an inline conditional class
+- `cn()` for every `className`; never string concatenation
+- Radix primitives for accessibility where the component is interactive
+- `data-slot` on the root element, and `data-variant` / `data-size` where they apply
+- Named exports only
+- `"use client"` only when the component uses hooks, event handlers or browser APIs
+- Colours from CSS custom properties; no hardcoded hex
+- An entry in `registry.json` — see [contributing](/registry/contributing)
