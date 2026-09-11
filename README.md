@@ -1,7 +1,35 @@
-# mzizi-docs
+# Mzizi documentation
 
-The Mzizi documentation site — a [Mintlify](https://mintlify.com) deployment, destined for
-`docs.mzizi.dev`.
+> The Mzizi documentation site — a [Mintlify](https://mintlify.com) project covering both the Mzizi language and the Mzizi registry, and keeping them apart.
+
+[![CI](https://github.com/mzizi-dev/mzizi-docs/actions/workflows/ci.yml/badge.svg)](https://github.com/mzizi-dev/mzizi-docs/actions/workflows/ci.yml)
+[![Lint](https://github.com/mzizi-dev/mzizi-docs/actions/workflows/lint.yml/badge.svg)](https://github.com/mzizi-dev/mzizi-docs/actions/workflows/lint.yml)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
+![Mintlify](https://img.shields.io/badge/Mintlify-docs-0D9373?style=flat-square)
+
+**Status:** not deployed | **Intended address:** `docs.mzizi.dev` | **Long-form docs today:** [docs.bundu.org](https://docs.bundu.org) (product), [docs.nyuchi.com](https://docs.nyuchi.com) (engineering)
+
+---
+
+## This site is not live
+
+**`docs.mzizi.dev` does not resolve.** Checked 2026-09-12: no DNS record, no
+certificate, nothing to link. No Mintlify subdomain answers for this project either.
+Nothing in this repository is published anywhere, and until it is, do not link
+`docs.mzizi.dev` from another README, another repo's prose, or a package's
+`homepage` field — a docs link that 404s is worse than no docs link.
+
+The move is planned, not done:
+[`mzizi-registry#324`](https://github.com/mzizi-dev/mzizi-registry/pull/324),
+"Mzizi documentation moves to mzizi-docs / docs.mzizi.dev", is **open and
+unmerged**. [Making `docs.mzizi.dev` live](#making-docsmzizidev-live--for-a-human)
+below is the procedure, and it needs a human with dashboard access.
+
+Working long-form documentation lives at
+[docs.bundu.org](https://docs.bundu.org) (product) and
+[docs.nyuchi.com](https://docs.nyuchi.com) (engineering). Both resolve.
+
+## What it documents
 
 It documents two things that share a name, and keeps them apart.
 
@@ -10,11 +38,19 @@ content-addressed IR and the four RFCs — from
 [`mzizi-dev/mzizi`](https://github.com/mzizi-dev/mzizi). These are the pages in the flat root
 directory.
 
-**The Mzizi registry** — the shipping component system, brand system and DNA-helix
-architecture served at `mzizi.dev`, from
+**The Mzizi registry** — the shipping component system, the brand system and the DNA-helix
+architecture, from
 [`mzizi-dev/mzizi-registry`](https://github.com/mzizi-dev/mzizi-registry). These are the pages
 under `architecture/`, `registry/`, `foundations/`, `patterns/`, `blocks/`, `charts/` and
 `content/`, plus `tooling.mdx` and `console.mdx`.
+
+The registry used to be served at `mzizi.dev`. **It is not any more.** As of 2026-09-12 the
+apex serves a three-page site from
+[`mzizi-dev/mzizi-site`](https://github.com/mzizi-dev/mzizi-site), and `/components`,
+`/tokens`, `/brand`, `/architecture`, `/observability` and `/r/` all 404 there. The API
+survived on `api.mzizi.dev` and the MCP server on `mcp.mzizi.dev`; the developer portal has
+no live address. Pages here that send a reader to `mzizi.dev/<something>` are pointing at a
+404 — see [Known content debt](#known-content-debt).
 
 They are different things with different maturity, and the distinction is load-bearing.
 `ecosystem.mdx` draws the line, and every section landing page under the registry tree repeats
@@ -32,6 +68,27 @@ marks it. CI enforces the floor of this with a grep for overclaiming phrasings (
 job in `.github/workflows/ci.yml`); the grep is a backstop, not the standard. The standard is
 that a claim on this site is either checkable in the source repository or labelled as a
 design intention.
+
+## Known content debt
+
+Counted on 2026-09-12 with `grep` over `*.mdx`, and **not fixed in this change** — a
+README pass is the wrong vehicle for a 22-file content migration, and `prettier --write`
+corrupts MDX comments, so this needs doing carefully and on its own branch.
+
+| What                                            | Files | Why it is wrong                                                                                                       |
+| ----------------------------------------------- | ----: | --------------------------------------------------------------------------------------------------------------------- |
+| The install form `https://mzizi.dev/api/v1/...` |    22 | That host returns **404**. The canonical form is `https://api.mzizi.dev/v1/ui/<name>`, which returns 200              |
+| "Five African Minerals"                         |     3 | The palette is **21 colour families**: 7 minerals, 7 heritage, 7 experimental                                         |
+| "Seven African Minerals" as the whole palette   |     3 | The minerals are seven; the palette is twenty-one. Correct as a count of one group, wrong as a description of the set |
+| A link to `docs.mzizi.dev`                      |     1 | Does not resolve                                                                                                      |
+
+Live sources to check a claim against: `GET https://api.mzizi.dev/api/v1/brand` returns
+three arrays of seven, and `GET https://api.mzizi.dev/api/v1/architecture` returns 8 nodes,
+4 rungs and 6 strands. "Axis", "axes" and "layer" are retired vocabulary.
+
+There is **no database** behind any of it. The registry is disk — `registry.json` and
+`content/doctrine/**` in `mzizi-registry`. D1 exists only for the MCP server and for fundi
+logging.
 
 ## Layout
 
@@ -51,7 +108,8 @@ scripts/           check-contrast.mjs — the APCA 3.0 gate CI runs
 
 The registry pages were consolidated in from two other organisations' Starlight sites
 (`bundu-labs/bundu-docs` and `nyuchi/nyuchi-docs`). Nothing was removed from those sites —
-see the import notes in the pull requests that landed them.
+see the import notes in the pull requests that landed them. That is also where the content
+debt above came in from.
 
 ## Running it locally
 
@@ -116,17 +174,36 @@ Mintlify deploys from this repository through the Mintlify GitHub App. Install i
 point it at `mzizi-dev/mzizi-docs`. After that, **a merge to `main` deploys to production
 automatically**; pull requests get a preview deployment.
 
-This repository is **merge-only**. Land changes with:
+This repository is **rebase-only**. Read off the GitHub API on 2026-09-12,
+`allow_rebase_merge` is `true` with `allow_merge_commit` and `allow_squash_merge` both
+`false` — on all nine repositories in `mzizi-dev` and all 75 in the enterprise — with
+auto-merge enabled. Land changes with:
 
 ```bash
-gh pr merge <n> --merge --delete-branch
+gh pr merge <n> --rebase --auto
 ```
+
+Never `--admin`. The previous instruction here, `--merge`, is now rejected by the repo
+settings.
+
+> **Never run `prettier --write` on an `.mdx` file.** Prettier 3.9.x rewrites
+> `{/* … */}` into `{/_ … _/}`, which is invalid MDX. Prettier on `.md` is fine and is what
+> CI runs.
 
 ## Making `docs.mzizi.dev` live — for a human
 
-Not done, deliberately, and not doable from CI. As of 11 September 2026 `docs.mzizi.dev`
-returns no DNS record at all; `mzizi.dev` and `mcp.mzizi.dev` resolve, `api.mzizi.dev` and
-`app.mzizi.dev` do not.
+Not done, deliberately, and not doable from CI. Re-checked 2026-09-12:
+
+| Address          | State                                     |
+| ---------------- | ----------------------------------------- |
+| `mzizi.dev`      | Resolves — the three-page site            |
+| `api.mzizi.dev`  | Resolves                                  |
+| `app.mzizi.dev`  | Resolves — the console                    |
+| `mcp.mzizi.dev`  | Resolves; `/mcp` answers 401 without auth |
+| `docs.mzizi.dev` | **No DNS record at all**                  |
+
+That table has changed since this section was written: `api.mzizi.dev` and `app.mzizi.dev`
+did not resolve then and do now. Only `docs.mzizi.dev` is still missing.
 
 Cutover needs three steps, in this order:
 
@@ -144,8 +221,11 @@ Cutover needs three steps, in this order:
    Mintlify to report the domain verified and the certificate issued.
 
 Afterwards, update `ecosystem.mdx` — it carries a dated table of which subdomains resolve,
-and that table should stay true.
+and that table is already out of date for the reasons above.
 
 ## Licence
 
-Apache-2.0. See [`LICENSE`](./LICENSE).
+Licensed under the [Apache License 2.0](./LICENSE).
+
+Mzizi is an open-architecture project of the **Bundu Foundation**, operated and developed by
+**Nyuchi**.
