@@ -1,0 +1,158 @@
+---
+title: "Mobile-first patterns"
+description: "Designing for mid-range Android phones on variable networks as the primary case — navigation, sheets, touch targets, progressive loading and offline states."
+sidebarTitle: "Mobile-first"
+icon: "smartphone"
+---
+
+Most access is on mobile devices, often mid-range Android phones on variable networks. Mobile
+is the primary platform, not a responsive afterthought.
+
+## Principles
+
+1. **Start with mobile** — design the smallest screen, then enhance.
+2. **Optimise for touch** — 48px minimum targets, actions within thumb reach.
+3. **Minimise data** — lazy-load images, compress assets, do not make requests you can avoid.
+4. **Work offline** — core features function without a connection.
+5. **Paint fast** — show skeleton content immediately, load data progressively.
+
+## Bottom navigation
+
+Put app-level navigation in the thumb zone on mobile, and in a sidebar on desktop:
+
+```tsx
+<div className="hidden md:block">
+  <NyuchiSidebar />
+</div>
+<div className="fixed inset-x-0 bottom-0 md:hidden">
+  <NyuchiBottomNav
+    items={[
+      { label: "Home", href: "/", icon: Home },
+      { label: "Search", href: "/search", icon: Search },
+      { label: "Events", href: "/events", icon: Calendar },
+      { label: "Profile", href: "/profile", icon: User },
+    ]}
+  />
+</div>
+```
+
+Four or five items maximum. Beyond that the targets get too small, which defeats the reason
+for putting them there.
+
+```bash
+npx shadcn@latest add https://mzizi.dev/api/v1/ui/nyuchi-bottom-nav
+npx shadcn@latest add https://mzizi.dev/api/v1/ui/nyuchi-sidebar
+```
+
+## Sheet rather than dialog
+
+On mobile a bottom sheet is easier to reach and dismiss than a centred modal:
+
+```tsx
+<div className="hidden sm:block">
+  <Dialog>
+    <DialogTrigger asChild><Button>Open</Button></DialogTrigger>
+    <DialogContent>{/* content */}</DialogContent>
+  </Dialog>
+</div>
+<div className="sm:hidden">
+  <Sheet>
+    <SheetTrigger asChild><Button>Open</Button></SheetTrigger>
+    <SheetContent side="bottom">{/* the same content */}</SheetContent>
+  </Sheet>
+</div>
+```
+
+## Touch targets
+
+Every interactive element is at least 48px in the touch dimension.
+
+```tsx
+{/* correct */}
+<button className="flex h-12 items-center gap-3 px-4">
+  <Icon className="size-5" />
+  <span>Menu item</span>
+</button>
+
+{/* too small for a thumb */}
+<button className="h-6 px-2 text-xs">Tap</button>
+```
+
+For a list of tappable rows, the `item` component already provides the right target:
+
+```tsx
+<ItemGroup>
+  <Item>
+    <ItemContent>
+      <ItemTitle>Event name</ItemTitle>
+      <ItemDescription>15 June 2026</ItemDescription>
+    </ItemContent>
+  </Item>
+</ItemGroup>
+```
+
+## Progressive loading
+
+### Sequential mounting
+
+```tsx
+<LazySection label="hero"><HeroSection /></LazySection>
+<LazySection label="stats"><StatsSection /></LazySection>
+<LazySection label="chart"><ChartSection /></LazySection>
+```
+
+See [lazy loading](/patterns/lazy-loading).
+
+### Images
+
+- `loading="lazy"` below the fold.
+- Explicit `width` and `height` to prevent layout shift.
+- A thumbnail or placeholder first.
+
+### Memory
+
+```tsx
+const { isUnderPressure } = useMemoryPressure()
+
+{isUnderPressure ? <Skeleton className="h-64" /> : <ExpensiveChart data={data} />}
+```
+
+## Network awareness
+
+```tsx
+{!navigator.onLine && (
+  <Alert variant="warning" className="mx-4 mt-2">
+    <AlertTitle>You are offline</AlertTitle>
+    <AlertDescription>
+      Some features may be limited. Changes will sync when you reconnect.
+    </AlertDescription>
+  </Alert>
+)}
+```
+
+`navigator.onLine` tells you the device has *a* connection, not that your server is reachable —
+treat a `true` as weak evidence and let the request failing be the real signal.
+
+## Text input
+
+```tsx
+<Input type="email" autoComplete="email" />
+<Input type="tel" autoComplete="tel" />
+<Input inputMode="numeric" pattern="[0-9]*" />
+```
+
+`type="email"` puts the `@` on the keyboard; `type="tel"` gives a number pad; `inputMode="numeric"`
+gives digits without the telephone semantics. `autoComplete` removes typing altogether, which on
+a phone on a slow network is the largest single saving available.
+
+## Summary
+
+| Pattern | Mobile | Desktop |
+| --- | --- | --- |
+| Navigation | Bottom nav | Sidebar |
+| Modals | Bottom sheet | Centred dialog |
+| Data tables | Card list | Full table |
+| Sidebar | Hidden, overlay | Persistent |
+| Stats grid | 2 columns | 4 columns |
+| Filter bar | Collapsible | Always visible |
+| Images | Full width | Constrained |

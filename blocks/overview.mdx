@@ -1,0 +1,49 @@
+---
+title: "Blocks"
+description: "Pre-built compositions of registry components for common page sections — dashboards, authentication screens and sidebars."
+sidebarTitle: "Overview"
+icon: "layout-template"
+---
+
+<Note>
+  This section documents the **Mzizi registry** — the shipping design system served at
+  [mzizi.dev](https://mzizi.dev) — not **Mzizi-lang**. [The ecosystem page](/ecosystem) draws
+  the line.
+</Note>
+
+Blocks are compositions of registry components at a higher level than a single component. A
+button is a component; a complete sign-in screen is a block.
+
+## How blocks work
+
+Blocks are composed entirely from registry components, following the
+[application layers](/patterns/architecture) — domain composites built from shared primitives.
+
+The registry publishes 105 items of type `registry:block`, so many blocks are directly
+installable. The pages in this section document the composition patterns behind the common
+ones, which is what you need when you are building a variant rather than taking the default.
+
+## Available patterns
+
+<CardGroup cols={3}>
+  <Card title="Dashboard" icon="gauge" href="/blocks/dashboard">
+    Stats, charts, sidebar layout and data tables.
+  </Card>
+  <Card title="Authentication" icon="key" href="/blocks/authentication">
+    Sign in, sign up and password reset.
+  </Card>
+  <Card title="Sidebar" icon="panel-left" href="/blocks/sidebar">
+    Collapsible sidebar with navigation groups and a user menu.
+  </Card>
+</CardGroup>
+
+## Building with a block
+
+1. Install the components the block needs from the registry.
+2. Follow the composition pattern.
+3. Replace the content and data with your own.
+4. The block inherits your token layer automatically — it references semantic tokens, not
+   values.
+
+Step four is the reason these are patterns rather than screenshots: the same composition looks
+like your product because none of it names a colour.

@@ -1,0 +1,106 @@
+---
+title: "Charts"
+description: "Chart components built on Recharts and wrapped in a ChartContainer that applies the mineral palette and follows the theme."
+sidebarTitle: "Overview"
+icon: "chart-column"
+---
+
+<Note>
+  This section documents the **Mzizi registry** — the shipping design system served at
+  [mzizi.dev](https://mzizi.dev) — not **Mzizi-lang**. [The ecosystem page](/ecosystem) draws
+  the line.
+</Note>
+
+Charts are built on **Recharts** and wrapped in a `ChartContainer` that applies the mineral
+palette automatically. They adapt between light and dark through the `--chart-*` tokens, so a
+chart follows the theme without per-chart configuration.
+
+## Install
+
+```bash
+npx shadcn@latest add https://mzizi.dev/api/v1/ui/chart
+```
+
+That installs `ChartContainer`, `ChartTooltip`, `ChartTooltipContent`, `ChartLegend` and
+`ChartLegendContent`.
+
+## Chart colours
+
+Five theme-adaptive tokens, drawn from the mineral palette. Values read from the registry's
+stylesheet on 11 September 2026.
+
+| Token | Light | Dark | Mineral |
+| --- | --- | --- | --- |
+| `--chart-1` | `#4B0082` | `#B388FF` | Tanzanite |
+| `--chart-2` | `#0047AB` | `#00B0FF` | Cobalt |
+| `--chart-3` | `#004D40` | `#64FFDA` | Malachite |
+| `--chart-4` | `#5D4037` | `#FFD740` | Gold |
+| `--chart-5` | `#A0522D` | `#E1B07E` | Terracotta |
+
+Use them in order for data series, so the same series index means the same colour in every
+chart across the ecosystem.
+
+<Note>
+  There are five **chart tokens**, drawn from a palette of **seven** minerals — sodalite and
+  copper are not in the chart ramp. Documentation describing "the Five African Minerals" is
+  confusing the two, and is out of date about the palette; see
+  [design tokens](/foundations/tokens).
+</Note>
+
+## Basic usage
+
+Every chart follows the same shape: a Recharts chart wrapped in `ChartContainer` with a config
+object.
+
+```tsx
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
+import { AreaChart, Area, XAxis, YAxis } from "recharts"
+
+const chartConfig = {
+  visitors: { label: "Visitors", color: "var(--chart-1)" },
+}
+
+<ChartContainer config={chartConfig} className="h-[300px]">
+  <AreaChart data={data}>
+    <XAxis dataKey="month" />
+    <YAxis />
+    <Area dataKey="visitors" fill="var(--chart-1)" stroke="var(--chart-1)" />
+    <ChartTooltip content={<ChartTooltipContent />} />
+  </AreaChart>
+</ChartContainer>
+```
+
+`ChartContainer` gives you responsive sizing, theme-aware colours through CSS custom
+properties, and accessible labelling.
+
+## Accessibility
+
+Colour alone is not a legend. Every chart with more than one series needs a `ChartLegend`, and
+a pie or donut chart needs one regardless — see [accessibility](/foundations/accessibility)
+for why colour is never the sole carrier of meaning.
+
+## Chart types
+
+<CardGroup cols={2}>
+  <Card title="Area" icon="chart-area" href="/charts/area">
+    Filled areas for time series and trends — basic, stacked and gradient.
+  </Card>
+  <Card title="Bar" icon="chart-column" href="/charts/bar">
+    Vertical, horizontal, grouped, stacked and mineral-coloured bars.
+  </Card>
+  <Card title="Line" icon="chart-line" href="/charts/line">
+    Continuous data, multiple series, and dashed lines for projections.
+  </Card>
+  <Card title="Pie" icon="chart-pie" href="/charts/pie">
+    Pie and donut charts for proportions.
+  </Card>
+  <Card title="Radar" icon="radar" href="/charts/radar">
+    Several items compared across several dimensions.
+  </Card>
+  <Card title="Radial" icon="gauge" href="/charts/radial">
+    Radial bars and gauges for progress and scores.
+  </Card>
+  <Card title="Tooltip" icon="message-square" href="/charts/tooltip">
+    Customising tooltips and legends.
+  </Card>
+</CardGroup>
