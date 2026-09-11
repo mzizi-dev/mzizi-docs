@@ -1,0 +1,65 @@
+---
+title: "Foundations"
+description: "The foundational decisions behind the Mzizi design system — tokens, typography, layout, motion, icons, accessibility and internationalisation."
+sidebarTitle: "Overview"
+icon: "layers"
+---
+
+<Note>
+  This section documents the **Mzizi registry** — the shipping design system served at
+  [mzizi.dev](https://mzizi.dev) — not **Mzizi-lang**, the Phase 0 research language the rest
+  of this site covers. [The ecosystem page](/ecosystem) draws the line.
+</Note>
+
+Foundations are the decisions that shape every component and pattern in the design system.
+They define how tokens, typography, layout, motion, icons, accessibility and
+internationalisation are handled, and they are constraints rather than suggestions — N1 owning
+every CSS value is what makes the other seven nodes portable.
+
+## Guiding philosophy
+
+The design system is built for **the reality of African infrastructure**. A user on a 2G
+connection is not an edge case; it is the primary case. Four pillars shape the decisions:
+
+1. **Local-first** — data and UI work offline, syncing when connectivity returns.
+2. **Mobile-first** — most access is on mobile devices with constrained bandwidth and
+   lower-end hardware.
+3. **Open source and sovereign** — no dependency on infrastructure the ecosystem does not
+   control.
+4. **Open data** — transparent data pipelines.
+
+Those translate into concrete constraints:
+
+- **Language-inclusive** — the font stack covers African languages with full diacritics.
+  African languages are first-class, not localisations.
+- **Accessible by default** — APCA 3.0 contrast, 56px default and 48px minimum touch targets.
+- **Performant on constrained devices** — lazy loading, memory-pressure monitoring and
+  sequential mount queues.
+- **Offline-capable** — components and patterns degrade gracefully.
+
+## Explore
+
+<CardGroup cols={2}>
+  <Card title="Design tokens" icon="palette" href="/foundations/tokens">
+    The Seven African Minerals, the semantic status categories, and how a value flows from N1
+    to everything above it.
+  </Card>
+  <Card title="Typography" icon="type" href="/foundations/typography">
+    Font stack, type scale, heading hierarchy, and when serif rather than sans.
+  </Card>
+  <Card title="Layout" icon="layout-grid" href="/foundations/layout">
+    Breakpoints, the spacing scale, container patterns and grid shapes.
+  </Card>
+  <Card title="Motion" icon="wand" href="/foundations/motion">
+    Timing, easing, enter and exit patterns, and reduced-motion behaviour.
+  </Card>
+  <Card title="Icons" icon="shapes" href="/foundations/icons">
+    Icon conventions, the size scale, and accessible icon-only controls.
+  </Card>
+  <Card title="Accessibility" icon="accessibility" href="/foundations/accessibility">
+    APCA 3.0 contrast thresholds, touch targets, keyboard navigation, screen readers.
+  </Card>
+  <Card title="Internationalisation" icon="languages" href="/foundations/internationalization">
+    Why Noto Sans, text direction, and locale-aware number and date formatting.
+  </Card>
+</CardGroup>

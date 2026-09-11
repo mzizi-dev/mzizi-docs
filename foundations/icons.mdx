@@ -1,0 +1,141 @@
+---
+title: "Icons"
+description: "Icon conventions in the Mzizi design system — where icons are imported from, the size scale, and accessible icon-only controls."
+sidebarTitle: "Icons"
+icon: "shapes"
+---
+
+The design system's icon library is **Lucide**. It is also one of the three declared fork
+seams on the `swappable` strand, which changes how you import from it.
+
+## Import through the registry's icon module
+
+```tsx
+import { Sun, ArrowRight } from "@/lib/icons"
+```
+
+`lib/icons` re-exports the icon library. Importing through it rather than reaching for
+`lucide-react` directly is the whole mechanism by which an adopter can swap the icon library
+and inherit everything else unchanged — an import scattered across two hundred components is
+not a seam.
+
+Import specific icons, never the whole library, so tree-shaking works.
+
+## Sizing
+
+| Context | Class | Pixels | Usage |
+| --- | --- | --- | --- |
+| Inline text | `size-3` | 12px | Inside badges, small labels |
+| Button icon | `size-4` | 16px | Icon buttons, button with text |
+| Card icon | `size-5` | 20px | Card headers, list items |
+| Feature icon | `size-6` | 24px | Feature cards, section icons |
+| Hero icon | `size-8` | 32px | Large display icons |
+| Illustration | `size-12` | 48px | Empty states, large callouts |
+
+Use the `size-*` shorthand, which sets width and height together, rather than separate `h-*`
+and `w-*` classes that can drift apart.
+
+## Common icons
+
+### Navigation
+
+| Icon | Usage |
+| --- | --- |
+| `Menu` | Mobile menu toggle |
+| `X` | Close, dismiss |
+| `ArrowLeft` / `ArrowRight` | Back, next |
+| `ChevronDown` | Dropdown trigger |
+| `ExternalLink` | External links |
+
+### Actions
+
+| Icon | Usage |
+| --- | --- |
+| `Search` | Search input |
+| `Plus` | Create |
+| `Trash2` | Delete |
+| `Pencil` | Edit |
+| `Copy` | Copy to clipboard |
+| `Share2` | Share |
+| `Download` | Download |
+
+### Status
+
+| Icon | Usage |
+| --- | --- |
+| `Check` | Completion, validation passed |
+| `AlertCircle` | Warning |
+| `AlertTriangle` | Error |
+| `Info` | Informational |
+| `Loader2` | Loading spinner, with `animate-spin` |
+
+## Accessibility
+
+### Icon-only controls
+
+An icon without visible text needs an accessible name:
+
+```tsx
+{/* aria-label */}
+<Button variant="ghost" size="icon" aria-label="Close dialog">
+  <X className="size-4" />
+</Button>
+
+{/* or visually hidden text */}
+<Button variant="ghost" size="icon">
+  <Search className="size-4" />
+  <span className="sr-only">Search</span>
+</Button>
+```
+
+Remember the 48px minimum touch target applies to icon buttons too — the icon is 16px, the
+control is not.
+
+### Decorative icons
+
+An icon beside visible text is decorative and should be hidden from assistive technology:
+
+```tsx
+<Button>
+  <Plus className="size-4" aria-hidden="true" />
+  Add item
+</Button>
+```
+
+Lucide icons set `aria-hidden="true"` by default, so this is usually handled for you.
+
+## Colour
+
+Icons inherit colour through `currentColor`. Use text colour utilities and semantic tokens:
+
+```tsx
+<Search className="size-4 text-muted-foreground" />
+<Check className="size-4 text-[var(--status-success)]" />
+```
+
+Prefer the semantic token to the mineral — `--status-success` rather than `--color-malachite`
+— so the icon follows the theme rather than pinning a colour.
+
+## Right-to-left
+
+Mark directional icons that should flip in RTL contexts:
+
+```tsx
+<ArrowRight className="size-4" data-rtl-mirror="true" />
+```
+
+A chevron that points at the next item should mirror; a logo should not.
+
+## Pairing icons with text
+
+```tsx
+<span className="flex items-center gap-1.5 text-sm text-muted-foreground">
+  <Clock className="size-3.5" />
+  3 minutes ago
+</span>
+
+<Button className="gap-2">
+  <Download className="size-4" />
+  Download report
+</Button>
+```

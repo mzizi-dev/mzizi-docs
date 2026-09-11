@@ -1,0 +1,143 @@
+---
+title: "Writing guidelines"
+description: "Voice, tone and language conventions for user-facing text across the bundu ecosystem."
+sidebarTitle: "Writing"
+icon: "pen-line"
+---
+
+These govern all user-facing text: UI labels, descriptions, help text, marketing copy and
+documentation.
+
+## Voice
+
+- **Clear** — say what you mean in the fewest words necessary.
+- **Warm** — friendly without being informal; professional without being cold.
+- **Empowering** — help the reader do the thing; never talk down.
+- **Grounded** — rooted in practical value, not hype.
+
+## Tone
+
+Tone shifts with context; voice does not.
+
+| Context | Tone | Example |
+| --- | --- | --- |
+| Success | Celebratory, brief | "Payment sent successfully" |
+| Error | Calm, helpful | "We could not process the payment. Check your balance and try again." |
+| Onboarding | Welcoming, guiding | "Welcome. Let us set up your account." |
+| Documentation | Direct, instructive | "Install the component with the shadcn CLI." |
+| Marketing | Confident | "Built for Africa's digital future." |
+
+## Language conventions
+
+### Sentence case
+
+Sentence case for all UI text — headings, buttons, labels, tabs.
+
+```
+Getting started        not   Getting Started
+Add new item           not   Add New Item
+```
+
+Exceptions: proper nouns and brand names. Ecosystem brand names stay lowercase — see
+[typography](/foundations/typography).
+
+### Active voice
+
+More direct, and easier to translate.
+
+```
+You can install components with the shadcn CLI.
+not: Components can be installed with the shadcn CLI.
+
+The system saved your changes.
+not: Your changes have been saved by the system.
+```
+
+### Short sentences
+
+Under 25 words. Break complex ideas apart.
+
+```
+Components are installed locally. You own the code and can modify it freely.
+
+not: Components are installed locally into your project where you own the code and
+can modify it freely to suit your needs.
+```
+
+### Numbers
+
+- Numerals for quantities and technical values: "3 components", "48px touch targets",
+  "0.75rem".
+- Spell out a number that starts a sentence: "Seven minerals form the palette."
+
+### Dates and times
+
+- Use the reader's locale format where you can — see
+  [internationalisation](/foundations/internationalization).
+- Fall back to day-month-year: "2 April 2026".
+- Relative time for recent events: "3 hours ago", "yesterday".
+
+## Writing for a pan-African audience
+
+**Shona and Ndebele are primary languages** alongside English. Write with translation into
+them in mind from the start rather than as a later pass.
+
+### Avoid idioms
+
+```
+Get started quickly      not   Hit the ground running
+This is easy to use      not   This is a piece of cake
+```
+
+### Avoid cultural assumptions
+
+Do not assume Western holidays, seasons or references. Seasons differ across the continent;
+"spring" is not a shared date.
+
+### Technical terms
+
+- Define a technical term on first use.
+- Pick one term and use it everywhere.
+- Prefer the plain word: "set up" rather than "bootstrap", "install" rather than "scaffold".
+
+## UI text patterns
+
+### Buttons
+
+Use a verb that describes what happens.
+
+```
+Save changes     not   Submit
+Delete account   not   Remove
+Send message     not   OK
+```
+
+### Labels
+
+Be specific.
+
+```
+Email address    not   Email
+Full name        not   Name
+Phone number     not   Phone
+```
+
+### Empty states
+
+Say what the reader can do, not only what is missing.
+
+```
+No messages yet. Start a conversation to see messages here.
+not: No data found.
+```
+
+### Confirmation dialogs
+
+State what will happen and whether it can be undone.
+
+```
+Title:   Delete this item?
+Body:    This will permanently delete the item and all associated data.
+         This action cannot be undone.
+Actions: Delete item / Cancel
+```
