@@ -17,13 +17,13 @@ Every application enforces a strict five-layer hierarchy. A component imports fr
 below it, never sideways and never upward. That is what makes a section testable in isolation
 and stops one failure cascading.
 
-| Layer | Name | Path |
-| --- | --- | --- |
-| L1 | Shared primitives | `components/ui/` |
-| L2 | Domain composites | `components/weather/`, `components/reports/` |
-| L3 | Page orchestrators | `components/landing/`, `components/dashboard/` |
-| L4 | Error boundaries and loading states | `components/section-error-boundary.tsx` |
-| L5 | Server page wrappers | `app/[route]/page.tsx` |
+| Layer | Name                                | Path                                           |
+| ----- | ----------------------------------- | ---------------------------------------------- |
+| L1    | Shared primitives                   | `components/ui/`                               |
+| L2    | Domain composites                   | `components/weather/`, `components/reports/`   |
+| L3    | Page orchestrators                  | `components/landing/`, `components/dashboard/` |
+| L4    | Error boundaries and loading states | `components/section-error-boundary.tsx`        |
+| L5    | Server page wrappers                | `app/[route]/page.tsx`                         |
 
 > Imports flow downward only.
 

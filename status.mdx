@@ -17,21 +17,21 @@ Every row below is checkable in
 [`mzizi-dev/mzizi`](https://github.com/mzizi-dev/mzizi) — that is the point of writing it as
 a table rather than a paragraph.
 
-| Piece | State | Where |
-| ----- | ----- | ----- |
-| Lexer | Exists, tested | `compiler/src/lex.rs` |
-| Recovering parser | Exists, tested | `compiler/src/parse.rs` |
-| Agent diagnostic protocol (NDJSON) | Exists, tested | `compiler/src/diagnostic.rs` |
-| Content-addressed IR + SHA-256 store | Exists, tested, measured | `compiler/src/ir.rs`, `compiler/src/hash.rs` |
-| `mz outline` | Exists, tested | `compiler/src/outline.rs` |
-| Nine primitives written in Mzizi | Parse clean, gated in CI | `primitives/*.mz` |
-| One ported corpus component | Parses clean | `examples/connectivity_bar.mz` |
-| Contract **evaluation** | **Not implemented** — bodies parse, nothing checks them | — |
-| Lowering to Rust / Dioxus | **Not started** — Phase 1 | — |
-| Rendering, any target | **Not started** — Phase 1 | — |
-| Local state (`state x: int = 0`) | **Unresolved design question** | RFC-0001 §7, RFC-0002 §6, RFC-0003 §8 |
-| Phase 0 benchmark harness | **Unspecified** past the task-set and defect-rate decisions | Charter §7 |
-| Phase 0 benchmark result | **Has not run** | — |
+| Piece                                | State                                                       | Where                                        |
+| ------------------------------------ | ----------------------------------------------------------- | -------------------------------------------- |
+| Lexer                                | Exists, tested                                              | `compiler/src/lex.rs`                        |
+| Recovering parser                    | Exists, tested                                              | `compiler/src/parse.rs`                      |
+| Agent diagnostic protocol (NDJSON)   | Exists, tested                                              | `compiler/src/diagnostic.rs`                 |
+| Content-addressed IR + SHA-256 store | Exists, tested, measured                                    | `compiler/src/ir.rs`, `compiler/src/hash.rs` |
+| `mz outline`                         | Exists, tested                                              | `compiler/src/outline.rs`                    |
+| Nine primitives written in Mzizi     | Parse clean, gated in CI                                    | `primitives/*.mz`                            |
+| One ported corpus component          | Parses clean                                                | `examples/connectivity_bar.mz`               |
+| Contract **evaluation**              | **Not implemented** — bodies parse, nothing checks them     | —                                            |
+| Lowering to Rust / Dioxus            | **Not started** — Phase 1                                   | —                                            |
+| Rendering, any target                | **Not started** — Phase 1                                   | —                                            |
+| Local state (`state x: int = 0`)     | **Unresolved design question**                              | RFC-0001 §7, RFC-0002 §6, RFC-0003 §8        |
+| Phase 0 benchmark harness            | **Unspecified** past the task-set and defect-rate decisions | Charter §7                                   |
+| Phase 0 benchmark result             | **Has not run**                                             | —                                            |
 
 The compiler crate is `version = "0.0.0"` with `publish = false`. There is no
 `cargo install mz`, no published crate, and no release. You build it from the repository or
@@ -52,7 +52,7 @@ benchmark **must** include a small open-weight model arm, because the frontier a
 cannot validate a thesis whose whole point is helping the models that a frontier arm does
 not represent.
 
-No arm of that benchmark has run. So every claim on this site about *why* a design decision
+No arm of that benchmark has run. So every claim on this site about _why_ a design decision
 is right is a **stated rationale**, not a measured result. The two things that have been
 measured are narrower, and they are reported as such below.
 
@@ -61,13 +61,13 @@ measured are narrower, and they are reported as such below.
 These come from `compiler/tests/ir_measured.rs`, over the nine primitives plus the corpus
 example — ten files, which is a tiny corpus and should be read as such.
 
-| Claim | Measured |
-| ----- | -------- |
-| Structural sharing | 127 shared nodes vs 141 isolated — 14 saved across 10 files |
-| `mz outline` cost | Worst case **38% of source** (`spinner.mz`); the test fails above 75% |
-| Parse + lower, whole set | **~4.3 ms** for 10 files; budget 400 ms |
-| Identity stability | Same source → same root hash; blank-line changes do not alter it; a variant column change reaches the root |
-| Rename cost | Renaming every component in the store changes **zero** nodes |
+| Claim                    | Measured                                                                                                   |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------- |
+| Structural sharing       | 127 shared nodes vs 141 isolated — 14 saved across 10 files                                                |
+| `mz outline` cost        | Worst case **38% of source** (`spinner.mz`); the test fails above 75%                                      |
+| Parse + lower, whole set | **~4.3 ms** for 10 files; budget 400 ms                                                                    |
+| Identity stability       | Same source → same root hash; blank-line changes do not alter it; a variant column change reaches the root |
+| Rename cost              | Renaming every component in the store changes **zero** nodes                                               |
 
 RFC-0003 §7 flags the first number honestly, and so does this page: _"The sharing number is
 honest but small… At the scale of the real 571-component registry… the ratio should improve

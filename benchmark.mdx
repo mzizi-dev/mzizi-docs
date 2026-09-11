@@ -15,11 +15,11 @@ icon: "flask-conical"
 An agent authors N equivalent components in Mzizi's syntax, and the same components in raw
 Dioxus and Leptos under the same harness. Three metrics:
 
-| Metric | Which failure modes it tests |
-| ------ | ---------------------------- |
-| **Tokens consumed** | FM-6 (ceremony) and FM-8 (formatting entropy) |
-| **Iterations to a clean compile** | FM-2 (anonymous delimiters) and FM-5 (round-trip starvation) |
-| **Defect rate** — compiles but wrong | FM-1, FM-3, FM-7, and contracts being in-language |
+| Metric                               | Which failure modes it tests                                 |
+| ------------------------------------ | ------------------------------------------------------------ |
+| **Tokens consumed**                  | FM-6 (ceremony) and FM-8 (formatting entropy)                |
+| **Iterations to a clean compile**    | FM-2 (anonymous delimiters) and FM-5 (round-trip starvation) |
+| **Defect rate** — compiles but wrong | FM-1, FM-3, FM-7, and contracts being in-language            |
 
 The stopping rule, from RFC-0001 §6:
 
@@ -46,7 +46,7 @@ mirrors the contract-test pattern already used for the `.tsx` → `.rs` ports: t
 is read from disk, and disagreement is the new code's fault unless it is a documented,
 deliberate divergence.
 
-Note what is *not* a defect: a syntax or compile error. That is the normal friction the
+Note what is _not_ a defect: a syntax or compile error. That is the normal friction the
 compile-error-density design goal is trying to minimise. The defect rate measures what gets
 **past** the compiler wrong.
 
@@ -60,7 +60,7 @@ the intuition that the split makes a project harder to attack. Two corrections:
 
 **SQLite's split is commercial, not defensive.** TH3 is proprietary because it is sold and
 carries DO-178B avionics certification evidence with its own licensing constraints. SQLite
-simultaneously ships a very large *public* test suite.
+simultaneously ships a very large _public_ test suite.
 
 **Private tests are close to worthless as a security control.** An attacker has the source, a
 fuzzer and symbolic execution. A test suite mostly documents what a project already handles
@@ -123,9 +123,9 @@ Three consequences the RFC calls non-negotiable:
    PR, whenever the secret is absent, the check reports "skipped". _"A red X that an outside
    contributor is structurally unable to turn green is a wall, not a gate."_
 2. **The private result is advisory to outsiders, blocking only for maintainers.** Branch
-   protection may require it on `main`; it must not be required to *propose* a change.
+   protection may require it on `main`; it must not be required to _propose_ a change.
 3. **A private failure must be reportable in public without leaking the test.** The check
-   reports the *shape* of the failure — which metric regressed, by how much, against which
+   reports the _shape_ of the failure — which metric regressed, by how much, against which
    component — not the task input.
 
 ## The mechanism, and its current state
@@ -150,7 +150,7 @@ RFC-0004 settles where it will live — `mzizi-dev`, so read access to the held-
 governed by one org's membership, which is the Mzizi maintainer set and nothing wider — and
 then argues it should not be created yet, for a design reason rather than a scheduling one:
 
-> Its whole job is to run the *public* harness against a private input, so if it exists
+> Its whole job is to run the _public_ harness against a private input, so if it exists
 > before the harness does, the harness ends up shaped around the private runner — the exact
 > inversion §3 forbids.
 
@@ -169,8 +169,8 @@ left unsaid:
 
 - It does not make Mzizi harder to attack. Security comes from the public suite, the
   fuzzing, the `-D warnings` gate and review — all public.
-- It does not hide the compiler's behaviour. Every assertion about what Mzizi *does* is
-  public; only a held-out measurement of *how well an agent uses it* is not.
+- It does not hide the compiler's behaviour. Every assertion about what Mzizi _does_ is
+  public; only a held-out measurement of _how well an agent uses it_ is not.
 - It is not permanent for security tests. Embargoed tests move to public at disclosure, and
   a test still private after its embargo has expired is a bug in the process.
 

@@ -7,7 +7,7 @@ icon: "shield"
 
 Three layers of isolation prevent cascading failures. A crashing chart shows a fallback where
 the chart was; everything else on the page keeps working. This is mandatory, and it is the
-practical expression of the N5 covenant — *failure in one part never breaks the whole*.
+practical expression of the N5 covenant — _failure in one part never breaks the whole_.
 
 ## 1. `ErrorBoundary`
 
@@ -46,12 +46,12 @@ logs through the observability library without any wiring on your part.
 
 ### Props
 
-| Prop | Type | Description |
-| --- | --- | --- |
-| `section` | `string` | Section name, used in the log line and the fallback |
-| `fallback?` | `ReactNode` | Custom fallback; defaults to a card with a retry |
-| `onError?` | `(error: Error, section: string) => void` | Hook for external reporting |
-| `className?` | `string` | Extra styles for the fallback container |
+| Prop         | Type                                      | Description                                         |
+| ------------ | ----------------------------------------- | --------------------------------------------------- |
+| `section`    | `string`                                  | Section name, used in the log line and the fallback |
+| `fallback?`  | `ReactNode`                               | Custom fallback; defaults to a card with a retry    |
+| `onError?`   | `(error: Error, section: string) => void` | Hook for external reporting                         |
+| `className?` | `string`                                  | Extra styles for the fallback container             |
 
 The `section` string is doing two jobs: it names the thing the reader lost, and it is the
 handle you grep for when the log shows up. Make it the name a person would use.

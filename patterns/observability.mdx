@@ -60,7 +60,7 @@ logger.warn("File not found, skipping", { data: { filePath: "components/ui/missi
 
 ## `measure`
 
-Times a synchronous or asynchronous function, logs the duration on success *and* on failure,
+Times a synchronous or asynchronous function, logs the duration on success _and_ on failure,
 and returns the function's result.
 
 ```ts
@@ -121,14 +121,14 @@ See [error boundaries](/patterns/error-boundaries).
 
 ## Grep patterns
 
-| Pattern | Finds |
-| --- | --- |
-| `grep "\[mzizi\]" logs` | Every unscoped log line |
-| `grep "\[mzizi:registry\]" logs` | The registry module only |
-| `grep "\[mzizi.*ERROR" logs` | Every error, scoped or not |
-| `grep "\[mzizi:error-boundary\]" logs` | Boundary events |
-| `grep "\[mzizi:perf\]" logs` | Performance measurements |
-| `grep "\[trace:req-" logs` | Request traces |
+| Pattern                                | Finds                      |
+| -------------------------------------- | -------------------------- |
+| `grep "\[mzizi\]" logs`                | Every unscoped log line    |
+| `grep "\[mzizi:registry\]" logs`       | The registry module only   |
+| `grep "\[mzizi.*ERROR" logs`           | Every error, scoped or not |
+| `grep "\[mzizi:error-boundary\]" logs` | Boundary events            |
+| `grep "\[mzizi:perf\]" logs`           | Performance measurements   |
+| `grep "\[trace:req-" logs`             | Request traces             |
 
 The square brackets need escaping in a basic grep — unescaped, `[mzizi]` is a character class
 matching a single letter, which matches almost every line in the file and looks like it

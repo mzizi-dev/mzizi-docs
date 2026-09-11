@@ -33,7 +33,7 @@ times, where compile speed, error density and token-efficient representation are
 metrics.
 
 Everything else — cross-platform reach, ML integration, edge deployment — is Mzizi
-*integrating* with what already exists well, not out-building specialists at their own game.
+_integrating_ with what already exists well, not out-building specialists at their own game.
 
 ## What that has to cash out as
 
@@ -66,14 +66,14 @@ Four measurable design goals, not a slogan:
 The charter is precise about which layer is the research contribution, which matters because
 it bounds what Mzizi is claiming to have invented.
 
-| Layer | Approach |
-| ----- | -------- |
-| **Syntax, type system, compiler** | **Novel.** The actual research contribution and the thing worth defending as IP. |
-| **Cross-platform rendering** | **Interop with Dioxus's existing renderer**, not a rebuilt engine. Dioxus already spent years on "one codebase, four platforms". |
-| **ML workloads** | **Native integration with Candle.** Components declare and consume inference as a first-class capability; Mzizi does not build a competing tensor runtime. |
-| **Edge** | First-class deployment target from day one — the one area with real existing experience (Cloudflare Workers, `workers-rs`). |
-| **Compiled artifact** | **WASM, and native for desktop.** Not Astro, not any web framework. Astro is one thin optional distribution surface among several. |
-| **Post-quantum cryptography** | **Explicitly deferred.** A future research thread, named so it does not dilute Phase 0. |
+| Layer                             | Approach                                                                                                                                                   |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Syntax, type system, compiler** | **Novel.** The actual research contribution and the thing worth defending as IP.                                                                           |
+| **Cross-platform rendering**      | **Interop with Dioxus's existing renderer**, not a rebuilt engine. Dioxus already spent years on "one codebase, four platforms".                           |
+| **ML workloads**                  | **Native integration with Candle.** Components declare and consume inference as a first-class capability; Mzizi does not build a competing tensor runtime. |
+| **Edge**                          | First-class deployment target from day one — the one area with real existing experience (Cloudflare Workers, `workers-rs`).                                |
+| **Compiled artifact**             | **WASM, and native for desktop.** Not Astro, not any web framework. Astro is one thin optional distribution surface among several.                         |
+| **Post-quantum cryptography**     | **Explicitly deferred.** A future research thread, named so it does not dilute Phase 0.                                                                    |
 
 ## The phasing
 
@@ -88,6 +88,7 @@ it bounds what Mzizi is claiming to have invented.
     build Phase 1 until Phase 0 has a real number attached to it."_**
 
     This is where the project is. See [Status](/status) and [the benchmark](/benchmark).
+
   </Step>
   <Step title="Phase 1 — rendering interop; WASM/native as the real deliverable" icon="box">
     Wire the compiler output into Dioxus's renderer. The artifact that comes out — a working
@@ -97,6 +98,7 @@ it bounds what Mzizi is claiming to have invented.
 
     Integration work, not framework-building. Any temptation to build a native renderer here
     is scope creep until interop has been tried and found genuinely insufficient.
+
   </Step>
   <Step title="Phase 2 — edge-first deployment" icon="globe">
     Native target using existing Cloudflare and `workers-rs` experience. The cheapest phase

@@ -11,16 +11,16 @@ all resolve for any registry component name.
 
 ## URL structure
 
-| Endpoint | URL pattern | Purpose |
-| --- | --- | --- |
-| Portal | `mzizi.dev/components/{name}` | Documentation page |
-| Source | `mzizi.dev/source/{name}` | Full source view |
-| Changelog | `mzizi.dev/changelog/{name}` | Per-component version history |
-| API — component | `mzizi.dev/api/v1/ui/{name}` | Component metadata and source, shadcn format |
-| API — docs | `mzizi.dev/api/v1/ui/{name}/docs` | Use cases, variants, accessibility notes |
-| API — versions | `mzizi.dev/api/v1/ui/{name}/versions` | Per-component version JSON |
-| Health | `mzizi.dev/api/health/{name}` | Per-component health probe |
-| Chaos | `mzizi.dev/api/chaos/{name}` | Supported-fault manifest |
+| Endpoint        | URL pattern                           | Purpose                                      |
+| --------------- | ------------------------------------- | -------------------------------------------- |
+| Portal          | `mzizi.dev/components/{name}`         | Documentation page                           |
+| Source          | `mzizi.dev/source/{name}`             | Full source view                             |
+| Changelog       | `mzizi.dev/changelog/{name}`          | Per-component version history                |
+| API — component | `mzizi.dev/api/v1/ui/{name}`          | Component metadata and source, shadcn format |
+| API — docs      | `mzizi.dev/api/v1/ui/{name}/docs`     | Use cases, variants, accessibility notes     |
+| API — versions  | `mzizi.dev/api/v1/ui/{name}/versions` | Per-component version JSON                   |
+| Health          | `mzizi.dev/api/health/{name}`         | Per-component health probe                   |
+| Chaos           | `mzizi.dev/api/chaos/{name}`          | Supported-fault manifest                     |
 
 The site-wide health probe is at `/api/v1/health`. All eight patterns above were checked
 against `button` on 11 September 2026 and returned `200`.

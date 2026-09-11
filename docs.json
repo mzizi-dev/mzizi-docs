@@ -32,28 +32,15 @@
     "groups": [
       {
         "group": "Start here",
-        "pages": [
-          "index",
-          "status",
-          "ecosystem"
-        ]
+        "pages": ["index", "status", "ecosystem"]
       },
       {
         "group": "The language",
-        "pages": [
-          "syntax",
-          "primitives",
-          "compiler",
-          "ir"
-        ]
+        "pages": ["syntax", "primitives", "compiler", "ir"]
       },
       {
         "group": "The research programme",
-        "pages": [
-          "charter",
-          "benchmark",
-          "rfcs"
-        ]
+        "pages": ["charter", "benchmark", "rfcs"]
       },
       {
         "group": "The registry",
@@ -136,10 +123,7 @@
       },
       {
         "group": "Registry tooling",
-        "pages": [
-          "tooling",
-          "console"
-        ]
+        "pages": ["tooling", "console"]
       }
     ]
   },

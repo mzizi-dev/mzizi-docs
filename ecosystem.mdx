@@ -17,6 +17,7 @@ All in the [`mzizi-dev`](https://github.com/mzizi-dev) org, which is Foundation-
     Apache-2.0. This is what the rest of this site documents.
 
     _Phase 0 prototype front end._
+
   </Card>
   <Card title="mzizi-registry" icon="library" href="https://github.com/mzizi-dev/mzizi-registry">
     **The component registry, brand system and developer portal.** A Next.js app serving
@@ -25,29 +26,34 @@ All in the [`mzizi-dev`](https://github.com/mzizi-dev) org, which is Foundation-
     model.
 
     _Live._
+
   </Card>
   <Card title="mzizi-api-gateway" icon="server" href="https://github.com/mzizi-dev/mzizi-api-gateway">
     **`api.mzizi.dev`** — the registry API as a pure-Rust Cloudflare Worker, built on
     `workers-rs`. A strangler fig over the Next.js handlers rather than a rewrite.
 
     _Scaffold. One route native, the rest proxied._
+
   </Card>
   <Card title="mzizi-console" icon="layout-dashboard" href="https://github.com/mzizi-dev/mzizi-console">
     **`app.mzizi.dev`** — Astro renders the chrome as static HTML; Rust/Dioxus islands render
     the data, fetched live from the registry API. **Nyuchi-owned**, not Foundation.
 
     _In development._
+
   </Card>
   <Card title="mzizi-site" icon="globe" href="https://github.com/mzizi-dev/mzizi-site">
     **`mzizi.dev`** — intended as the site that brings the language, the registry and the
     docs together.
 
     _Empty repository. `mzizi.dev` is served by **mzizi-registry** today._
+
   </Card>
   <Card title="mzizi-docs" icon="book-open" href="https://github.com/mzizi-dev/mzizi-docs">
     **This site.** A Mintlify deployment, destined for `docs.mzizi.dev`.
 
     _Domain not yet live — see below._
+
   </Card>
 </CardGroup>
 
@@ -62,13 +68,13 @@ the same as an address that exists — the api-gateway repository exists precise
 `api.mzizi.dev` was being called by a client that asserted it "still resolves", and the
 measurement said `NXDOMAIN`.
 
-| Domain | Resolves | Served by |
-| ------ | -------- | --------- |
-| `mzizi.dev` | **Yes** | mzizi-registry, via Cloudflare |
-| `mcp.mzizi.dev` | **Yes** | The one Mzizi MCP server, Streamable HTTP |
-| `api.mzizi.dev` | **No** | mzizi-api-gateway, when deployed |
-| `app.mzizi.dev` | **No** | mzizi-console, when deployed |
-| `docs.mzizi.dev` | **No** | This site, when the domain is cut over |
+| Domain           | Resolves | Served by                                 |
+| ---------------- | -------- | ----------------------------------------- |
+| `mzizi.dev`      | **Yes**  | mzizi-registry, via Cloudflare            |
+| `mcp.mzizi.dev`  | **Yes**  | The one Mzizi MCP server, Streamable HTTP |
+| `api.mzizi.dev`  | **No**   | mzizi-api-gateway, when deployed          |
+| `app.mzizi.dev`  | **No**   | mzizi-console, when deployed              |
+| `docs.mzizi.dev` | **No**   | This site, when the domain is cut over    |
 
 <Note>
   If you are reading this page at a URL that is not `docs.mzizi.dev`, that is why. Cutting
@@ -80,10 +86,10 @@ measurement said `NXDOMAIN`.
 The charter draws this line explicitly, and it is not a formality — it decides which
 organisation's clock each piece runs on.
 
-| | Owner |
-| --- | --- |
-| The Mzizi **framework**, components and logic | **Bundu Foundation** — 100% |
-| The Mzizi **console** ("Fundi") and active cyber testing | **Nyuchi** |
+|                                                          | Owner                       |
+| -------------------------------------------------------- | --------------------------- |
+| The Mzizi **framework**, components and logic            | **Bundu Foundation** — 100% |
+| The Mzizi **console** ("Fundi") and active cyber testing | **Nyuchi**                  |
 
 So the framework serves `mzizi.dev` and `api.mzizi.dev`; the console serves
 `app.mzizi.dev`. Same org on GitHub, two owners in fact.
