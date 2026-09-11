@@ -1,0 +1,137 @@
+---
+title: "Registry schema"
+description: "The shadcn-compatible JSON schema the Mzizi registry follows — the manifest, the item types, and the API response shape."
+sidebarTitle: "Schema"
+icon: "braces"
+---
+
+The Mzizi registry follows the [shadcn registry
+schema](https://ui.shadcn.com/schema/registry.json).
+
+## The manifest
+
+`registry.json` at the repository root is the single source of truth for every registry item:
+
+```json
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "mzizi",
+  "homepage": "https://mzizi.dev",
+  "items": []
+}
+```
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `$schema` | string | Schema URL for validation |
+| `name` | string | Registry identifier — `mzizi` |
+| `homepage` | string | Registry homepage |
+| `items` | array | The registry items |
+
+## An item
+
+```json
+{
+  "name": "button",
+  "type": "registry:ui",
+  "description": "Displays a button or a component that looks like a button.",
+  "dependencies": ["radix-ui", "class-variance-authority"],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "components/registry/n2-primitives/button.tsx",
+      "type": "registry:ui"
+    }
+  ]
+}
+```
+
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| `name` | string | Yes | Unique kebab-case identifier |
+| `type` | string | Yes | Item type — see below |
+| `description` | string | Yes | Human-readable description |
+| `dependencies` | string[] | Yes | npm package names |
+| `registryDependencies` | string[] | Yes | Other registry item names |
+| `files` | object[] | Yes | The files composing the item |
+
+### The file object
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `path` | string | Path from the repository root |
+| `type` | string | File type, matching the parent item type |
+| `content` | string | Source — populated by the API, not stored in the manifest |
+
+## Item types
+
+Counts read from `GET https://mzizi.dev/api/v1/ui` on 11 September 2026. They move; read the
+endpoint rather than this table.
+
+| Type | Count | Installs to | What it is |
+| --- | --- | --- | --- |
+| `registry:ui` | 419 | `components/ui/` | React components — CVA variants, Radix primitives, `cn()` composition |
+| `registry:block` | 105 | composed sections | Higher-level compositions of several components |
+| `registry:lib` | 46 | `lib/` | Pure functions, patterns and infrastructure — `utils`, `observability`, `circuit-breaker`, `retry`, `timeout`, `fallback-chain`, `chaos`, `ai-safety` |
+| `registry:hook` | 3 | `hooks/` | `use-toast`, `use-mobile`, `use-memory-pressure` |
+| `registry:base` | 1 | the base layer | |
+| `registry:theme` | 1 | the theme | |
+
+## API response format
+
+`GET /api/v1/ui/{name}` returns the manifest entry enriched with inlined source:
+
+```json
+{
+  "name": "button",
+  "type": "registry:ui",
+  "description": "Displays a button or a component that looks like a button.",
+  "dependencies": ["radix-ui", "class-variance-authority"],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "components/registry/n2-primitives/button.tsx",
+      "type": "registry:ui",
+      "content": "\"use client\"\n\nimport * as React from \"react\"\n..."
+    }
+  ]
+}
+```
+
+`content` carries the complete, installable source.
+
+## The index
+
+`GET /api/v1/ui` returns every item without source:
+
+```json
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "mzizi",
+  "homepage": "https://mzizi.dev",
+  "items": [
+    { "name": "accordion", "type": "registry:ui", "description": "..." },
+    { "name": "alert", "type": "registry:ui", "description": "..." }
+  ]
+}
+```
+
+<Note>
+  The registry's `name` is `mzizi`. An earlier version of this document said `mukoko`; the
+  manifest is the authority and it does not.
+</Note>
+
+## Static build output
+
+`pnpm registry:build` writes one JSON file per item:
+
+```
+public/r/
+  button.json
+  card.json
+  dialog.json
+  use-toast.json
+  circuit-breaker.json
+```
+
+Each file carries the same shape as the API response, inlined source included.
