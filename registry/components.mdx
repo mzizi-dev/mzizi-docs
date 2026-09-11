@@ -1,0 +1,56 @@
+---
+title: "Browsing components"
+description: "How to list and inspect Mzizi registry components — from the portal, from the HTTP API, and from the MCP server."
+sidebarTitle: "Browsing"
+icon: "search"
+---
+
+Every registry component has a live preview, full source, and an API tester on the design
+portal at [mzizi.dev/components](https://mzizi.dev/components). That gallery is a live React
+surface and does not port to this documentation site; the API endpoints below cover the same
+ground.
+
+## Install any component
+
+```bash
+npx shadcn@latest add https://mzizi.dev/api/v1/ui/<component-name>
+```
+
+## List programmatically
+
+```bash
+# Registry index — every item, metadata only
+curl https://mzizi.dev/api/v1/ui
+
+# A single component, with inline source
+curl https://mzizi.dev/api/v1/ui/button
+
+# Use cases, variants and accessibility notes
+curl https://mzizi.dev/api/v1/ui/button/docs
+
+# Version history for one component
+curl https://mzizi.dev/api/v1/ui/button/versions
+```
+
+The index response is a shadcn registry document: components sit under `items`, each with
+`name`, `type` and `description`. The per-component response adds the full source in
+`files[].content`.
+
+<Note>
+  The index is not an array. `GET /api/v1/ui` returns `{ "$schema": …, "name": "mzizi",
+  "homepage": …, "items": [ … ] }`, and a client that decodes it as a bare list decodes it to
+  nothing — which then renders as an empty gallery rather than an error. This has bitten a
+  real consumer; decode the envelope.
+</Note>
+
+## Naming
+
+Component naming is a deliberate mix. Framework-standard primitives keep their plain shadcn
+names — `button`, `dialog`, `card` — while brand composites carry a prefix, `nyuchi-` or
+`mzizi-`. The prefix signals a brand-specific composite; an unprefixed name is a stock
+primitive re-served through the registry.
+
+## Over MCP
+
+An agent can reach the same catalogue through the MCP server rather than the HTTP API. See
+[the MCP server](/registry/mcp).

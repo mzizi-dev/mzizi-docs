@@ -1,0 +1,103 @@
+---
+title: "The MCP server"
+description: "The one Mzizi MCP endpoint — eleven consolidated tools over the registry, the brand system and the architecture model, behind a free signup gate."
+sidebarTitle: "MCP server"
+icon: "plug"
+---
+
+The Mzizi registry exposes itself to agents over the **Model Context Protocol**, so tools such
+as Claude Code can read components, tokens, doctrine and the architecture model without
+scraping a web page.
+
+## One endpoint
+
+```
+https://mcp.mzizi.dev/mcp     Streamable HTTP
+```
+
+<Warning>
+  **There is one Mzizi MCP server, not two.** The portal used to serve a second, smaller MCP
+  in-process at `mzizi.dev/mcp`. That route is now a **308** to the endpoint above — method
+  and body preserved, so an in-flight JSON-RPC `POST` survives the hop and old clients keep
+  working. Point new clients at `mcp.mzizi.dev/mcp` directly. Verified 11 September 2026.
+</Warning>
+
+## Connecting
+
+```json
+{
+  "mcpServers": {
+    "mzizi": {
+      "type": "http",
+      "url": "https://mcp.mzizi.dev/mcp"
+    }
+  }
+}
+```
+
+Any MCP-compatible client can connect over Streamable HTTP.
+
+## Authentication
+
+The server is gated by a **free WorkOS signup**. An unauthenticated `tools/list` returns
+`401 invalid_token` — that is the gate working, not an outage, and it is worth recognising
+before you file a bug against it.
+
+`https://mzizi.dev/api/v1` stays open and unauthenticated for anything that does not need an
+account, so a plain `curl` against the HTTP API remains the simplest path for scripts.
+
+## The tools
+
+Eleven, reported by `mzizi_mcp_describe` at server version `0.9.1` on 11 September 2026. Each
+returns a whole self-contained document — one call, no joins.
+
+| Tool | What it answers |
+| --- | --- |
+| `mzizi_search` | Free-text search when you do not know the name of what you want |
+| `mzizi_get_component` | One component in full — metadata, source, history, links, resolved primitive sources |
+| `mzizi_list_components` | The component index, filterable by node; also per-node counts |
+| `mzizi_get_tokens` | Brand tokens, token categories, ecosystem brands |
+| `mzizi_get_architecture` | The DNA helix — nodes, rungs, strands, and per-node documents |
+| `mzizi_get_doctrine` | Ubuntu pillars and principles, Bundu conventions, AI instruction sets |
+| `mzizi_get_skills` | The agent skills bundle |
+| `mzizi_check_accessibility` | Contrast, relative luminance, colour-blindness simulation, audits |
+| `mzizi_report_issue` | Component feedback, observability events, chaos events |
+| `mzizi_fundi` | Status of, and delegated runs against, the N9 fundi rung |
+| `mzizi_mcp_describe` | What this server exposes and where its data comes from |
+
+Start with `mzizi_search` when you do not know the name of the thing you want;
+`mzizi_get_component` when you do.
+
+<Note>
+  This eleven-tool surface **replaced a much larger one**. An earlier `mzizi-mcp` built its
+  catalogue at startup from a database table and exposed sixty-four tools, many of which
+  overlapped or answered with retired data. The consolidation folded them into the set above —
+  `mzizi_get_architecture` alone replaces `get_architecture`, `get_node_detail` and
+  `get_node_documents`. Documentation still describing a sixty-four-tool registry-driven
+  catalogue is describing the surface that was replaced.
+</Note>
+
+## Where its data comes from
+
+The server reads `https://mzizi.dev/api/v1` — the same public HTTP API described in
+[the registry schema](/registry/schema) — and **holds no database credential of its own**.
+Components are files in
+[`mzizi-dev/mzizi-registry`](https://github.com/mzizi-dev/mzizi-registry), compiled by the
+Next.js application and served over that API. The MCP server is a read surface over it.
+
+The Worker itself is maintained in a private tooling repository, so there is no public source
+link for it here.
+
+## Use cases
+
+### Building against the registry
+
+1. `mzizi_list_components`, filtered to the node you are building at — N2 primitives, N3 brand.
+2. `mzizi_get_component` for the full document of anything that looks right.
+3. Install with the shadcn CLI against `mzizi.dev/api/v1/ui/<name>`.
+
+### Reviewing a change
+
+1. `mzizi_get_tokens` to check a component is using published tokens rather than raw values.
+2. `mzizi_get_architecture` to check the component sits where its imports say it does.
+3. `mzizi_check_accessibility` for contrast and colour-blindness on any new pairing.

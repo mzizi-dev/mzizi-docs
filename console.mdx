@@ -1,0 +1,107 @@
+---
+title: "The Mzizi console"
+description: "app.mzizi.dev — Astro chrome with Rust islands over the registry API. What it is, what it replaced, and why it was ported by contract rather than translated."
+sidebarTitle: "The console"
+icon: "layout-dashboard"
+---
+
+<Note>
+  The console is **Nyuchi-owned**, not Bundu Foundation. The charter draws that line: the
+  framework, its components and its logic are Foundation IP; the console and active cyber
+  testing are Nyuchi's. [The ecosystem page](/ecosystem) follows it repository by repository.
+</Note>
+
+[`mzizi-dev/mzizi-console`](https://github.com/mzizi-dev/mzizi-console) is the Mzizi console,
+destined for `app.mzizi.dev`. **Astro in front, Rust behind.**
+
+## The split
+
+Astro renders the **chrome** — navigation, headings, prose, the page shell — as static HTML at
+build time. Rust and Dioxus **islands** render the **data**, fetched from the registry API at
+runtime.
+
+Both halves are deliberate. The chrome is static because a console's navigation has no reason
+to cost a 900 KiB WebAssembly download before it can show a heading; the overview page mounts
+no island at all and ships no WASM. The data is live because a component list baked in at build
+time goes stale the moment a component ships, and a stale copy that still looks authoritative
+is the defect class this ecosystem keeps removing.
+
+## Status
+
+<Warning>
+  `app.mzizi.dev` **does not resolve**. Checked by DNS lookup on 11 September 2026: of the
+  Mzizi subdomains, only `mzizi.dev` and `mcp.mzizi.dev` answer. The console is in development
+  and is not deployed. See [the ecosystem](/ecosystem) for the full measured table.
+</Warning>
+
+## What it replaces
+
+`@nyuchi/mzizi-console-app` — a Svelte 5 mini-app, last at `0.2.0-beta.1`, which the Nyuchi
+Console mounted under `/apps/mzizi/*`. It was never published to npm and shipped manually.
+
+The rewrite makes it a standalone surface at its own domain, and makes it Rust: the framework
+doctrine is that the UI is Astro and underneath is Rust first, TypeScript second, with no third
+UI framework. That also separates the two owners cleanly — the Mzizi framework serves
+`mzizi.dev` and `api.mzizi.dev`; the console serves `app.mzizi.dev`.
+
+## Ported by contract, not translated
+
+The governing rule of the port: **a faithful port of a broken component still compiles.** Two
+of the five routes could not have been translated even in principle.
+
+**Architecture** called `/architecture/frontend/axes` and `/architecture/frontend/layers`.
+Both answer **410 Gone** in production — checked, not assumed — and have done since the axis
+model was retired. So the route was rewritten against nodes, rungs and strands. Rungs are
+listed separately rather than as nodes with an empty backbone, because belonging to neither
+backbone is the fact the model turns on. See [the helix](/architecture/overview).
+
+**Tokens** was described in the Svelte manifest as the "Five African Minerals" palette. There
+are **seven**. That naming was removed from the framework repository and guarded against
+there; the guard does not reach a separate repository, which is how the wrong count survived
+in a client.
+
+| | Svelte app | The port |
+| --- | --- | --- |
+| API base | `mzizi.dev/api/v1` | `api.mzizi.dev/v1` |
+| `GET /ui` | typed as an array | a registry document, components under `items` |
+| A failed request | rendered an empty list | shows the status and the URL |
+
+That last row matters most. A `410` and an empty registry looked identical, so a permanently
+broken route presented itself as "no data".
+
+## Three envelope conventions
+
+Measured against production rather than assumed — the API does not use one shape:
+
+| Endpoint | Shape |
+| --- | --- |
+| `/architecture` | `{ "data": { … }, "meta": … }` |
+| `/ui` | a shadcn registry document — components under `items` |
+| `/brand` | no envelope; fields top-level, keys camelCase |
+
+Assuming a single convention decodes two of the three to nothing, and nothing renders as an
+empty page rather than as an error.
+
+## Verifying a client against the live API
+
+The console's test suite decodes **captured live responses** with its production types. That
+is a different claim from decoding fixtures the repository wrote itself, which prove only that
+the types are self-consistent — the Svelte client's types were self-consistent and wrong.
+
+```bash
+for e in ui brand architecture; do
+  curl -s "https://mzizi.dev/api/v1/$e" -o "tests/live/$e.json"
+done
+```
+
+The captures are excluded from formatting on purpose: reformatting them would turn bytes the
+API sent into fixtures the repository wrote.
+
+## Size is a deployability requirement
+
+After `wasm-opt -Oz`, the island bundle is about 1.0 MiB — roughly 921 KiB of WebAssembly plus
+74 KiB of JavaScript and 25 KiB of snippets. Optimisation is not a nicety here: an unoptimised
+debug build of the crate is a single 39.5 MB file, and Cloudflare's per-asset limit is 25 MiB
+on every plan, so it would be rejected at deploy. The build script warns loudly rather than
+silently when `wasm-opt` is missing, because skipping it does not produce a slightly larger
+bundle — it produces one that may not deploy at all.

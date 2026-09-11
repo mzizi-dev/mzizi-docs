@@ -1,0 +1,133 @@
+---
+title: "Agent tooling"
+description: "The published Mzizi agent tooling — the MCP server, the fundi CLI and SDK, and the skills bundle — and what fundi means in each of the two places it appears."
+sidebarTitle: "Agent tooling"
+icon: "wrench"
+---
+
+<Note>
+  This page documents tooling for the **Mzizi registry** — the shipping design system — not
+  **Mzizi-lang**. The language's own toolchain is `mz`; see [the compiler](/compiler).
+</Note>
+
+Three published packages let an agent work against the Mzizi registry. They are built in a
+**private** tooling repository, so this page links the published artefacts rather than the
+source.
+
+| Package | Latest | What it is |
+| --- | --- | --- |
+| [`@nyuchi/mzizi-mcp`](https://www.npmjs.com/package/@nyuchi/mzizi-mcp) | `0.9.1` | The MCP server — a Cloudflare Worker at `mcp.mzizi.dev` plus an npm stdio binary |
+| [`@nyuchi/mzizi-cli`](https://www.npmjs.com/package/@nyuchi/mzizi-cli) | `0.4.0` | The agent SDK and a CLI whose binary is named `fundi` |
+| [`@nyuchi/mzizi-skills`](https://www.npmjs.com/package/@nyuchi/mzizi-skills) | `0.5.1` | The skills bundle — nine agent skills, data only |
+
+Versions read from the npm registry on 11 September 2026.
+
+## The MCP server
+
+Covered in full on [the MCP server](/registry/mcp). In one line: one endpoint at
+`https://mcp.mzizi.dev/mcp`, eleven consolidated tools, a free signup gate, and no database
+credential of its own — it reads the same public HTTP API you can `curl`.
+
+## The `fundi` CLI
+
+```bash
+pnpm add -D @nyuchi/mzizi-cli
+```
+
+The binary is `fundi`. Its job is to take a project from "I want to use Mzizi" to "Mzizi is
+wired in correctly", and the loop is **explore → plan → apply**.
+
+| Command | Needs | Does |
+| --- | --- | --- |
+| `fundi explore` | nothing — runs offline | Reads a small set of disk markers (`package.json`, `tsconfig.json`, the global stylesheet, the Tailwind config, `components.json`) and prints a project snapshot. No model call. |
+| `fundi plan <goal>` | an Anthropic API key and a sign-in | Plans the minimal Mzizi-aligned edits. **Read-only** — it prints the steps and writes nothing. |
+| `fundi chat <message>` | an Anthropic API key and a sign-in | One-shot chat scoped to Mzizi doctrine. |
+| `fundi login` / `logout` / `whoami` | — | Manages the saved identity used for the gated MCP server. |
+
+As a library:
+
+```ts
+import { createFundi } from "@nyuchi/mzizi-cli"
+
+const fundi = await createFundi({
+  projectRoot: process.cwd(),
+  anthropicApiKey: process.env.ANTHROPIC_API_KEY!,
+})
+
+const snapshot = await fundi.explore()
+const plan = await fundi.plan("add the Mzizi token layer and a button", snapshot)
+await plan.apply({ dryRun: true })
+```
+
+Two safety properties are worth knowing before pointing it at a repository:
+
+- **Planning is read-only.** Writing to a file and running a shell command are blocked during
+  planning, and reachable only through an explicit non-dry-run apply.
+- **Everything is sandboxed to `projectRoot`.** A path that escapes it is rejected, in both
+  the planning and the apply phase.
+
+## The skills bundle
+
+The design-system and engineering doctrine ships as a public npm package of agent skills.
+Install it into a repository so an agent has the doctrine on hand rather than guessing:
+
+```bash
+npx skills add @nyuchi/mzizi-skills
+```
+
+Nine skills, verified against `GET https://mzizi.dev/api/v1/skills` on 11 September 2026:
+
+| Skill | Reach for it when |
+| --- | --- |
+| `nyuchi-design` | Generating a branded interface — minerals, radius, type |
+| `bundu-design` | Cross-brand materials and brand-voice decisions |
+| `mukoko-design` | Producing or exporting mukoko visual identity |
+| `simplify` | Before adding a component or style, and during any refactor |
+| `discoverability` | A shared link shows no preview, or you are adding a route or a site |
+| `scaffold-component` | Authoring a new component into the registry |
+| `ecosystem-app-setup` | Bootstrapping a new ecosystem application against the registry |
+| `cloudflare-worker-rust` | Building a Worker in Rust with `workers-rs` |
+| `mcp-server-cloudflare` | Adding or changing an MCP Worker |
+
+### Git is the source of truth
+
+Skills are authored in git as `skills/<name>/SKILL.md` — YAML frontmatter carrying `name` and
+`description`, then the body — and listed in an `index.json`. That bundle is the single home
+for skill content; it is projected *into* the registry's `skills` collection, which the API
+serves at `/api/v1/skills` and the MCP serves through `mzizi_get_skills`.
+
+<Warning>
+  **Never edit a skill anywhere but the bundle.** Not a copy vendored into a consumer
+  repository, not a `.claude/skills/*.md` file, and not the registry row directly — the next
+  sync overwrites all three. This reverses an older "authored once in the database" model,
+  which broke down precisely because two syncs wrote to the same collection in opposite
+  directions.
+</Warning>
+
+## Two things called fundi
+
+The name appears twice and means different things. Keeping them apart saves an argument.
+
+<CardGroup cols={2}>
+  <Card title="N9 fundi — the rung" icon="activity">
+    The self-healing rung of [the helix](/architecture/overview). It consumes N8 assurance
+    signals, classifies failures, deduplicates them and remediates the root cause. It runs as
+    a Cloudflare Worker, not as something you install. Its covenant: _failure is a learning
+    event, not a user-facing incident._
+  </Card>
+  <Card title="`fundi` — the CLI" icon="terminal">
+    The binary shipped by `@nyuchi/mzizi-cli`, described above. You install it into your own
+    project and it sets Mzizi up there. It does not run the self-healing loop.
+  </Card>
+</CardGroup>
+
+A third use of the word exists outside this site: the charter names the Mzizi **console**
+"Fundi" as a Nyuchi-owned product line. See [the console](/console) and
+[the ecosystem](/ecosystem) for that ownership line.
+
+<Note>
+  Older documentation described fundi as an agent shipping inside a package called
+  `mzizi-sdk`, in a monorepo named `nyuchi/fundi`. Neither the package nor that repository
+  name is current: the agent ships in `@nyuchi/mzizi-cli`, and the monorepo has moved and is
+  private.
+</Note>
