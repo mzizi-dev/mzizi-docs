@@ -1,0 +1,91 @@
+---
+title: "Lazy loading"
+description: "Sequential section mounting through a FIFO queue, with memory-pressure monitoring, so a long page does not exhaust a low-RAM device."
+sidebarTitle: "Lazy loading"
+icon: "hourglass"
+---
+
+Only one section mounts at a time, through a global first-in-first-out queue. The pattern comes
+from a page with seven chart sections that crashed mid-range Android devices by mounting them
+all at once.
+
+## Install
+
+```bash
+npx shadcn@latest add https://mzizi.dev/api/v1/ui/lazy-section
+npx shadcn@latest add https://mzizi.dev/api/v1/ui/use-memory-pressure
+```
+
+## How it works
+
+Each `LazySection` places a sentinel and watches it with an `IntersectionObserver`. When the
+sentinel approaches the viewport the section joins the mount queue; the queue releases one
+section at a time. A section that travels far enough past the viewport unmounts again, which is
+what keeps a long page's memory flat rather than monotonically rising.
+
+The load margin adapts to the screen: 100px on a narrow viewport, 300px otherwise. A phone gets
+less runway because it has less memory to spend on speculative mounting.
+
+```tsx
+<LazySection label="hero">
+  <HeroSection />
+</LazySection>
+
+<LazySection label="stats">
+  <StatsSection />
+</LazySection>
+
+<LazySection label="chart">
+  <ChartSection />
+</LazySection>
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `children` | `ReactNode` | — | The section to mount |
+| `fallback?` | `ReactNode` | pulse skeleton | Shown while queued |
+| `rootMargin?` | `string` | 100px or 300px by viewport width | How early to queue |
+| `label?` | `string` | `"section"` | Name used for logging and the `data-lazy-section` attribute |
+| `loading?` | `boolean` | `false` | Force the fallback |
+| `className?` | `string` | — | Styles for the wrapper |
+
+<Note>
+  Earlier documentation listed `section`, `priority`, `unmountDistance` and `disabled`. None of
+  those is the current API — the name is `label`, and ordering comes from the queue and
+  document order rather than from a priority number.
+</Note>
+
+The default fallback is a pulsing skeleton carrying `role="status"` and an accessible label, so
+a screen reader announces that something is loading rather than reading nothing.
+
+## Memory pressure
+
+`useMemoryPressure` watches JavaScript heap usage and reports when it crosses a threshold. It
+is a Chrome-only API, and the hook degrades to a no-op elsewhere rather than throwing.
+
+```ts
+const { isUnderPressure, usedMB, totalMB, usagePercent } = useMemoryPressure(85)
+```
+
+| Argument | Default | Meaning |
+| --- | --- | --- |
+| `thresholdPercent` | `85` | Heap usage at which pressure is reported |
+| `pollIntervalMs` | `5000` | How often to sample |
+
+```tsx
+const { isUnderPressure } = useMemoryPressure()
+
+return isUnderPressure ? <Skeleton className="h-64" /> : <ExpensiveChart data={data} />
+```
+
+Because it is a no-op on browsers without the API, `isUnderPressure` is `false` there — treat
+it as a hint that lets you do better on the browsers that report, not as a guarantee you are
+under the limit.
+
+<Note>
+  The design portal hosts a live demonstration of sequential mounting — the first section loads
+  eagerly while the rest wait in the queue and mount one at a time behind skeletons. That
+  interactive React surface does not port to this documentation site.
+</Note>

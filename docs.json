@@ -88,6 +88,44 @@
         ]
       },
       {
+        "group": "Patterns",
+        "pages": [
+          "patterns/overview",
+          "patterns/architecture",
+          "patterns/components",
+          "patterns/error-boundaries",
+          "patterns/observability",
+          "patterns/lazy-loading",
+          "patterns/mobile-first",
+          "patterns/dashboard",
+          "patterns/authentication",
+          "patterns/resource-index",
+          "patterns/resource-detail"
+        ]
+      },
+      {
+        "group": "Blocks",
+        "pages": [
+          "blocks/overview",
+          "blocks/dashboard",
+          "blocks/authentication",
+          "blocks/sidebar"
+        ]
+      },
+      {
+        "group": "Charts",
+        "pages": [
+          "charts/overview",
+          "charts/area",
+          "charts/bar",
+          "charts/line",
+          "charts/pie",
+          "charts/radar",
+          "charts/radial",
+          "charts/tooltip"
+        ]
+      },
+      {
         "group": "Content style",
         "pages": [
           "content/overview",

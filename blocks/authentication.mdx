@@ -1,0 +1,148 @@
+---
+title: "Authentication block"
+description: "Sign in, sign up and password reset compositions built from registry components."
+sidebarTitle: "Authentication"
+icon: "key"
+---
+
+Pre-built authentication screens. For the behaviour that goes with them — validation, error
+wording, session handling and the accessibility requirements — see the
+[authentication pattern](/patterns/authentication).
+
+## Install
+
+```bash
+npx shadcn@latest add \
+  https://mzizi.dev/api/v1/ui/button \
+  https://mzizi.dev/api/v1/ui/card \
+  https://mzizi.dev/api/v1/ui/input \
+  https://mzizi.dev/api/v1/ui/label \
+  https://mzizi.dev/api/v1/ui/field \
+  https://mzizi.dev/api/v1/ui/form \
+  https://mzizi.dev/api/v1/ui/separator
+```
+
+The registry also ships `nyuchi-auth-card` and `nyuchi-auth-layout` as N3 and N6 items, if you
+want the composed version rather than the parts.
+
+## Sign in
+
+```tsx
+<div className="flex min-h-screen items-center justify-center bg-muted px-4">
+  <Card className="w-full max-w-sm">
+    <CardHeader className="space-y-2 text-center">
+      <CardTitle className="text-xl">Sign in</CardTitle>
+      <p className="text-sm text-muted-foreground">
+        Enter your email to sign in to your account
+      </p>
+    </CardHeader>
+    <CardContent>
+      <form className="space-y-4">
+        <Field>
+          <FieldLabel>Email address</FieldLabel>
+          <Input type="email" placeholder="you@example.com" autoComplete="email" />
+        </Field>
+        <Field>
+          <div className="flex items-center justify-between">
+            <FieldLabel>Password</FieldLabel>
+            <a href="/forgot-password" className="text-xs text-muted-foreground hover:text-foreground">
+              Forgot password?
+            </a>
+          </div>
+          <Input type="password" autoComplete="current-password" />
+        </Field>
+        <Button type="submit" className="w-full">Sign in</Button>
+      </form>
+
+      <Separator className="my-6" />
+
+      <p className="text-center text-sm text-muted-foreground">
+        Do not have an account?{" "}
+        <a href="/signup" className="font-medium text-foreground underline underline-offset-2">
+          Sign up
+        </a>
+      </p>
+    </CardContent>
+  </Card>
+</div>
+```
+
+## Sign up
+
+```tsx
+<Card className="w-full max-w-sm">
+  <CardHeader className="space-y-2 text-center">
+    <CardTitle className="text-xl">Create account</CardTitle>
+    <p className="text-sm text-muted-foreground">
+      Enter your details to create your account
+    </p>
+  </CardHeader>
+  <CardContent>
+    <form className="space-y-4">
+      <Field>
+        <FieldLabel>Full name</FieldLabel>
+        <Input type="text" autoComplete="name" />
+      </Field>
+      <Field>
+        <FieldLabel>Email address</FieldLabel>
+        <Input type="email" placeholder="you@example.com" autoComplete="email" />
+      </Field>
+      <Field>
+        <FieldLabel>Password</FieldLabel>
+        <Input type="password" autoComplete="new-password" />
+        <FieldDescription>At least 8 characters</FieldDescription>
+      </Field>
+      <Button type="submit" className="w-full">Create account</Button>
+    </form>
+
+    <Separator className="my-6" />
+
+    <p className="text-center text-sm text-muted-foreground">
+      Already have an account?{" "}
+      <a href="/signin" className="font-medium text-foreground underline underline-offset-2">
+        Sign in
+      </a>
+    </p>
+  </CardContent>
+</Card>
+```
+
+## Password reset
+
+```tsx
+<Card className="w-full max-w-sm">
+  <CardHeader className="space-y-2 text-center">
+    <CardTitle className="text-xl">Reset password</CardTitle>
+    <p className="text-sm text-muted-foreground">
+      Enter your email and we will send you a reset link
+    </p>
+  </CardHeader>
+  <CardContent>
+    <form className="space-y-4">
+      <Field>
+        <FieldLabel>Email address</FieldLabel>
+        <Input type="email" placeholder="you@example.com" autoComplete="email" />
+      </Field>
+      <Button type="submit" className="w-full">Send reset link</Button>
+    </form>
+    <p className="mt-4 text-center text-sm text-muted-foreground">
+      <a href="/signin" className="font-medium text-foreground underline underline-offset-2">
+        Back to sign in
+      </a>
+    </p>
+  </CardContent>
+</Card>
+```
+
+Show the same confirmation whether or not the address is registered.
+
+## Design notes
+
+- A single **Full name** field, never first and last — see
+  [inclusive language](/content/inclusive-language).
+- `autoComplete` on every input, so password managers work.
+- `bg-muted` behind the card gives the separation; do not reach for a hardcoded grey.
+- Validation uses `react-hook-form` with `zod` — see the
+  [authentication pattern](/patterns/authentication).
+- Put your brand mark in the `CardHeader`. The registry does not ship a logo component;
+  brand marks are per-brand, which is the point.

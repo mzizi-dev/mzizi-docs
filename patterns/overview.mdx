@@ -1,0 +1,68 @@
+---
+title: "Application patterns"
+description: "The patterns applications built on the Mzizi registry follow — composition, resilience, observability, and the standard page shapes."
+sidebarTitle: "Overview"
+icon: "blocks"
+---
+
+<Note>
+  This section documents patterns for applications built on the **Mzizi registry** — the
+  shipping design system — not **Mzizi-lang**, the Phase 0 research language the rest of this
+  site covers. [The ecosystem page](/ecosystem) draws the line.
+</Note>
+
+These patterns are what keeps a family of applications consistent, resilient and
+maintainable. Each is tested against the same four commitments as the rest of the system:
+sovereignty, resilience, accessibility, and infrastructure that assumes an African network
+rather than a Californian one.
+
+## Architecture and composition
+
+<CardGroup cols={2}>
+  <Card title="Application layers" icon="layers" href="/patterns/architecture">
+    The five-layer component hierarchy an application enforces, and why imports only flow
+    downward.
+  </Card>
+  <Card title="Component patterns" icon="component" href="/patterns/components">
+    CVA variants, Radix primitives, `cn()` composition and data attributes — the mandatory
+    stack for every component.
+  </Card>
+</CardGroup>
+
+## Resilience and observability
+
+<CardGroup cols={2}>
+  <Card title="Error boundaries" icon="shield" href="/patterns/error-boundaries">
+    Three layers of isolation, so one failing section never takes the page with it.
+  </Card>
+  <Card title="Observability" icon="activity" href="/patterns/observability">
+    Structured logging, performance measurement and error tracking behind one grep-able
+    prefix.
+  </Card>
+  <Card title="Lazy loading" icon="hourglass" href="/patterns/lazy-loading">
+    Sequential mounting through a FIFO queue, with memory-pressure monitoring.
+  </Card>
+  <Card title="Mobile-first" icon="smartphone" href="/patterns/mobile-first">
+    Constrained bandwidth and lower-end hardware as the primary case, not an edge case.
+  </Card>
+</CardGroup>
+
+## Page shapes
+
+<CardGroup cols={2}>
+  <Card title="Dashboard" icon="gauge" href="/patterns/dashboard">
+    Stats, charts, sidebar and data tables composed into one consistent layout.
+  </Card>
+  <Card title="Authentication" icon="key" href="/patterns/authentication">
+    Sign in, sign up and password reset, with validation and accessible error handling.
+  </Card>
+  <Card title="Resource index" icon="list" href="/patterns/resource-index">
+    List and table views with filtering, sorting, pagination and a useful empty state.
+  </Card>
+  <Card title="Resource detail" icon="file-text" href="/patterns/resource-detail">
+    Single-item pages, with a sidebar that becomes a stack on mobile.
+  </Card>
+</CardGroup>
+
+Install components from the registry rather than copy-pasting them or starting a parallel
+library. See [consuming the registry](/registry/consuming).
