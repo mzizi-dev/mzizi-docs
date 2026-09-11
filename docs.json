@@ -1,0 +1,69 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "sequoia",
+  "name": "Mzizi",
+  "colors": {
+    "primary": "#0047AB",
+    "light": "#B3E5FC",
+    "dark": "#0047AB"
+  },
+  "background": {
+    "color": {
+      "light": "#F3F2EE",
+      "dark": "#1B1A17"
+    },
+    "decoration": "grid"
+  },
+  "fonts": {
+    "heading": {
+      "family": "Noto Serif",
+      "weight": 600
+    },
+    "body": {
+      "family": "Noto Sans",
+      "weight": 400
+    }
+  },
+  "icons": {
+    "library": "lucide"
+  },
+  "favicon": "/images/favicon.ico",
+  "navigation": {
+    "groups": [
+      {
+        "group": "Start here",
+        "pages": ["index", "status", "ecosystem"]
+      },
+      {
+        "group": "The language",
+        "pages": ["syntax", "primitives", "compiler", "ir"]
+      },
+      {
+        "group": "The research programme",
+        "pages": ["charter", "benchmark", "rfcs"]
+      }
+    ]
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "GitHub",
+        "href": "https://github.com/mzizi-dev/mzizi"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "mzizi.dev",
+      "href": "https://mzizi.dev"
+    }
+  },
+  "contextual": {
+    "options": ["copy", "view", "chatgpt", "claude", "perplexity", "mcp", "cursor", "vscode"]
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/mzizi-dev"
+    }
+  },
+  "description": "Mzizi is a Bundu Foundation research project: a Rust framework whose syntax, type system and compiler feedback loop are designed for machine authorship by small open-weight models. Phase 0 is a prototype front end, and nothing has yet been measured against the charter's kill criteria."
+}
