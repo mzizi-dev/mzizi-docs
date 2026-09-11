@@ -18,17 +18,17 @@ wrong when a language model writes code, and then justifies every decision again
 them. Its own rule: _"If a decision doesn't trace to a failure mode, it doesn't belong in
 the language."_
 
-| ID | Failure mode |
-| -- | ------------ |
-| **FM-1** | **Idiom sampling.** N equivalent ways to express one intent means generation samples over them, and every choice point is somewhere to be subtly wrong. |
-| **FM-2** | **Anonymous-delimiter mismatch.** A `}` closing something 200 lines up carries no information about *what* it closes. One missing brace cascades into dozens of phantom errors. |
-| **FM-3** | **Non-local fixes.** Errors whose repair site is far from the report site. Rust lifetimes are the extreme case. |
-| **FM-4** | **Edit-anchor collisions.** Agents mostly *edit*, by exact-string match. Repeated boilerplate makes the anchor non-unique, so edits fail or land on the wrong copy. |
-| **FM-5** | **Round-trip starvation.** A compiler that stops at the first parse error turns one mistake into five compile cycles, each a full agent turn. |
-| **FM-6** | **Token burn.** Ceremony carrying no decision — imports, derive lists, repeated visibility keywords. (The inverse trap is APL-terseness; the optimum is *plain words, no ceremony*, not *few characters*.) |
-| **FM-7** | **Macro opacity.** When the visible source differs from what compiles, errors point into generated code the author cannot see. |
-| **FM-8** | **Formatting entropy.** Formatting freedom mixes cosmetic and semantic change in every diff. |
-| **FM-9** | **Hidden capability.** To reason locally about a function you must know what it *can do* without reading its transitive callees. |
+| ID       | Failure mode                                                                                                                                                                                               |
+| -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **FM-1** | **Idiom sampling.** N equivalent ways to express one intent means generation samples over them, and every choice point is somewhere to be subtly wrong.                                                    |
+| **FM-2** | **Anonymous-delimiter mismatch.** A `}` closing something 200 lines up carries no information about _what_ it closes. One missing brace cascades into dozens of phantom errors.                            |
+| **FM-3** | **Non-local fixes.** Errors whose repair site is far from the report site. Rust lifetimes are the extreme case.                                                                                            |
+| **FM-4** | **Edit-anchor collisions.** Agents mostly _edit_, by exact-string match. Repeated boilerplate makes the anchor non-unique, so edits fail or land on the wrong copy.                                        |
+| **FM-5** | **Round-trip starvation.** A compiler that stops at the first parse error turns one mistake into five compile cycles, each a full agent turn.                                                              |
+| **FM-6** | **Token burn.** Ceremony carrying no decision — imports, derive lists, repeated visibility keywords. (The inverse trap is APL-terseness; the optimum is _plain words, no ceremony_, not _few characters_.) |
+| **FM-7** | **Macro opacity.** When the visible source differs from what compiles, errors point into generated code the author cannot see.                                                                             |
+| **FM-8** | **Formatting entropy.** Formatting freedom mixes cosmetic and semantic change in every diff.                                                                                                               |
+| **FM-9** | **Hidden capability.** To reason locally about a function you must know what it _can do_ without reading its transitive callees.                                                                           |
 
 ## A whole component
 
@@ -109,14 +109,14 @@ whitespace mangling in transit cannot change meaning.
 
 ## One construct per intent — FM-1
 
-| Intent | The only form | Deliberately absent |
-| ------ | ------------- | ------------------- |
-| Conditional | `when <cond> … [else …] end` | `if`, ternary, `unless`, expression-`if` |
-| Enumeration | `enum … end` with per-variant data columns | parallel const maps keyed by variant |
-| Iteration | `for each x in xs … end` | `while`, `loop`, iterator-chain/loop duality |
-| Branching on variants | `match x / case a … / case b … / end`, exhaustive, no guards in v0 | `if`-chains over variants |
-| Events out | `emit <event>(args)` | callback-calling conventions |
-| Absence | `nothing` (in views), `none` (as a value) | `null`/`undefined` duality |
+| Intent                | The only form                                                      | Deliberately absent                          |
+| --------------------- | ------------------------------------------------------------------ | -------------------------------------------- |
+| Conditional           | `when <cond> … [else …] end`                                       | `if`, ternary, `unless`, expression-`if`     |
+| Enumeration           | `enum … end` with per-variant data columns                         | parallel const maps keyed by variant         |
+| Iteration             | `for each x in xs … end`                                           | `while`, `loop`, iterator-chain/loop duality |
+| Branching on variants | `match x / case a … / case b … / end`, exhaustive, no guards in v0 | `if`-chains over variants                    |
+| Events out            | `emit <event>(args)`                                               | callback-calling conventions                 |
+| Absence               | `nothing` (in views), `none` (as a value)                          | `null`/`undefined` duality                   |
 
 There is no statement/expression duality. Logic is statements; only `view` and `contract`
 have their own declarative sub-grammars.
@@ -139,7 +139,7 @@ it as a keyword made a valid view line unparseable. Types resolve by position.
 `enum connection_state` carries `label` and `color` as **columns on the variants**. The
 TypeScript corpus kept these in parallel `Record` maps, and porting that corpus to Rust
 found exactly the drift you would predict: nodes missing from a map, a wrong fallback
-colour. In Mzizi the enum *is* the table, a missing cell is a compile error, and
+colour. In Mzizi the enum _is_ the table, a missing cell is a compile error, and
 `state.label` is total by construction.
 
 `alert.mz` shows the version of this that is not about styling at all:
@@ -171,7 +171,7 @@ nested blocks. Every diagnostic inside a view points at source the author actual
 Interpolation is `{expr}` inside strings, and it is the only string-building mechanism.
 
 Attributes the corpus proved load-bearing are first-class and checked: `slot` (the
-`data-slot` identity contract), `role` (ARIA — and an explicit `role` *replaces* implicit
+`data-slot` identity contract), `role` (ARIA — and an explicit `role` _replaces_ implicit
 semantics, which is a real corpus defect class), and `class` (statically scanned, so
 dynamic class construction is impossible).
 

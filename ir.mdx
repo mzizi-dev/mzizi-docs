@@ -10,30 +10,30 @@ loop, and the half that decides whether a small model can work in a large projec
 
 ## The eight reading barriers
 
-| ID | Barrier |
-| -- | ------- |
-| **RB-1** | **Textual addressing only.** Editing requires an exact string match, so a change needs *more* context than the change itself. |
-| **RB-2** | **File-granular reads.** Learning one prop's type costs the whole file. No "interface only" primitive exists in the loop. |
+| ID       | Barrier                                                                                                                                                   |
+| -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **RB-1** | **Textual addressing only.** Editing requires an exact string match, so a change needs _more_ context than the change itself.                             |
+| **RB-2** | **File-granular reads.** Learning one prop's type costs the whole file. No "interface only" primitive exists in the loop.                                 |
 | **RB-3** | **Invisible dependency graph.** "What breaks if I change this?" means grepping — false positives from same-name symbols, false negatives from re-exports. |
-| **RB-4** | **Diffs conflate moved with changed.** Rename, reformat and real semantic change all arrive as the same noise. |
-| **RB-5** | **Generated code is a blind spot.** With macros, the thing that runs is not the thing that was read. |
-| **RB-6** | **No stable identity across time.** A summary silently rots, and nothing reports which recorded facts are still true. |
-| **RB-7** | **Repeated structure is unavoidable cost.** Hundreds of components with identical prop ceremony, paid for on every read and useless as an edit anchor. |
-| **RB-8** | **Understanding cannot be cached.** Every session starts cold, and the hand-written substitute — a `CLAUDE.md` — drifts. |
+| **RB-4** | **Diffs conflate moved with changed.** Rename, reformat and real semantic change all arrive as the same noise.                                            |
+| **RB-5** | **Generated code is a blind spot.** With macros, the thing that runs is not the thing that was read.                                                      |
+| **RB-6** | **No stable identity across time.** A summary silently rots, and nothing reports which recorded facts are still true.                                     |
+| **RB-7** | **Repeated structure is unavoidable cost.** Hundreds of components with identical prop ceremony, paid for on every read and useless as an edit anchor.    |
+| **RB-8** | **Understanding cannot be cached.** Every session starts cold, and the hand-written substitute — a `CLAUDE.md` — drifts.                                  |
 
 Content addressing answers seven of the eight from a single decision. That is the entire
 argument for it.
 
-| Barrier | What the IR does |
-| ------- | ---------------- |
-| RB-1 | Nodes are addressed by hash, or by a unique structural path (`connectivity_bar/fn:retry`) — never by line number or string match |
-| RB-2 | `mz outline` serves the interface at a fraction of source cost; any single node can be fetched alone |
-| RB-3 | Reference edges are explicit in the node, so "who points at this hash" is a lookup, not a search |
-| RB-4 | A moved node keeps its hash. Only real change alters a hash, so a diff *is* the semantic diff |
-| RB-5 | No macros: the IR is ground truth and is directly inspectable |
-| RB-6 | The hash **is** the identity, permanently. A recorded fact is re-verified by asking whether that hash still exists |
-| RB-7 | Structural sharing: identical subtrees are one stored node |
-| RB-8 | The store is derived and machine-verified — the thing a hand-written `CLAUDE.md` was failing to be |
+| Barrier | What the IR does                                                                                                                 |
+| ------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| RB-1    | Nodes are addressed by hash, or by a unique structural path (`connectivity_bar/fn:retry`) — never by line number or string match |
+| RB-2    | `mz outline` serves the interface at a fraction of source cost; any single node can be fetched alone                             |
+| RB-3    | Reference edges are explicit in the node, so "who points at this hash" is a lookup, not a search                                 |
+| RB-4    | A moved node keeps its hash. Only real change alters a hash, so a diff _is_ the semantic diff                                    |
+| RB-5    | No macros: the IR is ground truth and is directly inspectable                                                                    |
+| RB-6    | The hash **is** the identity, permanently. A recorded fact is re-verified by asking whether that hash still exists               |
+| RB-7    | Structural sharing: identical subtrees are one stored node                                                                       |
+| RB-8    | The store is derived and machine-verified — the thing a hand-written `CLAUDE.md` was failing to be                               |
 
 RB-5 is the exception only in the sense that the syntax already solved it: the view grammar
 is native rather than a macro, so the IR inherits the property rather than fixing it.
@@ -74,7 +74,7 @@ Fields are sorted by key so that authoring order cannot change identity. Childre
 SHA-256, hand-rolled, verified against the published NIST vectors. The house convention is
 to hand-roll small, fully-specified things rather than take a dependency, and SHA-256
 qualifies precisely because it is completely specified with official test vectors, so
-correctness is *verifiable* rather than assumed.
+correctness is _verifiable_ rather than assumed.
 
 RFC-0003 states the limit of that plainly, and so does this page:
 
@@ -93,7 +93,7 @@ node records the name of anything it references — only hashes.
   held the name. That removes the whole class of exhaustive multi-site refactor, which is
   precisely what small models perform worst at.
 - **Source carries no import lines.** This is the mechanism underneath the syntax-level
-  rule: source says *what*, the namespace says *which*.
+  rule: source says _what_, the namespace says _which_.
 - **Two components can be compared for identity, not similarity.** Same hash means
   genuinely the same logic, wherever it came from.
 
@@ -106,6 +106,7 @@ node records the name of anything it references — only hashes.
     `mz outline` — the interface form.
 
     `mz ir` — the flat node listing with hashes and structural paths.
+
   </Card>
   <Card title="Designed, not built" icon="circle-dashed">
     `mz refs <hash>` — every node referencing this one (RB-3).
@@ -116,6 +117,7 @@ node records the name of anything it references — only hashes.
 
     `mz diff <hash-a> <hash-b>` — node-level added / removed / changed, with moves reported
     as moves.
+
   </Card>
 </CardGroup>
 
@@ -127,7 +129,7 @@ projects, is an open question with a caching payoff and a trust question attache
 This is worth reading because it is the shape of the whole project in one paragraph: a
 claim was made, a measured test caught it, and the claim was narrowed rather than defended.
 
-RFC-0003's first draft called structural paths *"stable across edits"*. Two `row` siblings
+RFC-0003's first draft called structural paths _"stable across edits"_. Two `row` siblings
 inside `alert`'s view collided on the same path, which would have made a patch address
 ambiguous. Two things came out of it. Paths now disambiguate same-named siblings — by `slot`
 where one exists (`alert/view/element:notice/element:row@alert-title`, readable, and `slot`
@@ -155,13 +157,13 @@ cut back to what is true:
 From `compiler/tests/ir_measured.rs`, over the nine primitives plus the corpus example, so
 these are reproducible rather than asserted:
 
-| Claim | Measured |
-| ----- | -------- |
-| Structural sharing | 127 shared nodes vs 141 isolated — 14 saved across 10 files |
-| Outline cost | Worst case 38% of source (`spinner.mz`); the test fails above 75% |
-| Parse + lower, whole set | ~4.3 ms for 10 files; budget 400 ms |
-| Identity stability | Same source → same root hash; blank-line changes do not alter it; a variant column change reaches the root |
-| Rename cost | Renaming every component in the store changes **zero** nodes |
+| Claim                    | Measured                                                                                                   |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------- |
+| Structural sharing       | 127 shared nodes vs 141 isolated — 14 saved across 10 files                                                |
+| Outline cost             | Worst case 38% of source (`spinner.mz`); the test fails above 75%                                          |
+| Parse + lower, whole set | ~4.3 ms for 10 files; budget 400 ms                                                                        |
+| Identity stability       | Same source → same root hash; blank-line changes do not alter it; a variant column change reaches the root |
+| Rename cost              | Renaming every component in the store changes **zero** nodes                                               |
 
 <Note>
   The sharing number is small and RFC-0003 labels it as such: ten files is a tiny corpus,

@@ -42,14 +42,14 @@ less runway because it has less memory to spend on speculative mounting.
 
 ## Props
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `children` | `ReactNode` | — | The section to mount |
-| `fallback?` | `ReactNode` | pulse skeleton | Shown while queued |
-| `rootMargin?` | `string` | 100px or 300px by viewport width | How early to queue |
-| `label?` | `string` | `"section"` | Name used for logging and the `data-lazy-section` attribute |
-| `loading?` | `boolean` | `false` | Force the fallback |
-| `className?` | `string` | — | Styles for the wrapper |
+| Prop          | Type        | Default                          | Description                                                 |
+| ------------- | ----------- | -------------------------------- | ----------------------------------------------------------- |
+| `children`    | `ReactNode` | —                                | The section to mount                                        |
+| `fallback?`   | `ReactNode` | pulse skeleton                   | Shown while queued                                          |
+| `rootMargin?` | `string`    | 100px or 300px by viewport width | How early to queue                                          |
+| `label?`      | `string`    | `"section"`                      | Name used for logging and the `data-lazy-section` attribute |
+| `loading?`    | `boolean`   | `false`                          | Force the fallback                                          |
+| `className?`  | `string`    | —                                | Styles for the wrapper                                      |
 
 <Note>
   Earlier documentation listed `section`, `priority`, `unmountDistance` and `disabled`. None of
@@ -69,10 +69,10 @@ is a Chrome-only API, and the hook degrades to a no-op elsewhere rather than thr
 const { isUnderPressure, usedMB, totalMB, usagePercent } = useMemoryPressure(85)
 ```
 
-| Argument | Default | Meaning |
-| --- | --- | --- |
-| `thresholdPercent` | `85` | Heap usage at which pressure is reported |
-| `pollIntervalMs` | `5000` | How often to sample |
+| Argument           | Default | Meaning                                  |
+| ------------------ | ------- | ---------------------------------------- |
+| `thresholdPercent` | `85`    | Heap usage at which pressure is reported |
+| `pollIntervalMs`   | `5000`  | How often to sample                      |
 
 ```tsx
 const { isUnderPressure } = useMemoryPressure()

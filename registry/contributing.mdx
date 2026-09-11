@@ -85,14 +85,14 @@ Every component carries:
 }
 ```
 
-| Field | Required | Description |
-| --- | --- | --- |
-| `name` | Yes | Kebab-case identifier; matches the file name |
-| `type` | Yes | `registry:ui`, `registry:hook`, `registry:lib`, `registry:block`, `registry:base` or `registry:theme` |
-| `description` | Yes | One line |
-| `dependencies` | Yes | npm packages; may be empty |
-| `registryDependencies` | Yes | Other registry item names this needs |
-| `files` | Yes | The files that make up the item |
+| Field                  | Required | Description                                                                                           |
+| ---------------------- | -------- | ----------------------------------------------------------------------------------------------------- |
+| `name`                 | Yes      | Kebab-case identifier; matches the file name                                                          |
+| `type`                 | Yes      | `registry:ui`, `registry:hook`, `registry:lib`, `registry:block`, `registry:base` or `registry:theme` |
+| `description`          | Yes      | One line                                                                                              |
+| `dependencies`         | Yes      | npm packages; may be empty                                                                            |
+| `registryDependencies` | Yes      | Other registry item names this needs                                                                  |
+| `files`                | Yes      | The files that make up the item                                                                       |
 
 An item with more than one source file where the schema expects exactly one is a manifest bug
 rather than a bad request, and the API says so — worth knowing when a component 500s and the

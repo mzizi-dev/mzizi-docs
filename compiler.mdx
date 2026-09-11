@@ -27,13 +27,13 @@ cargo run -- ir       ../primitives/card.mz                  # nodes, hashes, st
 
 ## The four commands
 
-| Command | What it does |
-| ------- | ------------ |
-| `mz check <file.mz>` | Human-readable diagnostics, one per line, plus a summary |
-| `mz check --agent <file.mz>` | The same diagnostics as NDJSON, plus a summary object |
-| `mz outline <file.mz>` | The component's interface only, emitted as valid Mzizi |
-| `mz hash <file.mz>` | The root hash and the stored node count |
-| `mz ir <file.mz>` | Every node with its hash and structural path |
+| Command                      | What it does                                             |
+| ---------------------------- | -------------------------------------------------------- |
+| `mz check <file.mz>`         | Human-readable diagnostics, one per line, plus a summary |
+| `mz check --agent <file.mz>` | The same diagnostics as NDJSON, plus a summary object    |
+| `mz outline <file.mz>`       | The component's interface only, emitted as valid Mzizi   |
+| `mz hash <file.mz>`          | The root hash and the stored node count                  |
+| `mz ir <file.mz>`            | Every node with its hash and structural path             |
 
 With no command given, the first positional argument is treated as a file and `check` is
 assumed.
@@ -49,11 +49,11 @@ assumed.
 
 So the loop can branch on status without parsing output:
 
-| Status | Meaning |
-| ------ | ------- |
-| `0` | No errors. Warnings do not fail. |
-| `1` | Errors present, or the file did not parse when an IR command needed a tree. |
-| `2` | Usage or I/O problem. |
+| Status | Meaning                                                                     |
+| ------ | --------------------------------------------------------------------------- |
+| `0`    | No errors. Warnings do not fail.                                            |
+| `1`    | Errors present, or the file did not parse when an IR command needed a tree. |
+| `2`    | Usage or I/O problem.                                                       |
 
 ## `mz check --agent`: the protocol
 
@@ -110,13 +110,13 @@ The human-readable mode ends with the same information as prose:
 
 Codes are grouped by phase, and the ranges are stable:
 
-| Range | Phase |
-| ----- | ----- |
-| `MZ01xx` | Lexical |
+| Range    | Phase                                                                                |
+| -------- | ------------------------------------------------------------------------------------ |
+| `MZ01xx` | Lexical                                                                              |
 | `MZ02xx` | The component header, `use`, and block closing — including every `end` echo mismatch |
-| `MZ03xx` | Enum variants and `prop` declarations |
-| `MZ04xx` | Lines that cannot start where they appear, and the view grammar |
-| `MZ05xx` | The contract block |
+| `MZ03xx` | Enum variants and `prop` declarations                                                |
+| `MZ04xx` | Lines that cannot start where they appear, and the view grammar                      |
+| `MZ05xx` | The contract block                                                                   |
 
 Two are worth quoting because they show what the messages are trying to be. `MZ0402`, when
 something that cannot start a view line does:
@@ -137,12 +137,12 @@ And `MZ0501`, which is a warning rather than an error, and is how RFC-0001 §1.6
 ```
 
 The `end`-echo diagnostics (`MZ0206`–`MZ0208`) are the payoff for the name echo: they can
-say *which* block on *which* line an `end` actually closes, and hand back the exact text to
+say _which_ block on _which_ line an `end` actually closes, and hand back the exact text to
 write instead.
 
 ## `mz outline`: the representation for dependencies
 
-When editing component A that uses B, an agent needs B's *interface*, not B's body. Reading
+When editing component A that uses B, an agent needs B's _interface_, not B's body. Reading
 the file gets both, plus comments and unrelated functions — RFC-0003's barrier RB-2.
 
 The outline carries: the first doc line, the component name, declared capabilities, every

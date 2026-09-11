@@ -90,7 +90,7 @@ diff.
 
 Mzizi's stated accessibility standard is APCA 3.0, not WCAG 2.x, and the difference is not
 academic here. `mint a11y`'s colour check is WCAG-ratio based and is not polarity-aware — it
-tests `colors.dark` against *both* backgrounds and demands 3:1 on each, even though `dark`
+tests `colors.dark` against _both_ backgrounds and demands 3:1 on each, even though `dark`
 only ever renders in light mode and `light` only ever renders in dark mode. Satisfying it
 pushes both values to mid-tone and serves neither theme.
 

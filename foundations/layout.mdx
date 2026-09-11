@@ -12,14 +12,14 @@ progressively enhances, because that is the order in which the constraints bind.
 
 Tailwind's defaults, used unmodified:
 
-| Breakpoint | Minimum width | Target |
-| --- | --- | --- |
-| (default) | 0px | Mobile phones |
-| `sm` | 640px | Large phones, small tablets |
-| `md` | 768px | Tablets |
-| `lg` | 1024px | Laptops |
-| `xl` | 1280px | Desktops |
-| `2xl` | 1536px | Large screens |
+| Breakpoint | Minimum width | Target                      |
+| ---------- | ------------- | --------------------------- |
+| (default)  | 0px           | Mobile phones               |
+| `sm`       | 640px         | Large phones, small tablets |
+| `md`       | 768px         | Tablets                     |
+| `lg`       | 1024px        | Laptops                     |
+| `xl`       | 1280px        | Desktops                    |
+| `2xl`      | 1536px        | Large screens               |
 
 ### Mobile-first means mobile-first
 
@@ -38,17 +38,17 @@ Write the mobile styles unprefixed, then add breakpoint modifiers:
 The design system publishes a named spacing scale — see
 [design tokens](/foundations/tokens). In Tailwind these are the values reached for most:
 
-| Token | Value | Usage |
-| --- | --- | --- |
-| `1` | 4px | Tight gaps, icon to text |
-| `2` | 8px | Standard small gap |
-| `3` | 12px | Component internal padding |
-| `4` | 16px | Standard gap, card padding |
-| `6` | 24px | Section padding on mobile |
-| `8` | 32px | Section padding on desktop |
-| `12` | 48px | Large section spacing |
-| `16` | 64px | Page section separation |
-| `24` | 96px | Hero spacing |
+| Token | Value | Usage                      |
+| ----- | ----- | -------------------------- |
+| `1`   | 4px   | Tight gaps, icon to text   |
+| `2`   | 8px   | Standard small gap         |
+| `3`   | 12px  | Component internal padding |
+| `4`   | 16px  | Standard gap, card padding |
+| `6`   | 24px  | Section padding on mobile  |
+| `8`   | 32px  | Section padding on desktop |
+| `12`  | 48px  | Large section spacing      |
+| `16`  | 64px  | Page section separation    |
+| `24`  | 96px  | Hero spacing               |
 
 ### Rhythm
 
@@ -72,13 +72,13 @@ The standard content container:
 <div className="mx-auto max-w-5xl px-4 sm:px-6">{/* content */}</div>
 ```
 
-| Class | Width | Usage |
-| --- | --- | --- |
-| `max-w-2xl` | 672px | Narrow content — articles, forms |
-| `max-w-4xl` | 896px | Standard content |
-| `max-w-5xl` | 1024px | Wide content, landing pages |
-| `max-w-6xl` | 1152px | Full-width content |
-| `max-w-7xl` | 1280px | Dashboard layouts |
+| Class       | Width  | Usage                            |
+| ----------- | ------ | -------------------------------- |
+| `max-w-2xl` | 672px  | Narrow content — articles, forms |
+| `max-w-4xl` | 896px  | Standard content                 |
+| `max-w-5xl` | 1024px | Wide content, landing pages      |
+| `max-w-6xl` | 1152px | Full-width content               |
+| `max-w-7xl` | 1280px | Dashboard layouts                |
 
 ### Full-bleed sections
 

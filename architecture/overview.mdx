@@ -16,11 +16,11 @@ Mzizi's frontend architecture is a **DNA double helix**: two entwined backbones 
 **engineering** strand set and a **meaning** strand set — held together by cross-cutting
 **rungs**. Every element in the model carries a `type`:
 
-| `type` | What it is |
-| --- | --- |
-| **node** | A functional unit sitting on exactly one strand |
-| **strand** | A backbone grouping that nodes belong to |
-| **rung** | A base pair bridging both backbones, bound to no single strand |
+| `type`     | What it is                                                     |
+| ---------- | -------------------------------------------------------------- |
+| **node**   | A functional unit sitting on exactly one strand                |
+| **strand** | A backbone grouping that nodes belong to                       |
+| **rung**   | A base pair bridging both backbones, bound to no single strand |
 
 The model is served, not written down. `GET https://mzizi.dev/api/v1/architecture` returns the
 live set, and the tables below are a snapshot of it taken on 11 September 2026 — orientation,
@@ -35,16 +35,16 @@ curl https://mzizi.dev/api/v1/architecture
 Eight, all on the engineering backbone today. The `component_count` column is what the
 registry held at the time of the snapshot; read the endpoint for the current number.
 
-| # | `sub_label` | Node | Strand | Covenant | Components |
-| --- | --- | --- | --- | --- | --- |
-| N1 | `tokens` | Design tokens | swappable | Design decisions are data, not code. | 19 |
-| N2 | `primitive` | Primitives | core-guarantee | A primitive does one thing well. | 371 |
-| N3 | `brand` | Brand components | shipped | A brand component is a primitive with Ubuntu in it. | 67 |
-| N4 | `safety` | Safety rails | core-guarantee | Nothing harmful reaches the user. | 14 |
-| N5 | `resilience` | Resilience patterns | core-guarantee | Failure in one part never breaks the whole. | 14 |
-| N6 | `pages` | Pages | shipped | A page is a composition, not an implementation. | 52 |
-| N7 | `shell` | Shell | shipped | The shell holds the product. | 16 |
-| N8 | `assurance` | Assurance | core-guarantee | What breaks is seen before users feel it. | 14 |
+| #   | `sub_label`  | Node                | Strand         | Covenant                                            | Components |
+| --- | ------------ | ------------------- | -------------- | --------------------------------------------------- | ---------- |
+| N1  | `tokens`     | Design tokens       | swappable      | Design decisions are data, not code.                | 19         |
+| N2  | `primitive`  | Primitives          | core-guarantee | A primitive does one thing well.                    | 371        |
+| N3  | `brand`      | Brand components    | shipped        | A brand component is a primitive with Ubuntu in it. | 67         |
+| N4  | `safety`     | Safety rails        | core-guarantee | Nothing harmful reaches the user.                   | 14         |
+| N5  | `resilience` | Resilience patterns | core-guarantee | Failure in one part never breaks the whole.         | 14         |
+| N6  | `pages`      | Pages               | shipped        | A page is a composition, not an implementation.     | 52         |
+| N7  | `shell`      | Shell               | shipped        | The shell holds the product.                        | 16         |
+| N8  | `assurance`  | Assurance           | core-guarantee | What breaks is seen before users feel it.           | 14         |
 
 The node layout is visible on disk as well as over the API: registry components live under
 `components/registry/n1-tokens/`, `n2-primitives/`, `n3-brand/` and so on in
@@ -55,12 +55,12 @@ The node layout is visible on disk as well as over the API: registry components 
 Four. A rung bridges both backbones and belongs to no strand, so `strand` is `null` on every
 one of them.
 
-| # | `sub_label` | Rung | Covenant |
-| --- | --- | --- | --- |
-| N9 | `fundi` | Fundi | Failure is a learning event, not a user-facing incident. |
+| #   | `sub_label`     | Rung          | Covenant                                                                                           |
+| --- | --------------- | ------------- | -------------------------------------------------------------------------------------------------- |
+| N9  | `fundi`         | Fundi         | Failure is a learning event, not a user-facing incident.                                           |
 | N10 | `documentation` | Documentation | Every document lives here — documents, instructions, docs, documentation. One rung, no exceptions. |
-| N11 | `discovery` | Discovery | If the machine can't see it, it doesn't exist. |
-| N12 | `skills` | Skills | What the system knows how to do is teachable, not tribal. |
+| N11 | `discovery`     | Discovery     | If the machine can't see it, it doesn't exist.                                                     |
+| N12 | `skills`        | Skills        | What the system knows how to do is teachable, not tribal.                                          |
 
 N9 is the self-healing rung: it consumes N8 assurance signals and remediates the root cause.
 N10 is the single home for anything document-shaped. N11 is the machine-facing surface —
@@ -72,14 +72,14 @@ authored in git and projected into the registry.
 
 Six, three per backbone.
 
-| Strand | Backbone | Covenant | Carries |
-| --- | --- | --- | --- |
-| `core-guarantee` | engineering | The guarantees travel unchanged, always. | Accessibility, data, resilience, observability, safety, primitives |
-| `shipped` | engineering | In the box, but free to evolve. | Brand, pages, shell — in the box, no permanence promise |
-| `swappable` | engineering | Fork along the seams, not everywhere. | Tokens, icon library, framework — the only defined fork seams |
-| `spine` | engineering | What makes the parts one body. | The harness — the pre-wiring that makes strands one framework, not a parts list |
-| `genetic-code` | meaning | The sequence everything is read from. | Ubuntu principles and Bundu conventions |
-| `transcription` | meaning | Doctrine is data, not tribal knowledge. | Conventions and decisions as queryable documents |
+| Strand           | Backbone    | Covenant                                 | Carries                                                                         |
+| ---------------- | ----------- | ---------------------------------------- | ------------------------------------------------------------------------------- |
+| `core-guarantee` | engineering | The guarantees travel unchanged, always. | Accessibility, data, resilience, observability, safety, primitives              |
+| `shipped`        | engineering | In the box, but free to evolve.          | Brand, pages, shell — in the box, no permanence promise                         |
+| `swappable`      | engineering | Fork along the seams, not everywhere.    | Tokens, icon library, framework — the only defined fork seams                   |
+| `spine`          | engineering | What makes the parts one body.           | The harness — the pre-wiring that makes strands one framework, not a parts list |
+| `genetic-code`   | meaning     | The sequence everything is read from.    | Ubuntu principles and Bundu conventions                                         |
+| `transcription`  | meaning     | Doctrine is data, not tribal knowledge.  | Conventions and decisions as queryable documents                                |
 
 `core-guarantee` is the load-bearing covenant for adopters: an accessibility layer you can
 switch off is a suggestion, not a guarantee. `swappable` is its complement — you fork tokens,
@@ -90,8 +90,8 @@ icons and framework, and inherit everything else unchanged.
 `N9` is not "above" `N8`, and `N12` is not the top. The numbers are stable identifiers and
 nothing more. Two consequences follow:
 
-- **Nothing consumes the model in numeric order.** A node reads from the strand below it *on
-  the same backbone*; a rung bridges both and is never imported by a node.
+- **Nothing consumes the model in numeric order.** A node reads from the strand below it _on
+  the same backbone_; a rung bridges both and is never imported by a node.
 - **The node set is not capped.** More nodes and rungs get added — N12 is itself newer than
   much of the prose written about this model. Any code, prompt, schema or sentence that
   hardcodes an upper bound is wrong the moment the next one lands. Read the endpoint instead.
@@ -120,11 +120,11 @@ An earlier version of this model described ten ecosystem nodes arranged across f
 (X horizontal, Y vertical, Z depth, plus "outside" and "documentation"). That model is gone.
 Its API surfaces were retired rather than repaired, and they say so:
 
-| Endpoint | Status |
-| --- | --- |
-| `GET /api/v1/architecture` | **200** — the helix |
-| `GET /api/v1/architecture/frontend/axes` | **410 Gone** |
-| `GET /api/v1/architecture/frontend/layers` | **410 Gone** |
+| Endpoint                                   | Status              |
+| ------------------------------------------ | ------------------- |
+| `GET /api/v1/architecture`                 | **200** — the helix |
+| `GET /api/v1/architecture/frontend/axes`   | **410 Gone**        |
+| `GET /api/v1/architecture/frontend/layers` | **410 Gone**        |
 
 Verified 11 September 2026 against production.
 

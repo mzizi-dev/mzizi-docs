@@ -26,15 +26,15 @@ curl https://mzizi.dev/api/v1/brand
   or a page, it is out of date.
 </Warning>
 
-| Mineral | CSS variable | Light | Dark | Origin | Used for |
-| --- | --- | --- | --- | --- | --- |
-| Cobalt | `--color-cobalt` | `#0047AB` | `#00B0FF` | Katanga and the Zambian Copperbelt | Links, info, focus rings |
-| Tanzanite | `--color-tanzanite` | `#4B0082` | `#B388FF` | Merelani Hills, Tanzania | Primary brand, creativity, social |
-| Malachite | `--color-malachite` | `#004D40` | `#64FFDA` | The Congo copper belt | Success, positive actions |
-| Gold | `--color-gold` | `#5D4037` | `#FFD740` | Ghana, South Africa, Mali | Achievements, rewards, highlights |
-| Terracotta | `--color-terracotta` | `#A0522D` | `#E1B07E` | — | Warm accent |
-| Sodalite | `--color-sodalite` | `#283593` | `#3D5AFE` | — | Deep blue accent |
-| Copper | `--color-copper` | `#BF5A36` | `#FF8A65` | — | The Bundu parent identity |
+| Mineral    | CSS variable         | Light     | Dark      | Origin                             | Used for                          |
+| ---------- | -------------------- | --------- | --------- | ---------------------------------- | --------------------------------- |
+| Cobalt     | `--color-cobalt`     | `#0047AB` | `#00B0FF` | Katanga and the Zambian Copperbelt | Links, info, focus rings          |
+| Tanzanite  | `--color-tanzanite`  | `#4B0082` | `#B388FF` | Merelani Hills, Tanzania           | Primary brand, creativity, social |
+| Malachite  | `--color-malachite`  | `#004D40` | `#64FFDA` | The Congo copper belt              | Success, positive actions         |
+| Gold       | `--color-gold`       | `#5D4037` | `#FFD740` | Ghana, South Africa, Mali          | Achievements, rewards, highlights |
+| Terracotta | `--color-terracotta` | `#A0522D` | `#E1B07E` | —                                  | Warm accent                       |
+| Sodalite   | `--color-sodalite`   | `#283593` | `#3D5AFE` | —                                  | Deep blue accent                  |
+| Copper     | `--color-copper`     | `#BF5A36` | `#FF8A65` | —                                  | The Bundu parent identity         |
 
 Each mineral also carries a container pair — a pale fill for light mode and a deep one for
 dark — for hover states, selected rows and soft highlights.
@@ -50,18 +50,18 @@ dark — for hover states, selected rows and soft highlights.
 Components reference semantic names, never minerals directly. Fourteen are published; these
 are the ones components reach for most:
 
-| Token | Light | Dark | Meaning |
-| --- | --- | --- | --- |
-| `--primary` | `#4B0082` | `#B388FF` | Primary brand action — tanzanite |
-| `--success` | `#004D40` | `#64FFDA` | Success, positive actions |
-| `--warning` | `#7A5C00` | `#FFD866` | Caution |
-| `--error` | `#B3261E` | `#F2B8B5` | Errors, destructive actions |
-| `--info` | `#0047AB` | `#00B0FF` | Informational states — cobalt |
-| `--neutral` | `#55514B` | `#A09C93` | Inactive status, secondary data series |
-| `--syncing` | `#1C5962` | `#36ABBA` | In-progress sync, pending |
-| `--offline` | `#674C32` | `#BA9570` | Offline, disconnected |
-| `--border` | `#E7E5E0` | `#2A2927` | Cards, inputs, dividers — warm stone, not cool grey |
-| `--ring` | `#0047AB` | `#00B0FF` | Focus ring — cobalt, 2px with 2px offset |
+| Token       | Light     | Dark      | Meaning                                             |
+| ----------- | --------- | --------- | --------------------------------------------------- |
+| `--primary` | `#4B0082` | `#B388FF` | Primary brand action — tanzanite                    |
+| `--success` | `#004D40` | `#64FFDA` | Success, positive actions                           |
+| `--warning` | `#7A5C00` | `#FFD866` | Caution                                             |
+| `--error`   | `#B3261E` | `#F2B8B5` | Errors, destructive actions                         |
+| `--info`    | `#0047AB` | `#00B0FF` | Informational states — cobalt                       |
+| `--neutral` | `#55514B` | `#A09C93` | Inactive status, secondary data series              |
+| `--syncing` | `#1C5962` | `#36ABBA` | In-progress sync, pending                           |
+| `--offline` | `#674C32` | `#BA9570` | Offline, disconnected                               |
+| `--border`  | `#E7E5E0` | `#2A2927` | Cards, inputs, dividers — warm stone, not cool grey |
+| `--ring`    | `#0047AB` | `#00B0FF` | Focus ring — cobalt, 2px with 2px offset            |
 
 ### The `--status-*` aliases
 
@@ -91,27 +91,27 @@ dark blocks so a utility class generates for each.
 
 Surfaces are a ladder, not a single background colour:
 
-| Token | Light | Dark | Where |
-| --- | --- | --- | --- |
-| `base` | `#F3F3F1` | `#0E0D0C` | Page background |
-| `container` | `#E5E4E1` | `#1E1D1A` | Neutral containers, grouped content |
-| `muted` | `#FAF9F5` | `#050504` | Inset sections, metadata rows |
-| `overlay` | `#E0DFDC` | `#23221F` | Overlays and dialogs |
-| `raised` | `#D6D5D1` | `#2E2C29` | Menus and toasts above an overlay |
-| `pitch` | `#FAFAFA` | `#050505` | Media wells, splash |
-| `scrim` | `rgba(0,0,0,0.40)` | `rgba(0,0,0,0.60)` | Backdrop behind an overlay |
+| Token       | Light              | Dark               | Where                               |
+| ----------- | ------------------ | ------------------ | ----------------------------------- |
+| `base`      | `#F3F3F1`          | `#0E0D0C`          | Page background                     |
+| `container` | `#E5E4E1`          | `#1E1D1A`          | Neutral containers, grouped content |
+| `muted`     | `#FAF9F5`          | `#050504`          | Inset sections, metadata rows       |
+| `overlay`   | `#E0DFDC`          | `#23221F`          | Overlays and dialogs                |
+| `raised`    | `#D6D5D1`          | `#2E2C29`          | Menus and toasts above an overlay   |
+| `pitch`     | `#FAFAFA`          | `#050505`          | Media wells, splash                 |
+| `scrim`     | `rgba(0,0,0,0.40)` | `rgba(0,0,0,0.60)` | Backdrop behind an overlay          |
 
 ## Radii
 
 Four numbers, and one identity rule.
 
-| Token | Value |
-| --- | --- |
-| `sm` | 7px |
-| `md` | 12px |
-| `lg` / `base` | 14px |
-| `xl` / `2xl` | 17px |
-| `full` | 9999px |
+| Token         | Value  |
+| ------------- | ------ |
+| `sm`          | 7px    |
+| `md`          | 12px   |
+| `lg` / `base` | 14px   |
+| `xl` / `2xl`  | 17px   |
+| `full`        | 9999px |
 
 **Buttons are always pill-shaped**, and so are inputs, avatars and badges. That is a brand
 identity decision rather than a styling preference, and it is why those categories carry
@@ -121,16 +121,16 @@ identity decision rather than a styling preference, and it is why those categori
 
 The scale runs from a 2px hairline upward, with names rather than raw numbers:
 
-| Token | Value | Usage |
-| --- | --- | --- |
-| `xxs` | 2px | Hairline gaps — chip-in-chip, inline meta separators |
-| `xs` | 4px | Tight gaps, icon padding |
-| `xs-plus` | 6px | Icon-to-text offset |
-| `sm` | 8px | Compact spacing, inline gaps |
-| `sm-plus` | 10px | Dense tag padding |
-| `md` | 12px | Compact component padding |
-| `base` | 16px | Default component padding — cards, inputs |
-| `base-plus` | 20px | Comfortable component padding |
+| Token       | Value | Usage                                                |
+| ----------- | ----- | ---------------------------------------------------- |
+| `xxs`       | 2px   | Hairline gaps — chip-in-chip, inline meta separators |
+| `xs`        | 4px   | Tight gaps, icon padding                             |
+| `xs-plus`   | 6px   | Icon-to-text offset                                  |
+| `sm`        | 8px   | Compact spacing, inline gaps                         |
+| `sm-plus`   | 10px  | Dense tag padding                                    |
+| `md`        | 12px  | Compact component padding                            |
+| `base`      | 16px  | Default component padding — cards, inputs            |
+| `base-plus` | 20px  | Comfortable component padding                        |
 
 ## How a value reaches a component
 
@@ -154,10 +154,10 @@ Some tokens are component-shaped rather than colour-shaped, and they are publish
 way:
 
 | Component | Default height | Small | Minimum touch target | Radius |
-| --- | --- | --- | --- | --- |
-| Button | 56px | 48px | 48px | 9999 |
-| Input | 56px | 48px | 48px | 9999 |
-| Avatar | 40px | 32px | 48px | 9999 |
-| Badge | 22px | — | — | 9999 |
+| --------- | -------------- | ----- | -------------------- | ------ |
+| Button    | 56px           | 48px  | 48px                 | 9999   |
+| Input     | 56px           | 48px  | 48px                 | 9999   |
+| Avatar    | 40px           | 32px  | 48px                 | 9999   |
+| Badge     | 22px           | —     | —                    | 9999   |
 
 The 48px floor is not negotiable; see [accessibility](/foundations/accessibility).
