@@ -1,0 +1,147 @@
+---
+title: "Accessibility"
+description: "The accessibility standards the Mzizi design system enforces — APCA 3.0 contrast, 56px touch targets, keyboard navigation and screen-reader support."
+sidebarTitle: "Accessibility"
+icon: "accessibility"
+---
+
+Accessibility in this design system is a constraint, not a review step. Components must be
+usable in bright sunlight on a cracked screen as readily as on a desktop in an office, and the
+thresholds below are what makes that checkable rather than aspirational.
+
+## Contrast: APCA, not WCAG
+
+The stated standard is **APCA 3.0** — the Advanced Perceptual Contrast Algorithm — rather than
+the WCAG 2.x contrast ratio. This is not a preference. The two models disagree, and where they
+disagree the perceptual one is the one this system follows.
+
+| Text type | Minimum APCA Lc | Example |
+| --- | --- | --- |
+| Body text, 16px | Lc 75 | `--foreground` on `--background` |
+| Large text, 24px and above | Lc 60 | Headings on cards |
+| UI controls | Lc 60 | Button labels, form inputs |
+| Non-text UI | Lc 30 | The absolute floor |
+| Placeholder text | Lc 45 | Input placeholders |
+
+### Why the difference matters
+
+Sodalite's published `darkHex` is `#3D5AFE`. Against a near-black background it **passes** a
+WCAG ratio check and scores APCA **Lc -25.8** — below even the Lc 30 floor for non-text UI.
+The ratio says fine; the perceptual model says unreadable; the perceptual model is right.
+
+A ratio check will also mislead you about polarity. It is not polarity-aware, so it tests a
+dark-mode colour against a light background and demands a threshold on both — and satisfying
+that pushes both values to mid-tone and serves neither theme.
+
+### Testing a new pairing
+
+1. Test in both light and dark.
+2. Use an APCA calculator, not a WCAG ratio checker.
+3. Check the pairings that actually ship — `--muted-foreground` on `--muted`,
+   `--foreground` on `--card` — not only foreground on background.
+
+The registry exposes this over MCP as `mzizi_check_accessibility`, which covers contrast,
+relative luminance and colour-blindness simulation in one call. See
+[the MCP server](/registry/mcp).
+
+## Touch targets
+
+**56px default, 48px minimum.** The minimum is a floor, not a target, and nothing interactive
+goes below it.
+
+| Size | Height | Usage |
+| --- | --- | --- |
+| Default | 56px (`h-14`) | Buttons, inputs, interactive controls |
+| Small | 48px (`h-12`) | Compact variants, secondary actions |
+| Minimum | 48px | The absolute floor |
+
+```tsx
+<Button size="default">Submit</Button>   {/* 56px */}
+<Button size="sm">Cancel</Button>        {/* 48px */}
+```
+
+For a small visual element such as a checkbox indicator, extend the clickable area with
+padding rather than shrinking the target:
+
+```tsx
+<label className="flex min-h-12 items-center gap-3 px-3">
+  <Checkbox />
+  <span>Accept terms</span>
+</label>
+```
+
+## Keyboard navigation
+
+Interactive components use **Radix UI** primitives, which handle:
+
+- **Focus management** — trapping focus in modals, restoring it on close.
+- **Arrow-key navigation** — within menus, tabs, radio groups and comboboxes.
+- **Escape to close** — dialogs, dropdowns, popovers, sheets.
+- **Enter and Space to activate** — buttons, checkboxes, toggles.
+- **Home and End** — first and last item in a list.
+
+### Focus indicators
+
+Every focusable element shows a visible ring, 2px with a 2px offset, using the `--ring` token
+(cobalt):
+
+```css
+focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring
+```
+
+Never remove it.
+
+## Screen readers
+
+### Semantic HTML
+
+Use the element that means what you intend: `<button>` for actions rather than a `div` with an
+`onClick`, `<a>` for navigation, `<nav>` and `<main>` as landmarks, and heading levels in
+order with none skipped.
+
+### ARIA
+
+Radix components carry the ARIA attributes they need. For your own:
+
+```tsx
+{/* Describe an icon-only control */}
+<Button aria-label="Close dialog" size="icon">
+  <X className="size-4" />
+</Button>
+
+{/* Link related elements */}
+<Label htmlFor="email-input">Email</Label>
+<Input id="email-input" type="email" />
+
+{/* Announce dynamic content */}
+<div aria-live="polite" aria-atomic="true">
+  {statusMessage}
+</div>
+```
+
+N3 brand components get a `LiveRegion` from the harness rather than building their own — see
+[placing a component](/architecture/nodes).
+
+### Testing
+
+Test with at least one screen reader: VoiceOver on macOS and iOS, NVDA on Windows, TalkBack on
+Android.
+
+## Colour independence
+
+Never use colour as the sole carrier of meaning. Pair it with a text label ("Error: invalid
+email", not a red border alone), an icon, or a pattern.
+
+The mineral palette was chosen with common colour-vision deficiencies in mind, which reduces
+the problem but does not remove it — two minerals that are distinguishable to you may not be
+to a reader.
+
+## Checklist
+
+- [ ] Contrast meets the APCA threshold for the text size, in both themes
+- [ ] Touch targets are 56px default and never below 48px
+- [ ] Every interaction is reachable by keyboard
+- [ ] Focus indicators are visible and unmodified
+- [ ] A screen reader announces the component's purpose and state
+- [ ] Colour is not the only signal
+- [ ] Heading levels are sequential

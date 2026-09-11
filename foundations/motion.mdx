@@ -1,0 +1,125 @@
+---
+title: "Motion"
+description: "Animation in the Mzizi design system — timing, easing, enter and exit patterns, and what happens when a user asks for reduced motion."
+sidebarTitle: "Motion"
+icon: "wand"
+---
+
+Motion here is purposeful and restrained. An animation communicates a state change or guides
+attention; it does not decorate.
+
+## Principles
+
+1. **Functional, not decorative** — every animation communicates something.
+2. **Fast** — most transitions finish in 150–200ms. A user should never wait on one.
+3. **Consistent** — the same kind of change animates the same way everywhere.
+4. **Respectful** — `prefers-reduced-motion` is honoured, not worked around.
+
+## Timing
+
+| Duration | Class | Usage |
+| --- | --- | --- |
+| 100ms | `duration-100` | Micro-interactions — hover, focus |
+| 150ms | `duration-150` | State changes — toggle, checkbox |
+| 200ms | `duration-200` | Standard transitions — colour, opacity |
+| 300ms | `duration-300` | Layout shifts — accordion, collapsible |
+| 500ms | `duration-500` | Page-level transitions — sheet, drawer |
+
+## Easing
+
+| Easing | Usage |
+| --- | --- |
+| `ease-out` | Elements entering — fade in, slide in |
+| `ease-in` | Elements exiting — fade out, slide out |
+| `ease-in-out` | Continuous motion — loading spinners |
+
+```tsx
+<div className="transition-colors duration-150 ease-out hover:bg-muted">Hover me</div>
+```
+
+## Enter and exit
+
+### Fade
+
+For tooltips, popovers and content that appears in place:
+
+```tsx
+<div className="transition-opacity duration-200 ease-out data-[state=open]:opacity-100 data-[state=closed]:opacity-0">
+  Content
+</div>
+```
+
+### Slide
+
+For sheets, drawers and sidebars entering from an edge:
+
+```tsx
+<SheetContent side="bottom" className="transition-transform duration-300 ease-out">
+  Content
+</SheetContent>
+```
+
+### Scale
+
+For dialogs — 95% to 100% with a simultaneous fade:
+
+```tsx
+<div className="transition-all duration-200 ease-out data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95">
+  Modal content
+</div>
+```
+
+### Collapse
+
+Radix handles the height animation for accordions and collapsibles internally. Do not
+reimplement it.
+
+## Common patterns
+
+```tsx
+{/* Hover lift */}
+<Card className="transition-all duration-150 hover:shadow-md hover:-translate-y-0.5">…</Card>
+
+{/* Arrow slide, signalling direction */}
+<ArrowRight className="size-4 transition-transform duration-150 group-hover:translate-x-1" />
+
+{/* Loading */}
+<Spinner className="size-5" />
+<Skeleton className="h-4 w-48" />
+```
+
+## Reduced motion
+
+Users enable `prefers-reduced-motion` for medical reasons — vestibular disorders, seizure
+conditions — as well as preference. Honour it.
+
+```css
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+```
+
+In Tailwind, use the `motion-safe` and `motion-reduce` variants:
+
+```tsx
+<div className="motion-safe:transition-transform motion-safe:duration-200 motion-safe:hover:-translate-y-1">
+  Card
+</div>
+```
+
+N3 brand components read motion configuration from the harness — `const { motion } =
+useNyuchiHarness(…)` — rather than each deciding for itself. That is what makes the behaviour
+consistent instead of merely common.
+
+### What to keep, what to remove
+
+**Keep** under reduced motion: opacity changes, colour changes, and the layout shift itself —
+just without animating it.
+
+**Remove**: translate, scale and rotate animations; sliding transitions; parallax;
+auto-playing carousels.

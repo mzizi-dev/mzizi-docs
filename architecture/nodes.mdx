@@ -94,11 +94,12 @@ Component source is **files in the repository**, under
 - Import icons through the registry's `lib/icons` module rather than reaching for
   `lucide-react` directly — the indirection is what lets the icon library be swapped, and the
   icon library is one of the three declared fork seams on the `swappable` strand.
-- Size from the token scale rather than ad-hoc values.
+- Size from the token scale rather than ad-hoc values. See [icons](/foundations/icons).
 - Mark directional icons with `data-rtl-mirror="true"` when they should flip in RTL contexts.
 
 ## Accessibility
 
 Mzizi's stated contrast standard is **APCA 3.0**, not a WCAG 2.x ratio. Validate new colour
 pairings against it before shipping them; the two models disagree, and where they disagree the
-perceptual one is the one this system follows.
+perceptual one is the one this system follows. See
+[accessibility](/foundations/accessibility) for the thresholds.

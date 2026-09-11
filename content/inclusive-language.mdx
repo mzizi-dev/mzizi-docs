@@ -1,0 +1,135 @@
+---
+title: "Inclusive language"
+description: "Guidelines for inclusive, respectful language in a pan-African context — geography, economics, gender, terminology, and fields that fit real names."
+sidebarTitle: "Inclusive language"
+icon: "users"
+---
+
+The ecosystem serves users across Africa — 54 countries, thousands of languages, and no single
+representative culture. Language has to be inclusive, respectful and free of assumptions.
+
+## Pan-African context
+
+### Avoid geographic flattening
+
+- Do not treat one country as representative of "Africa".
+- Do not assume shared culture, language or economic context.
+- Be specific where specificity is the honest answer.
+
+```
+Good: "Available in Zimbabwe, South Africa and Kenya"
+Bad:  "Available across Africa" — when it is available in three countries
+
+Good: "Popular in Southern Africa"
+Bad:  "Popular in Africa"
+```
+
+### Economic sensitivity
+
+Do not assume high-speed internet, an expensive device or a credit card.
+
+```
+Good: "Works on any device"
+Bad:  "Optimised for the latest smartphones"
+
+Good: "Choose a plan that works for you"
+Bad:  "Upgrade to premium for the full experience"
+```
+
+## Gender
+
+Use gender-neutral language by default. Do not infer gender from a name, a role or a context.
+
+```
+Good: "They submitted the form"        Bad: "He submitted the form"
+Good: "The developer can configure…"   Bad: "He or she can configure…"
+Good: "Sales representative"           Bad: "Salesman"
+Good: "Chair" / "Chairperson"          Bad: "Chairman"
+```
+
+## Technical terminology
+
+### Exclusionary metaphors
+
+| Instead of | Use |
+| --- | --- |
+| master / slave | primary / replica |
+| whitelist / blacklist | allowlist / blocklist |
+| sanity check | validation check |
+| dummy value | placeholder value |
+| man-hours | person-hours, work hours |
+| grandfathered | legacy, exempt |
+
+These alternatives are already the convention in the registry codebase — the `ai-safety`
+library uses allowlist validation, not the older term.
+
+### Ability
+
+Do not use disability as a metaphor. Describe what the system does, not what the reader
+cannot do.
+
+```
+Good: "This feature is not available offline"
+Bad:  "You are unable to use this feature offline"
+
+Good: "Screen reader compatible"
+Bad:  "For blind users"
+```
+
+## Names and identity
+
+### Name fields
+
+- Use a **single "Full name" field**. Do not split into first and last.
+- African naming conventions vary widely — patronymic names, clan names, single names.
+- **Never validate name length.** Some names are one character; some are very long.
+- Support Unicode. See [internationalisation](/foundations/internationalization) for why the
+  font choice matters here too.
+
+```tsx
+{/* correct */}
+<Field>
+  <FieldLabel>Full name</FieldLabel>
+  <Input name="fullName" />
+</Field>
+
+{/* incorrect — assumes a Western naming convention */}
+<Field><FieldLabel>First name</FieldLabel><Input name="firstName" /></Field>
+<Field><FieldLabel>Last name</FieldLabel><Input name="lastName" /></Field>
+```
+
+### Phone numbers
+
+Support international format with a country code, support the `+` prefix, and do not assume a
+default country.
+
+### Addresses
+
+Do not assume street–city–state–postcode. Many African addresses use landmarks, area names or
+postal agency addresses. Make the fields flexible rather than rigidly structured.
+
+## Religion and culture
+
+Do not assume religious holidays or observances. Prefer secular references: "end of year"
+rather than "the Christmas period".
+
+## Age and experience
+
+Do not infer technical literacy from age. Avoid patronising qualifiers — "simply" and "just"
+tell the reader the task is easy, which is unhelpful when it is not going well.
+
+```
+Good: "Run the install command"
+Bad:  "Simply run the install command"
+
+Good: "Configure the theme provider"
+Bad:  "Just add the theme provider"
+```
+
+## Review checklist
+
+- [ ] Would this make sense in Lagos, Nairobi, Harare and Cape Town alike?
+- [ ] Does it avoid assumptions about gender, religion or economic status?
+- [ ] Are technical terms free of exclusionary metaphors?
+- [ ] Do name and identity fields accommodate diverse naming conventions?
+- [ ] Is the tone respectful rather than patronising?
