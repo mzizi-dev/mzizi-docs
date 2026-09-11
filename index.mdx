@@ -1,0 +1,93 @@
+---
+title: "A language designed to be written by machines that are not very good at writing"
+description: "Mzizi is a Bundu Foundation research project: a Rust framework whose syntax, type system and compiler feedback loop are built for small open-weight models. Phase 0 is a prototype front end, and the thesis is still unmeasured."
+sidebarTitle: "Overview"
+icon: "sprout"
+mode: "wide"
+---
+
+<Note>
+  **Read [Status](/status) before anything else.** Mzizi-lang is a Phase 0 research
+  prototype. A lexer, a recovering parser, an agent diagnostic protocol, a
+  content-addressed IR and nine primitives exist and are tested. Nothing renders, nothing
+  lowers to Rust yet, contract bodies parse but are not evaluated, and the benchmark that
+  the whole thesis rests on **has not run**. These pages document a research programme in
+  progress, not a shipping framework.
+</Note>
+
+_Mzizi_ is **root** in Swahili. It is a Bundu Foundation research project, and it names two
+related things in this ecosystem: the component registry and design system served at
+[mzizi.dev](https://mzizi.dev), and — the subject of these pages — **Mzizi-lang**, a
+language and compiler for authoring components.
+
+## The claim worth defending
+
+Every web framework in existence was designed assuming a human is typing, reading docs, and
+holding context in their head. The charter's bet is that this is the wrong assumption for
+where development is going:
+
+> Mzizi's single sharp edge: **a Rust framework whose syntax, type system, and compiler
+> feedback loop are designed for machine authorship, not just human ergonomics.**
+
+And then a correction that turns out to matter more than the original claim. RFC-0001 was
+written by a frontier model optimising for its own experience; [RFC-0002](/rfcs) withdrew
+that target:
+
+> **The design target is small models.** A 7B open-weight model running locally, not a
+> frontier model with a million-token context. Frontier capability is improving on its own;
+> the language cannot help there and does not need to.
+
+That inversion is load-bearing. It is why token efficiency is a first-order goal rather than
+a fading one, why `end component button` echoes the name back at you, and why the grammar is
+small and closed rather than familiar and open. A familiarity penalty is paid once. A large
+decision space is a tax paid on every generation, and it scales inversely with model size.
+
+## Where to start
+
+<CardGroup cols={2}>
+  <Card title="Status" icon="gauge" href="/status">
+    What exists, what is tested, what is measured, and what is still just a design
+    document. The honest version, which is shorter than you would like.
+  </Card>
+  <Card title="Syntax" icon="code" href="/syntax">
+    Nine named failure modes an agent hits writing Rust UI code, and the syntax decision
+    that answers each one.
+  </Card>
+  <Card title="The nine primitives" icon="layers" href="/primitives">
+    Real `.mz` source, gated in CI, plus the packaging decision — why primitives are
+    copied files and not crates.
+  </Card>
+  <Card title="The compiler" icon="terminal" href="/compiler">
+    `mz check`, `mz outline`, `mz hash`, `mz ir`, and the NDJSON protocol written for a
+    reader holding zero file context.
+  </Card>
+  <Card title="The IR" icon="git-branch" href="/ir">
+    Content addressing: one architectural decision that answers seven of eight named
+    reading barriers.
+  </Card>
+  <Card title="The ecosystem" icon="map" href="/ecosystem">
+    Which repository serves which domain, and which parts of it are real today.
+  </Card>
+</CardGroup>
+
+## What Mzizi is not
+
+The charter is explicit about its non-goals, and they are worth reading before anyone
+assumes a larger claim:
+
+- **Not a rendering engine.** Phase 1 is interop with Dioxus's existing renderer. Dioxus
+  already spent years on "one codebase, four platforms"; rebuilding it buys the
+  syntax/compiler layer nothing.
+- **Not a tensor runtime.** ML inference is a declared capability backed by Candle, not a
+  competing framework.
+- **Not a post-quantum cryptography project.** Named as a future research thread and
+  explicitly out of scope.
+- **Not a web-framework target.** The compiled artifact is WASM (and native, for desktop).
+  Astro is one thin, optional distribution surface among several — not a platform Mzizi
+  targets.
+
+## Ownership
+
+Mzizi-the-framework is **100% Bundu Foundation IP**. The adjacent Mzizi console ("Fundi")
+is Nyuchi-owned and serves a different domain. The charter draws that line deliberately, and
+the [ecosystem map](/ecosystem) follows it repository by repository.

@@ -1,0 +1,127 @@
+---
+title: "Status"
+description: "What exists, what is tested, what is measured, and what is still only a design document. Mzizi-lang is a Phase 0 prototype front end and has not been measured against its own kill criteria."
+icon: "gauge"
+---
+
+<Warning>
+  **Nothing on this site should be read as documentation of a working production language.**
+  The `mzizi-lang` README states the position plainly: _"Status: prototype front end… The
+  Phase 0 benchmark has not run, so **nothing here has yet been measured against the
+  charter's kill criteria**. Contract bodies parse but are not evaluated."_
+</Warning>
+
+## What actually exists
+
+Every row below is checkable in
+[`mzizi-dev/mzizi`](https://github.com/mzizi-dev/mzizi) — that is the point of writing it as
+a table rather than a paragraph.
+
+| Piece | State | Where |
+| ----- | ----- | ----- |
+| Lexer | Exists, tested | `compiler/src/lex.rs` |
+| Recovering parser | Exists, tested | `compiler/src/parse.rs` |
+| Agent diagnostic protocol (NDJSON) | Exists, tested | `compiler/src/diagnostic.rs` |
+| Content-addressed IR + SHA-256 store | Exists, tested, measured | `compiler/src/ir.rs`, `compiler/src/hash.rs` |
+| `mz outline` | Exists, tested | `compiler/src/outline.rs` |
+| Nine primitives written in Mzizi | Parse clean, gated in CI | `primitives/*.mz` |
+| One ported corpus component | Parses clean | `examples/connectivity_bar.mz` |
+| Contract **evaluation** | **Not implemented** — bodies parse, nothing checks them | — |
+| Lowering to Rust / Dioxus | **Not started** — Phase 1 | — |
+| Rendering, any target | **Not started** — Phase 1 | — |
+| Local state (`state x: int = 0`) | **Unresolved design question** | RFC-0001 §7, RFC-0002 §6, RFC-0003 §8 |
+| Phase 0 benchmark harness | **Unspecified** past the task-set and defect-rate decisions | Charter §7 |
+| Phase 0 benchmark result | **Has not run** | — |
+
+The compiler crate is `version = "0.0.0"` with `publish = false`. There is no
+`cargo install mz`, no published crate, and no release. You build it from the repository or
+you do not have it.
+
+## The kill criterion, and why it has not fired
+
+The charter gives Phase 0 a success criterion that is also a stopping rule:
+
+> A defined benchmark where an LLM agent authors N equivalent components in Mzizi's syntax
+> vs. raw Dioxus/Leptos, measured on tokens consumed, iterations to a clean compile, and
+> defect rate. If this doesn't show a measurable advantage, nothing downstream matters —
+> don't build Phase 1 until Phase 0 has a real number attached to it.
+
+RFC-0001 §6 sharpens it further: _"If Mzizi doesn't beat both on at least two of three
+metrics, the thesis is wrong and Phase 1 does not start."_ RFC-0002 §5 adds that the
+benchmark **must** include a small open-weight model arm, because the frontier arm alone
+cannot validate a thesis whose whole point is helping the models that a frontier arm does
+not represent.
+
+No arm of that benchmark has run. So every claim on this site about *why* a design decision
+is right is a **stated rationale**, not a measured result. The two things that have been
+measured are narrower, and they are reported as such below.
+
+## What has actually been measured
+
+These come from `compiler/tests/ir_measured.rs`, over the nine primitives plus the corpus
+example — ten files, which is a tiny corpus and should be read as such.
+
+| Claim | Measured |
+| ----- | -------- |
+| Structural sharing | 127 shared nodes vs 141 isolated — 14 saved across 10 files |
+| `mz outline` cost | Worst case **38% of source** (`spinner.mz`); the test fails above 75% |
+| Parse + lower, whole set | **~4.3 ms** for 10 files; budget 400 ms |
+| Identity stability | Same source → same root hash; blank-line changes do not alter it; a variant column change reaches the root |
+| Rename cost | Renaming every component in the store changes **zero** nodes |
+
+RFC-0003 §7 flags the first number honestly, and so does this page: _"The sharing number is
+honest but small… At the scale of the real 571-component registry… the ratio should improve
+substantially — but that is a prediction, and it stays labelled as one until the registry is
+lowered."_
+
+The test suite is 75 tests across `compiler/src` and `compiler/tests`. CI gates the
+directory on `cargo fmt --check`, `cargo clippy --all-targets -D warnings`, `cargo test`,
+and a `mz check` over every primitive.
+
+## Where the RFCs and the implementation disagree
+
+Worth knowing before you copy an example out of an RFC and expect it to compile.
+
+<AccordionGroup>
+  <Accordion title="RFC status headers are behind the code">
+    RFC-0001 and RFC-0002 both carry the header _"Status: draft for review — nothing here is
+    implemented"_. That was true when written and is no longer true: the front end exists.
+    RFC-0003's header is current (_"draft; core implemented in this PR"_), as is RFC-0004's.
+    Treat the headers as historical.
+  </Accordion>
+  <Accordion title="View attributes take `=` in the implemented grammar">
+    RFC-0001 §1 writes view attributes without an equals sign — `text state.label`,
+    `strip slot "nyuchi-connectivity-bar"`. The parser that exists requires
+    `name = value` (`compiler/src/parse.rs`), and every `.mz` file in the repository is
+    written that way. [Syntax](/syntax) documents the implemented form.
+  </Accordion>
+  <Accordion title="The implemented primitives carry a `portal` attribute the RFC never mentions">
+    Every primitive sets `portal = "https://mzizi.dev/components/<name>"`, pointing back at
+    the registry entry for the component it ports. It is not in RFC-0001's attribute list.
+  </Accordion>
+  <Accordion title="`mz fix`, `mz refs`, `mz path`, `mz patch` and `mz diff` do not exist">
+    RFC-0001 §4.3 describes `mz fix` applying all `exact` fixes in one shot, and RFC-0003 §5
+    lists `refs`, `path`, `patch` and `diff` under _"Designed here, next in implementation
+    order"_. The binary dispatches exactly four commands today: `check`, `outline`, `hash`,
+    `ir`. See [The compiler](/compiler).
+  </Accordion>
+  <Accordion title="RFC-0003's outline example is illustrative, not literal">
+    RFC-0003 §4 shows a compact outline for `button` with enum variants on one line and
+    `contract 5`. The emitter in `compiler/src/outline.rs` lists variants one per line and
+    emits an empty `contract` block. The measured cost claim in §7 is from the real emitter;
+    the printed sample is not.
+  </Accordion>
+</AccordionGroup>
+
+## The private repository does not exist yet
+
+[RFC-0004](/benchmark) specifies a private held-out benchmark repository in the `mzizi-dev`
+org, and then argues at length that it **should not be created yet** — because a private
+runner that exists before the public harness does will shape the harness around itself,
+inverting the dependency rule the whole RFC is built on. The trigger is stated: _"the first
+held-out task. Not before."_
+
+The public half of the mechanism is implemented and inert:
+`.github/workflows/mzizi-lang-benchmark-dispatch.yml` reports "not configured" because the
+`MZIZI_HELDOUT_REPO` variable and `MZIZI_DISPATCH_TOKEN` secret do not exist. That is the
+intended steady state, not a failure.

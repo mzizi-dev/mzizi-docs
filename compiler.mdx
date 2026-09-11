@@ -1,0 +1,168 @@
+---
+title: "The mz compiler"
+description: "Four commands, an exit-status contract, and an NDJSON diagnostic protocol written for a reader holding zero file context."
+icon: "terminal"
+---
+
+`mz` is the Phase 0 front end: lex → parse → lower → IR. It is a single Rust binary with
+**no dependencies at all**, which is a deliberate house convention rather than an oversight
+— a compiler whose check loop must stay sub-second on a modest laptop should not start life
+with a dependency tree to build first, and the small things it needs (JSON emission,
+SHA-256) are fully specified and therefore hand-rollable with verifiable correctness.
+
+## Getting it
+
+There is no release, no published crate, and no installer. The crate is `version = "0.0.0"`
+with `publish = false`.
+
+```bash
+git clone https://github.com/mzizi-dev/mzizi.git
+cd mzizi/compiler
+cargo test                                                   # 75 tests
+cargo run -- check    ../primitives/button.mz
+cargo run -- check --agent ../examples/connectivity_bar.mz   # NDJSON for an agent
+cargo run -- outline  ../primitives/alert.mz                 # the interface, as valid Mzizi
+cargo run -- ir       ../primitives/card.mz                  # nodes, hashes, structural paths
+```
+
+## The four commands
+
+| Command | What it does |
+| ------- | ------------ |
+| `mz check <file.mz>` | Human-readable diagnostics, one per line, plus a summary |
+| `mz check --agent <file.mz>` | The same diagnostics as NDJSON, plus a summary object |
+| `mz outline <file.mz>` | The component's interface only, emitted as valid Mzizi |
+| `mz hash <file.mz>` | The root hash and the stored node count |
+| `mz ir <file.mz>` | Every node with its hash and structural path |
+
+With no command given, the first positional argument is treated as a file and `check` is
+assumed.
+
+<Note>
+  **Documented elsewhere, not implemented here.** RFC-0001 §4.3 describes `mz fix` applying
+  every `exact` fix in one shot, and RFC-0003 §5 lists `mz refs`, `mz path`, `mz patch` and
+  `mz diff` under *"designed here, next in implementation order"*. The binary dispatches
+  exactly the commands in the table above.
+</Note>
+
+### Exit status is a contract
+
+So the loop can branch on status without parsing output:
+
+| Status | Meaning |
+| ------ | ------- |
+| `0` | No errors. Warnings do not fail. |
+| `1` | Errors present, or the file did not parse when an IR command needed a tree. |
+| `2` | Usage or I/O problem. |
+
+## `mz check --agent`: the protocol
+
+This is the surface an agent should use. RFC-0001 §4 states it as a versioned contract, and
+four properties define it.
+
+<Steps>
+  <Step title="Whole-program, all at once, deterministic order">
+    Statement-per-line plus `end`-anchored blocks let the parser resynchronise at every
+    line. The recovery target is **at most one diagnostic per true author error** — never a
+    cascade, and never "fix one to see the next". That is the direct answer to FM-5: a
+    compiler that stops at the first parse error turns one mistake into five agent turns.
+  </Step>
+  <Step title="NDJSON, one diagnostic per line">
+    Each line is a complete JSON object carrying `code`, `severity`, `file`, `span` as
+    `[start_line, start_col, end_line, end_col]`, `say`, and an optional `fix`.
+  </Step>
+  <Step title="`say` is written for a reader with zero file context">
+    It quotes the offending source inline, so the agent needn't re-read the file to
+    understand the error. The stated target is ≤ 200 characters — density is the budget.
+  </Step>
+  <Step title="Fixes are data">
+    Every diagnostic carries a machine-applicable `fix` when one is unambiguous, tagged
+    `exact`, `guess` or `none`. The intent is that `mz fix` applies all `exact` fixes in one
+    shot, deleting a whole class of mechanical error from the loop.
+  </Step>
+</Steps>
+
+The shape RFC-0001 specifies:
+
+```json
+{"code":"MZ0412","file":"connectivity_bar.mz","span":[38,10,38,17],
+ "say":"`emit on_state_change(sync)` — `sync` is not a variant of `connection_state`; nearest is `syncing`",
+ "fix":{"span":[38,10,38,17],"replace":"syncing"},"confidence":"exact"}
+```
+
+The emitter in `compiler/src/diagnostic.rs` writes the same fields with `severity` added and
+`confidence` nested inside the `fix` object:
+
+```text
+{"code":…,"severity":…,"file":…,"span":[…],"say":…,"fix":{"span":[…],"replace":…,"confidence":…}}
+```
+
+Every run ends with a summary line, so a consumer always has a terminator:
+
+```json
+{"summary":true,"errors":3,"warnings":1,"exact_fixable":2,"ms":480}
+```
+
+The human-readable mode ends with the same information as prose:
+`mz: 3 errors (2 exact-fixable), 480ms`.
+
+### Diagnostic codes
+
+Codes are grouped by phase, and the ranges are stable:
+
+| Range | Phase |
+| ----- | ----- |
+| `MZ01xx` | Lexical |
+| `MZ02xx` | The component header, `use`, and block closing — including every `end` echo mismatch |
+| `MZ03xx` | Enum variants and `prop` declarations |
+| `MZ04xx` | Lines that cannot start where they appear, and the view grammar |
+| `MZ05xx` | The contract block |
+
+Two are worth quoting because they show what the messages are trying to be. `MZ0402`, when
+something that cannot start a view line does:
+
+```text
+… cannot start a view line — expected an element, `name = value`, `nothing`, or `end`
+```
+
+It names the whole set of valid continuations rather than only what was wrong — the
+Elm-derived expected-vs-found discipline RFC-0002 §3 names as the most valuable borrow in
+compiler-error UX, on the grounds that a small model cannot infer from an indirect hint.
+
+And `MZ0501`, which is a warning rather than an error, and is how RFC-0001 §1.6's rule
+("a component without a `contract` block compiles with a warning") is actually enforced:
+
+```text
+`component button` has no `contract` block — behaviour is unverified (RFC-0001 §1.6)
+```
+
+The `end`-echo diagnostics (`MZ0206`–`MZ0208`) are the payoff for the name echo: they can
+say *which* block on *which* line an `end` actually closes, and hand back the exact text to
+write instead.
+
+## `mz outline`: the representation for dependencies
+
+When editing component A that uses B, an agent needs B's *interface*, not B's body. Reading
+the file gets both, plus comments and unrelated functions — RFC-0003's barrier RB-2.
+
+The outline carries: the first doc line, the component name, declared capabilities, every
+prop with its type and default, every enum with its variant **names** only, the names of
+`fn` declarations, and a marker for whether a contract exists. It drops variant column data,
+view bodies and function bodies — which is where the bulk of a component's bytes are.
+
+It is emitted as **valid Mzizi**, deliberately: a reader who can read the language can
+already read this, so there is no second format to learn and no second parser to keep in
+step.
+
+Measured over the nine primitives plus the corpus example, the worst case is **38% of
+source** (`spinner.mz`); the test in `compiler/tests/ir_measured.rs` fails above 75%.
+
+## Compile speed is a protocol property
+
+RFC-0001 §4.6 makes this explicit: _"A slow compiler fails Phase 0 no matter how good its
+errors are."_ The stated budget is sub-second incremental for a single-component change, and
+the benchmark is specified to record it per iteration.
+
+What has been measured so far is much narrower: parse and lower of all ten `.mz` files in
+the repository takes **~4.3 ms** against a 400 ms test budget. That is a floor on a tiny
+corpus, not the incremental-compile figure the charter asks for. See [Status](/status).

@@ -1,0 +1,86 @@
+/*
+ * Mzizi docs — custom styling.
+ *
+ * Mintlify auto-loads every .css file in the content directory (wherever
+ * docs.json lives) on every page — no reference from docs.json or MDX needed.
+ * See https://www.mintlify.com/docs/customize/custom-scripts.
+ *
+ * Already native to docs.json and deliberately not duplicated here: the theme,
+ * the brand colour pair, the page background colours and decoration, and the
+ * heading/body font pair (Noto Serif / Noto Sans — the canonical Mzizi
+ * typography, chosen ecosystem-wide for broad African-language and diacritic
+ * support, not a docs-specific pick). This file exists for the two things
+ * docs.json has no field for: the full neutral (gray) ramp Mintlify uses across
+ * borders, muted text and code-block chrome; and base font sizing (docs.json's
+ * `fonts` field controls family and weight only, not size).
+ *
+ * On the brand colour: cobalt is the mineral whose documented usage in the Mzizi
+ * token set is literally "Primary blue, links, CTAs" (symbolism: "Digital
+ * future, trust, knowledge"). That makes it the correct pick for a docs site's
+ * link and button colour, rather than borrowing a colour that is another brand's
+ * identity — sodalite belongs to shamwari, copper to the Bundu ecosystem mark,
+ * malachite to nhimbe and campfire.
+ *
+ * Measured with APCA 3.0 — Mzizi's actual stated standard, not WCAG:
+ *
+ *   light mode  #0047AB  on #F3F2EE  Lc  80.4   (cobalt lightHex, published)
+ *   dark mode   #B3E5FC  on #1B1A17  Lc -85.0   (cobalt on-container dark, published)
+ *
+ * Both clear Lc 75, APCA's minimum for body-size text, which is the right bar
+ * because these render as links and buttons at body size. Both values are
+ * published Mzizi tokens rather than derived shades: #B3E5FC is
+ * `--mineral-cobalt-on-container` in dark mode. Cobalt's published darkHex
+ * (#00B0FF) is NOT usable here — Lc -53.7, well short of the floor — which is
+ * the usual trap: the token designed as a *surface* accent is not the token
+ * designed as *foreground on* a dark surface.
+ *
+ * scripts/check-contrast.mjs enforces the above in CI.
+ *
+ * The backgrounds (#F3F2EE light, #1B1A17 dark) are not invented either: they
+ * are mzizi.dev's own `--background` values, so the docs site sits on the same
+ * ground as the site it documents. The ramp below is linearly interpolated
+ * between those two endpoints, with an ease-in-out curve for perceptual spacing,
+ * so borders and muted text read as part of the same family rather than
+ * Mintlify's unrelated default gray.
+ *
+ * Note, as the sibling site (shamwari-ai/docs) found and recorded: this file is
+ * NOT picked up by a local `mint dev` preview — the --gray-* values stay
+ * Mintlify's own computed defaults there. Everything else in docs.json (theme,
+ * colors, background, fonts) does render locally. Per Mintlify's own docs the
+ * file is auto-loaded on the deployed site, so this is a local-CLI gap rather
+ * than something wrong with the file — but re-verify on a real deploy preview
+ * before assuming the ramp is live.
+ */
+
+:root {
+  --gray-50: 243 242 238;
+  --gray-100: 237 236 232;
+  --gray-200: 219 218 213;
+  --gray-300: 194 192 187;
+  --gray-400: 162 161 155;
+  --gray-500: 128 127 121;
+  --gray-600: 96 95 89;
+  --gray-700: 65 64 58;
+  --gray-800: 41 40 35;
+  --gray-900: 30 29 25;
+  --gray-950: 27 26 23;
+}
+
+/*
+ * Mintlify's body/prose text renders in rem units, cascaded from the root
+ * font-size — so this is the one lever that reaches body copy, sidebar links and
+ * code blocks together without hardcoding theme-internal class names that could
+ * change under us on a Mintlify upgrade. Bumped from the browser default of
+ * 16px; mobile gets a second, larger bump on top of that rather than inheriting
+ * the desktop value, because narrow viewports are where "the font is small" gets
+ * reported from. Matches the sibling docs site so the two read as one family.
+ */
+html {
+  font-size: 17px;
+}
+
+@media (max-width: 768px) {
+  html {
+    font-size: 18px;
+  }
+}

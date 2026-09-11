@@ -1,0 +1,152 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    # Not just main. Stacked pull requests target the branch below them in the
+    # stack, and a filter of [main] silently gives every layer but the bottom one
+    # zero checks — the failure looks like a green PR, which is the worst shape
+    # for it to take.
+    branches: [main, "claude/**"]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+
+      # Strict mode: exits non-zero on any warning or error, not just a hard
+      # build failure.
+      - name: mint validate
+        run: npx --yes mint@latest validate
+
+  links:
+    name: Broken links
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+
+      # --check-external is deliberately omitted: it makes the check dependent on
+      # third-party site availability and turns transient network failures into a
+      # red PR unrelated to the diff. Internal links, anchors, and docs.json
+      # redirect destinations are within this repo's control and cost nothing to
+      # check on every push.
+      - name: mint broken-links
+        run: npx --yes mint@latest broken-links --check-anchors --check-redirects
+
+  accessibility:
+    name: Accessibility
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+
+      # Brand colours are gated by APCA 3.0, which is Mzizi's own stated
+      # standard, not by mint a11y's WCAG heuristic. That heuristic is not
+      # polarity-aware: it tests colors.dark against BOTH backgrounds and demands
+      # 3:1 on each, even though `dark` only ever renders in light mode and
+      # `light` only ever renders in dark mode. Satisfying it forces both values
+      # to mid-tone and serves neither theme.
+      #
+      # It also masks real failures in this palette. Sodalite's darkHex #3D5AFE
+      # passes WCAG against a near-black background but scores APCA Lc -25.8,
+      # below even the Lc 30 non-text floor.
+      - name: Brand colour contrast (APCA 3.0)
+        run: node scripts/check-contrast.mjs
+
+      # mint a11y still runs, for the check it is genuinely good at: alt
+      # attributes on every image and video across the MDX files. Its colour
+      # section is advisory here for the reasons above, so the exit code is not
+      # the gate — the MDX result is parsed explicitly instead, and an
+      # unrecognised output shape fails rather than passing silently.
+      - name: mint a11y (MDX alt attributes)
+        run: |
+          set -uo pipefail
+          out=$(npx --yes mint@latest a11y 2>&1) || true
+          echo "$out"
+          if ! grep -qi 'Checking mdx files for accessibility issues' <<<"$out"; then
+            echo "::error::mint a11y output did not contain the MDX section — output shape changed, refusing to pass silently."
+            exit 1
+          fi
+          if ! grep -qiE 'no accessibility issues found' <<<"$out"; then
+            echo "::error::mint a11y reported MDX accessibility issues (missing alt attributes)."
+            exit 1
+          fi
+          echo "MDX accessibility checks passed."
+
+  honesty:
+    name: Status honesty
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      # The single editorial rule this site has, enforced rather than trusted.
+      #
+      # mzizi-lang is a Phase 0 prototype: contract bodies parse but are not
+      # evaluated, nothing lowers to Rust, and the benchmark the whole thesis
+      # rests on has not run. Copy that implies otherwise is not a style problem,
+      # it is a false claim — so the phrasings that would make it are blocked.
+      #
+      # status.mdx is excluded because it *quotes* these framings in order to
+      # deny them; matching there is the point, not a violation.
+      - name: Check for overclaiming
+        run: |
+          set -uo pipefail
+          pattern='production[- ]ready|generally available|contracts are (checked|evaluated|enforced)|compiles to (rust|wasm) today|(mzizi|mz) is stable|the benchmark (shows|showed|proves|proved)'
+          hits=$(grep -rniE "$pattern" --include='*.mdx' . | grep -vE '^\./status\.mdx:' || true)
+          if [ -n "$hits" ]; then
+            echo "::error::Overclaiming found. mzizi-lang is a Phase 0 prototype — see status.mdx:"
+            echo "$hits"
+            exit 1
+          fi
+          echo "No overclaiming found."
+
+  secrets:
+    name: Secret scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # 0 scans the full history, not just the checked-out tree.
+          fetch-depth: 0
+
+      # The gitleaks BINARY, not gitleaks/gitleaks-action. That wrapper now
+      # requires a paid licence for organisation repositories; the underlying
+      # binary is still MIT-licensed, so calling it directly keeps this scan
+      # free. The version is pinned so a new release cannot change the result of
+      # an unrelated PR.
+      - name: Install gitleaks
+        env:
+          VERSION: "8.30.1"
+        run: |
+          set -euo pipefail
+          curl -sSL --fail -o /tmp/gitleaks.tar.gz \
+            "https://github.com/gitleaks/gitleaks/releases/download/v${VERSION}/gitleaks_${VERSION}_linux_x64.tar.gz"
+          sudo tar -xzf /tmp/gitleaks.tar.gz -C /usr/local/bin gitleaks
+          gitleaks version
+
+      # `git` rather than the older `detect`: it is the current, non-deprecated
+      # form, and it scans commit history — which is the half that matters, since
+      # a secret removed in a later commit is still published in an earlier one.
+      - name: Scan repository
+        run: gitleaks git . --redact --no-banner --verbose
