@@ -1,0 +1,138 @@
+---
+title: "The charter"
+description: "The thesis, the five phases, and the explicit non-goals. Bundu Foundation Research Charter v0.1 — a direction and a phasing, not a sprint plan."
+icon: "scroll-text"
+---
+
+Mzizi's direction is set by a single document:
+[`CHARTER.md`](https://github.com/mzizi-dev/mzizi/blob/main/CHARTER.md), the **Bundu
+Foundation Research Charter v0.1**. Its own status line reads _"charter draft — defines
+direction and phasing, not a sprint plan"_, and this page summarises it rather than
+replacing it.
+
+**Owner:** Bundu Foundation — 100%. The Mzizi framework, components and logic are Foundation
+IP. The Mzizi console ("Fundi") and active cyber testing are adjacent and Nyuchi-owned.
+
+## The thesis
+
+Every major web framework won by being unmistakably better at one thing first, not by
+matching an incumbent's full feature set on day one. React was Facebook's internal fix for
+one rendering problem. Vue was one person's answer to Angular's complexity. Svelte bet on a
+single contrarian idea — compile the framework away — years before anyone else took it
+seriously.
+
+Mzizi's single sharp edge:
+
+> A Rust framework whose syntax, type system, and compiler feedback loop are designed for
+> machine authorship, not just human ergonomics.
+
+The charter's argument for why the field is open: every existing framework, Rust or
+otherwise, was designed assuming a human is typing, reading docs, and holding context in
+their head. None of them are designed for an agent iterating against a compiler thousands of
+times, where compile speed, error density and token-efficient representation are first-order
+metrics.
+
+Everything else — cross-platform reach, ML integration, edge deployment — is Mzizi
+*integrating* with what already exists well, not out-building specialists at their own game.
+
+## What that has to cash out as
+
+Four measurable design goals, not a slogan:
+
+<AccordionGroup>
+  <Accordion title="Low syntactic ambiguity">
+    Fewer distinct-but-equivalent ways to express one intent. Every degree of freedom in
+    "how you could have written this" is a degree of freedom a model can get subtly wrong.
+  </Accordion>
+  <Accordion title="Dense, high-signal compiler errors">
+    The loop is generate → compile → read error → fix → recompile, and its quality is
+    bounded by how much *actionable* information is packed into the compiler's output per
+    character. A compiler UX problem aimed at a machine reader.
+  </Accordion>
+  <Accordion title="Fast incremental compilation">
+    Humans tolerate a few seconds per iteration. An agent iterating hundreds of times per
+    session treats compile latency as the dominant cost of the whole workflow. Compile speed
+    is a Phase 0 success metric, not an optimisation to defer.
+  </Accordion>
+  <Accordion title="Token-efficient representation">
+    A codebase that fits more real logic into a context window per token spent is one an
+    agent can reason about more completely, with less summarisation loss. Applies to the
+    syntax surface *and* any intermediate representation the tooling exposes.
+  </Accordion>
+</AccordionGroup>
+
+## What is novel and what is borrowed
+
+The charter is precise about which layer is the research contribution, which matters because
+it bounds what Mzizi is claiming to have invented.
+
+| Layer | Approach |
+| ----- | -------- |
+| **Syntax, type system, compiler** | **Novel.** The actual research contribution and the thing worth defending as IP. |
+| **Cross-platform rendering** | **Interop with Dioxus's existing renderer**, not a rebuilt engine. Dioxus already spent years on "one codebase, four platforms". |
+| **ML workloads** | **Native integration with Candle.** Components declare and consume inference as a first-class capability; Mzizi does not build a competing tensor runtime. |
+| **Edge** | First-class deployment target from day one — the one area with real existing experience (Cloudflare Workers, `workers-rs`). |
+| **Compiled artifact** | **WASM, and native for desktop.** Not Astro, not any web framework. Astro is one thin optional distribution surface among several. |
+| **Post-quantum cryptography** | **Explicitly deferred.** A future research thread, named so it does not dilute Phase 0. |
+
+## The phasing
+
+<Steps>
+  <Step title="Phase 0 — prove the core claim, no rendering attached" icon="flask-conical">
+    A standalone compiler/syntax prototype with zero UI story. Success criterion: a defined
+    benchmark where an agent authors N equivalent components in Mzizi versus raw
+    Dioxus/Leptos, measured on tokens consumed, iterations to a clean compile, and defect
+    rate.
+
+    **_"If this doesn't show a measurable advantage, nothing downstream matters — don't
+    build Phase 1 until Phase 0 has a real number attached to it."_**
+
+    This is where the project is. See [Status](/status) and [the benchmark](/benchmark).
+  </Step>
+  <Step title="Phase 1 — rendering interop; WASM/native as the real deliverable" icon="box">
+    Wire the compiler output into Dioxus's renderer. The artifact that comes out — a working
+    WASM bundle, and a native binary for desktop — *is* the cross-platform product, and must
+    stand on its own: embeddable via a bare `<script type="module">`, a mobile WebView or
+    native WASM host, or an edge runtime, with no framework-specific packaging assumed.
+
+    Integration work, not framework-building. Any temptation to build a native renderer here
+    is scope creep until interop has been tried and found genuinely insufficient.
+  </Step>
+  <Step title="Phase 2 — edge-first deployment" icon="globe">
+    Native target using existing Cloudflare and `workers-rs` experience. The cheapest phase
+    to execute given current capability.
+  </Step>
+  <Step title="Phase 3 — Candle integration" icon="brain">
+    First-class support for declaring ML inference inside components, backed by Candle. The
+    `use ml` capability parses today and is specified to error as "not yet available".
+  </Step>
+  <Step title="Phase 4 — distribution adapters, Astro first among several" icon="package">
+    Once Phase 1's WASM artifact stands alone, framework-specific adapters are thin
+    packaging layers rather than new compiler work. Astro is first because it is furthest
+    along, not because Astro is a target platform — treat it as proof the standalone
+    artifact is genuinely embeddable.
+  </Step>
+</Steps>
+
+## Explicit non-goals
+
+- Not building a competing tensor or ML runtime. Candle is the dependency.
+- Not building a native cross-platform renderer in Phase 0 or 1. Dioxus interop first;
+  native renderer only if interop is proven insufficient.
+- Not addressing post-quantum cryptography in this charter.
+- Not blocked by, or blocking, Nyuchi/Mukoko revenue-phase work — different org, different
+  clock, per the Foundation's research mandate.
+
+## What the charter still leaves open
+
+Two things, and the charter says so rather than implying the plan is complete.
+
+**Contract evaluation.** Contract blocks parse but are not checked. That is what makes the
+defect metric toolchain-measured rather than a hand-written Rust test standing in for it.
+
+**Benchmark harness mechanics.** How agent runs are invoked, sandboxed and scored end to end
+— which components from the 571-plus corpus, how many per run, how "tokens consumed" and
+"iterations to clean compile" are actually measured and reported — is unspecified past the
+task-set and defect-rate decisions. The benchmark directory's own README is blunt about the
+consequence: _"Nothing here should be built until that's designed alongside the language
+syntax itself, since the harness has to invoke a compiler that doesn't exist yet."_

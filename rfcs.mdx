@@ -1,0 +1,148 @@
+---
+title: "RFC index"
+description: "Four design documents, their status lines as written, what each settles, and what each explicitly leaves open."
+icon: "file-text"
+---
+
+The RFCs are the design record. They live in
+[`design/`](https://github.com/mzizi-dev/mzizi/tree/main/design) in
+[`mzizi-dev/mzizi`](https://github.com/mzizi-dev/mzizi), and the repository's own README
+says to read them first.
+
+Two things to know before reading any of them.
+
+**They argue with each other, on purpose.** RFC-0002 opens by declaring RFC-0001's design
+target wrong and inverting three of its conclusions. RFC-0003 records a claim its own test
+suite falsified mid-implementation. RFC-0004 opens by correcting the premise it was
+commissioned on. That is the intended shape of the record, not disorder in it.
+
+**The status headers are historical.** RFC-0001 and RFC-0002 both say "nothing here is
+implemented". That was true when written. The front end now exists — see
+[Status](/status#where-the-rfcs-and-the-implementation-disagree) for where the documents and
+the code have since diverged.
+
+---
+
+## RFC-0001 — Surface syntax, canonical form, and the agent protocol
+
+<Card title="design/RFC-0001-syntax.md" icon="github" href="https://github.com/mzizi-dev/mzizi/blob/main/design/RFC-0001-syntax.md" horizontal>
+  **Status as written:** draft for review — nothing here is implemented.
+  **Amended by RFC-0002.**
+</Card>
+
+The nine failure modes an agent hits writing Rust UI code, and the syntax that answers each.
+`end <kind> <name>` with a cross-checked name echo; one construct per intent; enum data
+columns instead of parallel maps; `contract` blocks in the language; capability declarations
+at the top; no ownership surface at all.
+
+Also specifies canonical form (the compiler owns formatting, no configuration) and the
+`mz check --agent` protocol: whole-program NDJSON in deterministic order, at most one
+diagnostic per real error, messages written for a reader with zero file context, and fixes
+as machine-applicable data tagged `exact` / `guess` / `none`.
+
+Its own method rule: _"If a decision doesn't trace to a failure mode, it doesn't belong in
+the language."_
+
+**Leaves open:** local state; the grammar formalism; the IR; whether component name must
+match file name.
+
+→ [Syntax](/syntax) · [The compiler](/compiler)
+
+---
+
+## RFC-0002 — The design target, the runtime as the product, and what to mine
+
+<Card title="design/RFC-0002-runtime-and-prior-art.md" icon="github" href="https://github.com/mzizi-dev/mzizi/blob/main/design/RFC-0002-runtime-and-prior-art.md" horizontal>
+  **Status as written:** draft for review — nothing here is implemented.
+  Supersedes parts of RFC-0001 §1.1 and §6.
+</Card>
+
+The correction that reshaped the project. RFC-0001 was written by a frontier model reasoning
+about its own experience, which optimised for the author rather than the population. The
+design target is small models — a 7B open-weight model running locally — and that inverts
+three conclusions: token efficiency is permanently first-order, the `end` echo is an
+error-correcting code for weak long-range attention rather than parser elegance, and a small
+closed grammar beats a familiar open one.
+
+Also establishes that **the runtime is the product** ("shared logic, written once, running
+everywhere"), commits to the content-addressed IR, and surveys thirteen languages for what
+to borrow — Elm's error design, Roc's platform/application split, Gleam's tiny keyword set,
+Unison's content-addressed codebase, Zig's no-hidden-control-flow rule, Tree-sitter's
+error-tolerant parsing — each with an explicit licence note. The licence discipline is stated
+once and is unambiguous: design ideas are free; code carries obligations; **GPL/AGPL sources
+must not be copied into the project at all**, and anything borrowed as code must be recorded
+in a NOTICE file.
+
+§3.1 names what is genuinely missing everywhere, which is the defensible research
+contribution: contracts in the language checked by the toolchain; a diagnostic protocol
+designed for a machine reader; a content-addressed IR wired to an agent-facing patch API;
+and a grammar whose ambiguity budget is deliberately near zero.
+
+**Leaves open:** local state; the IR's concrete shape; effect-system depth; how far contract
+expressiveness should go before it becomes a proof assistant.
+
+→ [Overview](/) · [Syntax](/syntax)
+
+---
+
+## RFC-0003 — The content-addressed IR and the agent's read/write surface
+
+<Card title="design/RFC-0003-ir.md" icon="github" href="https://github.com/mzizi-dev/mzizi/blob/main/design/RFC-0003-ir.md" horizontal>
+  **Status as written:** draft; core implemented in this PR (hashing, store, outline).
+</Card>
+
+The other half of the loop: eight barriers an agent hits *reading* a codebase, and the
+content-addressed IR that answers seven of them from one decision. The node model, the
+length-prefixed canonical serialization, hand-rolled SHA-256 verified against NIST vectors,
+structural sharing, `mz outline`, and the query/patch surface.
+
+Contains the project's most instructive paragraph: §7.1, where the measured suite falsified
+the RFC's own claim that structural paths are "stable across edits", and the claim was
+narrowed to what is true rather than defended.
+
+**Leaves open:** local state under content addressing; the patch API's conflict model; store
+persistence; contract evaluation semantics.
+
+→ [The content-addressed IR](/ir)
+
+---
+
+## RFC-0004 — Test topology: what stays public, what goes private, and why
+
+<Card title="design/RFC-0004-test-topology.md" icon="github" href="https://github.com/mzizi-dev/mzizi/blob/main/design/RFC-0004-test-topology.md" horizontal>
+  **Status as written:** draft; the public half of the mechanism is implemented in this PR.
+</Card>
+
+Which test infrastructure stays public (nearly all of it, permanently), which is held out (a
+benchmark task set), and the dependency rule that keeps forks working: **private consumes
+public, public never consumes private.**
+
+Opens by rejecting the reason it was commissioned on. Private tests are close to worthless as
+a security control; the one legitimate reason here is measurement validity, because a public
+benchmark task set gets scraped into training data and a contaminated benchmark looks exactly
+like a successful one.
+
+**Leaves open:** held-out set rotation policy; a path for third-party verification of a
+published benchmark claim.
+
+→ [The Phase 0 benchmark](/benchmark)
+
+---
+
+## Reading order
+
+<Steps>
+  <Step title="CHARTER.md">
+    The thesis, the phasing, and the non-goals. Everything else is downstream of it.
+  </Step>
+  <Step title="RFC-0002 §1">
+    Read the design-target correction before RFC-0001, or RFC-0001's rationale will read as
+    a frontier-model argument — which is exactly what RFC-0002 says was wrong with it.
+  </Step>
+  <Step title="RFC-0001">
+    Then the syntax in full, with the amendment already in mind.
+  </Step>
+  <Step title="RFC-0003, then RFC-0004">
+    The IR, then the test topology that depends on it for cross-repository references.
+  </Step>
+</Steps>
