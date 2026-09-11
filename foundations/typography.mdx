@@ -1,0 +1,110 @@
+---
+title: "Typography"
+description: "The Mzizi type system — three font families, the type scale, heading hierarchy, and when to reach for serif rather than sans."
+sidebarTitle: "Typography"
+icon: "type"
+---
+
+Three font families, each with a job. The choices prioritise African language coverage and
+readability on the devices people actually use.
+
+## The font stack
+
+| Role | Font | CSS variable | Why |
+| --- | --- | --- | --- |
+| Body | Noto Sans | `--font-sans` | Broad language support including African diacritics |
+| Display | Noto Serif | `--font-serif` | Elegant display type with matching language coverage |
+| Code | JetBrains Mono | `--font-mono` | Built for developer readability |
+
+The language-coverage reason is the load-bearing one and is covered in
+[internationalisation](/foundations/internationalization).
+
+### Loading them
+
+```tsx
+const fontSans = Noto_Sans({ subsets: ["latin"], variable: "--font-sans" })
+const fontSerif = Noto_Serif({ subsets: ["latin"], variable: "--font-serif" })
+const fontMono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" })
+```
+
+Apply the variables to `<html>` and set the default with `font-sans` on `<body>`.
+
+## The type scale
+
+| Name | Class | Size | Line height | Usage |
+| --- | --- | --- | --- | --- |
+| Display | `text-5xl` | 48px | 1.1 | Hero headlines |
+| Title 1 | `text-4xl` | 36px | 1.15 | Page titles |
+| Title 2 | `text-3xl` | 30px | 1.2 | Section titles |
+| Title 3 | `text-2xl` | 24px | 1.25 | Subsection titles |
+| Heading | `text-xl` | 20px | 1.3 | Card titles |
+| Subheading | `text-lg` | 18px | 1.5 | Lead paragraphs |
+| Body | `text-base` | 16px | 1.5 | Default body text |
+| Caption | `text-sm` | 14px | 1.5 | Secondary text, labels |
+| Footnote | `text-xs` | 12px | 1.5 | Metadata, timestamps |
+
+The published scale also defines a 72px display step for hero type on marketing surfaces.
+
+## Serif or sans
+
+**Noto Serif** for page titles and hero headlines, brand-level messaging, and section headings
+on landing pages.
+
+**Noto Sans** for everything else: body text, UI labels, buttons, inputs, navigation, card
+content, error messages.
+
+```tsx
+<h1 className="font-serif text-4xl font-bold tracking-tight">Page title</h1>
+<p className="text-base text-muted-foreground">Supporting body copy.</p>
+```
+
+## Heading hierarchy
+
+Use heading levels in order. Never skip from `h1` to `h3`.
+
+```tsx
+<h1>Page title</h1>          {/* exactly one per page */}
+  <h2>Major section</h2>
+    <h3>Subsection</h3>
+    <h3>Subsection</h3>
+  <h2>Major section</h2>
+    <h3>Subsection</h3>
+      <h4>Detail</h4>
+```
+
+Every page has exactly one `<h1>`. Screen readers build a page outline from this, so a skipped
+level is a navigation failure, not a styling quirk.
+
+## Line height and tracking
+
+| Context | Line height | Letter spacing |
+| --- | --- | --- |
+| Display text | `leading-tight` (1.1–1.2) | `tracking-tight` (-0.025em) |
+| Body text | `leading-relaxed` (1.5) | default |
+| UI labels | `leading-normal` (1.5) | default |
+| All-caps text | `leading-normal` | `tracking-widest` (0.1em) |
+| Code | `leading-relaxed` | default |
+
+Tight tracking stops large headings looking spread out; wide tracking makes all-caps labels
+readable.
+
+## Brand wordmarks
+
+Ecosystem brand names are rendered in **lowercase** — mukoko, nyuchi, shamwari, bundu, nhimbe,
+bushtrade, lingo. This is a brand rule, not a stylistic preference, and it survives sentence
+case.
+
+## The typography component
+
+The registry ships pre-styled elements:
+
+```bash
+npx shadcn@latest add https://mzizi.dev/api/v1/ui/typography
+```
+
+```tsx
+<TypographyH1>Page title</TypographyH1>
+<TypographyLead>Introductory paragraph with larger text.</TypographyLead>
+<TypographyH2>Section heading</TypographyH2>
+<TypographyP>Standard body paragraph.</TypographyP>
+```

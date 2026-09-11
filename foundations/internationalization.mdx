@@ -1,0 +1,109 @@
+---
+title: "Internationalisation"
+description: "Why Noto Sans, how text direction is handled, and locale-aware number and date formatting across African regions."
+sidebarTitle: "Internationalisation"
+icon: "languages"
+---
+
+The ecosystem serves users across a continent with thousands of languages. Internationalisation
+is handled at the foundation rather than bolted on, and the font choice is the clearest example
+of what that means in practice.
+
+**African languages are first-class, not localisations.** Every component, pattern and content
+structure assumes multilingual African usage as the default.
+
+## Why Noto Sans
+
+Noto Sans was chosen for a specific reason: it is one of the few families with comprehensive
+coverage of African language scripts and diacritics.
+
+Languages using Latin script with diacritical marks are routinely broken by popular UI fonts.
+Noto Sans handles:
+
+- **Yoruba** — underdots (ẹ, ọ, ṣ) and tone marks (à, á, è, é)
+- **Igbo** — underdots (ị, ọ, ụ) and combining marks
+- **Hausa** — hooked characters (ɓ, ɗ, ƙ)
+- **Shona** — circumflex accents and extended vowels
+- **Swahili** — standard Latin script
+- **Amharic and Tigrinya** — Ge'ez script, via Noto Sans Ethiopic
+- **Arabic** — via Noto Sans Arabic, with right-to-left support
+
+```css
+--font-sans:  "Noto Sans", sans-serif;
+--font-serif: "Noto Serif", serif;
+--font-mono:  "JetBrains Mono", monospace;
+```
+
+A font that renders a user's name wrongly is not a typography problem; it is a correctness
+problem. That is why this sits in the foundations rather than in a style guide.
+
+## Text direction
+
+Most African languages are left-to-right, and `dir="ltr"` on `<html>` covers them.
+
+For Arabic, wrap the application in a direction provider so Radix's direction context reaches
+every primitive:
+
+```tsx
+<DirectionProvider dir="rtl">
+  <YourApp />
+</DirectionProvider>
+```
+
+When building RTL-aware layouts:
+
+- Use **logical properties** — `ms-4` rather than `ml-4`, `ps-4` rather than `pl-4`.
+- Use `start` and `end` rather than `left` and `right` — `text-start`, `justify-end`.
+- Mark directional icons with `data-rtl-mirror="true"` where they should flip. See
+  [icons](/foundations/icons).
+
+Radix components handle RTL arrow-key navigation without further configuration.
+
+## Number formatting
+
+Formats differ by region. Use `Intl.NumberFormat` and never hardcode a symbol or a separator:
+
+```ts
+new Intl.NumberFormat("en-ZA", { style: "currency", currency: "ZAR" }).format(1234.56)
+// "R 1 234,56"
+
+new Intl.NumberFormat("en-NG", { style: "currency", currency: "NGN" }).format(1234.56)
+// "₦1,234.56"
+
+new Intl.NumberFormat("en-ZW", { style: "currency", currency: "USD" }).format(1234.56)
+// "US$1,234.56"
+```
+
+Note that the South African format uses a space as the thousands separator and a comma as the
+decimal point — a hardcoded `toFixed(2)` gets it wrong in a way that looks right to a reader
+who is not from there.
+
+## Date formatting
+
+```ts
+new Intl.DateTimeFormat("en-ZW", { dateStyle: "medium" }).format(new Date())
+// "2 Apr 2026"
+
+new Intl.DateTimeFormat("en-ZA", { dateStyle: "long", timeStyle: "short" }).format(new Date())
+// "2 April 2026 at 14:30"
+```
+
+For relative time:
+
+```ts
+const rtf = new Intl.RelativeTimeFormat("en", { numeric: "auto" })
+rtf.format(-1, "day")  // "yesterday"
+rtf.format(3, "hour")  // "in 3 hours"
+```
+
+## Content considerations
+
+- **Shona and Ndebele are primary languages** alongside English, not secondary translations.
+- **Do not assume English.** Labels, error messages and UI text should be externalisable from
+  the start; retrofitting is far more expensive.
+- **Avoid idioms.** "Hit the ground running" does not translate. See
+  [writing guidelines](/content/writing).
+- **Support variable text length.** Translated strings run 30–50% longer than English. A
+  layout that only works at English length is a layout that breaks on first translation.
+- **Respect naming conventions.** Use a single "Full name" field; never validate name length;
+  support Unicode. See [inclusive language](/content/inclusive-language).
