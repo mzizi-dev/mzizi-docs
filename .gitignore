@@ -1,0 +1,16 @@
+# macOS
+.DS_Store
+
+# Node / Mintlify CLI
+node_modules/
+.mintlify/
+*.log
+npm-debug.log*
+
+# Editors
+.idea/
+.vscode/
+
+# Env — nothing here should ever need one, which is the point of listing it
+.env
+.env.*

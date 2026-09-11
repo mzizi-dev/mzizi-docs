@@ -1,0 +1,184 @@
+---
+title: "The Phase 0 benchmark"
+description: "The measurement the whole thesis rests on: what it measures, why one input to it is held out, and the dependency rule that keeps the public project forkable. It has not run."
+icon: "flask-conical"
+---
+
+<Warning>
+  **The benchmark has not run.** No arm of it — frontier or small-model — has produced a
+  number. The harness mechanics are unspecified past the decisions on this page. Everything
+  below is design, and the kill criterion has therefore never had the chance to fire.
+</Warning>
+
+## What it measures
+
+An agent authors N equivalent components in Mzizi's syntax, and the same components in raw
+Dioxus and Leptos under the same harness. Three metrics:
+
+| Metric | Which failure modes it tests |
+| ------ | ---------------------------- |
+| **Tokens consumed** | FM-6 (ceremony) and FM-8 (formatting entropy) |
+| **Iterations to a clean compile** | FM-2 (anonymous delimiters) and FM-5 (round-trip starvation) |
+| **Defect rate** — compiles but wrong | FM-1, FM-3, FM-7, and contracts being in-language |
+
+The stopping rule, from RFC-0001 §6:
+
+> If Mzizi doesn't beat both on at least two of three metrics, the thesis is wrong and Phase
+> 1 does not start.
+
+And from RFC-0002 §5, an addition that matters because the whole design target changed:
+**the benchmark must include a small open-weight model arm.** The frontier arm alone cannot
+validate the thesis, because the frontier model is the one the design helps least.
+
+## The corpus, and what counts as a defect
+
+Both resolved in the charter (§6, dated 2026-08-23).
+
+**Task set: Mzizi's own components.** The registry's 571-plus components, partially ported to
+Rust, with the existing `.tsx` and `.rs` implementations as ground truth. Explicitly **not**
+a port of an external library — not shadcn, not a generic primitive set. The nine
+[primitives](/primitives) and the one worked [example](/syntax#a-whole-component) in the
+repository are hand ports from exactly this corpus.
+
+**A defect is code that compiles cleanly but is behaviourally wrong.** It passes the
+compiler and fails a contract or behaviour test against the reference implementation. This
+mirrors the contract-test pattern already used for the `.tsx` → `.rs` ports: the reference
+is read from disk, and disagreement is the new code's fault unless it is a documented,
+deliberate divergence.
+
+Note what is *not* a defect: a syntax or compile error. That is the normal friction the
+compile-error-density design goal is trying to minimise. The defect rate measures what gets
+**past** the compiler wrong.
+
+## Why one input is held out
+
+This is [RFC-0004](/rfcs), and it opens by correcting its own premise rather than building
+on it.
+
+The prompt for that RFC was SQLite — public-domain code, proprietary TH3 test harness, and
+the intuition that the split makes a project harder to attack. Two corrections:
+
+**SQLite's split is commercial, not defensive.** TH3 is proprietary because it is sold and
+carries DO-178B avionics certification evidence with its own licensing constraints. SQLite
+simultaneously ships a very large *public* test suite.
+
+**Private tests are close to worthless as a security control.** An attacker has the source, a
+fuzzer and symbolic execution. A test suite mostly documents what a project already handles
+correctly — one of the least useful artifacts an attacker could be handed. Meanwhile hiding
+it costs real things: contributors cannot verify their own work, and coverage gaps become
+invisible to the people best placed to point them out. _"Security that depends on the
+mechanism being secret is the failure mode Kerckhoffs named in 1883."_
+
+So no test in Mzizi is private because privacy makes it stronger. One reason is decisive:
+
+### Benchmark contamination
+
+If the task set and its expected outputs are public, they get scraped into training data.
+After that the benchmark measures **memorisation**, not the language, and reports a
+flattering number for exactly the wrong reason. This is not hypothetical — it is what
+happened to GSM8K, HumanEval and most public LLM benchmarks.
+
+It is also the one failure that cannot be detected from inside: a contaminated benchmark
+looks like a successful one. The charter gives Phase 0 a kill criterion, and **a kill
+criterion that cannot fire is not a criterion.** A held-out set is therefore a
+correctness requirement, not a secrecy preference.
+
+Three narrower reasons also qualify: fuzzing seed corpora (a curated set of inputs that once
+crashed the compiler is a head start against unpatched forks — but never the fix or the
+regression test, both of which stay public); embargo windows, which are temporary by design;
+and certification evidence, which is not applicable today and is named only so the boundary
+is already drawn.
+
+## The split
+
+<CardGroup cols={2}>
+  <Card title="Public — everything below" icon="unlock">
+    The language, compiler, primitives and RFCs. The **entire correctness suite** — unit
+    tests, contract tests, parse gates, measured IR properties — permanently. The
+    **benchmark harness**: runner, metric definitions, scoring code. A published **fixture
+    format**, so anyone can write their own task set and run it.
+  </Card>
+  <Card title="Private — a small annex" icon="lock">
+    The held-out task set and its expected outputs. Fuzzing seed corpora. Embargoed security
+    tests, for the length of the embargo only.
+  </Card>
+</CardGroup>
+
+RFC-0004 states the ratio plainly: _"this is a small private annex to a large public suite,
+not a public shell around private testing. If someone cannot verify Mzizi's correctness from
+the public repository alone, the split has been drawn wrongly."_
+
+## The dependency rule
+
+> **Private consumes public. Public never consumes private.**
+
+Public CI must be completely self-contained: a fork with no secrets, no access and no
+relationship to the private repository must be able to run the full public suite and get a
+green result. The moment public CI needs a private token, every outside contributor's CI
+fails and the project is open source in name only.
+
+Three consequences the RFC calls non-negotiable:
+
+1. **A missing private result is `neutral`, never `failure`.** On a fork PR, a Dependabot
+   PR, whenever the secret is absent, the check reports "skipped". _"A red X that an outside
+   contributor is structurally unable to turn green is a wall, not a gate."_
+2. **The private result is advisory to outsiders, blocking only for maintainers.** Branch
+   protection may require it on `main`; it must not be required to *propose* a change.
+3. **A private failure must be reportable in public without leaking the test.** The check
+   reports the *shape* of the failure — which metric regressed, by how much, against which
+   component — not the task input.
+
+## The mechanism, and its current state
+
+The public half exists and is inert.
+`.github/workflows/mzizi-lang-benchmark-dispatch.yml` POSTs a `repository_dispatch` to the
+private repository carrying four public facts: commit SHA, ref, source repository, run id.
+
+It is **inert unless two things are configured** — the `MZIZI_HELDOUT_REPO` repository
+variable and the `MZIZI_DISPATCH_TOKEN` secret (`contents:write` on the private repository,
+nothing else). Neither exists, so today the job runs and reports "not configured". That is
+the intended steady state, not a failure. It is additionally guarded on `github.repository`
+so a fork skips it, and it **never** fails the build — a dispatch error is a warning, because
+a missed notification does not mean the commit is bad.
+
+The companion rule: the private runner must also **poll** for public commits it has not
+measured. The dispatch is a latency optimisation; the poll is the correctness guarantee.
+
+### The private repository does not exist, deliberately
+
+RFC-0004 settles where it will live — `mzizi-dev`, so read access to the held-out set is
+governed by one org's membership, which is the Mzizi maintainer set and nothing wider — and
+then argues it should not be created yet, for a design reason rather than a scheduling one:
+
+> Its whole job is to run the *public* harness against a private input, so if it exists
+> before the harness does, the harness ends up shaped around the private runner — the exact
+> inversion §3 forbids.
+
+Plus an argument about incentives worth quoting, because it is the kind of thing usually
+left unsaid:
+
+> An empty private repository is an attractive nuisance. Today every test in this project is
+> public, which is correct. The moment the repository exists, the marginal cost of filing a
+> test there drops to zero; each individual "this one is easier to keep private" is
+> defensible, and the aggregate is the public-shell-around-private-testing outcome §2 rules
+> out.
+
+**Trigger: the first held-out task. Not before.**
+
+## What this deliberately does not claim
+
+- It does not make Mzizi harder to attack. Security comes from the public suite, the
+  fuzzing, the `-D warnings` gate and review — all public.
+- It does not hide the compiler's behaviour. Every assertion about what Mzizi *does* is
+  public; only a held-out measurement of *how well an agent uses it* is not.
+- It is not permanent for security tests. Embargoed tests move to public at disclosure, and
+  a test still private after its embargo has expired is a bug in the process.
+
+## Still unsolved
+
+**Held-out set rotation.** A held-out set leaks slowly through published results and needs a
+refresh policy — probably a fraction rotated per reported run.
+
+**Third-party verification.** If an outside party needs to reproduce a benchmark claim there
+has to be a path, most likely a time-limited grant under an agreement not to publish. _"Worth
+solving before any number is published."_
