@@ -1,0 +1,138 @@
+---
+title: "Layout"
+description: "The Mzizi layout system — responsive breakpoints, the spacing rhythm, container patterns and grid shapes, starting from the smallest screen."
+sidebarTitle: "Layout"
+icon: "layout-grid"
+---
+
+The layout system is mobile-first. Every layout decision starts at the smallest screen and
+progressively enhances, because that is the order in which the constraints bind.
+
+## Breakpoints
+
+Tailwind's defaults, used unmodified:
+
+| Breakpoint | Minimum width | Target |
+| --- | --- | --- |
+| (default) | 0px | Mobile phones |
+| `sm` | 640px | Large phones, small tablets |
+| `md` | 768px | Tablets |
+| `lg` | 1024px | Laptops |
+| `xl` | 1280px | Desktops |
+| `2xl` | 1536px | Large screens |
+
+### Mobile-first means mobile-first
+
+Write the mobile styles unprefixed, then add breakpoint modifiers:
+
+```tsx
+{/* correct */}
+<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+
+{/* wrong — desktop-first, and the modifiers fight each other */}
+<div className="grid grid-cols-3 md:grid-cols-2 sm:grid-cols-1">
+```
+
+## Spacing
+
+The design system publishes a named spacing scale — see
+[design tokens](/foundations/tokens). In Tailwind these are the values reached for most:
+
+| Token | Value | Usage |
+| --- | --- | --- |
+| `1` | 4px | Tight gaps, icon to text |
+| `2` | 8px | Standard small gap |
+| `3` | 12px | Component internal padding |
+| `4` | 16px | Standard gap, card padding |
+| `6` | 24px | Section padding on mobile |
+| `8` | 32px | Section padding on desktop |
+| `12` | 48px | Large section spacing |
+| `16` | 64px | Page section separation |
+| `24` | 96px | Hero spacing |
+
+### Rhythm
+
+Keep vertical rhythm on multiples of 4px:
+
+```tsx
+<section className="px-4 py-12 sm:px-6 sm:py-16 md:py-24">
+  <div className="mx-auto max-w-5xl">
+    <h2 className="mb-4">Section title</h2>
+    <p className="mb-8">Description text</p>
+    <div className="grid gap-4 sm:gap-6">{/* content */}</div>
+  </div>
+</section>
+```
+
+## Containers
+
+The standard content container:
+
+```tsx
+<div className="mx-auto max-w-5xl px-4 sm:px-6">{/* content */}</div>
+```
+
+| Class | Width | Usage |
+| --- | --- | --- |
+| `max-w-2xl` | 672px | Narrow content — articles, forms |
+| `max-w-4xl` | 896px | Standard content |
+| `max-w-5xl` | 1024px | Wide content, landing pages |
+| `max-w-6xl` | 1152px | Full-width content |
+| `max-w-7xl` | 1280px | Dashboard layouts |
+
+### Full-bleed sections
+
+A section that spans the viewport but keeps its content centred:
+
+```tsx
+<section className="w-full bg-muted">
+  <div className="mx-auto max-w-5xl px-4 py-16 sm:px-6">{/* content */}</div>
+</section>
+```
+
+## Grids
+
+### Card grid
+
+```tsx
+<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+  <Card>...</Card>
+</div>
+```
+
+### Sidebar
+
+```tsx
+<div className="flex min-h-screen">
+  <aside className="hidden w-64 border-r border-border md:block">{/* sidebar */}</aside>
+  <main className="flex-1 p-4 sm:p-6">{/* main */}</main>
+</div>
+```
+
+### Stack
+
+```tsx
+<div className="flex flex-col gap-4">
+  <Component />
+  <Component />
+</div>
+```
+
+## Right-to-left
+
+Use **logical properties** rather than physical ones — `ms-4` rather than `ml-4`, `ps-4`
+rather than `pl-4`, `text-start` rather than `text-left`. A layout built with physical
+properties needs a second stylesheet to support Arabic; one built with logical properties does
+not.
+
+## Mobile considerations
+
+- **Touch targets** — 48px minimum on every interactive element.
+- **Thumb zones** — put primary actions in the lower half of the screen.
+- **Bottom navigation** — `nyuchi-bottom-nav` for app-level navigation on mobile.
+- **Sheet rather than dialog** — a bottom sheet is easier to reach and dismiss than a centred
+  modal.
+- **No horizontal scroll** — stack instead. The exception is a wide data table, which scrolls
+  inside its own container rather than pushing the page.
+- **Loading states** — show skeletons immediately; on a slow connection the alternative is a
+  blank screen the user reads as broken.

@@ -75,6 +75,28 @@
         ]
       },
       {
+        "group": "Foundations",
+        "pages": [
+          "foundations/overview",
+          "foundations/tokens",
+          "foundations/typography",
+          "foundations/layout",
+          "foundations/motion",
+          "foundations/icons",
+          "foundations/accessibility",
+          "foundations/internationalization"
+        ]
+      },
+      {
+        "group": "Content style",
+        "pages": [
+          "content/overview",
+          "content/writing",
+          "content/error-messages",
+          "content/inclusive-language"
+        ]
+      },
+      {
         "group": "Registry tooling",
         "pages": [
           "tooling",
