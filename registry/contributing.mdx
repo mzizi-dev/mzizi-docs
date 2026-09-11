@@ -1,0 +1,152 @@
+---
+title: "Contributing a component"
+description: "How to author a new component into the Mzizi registry — the mandatory patterns, the manifest entry, and the checks it has to pass."
+sidebarTitle: "Contributing"
+icon: "git-pull-request"
+---
+
+Every registry component follows the same shape. This page is what it takes to add one to
+[`mzizi-dev/mzizi-registry`](https://github.com/mzizi-dev/mzizi-registry).
+
+## 1. Create the component file
+
+Components live under `components/registry/n<number>-<name>/`, filed by the node they sit on.
+See [placing a component](/architecture/nodes) if you are unsure which that is.
+
+```tsx
+// components/registry/n2-primitives/my-component.tsx
+"use client"
+
+const myComponentVariants = cva(
+  "inline-flex items-center justify-center rounded-md transition-colors",
+  {
+    variants: {
+      variant: {
+        default: "bg-primary text-primary-foreground",
+        outline: "border border-border bg-transparent text-foreground",
+      },
+      size: {
+        default: "h-14 px-4",
+        sm: "h-12 px-3 text-sm",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+    },
+  }
+)
+
+interface MyComponentProps
+  extends React.ComponentProps<"div">,
+    VariantProps<typeof myComponentVariants> {}
+
+function MyComponent({ className, variant, size, ...props }: MyComponentProps) {
+  return (
+    <div
+      data-slot="my-component"
+      className={cn(myComponentVariants({ variant, size, className }))}
+      {...props}
+    />
+  )
+}
+
+export { MyComponent, myComponentVariants }
+```
+
+## 2. Follow the mandatory patterns
+
+Every component carries:
+
+- **CVA variants** — `class-variance-authority` for every visual variant, never inline
+  conditional classes.
+- **`cn()` composition** — all `className` props go through it.
+- **A `data-slot` attribute** on the root element.
+- **Named exports** — the component and its variants. No default export.
+- **Radix UI primitives** for focus, keyboard and screen-reader behaviour where the component
+  is interactive.
+- **TypeScript types** extending the appropriate HTML element props.
+
+## 3. Add it to `registry.json`
+
+```json
+{
+  "name": "my-component",
+  "type": "registry:ui",
+  "description": "A brief description of what the component does.",
+  "dependencies": ["class-variance-authority"],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "components/registry/n2-primitives/my-component.tsx",
+      "type": "registry:ui"
+    }
+  ]
+}
+```
+
+| Field | Required | Description |
+| --- | --- | --- |
+| `name` | Yes | Kebab-case identifier; matches the file name |
+| `type` | Yes | `registry:ui`, `registry:hook`, `registry:lib`, `registry:block`, `registry:base` or `registry:theme` |
+| `description` | Yes | One line |
+| `dependencies` | Yes | npm packages; may be empty |
+| `registryDependencies` | Yes | Other registry item names this needs |
+| `files` | Yes | The files that make up the item |
+
+An item with more than one source file where the schema expects exactly one is a manifest bug
+rather than a bad request, and the API says so — worth knowing when a component 500s and the
+source looks fine.
+
+## 4. Rebuild the static registry
+
+```bash
+pnpm registry:build
+```
+
+This regenerates the static JSON under `public/r/`.
+
+## 5. Check it serves
+
+```bash
+pnpm dev
+curl http://localhost:3000/api/v1/ui/my-component
+```
+
+The response should carry the metadata and the inlined source.
+
+## 6. Add tests
+
+```tsx
+describe("MyComponent", () => {
+  it("renders with default variant", () => {
+    render(<MyComponent>Content</MyComponent>)
+    expect(screen.getByText("Content")).toBeInTheDocument()
+  })
+
+  it("applies variant classes", () => {
+    render(<MyComponent variant="outline">Content</MyComponent>)
+    expect(screen.getByText("Content")).toHaveClass("border")
+  })
+})
+```
+
+## 7. Run everything
+
+```bash
+pnpm test
+pnpm lint
+pnpm typecheck
+```
+
+## Checklist
+
+- [ ] CVA + Radix + `cn()` throughout
+- [ ] CSS custom properties only — no hardcoded colours
+- [ ] `data-slot` on the root element
+- [ ] Named exports, no default export
+- [ ] Entry in `registry.json` with the right type and dependencies
+- [ ] `pnpm registry:build` runs clean
+- [ ] The API serves it
+- [ ] Tests, lint and types pass
+- [ ] APCA 3.0 contrast, 48px minimum touch targets, keyboard navigation

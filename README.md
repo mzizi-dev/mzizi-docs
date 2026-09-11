@@ -3,11 +3,22 @@
 The Mzizi documentation site — a [Mintlify](https://mintlify.com) deployment, destined for
 `docs.mzizi.dev`.
 
-It documents **Mzizi-lang**: the Phase 0 research language, its `mz` compiler, the nine
-primitives, the content-addressed IR, and the four RFCs — all from
-[`mzizi-dev/mzizi`](https://github.com/mzizi-dev/mzizi). It is not documentation for the
-Mzizi component registry, which is a separate, shipping thing; `ecosystem.mdx` draws that
-line.
+It documents two things that share a name, and keeps them apart.
+
+**Mzizi-lang** — the Phase 0 research language, its `mz` compiler, the nine primitives, the
+content-addressed IR and the four RFCs — from
+[`mzizi-dev/mzizi`](https://github.com/mzizi-dev/mzizi). These are the pages in the flat root
+directory.
+
+**The Mzizi registry** — the shipping component system, brand system and DNA-helix
+architecture served at `mzizi.dev`, from
+[`mzizi-dev/mzizi-registry`](https://github.com/mzizi-dev/mzizi-registry). These are the pages
+under `architecture/`, `registry/`, `foundations/`, `patterns/`, `blocks/`, `charts/` and
+`content/`, plus `tooling.mdx` and `console.mdx`.
+
+They are different things with different maturity, and the distinction is load-bearing.
+`ecosystem.mdx` draws the line, and every section landing page under the registry tree repeats
+it.
 
 ## The one editorial rule
 
@@ -27,10 +38,20 @@ design intention.
 ```
 docs.json          navigation, theme, colours, fonts, contextual menu
 style.css          neutral ramp + base font size (auto-loaded by Mintlify on deploy)
-*.mdx              the pages; one flat directory, names match the nav in docs.json
+*.mdx              the Mzizi-lang pages, flat at the root
+architecture/      the DNA helix, node placement, component backlinks
+registry/          consuming, contributing, schema, browsing, the MCP server
+foundations/       tokens, typography, layout, motion, icons, a11y, i18n
+patterns/          the mandatory application patterns
+blocks/ charts/    composed page sections; the Recharts wrappers
+content/           voice, tone, error messages, inclusive language
 images/            favicon
 scripts/           check-contrast.mjs — the APCA 3.0 gate CI runs
 ```
+
+The registry pages were consolidated in from two other organisations' Starlight sites
+(`bundu-labs/bundu-docs` and `nyuchi/nyuchi-docs`). Nothing was removed from those sites —
+see the import notes in the pull requests that landed them.
 
 ## Running it locally
 

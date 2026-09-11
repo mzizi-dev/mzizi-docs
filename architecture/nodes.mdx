@@ -1,0 +1,104 @@
+---
+title: "Placing a component"
+description: "How to decide which node of the DNA helix a new component belongs to, and the rules each node carries."
+sidebarTitle: "Placing a component"
+icon: "git-branch"
+---
+
+Use this guide to decide which node a new component belongs on. Placement is not a filing
+decision — it determines what the component may import, what it must do, and how it is
+observed.
+
+<Note>
+  This page was rewritten from a "Node Decision Guide" that described ten nodes across five
+  axes and instructed authors to write component source into a database. Both of those are
+  retired. See [the helix](/architecture/overview) for the model that replaced them, and
+  [contributing](/registry/contributing) for how source actually lands.
+</Note>
+
+## The decision tree
+
+**Is it a CSS value, colour, spacing or design token?** → **N1 tokens**
+
+Minerals, semantic colours, spacing, typography, radius, shadow, motion, breakpoints,
+z-index, icon sizes, touch targets, density. N1 is the only node allowed to *define* a value.
+
+**Is it a generic UI element — button, input, card, dialog, segmented control, toolbar?** →
+**N2 primitives**
+
+- Must **not** import `useNyuchiHarness`.
+- Must carry a `data-slot` attribute.
+- Must compose classes through `cn()`.
+- Must not reference mineral colours directly — semantic tokens only.
+- 56px default and 48px minimum touch target.
+- Pill-shaped categories (button, input, avatar, badge, toggle) use a `9999` radius.
+
+**Is it a branded component carrying the mineral palette?** → **N3 brand**
+
+- Name carries a brand prefix — `nyuchi-` or `mzizi-` in the current registry.
+- Imports `useNyuchiHarness` and destructures `{ log, motion, LiveRegion }`.
+- Carries an animation style that respects `prefers-reduced-motion`.
+- ARIA, `data-slot`, `focus-visible`, 48px touch targets.
+
+**Is it a verification check, content gate or security boundary?** → **N4 safety**
+
+Permission, content, trust, geo, rate, moderation, feature and subscription gates; wallet,
+DID and chain gates; the post-quantum crypto gate; the offline gate.
+
+**Is it an error boundary, fallback or degradation pattern?** → **N5 resilience**
+
+**Is it a full-screen page layout or page composition?** → **N6 pages**
+
+- Must **not** render its own buttons, cards or badges — those are N2 and N3.
+- Must use semantic CSS variables only (`bg-card`, `text-foreground`, `bg-primary`).
+- Must accept children or slots for content.
+
+**Is it navigation, routing or app lifecycle?** → **N7 shell**
+
+**Is it monitoring, testing, observability or conformity validation?** → **N8 assurance**
+
+Live examples: `mzizi-a11y-audit`, `mzizi-conformity-check`, `mzizi-api-probe`,
+`mzizi-alert-engine`, `mzizi-chaos`. The shape is a TypeScript module exporting typed
+functions plus a React hook for continuous monitoring.
+
+**None of the above?** It is probably a rung, not a node — and rungs are not components you
+place in an application. Self-healing is N9, prose is N10, machine-facing metadata is N11,
+agent skills are N12. See [the helix](/architecture/overview).
+
+## Where source lives
+
+Component source is **files in the repository**, under
+`components/registry/n<number>-<name>/` in
+[`mzizi-dev/mzizi-registry`](https://github.com/mzizi-dev/mzizi-registry), with
+`registry.json` as the manifest. The API reads the manifest and the files on disk.
+
+<Warning>
+  Earlier versions of this guide said every stable component carried its source in a
+  `components.source_code` database column, and that adding a component meant writing the
+  source with SQL. That is no longer true and is not a supported path. The registry's own
+  rule is now explicit: a script, a release or telemetry writes to the database; a human
+  writes to a file, where a diff and a reviewer can see it.
+</Warning>
+
+## CSS rules
+
+- All CSS values are defined at N1. Every other node consumes them through `var()`.
+- No raw Tailwind palette classes (`bg-red-500`) outside N1.
+- No inline hex, except documented third-party brand marks.
+- N6 pages use semantic CSS variables only.
+- Use logical properties (`margin-inline-start`, `padding-inline-end`) rather than physical
+  ones, so right-to-left layouts work without a second stylesheet.
+
+## Icon rules
+
+- Import icons through the registry's `lib/icons` module rather than reaching for
+  `lucide-react` directly — the indirection is what lets the icon library be swapped, and the
+  icon library is one of the three declared fork seams on the `swappable` strand.
+- Size from the token scale rather than ad-hoc values.
+- Mark directional icons with `data-rtl-mirror="true"` when they should flip in RTL contexts.
+
+## Accessibility
+
+Mzizi's stated contrast standard is **APCA 3.0**, not a WCAG 2.x ratio. Validate new colour
+pairings against it before shipping them; the two models disagree, and where they disagree the
+perceptual one is the one this system follows.

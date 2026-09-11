@@ -1,0 +1,94 @@
+---
+title: "The component registry"
+description: "How the Mzizi component registry works — a shadcn-compatible registry serving 575 items over a public API, backed by files in a repository."
+sidebarTitle: "Overview"
+icon: "library"
+---
+
+<Note>
+  This section documents the **Mzizi registry** — the shipping component system served at
+  [mzizi.dev](https://mzizi.dev) — not **Mzizi-lang**, the Phase 0 research language the rest
+  of this site covers. [The ecosystem page](/ecosystem) draws the line.
+</Note>
+
+The Mzizi portal is a **shadcn-compatible component registry**. Any project can install a
+component with a single CLI command, and the same manifest serves the CLI, the HTTP API and
+the MCP server.
+
+```bash
+npx shadcn@latest add https://mzizi.dev/api/v1/ui/button
+```
+
+That fetches the component JSON, resolves its dependencies, and writes the source into your
+project as a file you own.
+
+## What it holds
+
+Read from `GET https://mzizi.dev/api/v1/ui` on 11 September 2026:
+
+| Item type | Count | Installs to |
+| --- | --- | --- |
+| `registry:ui` | 419 | `components/ui/` |
+| `registry:block` | 105 | composed page sections |
+| `registry:lib` | 46 | `lib/` |
+| `registry:hook` | 3 | `hooks/` |
+| `registry:base` | 1 | the base layer |
+| `registry:theme` | 1 | the theme |
+| **Total** | **575** | |
+
+Counts move. `GET /api/v1/ui` is the live answer and `GET /api/v1/stats` publishes usage
+metrics alongside it — prefer either to a number written down anywhere, including here.
+
+## Where the source of truth is
+
+`registry.json` at the root of
+[`mzizi-dev/mzizi-registry`](https://github.com/mzizi-dev/mzizi-registry) is the manifest, and
+the component source sits beside it on disk under `components/registry/n<number>-<name>/`.
+The API reads both.
+
+<Warning>
+  The registry is **file-based**. Component source is not stored in a database, and writing a
+  component with SQL is not a supported path — it was, and the practice was retired. The
+  repository's own rule states the test: a script, a release or telemetry writes to the
+  database; a human writes to a file, where a diff and a reviewer can see it. The database
+  that remains holds version history, issue and self-healing logs, and observability events.
+</Warning>
+
+## How it serves
+
+```
+registry.json  (manifest — source of truth)
+    |
+    +-- Dynamic API  (app/api/v1/ui/)
+    |     GET /api/v1/ui          -> registry index
+    |     GET /api/v1/ui/{name}   -> component JSON with inlined source
+    |
+    +-- Static build (pnpm registry:build)
+          public/r/{name}.json    -> pre-built component JSON for CDN serving
+```
+
+Both shapes are what the shadcn CLI expects, so either can back an install.
+
+## Where to go next
+
+<CardGroup cols={2}>
+  <Card title="Consuming" icon="download" href="/registry/consuming">
+    Install components into your application with the shadcn CLI, customise them afterwards,
+    and take updates without losing your changes.
+  </Card>
+  <Card title="Contributing" icon="git-pull-request" href="/registry/contributing">
+    Author a new component, register it in the manifest, and get it through the checks.
+  </Card>
+  <Card title="Schema" icon="braces" href="/registry/schema">
+    The shadcn-compatible JSON schema, the item types, and the API response shape.
+  </Card>
+  <Card title="MCP server" icon="plug" href="/registry/mcp">
+    The one Mzizi MCP endpoint, what it exposes, and how to connect a client.
+  </Card>
+  <Card title="Browsing" icon="search" href="/registry/components">
+    Listing components from the API and from the portal.
+  </Card>
+  <Card title="Architecture" icon="dna" href="/architecture/overview">
+    The DNA helix each component is placed on, and what placement obliges it to do.
+  </Card>
+</CardGroup>

@@ -32,15 +32,54 @@
     "groups": [
       {
         "group": "Start here",
-        "pages": ["index", "status", "ecosystem"]
+        "pages": [
+          "index",
+          "status",
+          "ecosystem"
+        ]
       },
       {
         "group": "The language",
-        "pages": ["syntax", "primitives", "compiler", "ir"]
+        "pages": [
+          "syntax",
+          "primitives",
+          "compiler",
+          "ir"
+        ]
       },
       {
         "group": "The research programme",
-        "pages": ["charter", "benchmark", "rfcs"]
+        "pages": [
+          "charter",
+          "benchmark",
+          "rfcs"
+        ]
+      },
+      {
+        "group": "The registry",
+        "pages": [
+          "registry/overview",
+          "registry/consuming",
+          "registry/contributing",
+          "registry/schema",
+          "registry/components",
+          "registry/mcp"
+        ]
+      },
+      {
+        "group": "Registry architecture",
+        "pages": [
+          "architecture/overview",
+          "architecture/nodes",
+          "architecture/backlinks"
+        ]
+      },
+      {
+        "group": "Registry tooling",
+        "pages": [
+          "tooling",
+          "console"
+        ]
       }
     ]
   },
@@ -58,7 +97,16 @@
     }
   },
   "contextual": {
-    "options": ["copy", "view", "chatgpt", "claude", "perplexity", "mcp", "cursor", "vscode"]
+    "options": [
+      "copy",
+      "view",
+      "chatgpt",
+      "claude",
+      "perplexity",
+      "mcp",
+      "cursor",
+      "vscode"
+    ]
   },
   "footer": {
     "socials": {
