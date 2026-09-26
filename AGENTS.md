@@ -62,8 +62,9 @@ Two specific traps:
   `nyuchi/mzizi-tools` and `nyuchi/fundi` are now `mzizi-dev/agent-tools`, which is
   **private — never link it**. `mzizi-dev/mzizi` is the **language**, not the registry, so
   never repair a `nyuchi/mzizi` reference by dropping the org prefix.
-- Only `mzizi.dev` and `mcp.mzizi.dev` resolve. `docs.`, `api.` and `app.mzizi.dev` do not.
-  `dig` before writing any of them as live.
+- `mzizi.dev`, `mcp.mzizi.dev`, `api.mzizi.dev` and `app.mzizi.dev` all resolve (checked 26
+  September 2026). `docs.mzizi.dev` does not yet. `dig` before writing any of them as live —
+  this list moves.
 - **`mz`** is the compiler binary. **Primitives** are `.mz` source copied into a project, not
   crates.
 - The framework is Bundu Foundation IP; the console ("Fundi") is Nyuchi-owned. Keep the
