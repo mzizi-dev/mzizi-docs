@@ -76,13 +76,13 @@ the same as an address that exists — the api-gateway repository exists precise
 `api.mzizi.dev` was being called by a client that asserted it "still resolves", and an earlier
 measurement said `NXDOMAIN`.
 
-| Domain           | Resolves | Served by                                 |
-| ---------------- | -------- | ----------------------------------------- |
-| `mzizi.dev`      | **Yes**  | **mzizi-site** — cut over from mzizi-registry |
-| `mcp.mzizi.dev`  | **Yes**  | The one Mzizi MCP server, Streamable HTTP |
+| Domain           | Resolves | Served by                                                           |
+| ---------------- | -------- | ------------------------------------------------------------------- |
+| `mzizi.dev`      | **Yes**  | **mzizi-site** — cut over from mzizi-registry                       |
+| `mcp.mzizi.dev`  | **Yes**  | The one Mzizi MCP server, Streamable HTTP                           |
 | `api.mzizi.dev`  | **Yes**  | mzizi-registry still — mzizi-api-gateway is built, not yet cut over |
-| `app.mzizi.dev`  | **Yes**  | mzizi-console                              |
-| `docs.mzizi.dev` | **No**   | This site, when the domain is cut over    |
+| `app.mzizi.dev`  | **Yes**  | mzizi-console                                                       |
+| `docs.mzizi.dev` | **No**   | This site, when the domain is cut over                              |
 
 <Note>
   If you are reading this page at a URL that is not `docs.mzizi.dev`, that is why. Cutting
