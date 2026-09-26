@@ -20,33 +20,41 @@ All in the [`mzizi-dev`](https://github.com/mzizi-dev) org, which is Foundation-
 
   </Card>
   <Card title="mzizi-registry" icon="library" href="https://github.com/mzizi-dev/mzizi-registry">
-    **The component registry, brand system and developer portal.** A Next.js app serving
-    `mzizi.dev` and the `/api/v1` surface from `registry.json` and the component files beside
-    it. 575 registry items, the Seven African Minerals palette, the DNA-helix architecture
-    model.
+    **The component registry, brand system and developer portal.** A Next.js app whose
+    `/api/v1` surface serves `registry.json` and the component files beside it — 577 registry
+    items, the Seven African Minerals palette, the DNA-helix architecture model.
 
-    _Live._
+    _Live at its own Workers subdomain (`mzizi-registry.nyuchi.workers.dev`). No longer the
+    apex — see `mzizi-site` below — and its own portal pages (`/components`, `/architecture`,
+    `/tokens`, `/brand`, `/observability`) are being ported there one at a time._
 
   </Card>
   <Card title="mzizi-api-gateway" icon="server" href="https://github.com/mzizi-dev/mzizi-api-gateway">
     **`api.mzizi.dev`** — the registry API as a pure-Rust Cloudflare Worker, built on
-    `workers-rs`. A strangler fig over the Next.js handlers rather than a rewrite.
+    `workers-rs`. A strangler fig over the Next.js handlers rather than a rewrite: one route
+    (`/v1/health`) native, everything else proxied to `mzizi-registry` byte-identical.
 
-    _Scaffold. One route native, the rest proxied._
+    _Built and merged to `main`. `api.mzizi.dev` resolves today but is still answered directly
+    by `mzizi-registry`'s own Worker — this Worker has not yet been cut over to the domain._
 
   </Card>
   <Card title="mzizi-console" icon="layout-dashboard" href="https://github.com/mzizi-dev/mzizi-console">
     **`app.mzizi.dev`** — Astro renders the chrome as static HTML; Rust/Dioxus islands render
-    the data, fetched live from the registry API. **Nyuchi-owned**, not Foundation.
+    the data, fetched live from the registry API. Client-side WorkOS AuthKit gate, fail-closed.
+    **Nyuchi-owned**, not Foundation.
 
-    _In development._
+    _`app.mzizi.dev` resolves and is live. The AuthKit-gating work is merged to `main` but not
+    yet redeployed._
 
   </Card>
   <Card title="mzizi-site" icon="globe" href="https://github.com/mzizi-dev/mzizi-site">
-    **`mzizi.dev`** — intended as the site that brings the language, the registry and the
-    docs together.
+    **`mzizi.dev`** — the site that brings the language, the registry and the docs together.
+    Static Astro, styled on `@bundu/ui`, reading the live registry API at build time.
 
-    _Empty repository. `mzizi.dev` is served by **mzizi-registry** today._
+    _Live — this **is** the apex today._ Six pages so far (`/`, `/language`, `/ecosystem`,
+    `/components`, `/architecture`, `/tokens`); the registry portal's other pages
+    (`/playground`, `/skills`, `/cli`, `/observability`, per-component detail pages) are not
+    ported yet, so those still 404 here.
 
   </Card>
   <Card title="mzizi-docs" icon="book-open" href="https://github.com/mzizi-dev/mzizi-docs">
@@ -63,23 +71,33 @@ under [agent tooling](/tooling), though its source is not public.
 
 ## The domains, measured
 
-Checked 11 September 2026 by DNS lookup, because an address the ecosystem writes down is not
+Checked 26 September 2026 by DNS lookup, because an address the ecosystem writes down is not
 the same as an address that exists — the api-gateway repository exists precisely because
-`api.mzizi.dev` was being called by a client that asserted it "still resolves", and the
+`api.mzizi.dev` was being called by a client that asserted it "still resolves", and an earlier
 measurement said `NXDOMAIN`.
 
 | Domain           | Resolves | Served by                                 |
 | ---------------- | -------- | ----------------------------------------- |
-| `mzizi.dev`      | **Yes**  | mzizi-registry, via Cloudflare            |
+| `mzizi.dev`      | **Yes**  | **mzizi-site** — cut over from mzizi-registry |
 | `mcp.mzizi.dev`  | **Yes**  | The one Mzizi MCP server, Streamable HTTP |
-| `api.mzizi.dev`  | **No**   | mzizi-api-gateway, when deployed          |
-| `app.mzizi.dev`  | **No**   | mzizi-console, when deployed              |
+| `api.mzizi.dev`  | **Yes**  | mzizi-registry still — mzizi-api-gateway is built, not yet cut over |
+| `app.mzizi.dev`  | **Yes**  | mzizi-console                              |
 | `docs.mzizi.dev` | **No**   | This site, when the domain is cut over    |
 
 <Note>
   If you are reading this page at a URL that is not `docs.mzizi.dev`, that is why. Cutting
   the domain over is a deliberate human step, documented in this repository's README.
 </Note>
+
+<Warning>
+  The `mzizi.dev` cutover above happened outside version control: a custom domain was attached
+  to `mzizi-site`'s Worker directly in the Cloudflare dashboard, with no corresponding pull
+  request in either `mzizi-site` or `mzizi-registry`. A custom domain **takes** a hostname
+  something else already serves, silently, on the next request — it broke `mzizi-registry`'s
+  own portal pages (`/components`, `/brand`, `/tokens`, `/architecture`, `/observability`),
+  which had no other address and are only now being ported to `mzizi-site` one at a time.
+  Decide the target in a pull request before attaching a custom domain to a Worker in this org.
+</Warning>
 
 ## Who owns what
 
