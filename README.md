@@ -114,35 +114,11 @@ debt above came in from.
 ## Running it locally
 
 ```bash
-npm i -g mint      # the Mintlify CLI
-mint dev           # http://localhost:3000
+npm i -g mint && mint dev   # http://localhost:3000, from the repo root
 ```
 
-Run it from the repository root, where `docs.json` lives.
-
-Two things worth knowing before you trust the preview:
-
-- **`style.css` is not picked up by `mint dev`.** The `--gray-*` values stay Mintlify's
-  computed defaults locally. Per Mintlify's own documentation the file is auto-loaded on the
-  deployed site, so this is a local-CLI gap — but re-verify the ramp on a real deploy preview
-  rather than assuming.
-- If a page 404s, check you are in a directory with a valid `docs.json`. If the dev server
-  misbehaves, `mint update`.
-
-## Checks
-
-Everything CI runs, runnable locally:
-
-```bash
-npx mint@latest validate                                        # strict: warnings fail
-npx mint@latest broken-links --check-anchors --check-redirects  # internal links only
-npx mint@latest a11y                                            # alt attributes
-node scripts/check-contrast.mjs                                 # APCA 3.0 brand colours
-```
-
-`broken-links` deliberately omits `--check-external`: it would make the check depend on
-third-party availability and turn a transient network failure into a red PR unrelated to the
-diff.
+See [`AGENTS.md`](./AGENTS.md) for the local-dev caveats, the exact checks CI runs, and the
+merge convention.
 
 ### Why APCA and not WCAG
 
@@ -172,23 +148,8 @@ binary is still MIT-licensed.
 Mintlify deploys from this repository through the Mintlify GitHub App. Install it from the
 [Mintlify dashboard](https://dashboard.mintlify.com/settings/organization/github-app) and
 point it at `mzizi-dev/mzizi-docs`. After that, **a merge to `main` deploys to production
-automatically**; pull requests get a preview deployment.
-
-This repository is **rebase-only**. Read off the GitHub API on 2026-09-12,
-`allow_rebase_merge` is `true` with `allow_merge_commit` and `allow_squash_merge` both
-`false` — on all nine repositories in `mzizi-dev` and all 75 in the enterprise — with
-auto-merge enabled. Land changes with:
-
-```bash
-gh pr merge <n> --rebase --auto
-```
-
-Never `--admin`. The previous instruction here, `--merge`, is now rejected by the repo
-settings.
-
-> **Never run `prettier --write` on an `.mdx` file.** Prettier 3.9.x rewrites
-> `{/* … */}` into `{/_ … _/}`, which is invalid MDX. Prettier on `.md` is fine and is what
-> CI runs.
+automatically**; pull requests get a preview deployment. See [`AGENTS.md`](./AGENTS.md) for
+the merge convention and the MDX/prettier gotcha.
 
 ## Making `docs.mzizi.dev` live — for a human
 

@@ -84,3 +84,35 @@ Two specific traps:
 Remember `colors.light` renders in DARK mode and `colors.dark` renders in LIGHT mode. Do not
 substitute a WCAG ratio check for this — see the README for why that masks real failures in
 this palette.
+
+## Commands
+
+```bash
+npm i -g mint      # the Mintlify CLI, once
+mint dev           # http://localhost:3000 — run from the repo root, where docs.json lives
+```
+
+`style.css` is not picked up by `mint dev` — the `--gray-*` values stay Mintlify's computed
+defaults locally. Re-verify the ramp on a real deploy preview rather than assuming from the
+local server. If a page 404s locally, confirm you're in the directory with `docs.json`; if
+the dev server misbehaves, `mint update`.
+
+Everything CI runs, in the same order, runnable locally before you push:
+
+```bash
+npx mint@latest validate                                        # strict: warnings fail
+npx mint@latest broken-links --check-anchors --check-redirects  # internal links only
+npx mint@latest a11y                                             # alt attributes
+node scripts/check-contrast.mjs                                 # APCA 3.0 brand colours
+```
+
+**Never run `prettier --write` on an `.mdx` file.** Prettier 3.9.x rewrites `{/* … */}`
+into `{/_ … _/}`, which is invalid MDX. Prettier on `.md` is fine and is what CI runs.
+
+## Merge convention
+
+This repository is rebase-only: `allow_rebase_merge` is `true`, `allow_merge_commit` and
+`allow_squash_merge` are both `false` (read off the GitHub API 2026-09-12, org-wide across
+all nine `mzizi-dev` repos and all 75 in the enterprise). Land changes with
+`gh pr merge <n> --rebase --auto`. Never `--admin`, and don't use `--merge` — the repo
+settings reject it.
