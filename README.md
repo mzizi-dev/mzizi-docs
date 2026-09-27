@@ -7,27 +7,23 @@
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 ![Mintlify](https://img.shields.io/badge/Mintlify-docs-0D9373?style=flat-square)
 
-**Status:** not deployed | **Intended address:** `docs.mzizi.dev` | **Long-form docs today:** [docs.bundu.org](https://docs.bundu.org) (product), [docs.nyuchi.com](https://docs.nyuchi.com) (engineering)
+**Status:** live | **Address:** [docs.mzizi.dev](https://docs.mzizi.dev) | **Deploys from:** this repository, on Mintlify
 
 ---
 
-## This site is not live
+## This is the home of Mzizi's documentation
 
-**`docs.mzizi.dev` does not resolve.** Checked 2026-09-12: no DNS record, no
-certificate, nothing to link. No Mintlify subdomain answers for this project either.
-Nothing in this repository is published anywhere, and until it is, do not link
-`docs.mzizi.dev` from another README, another repo's prose, or a package's
-`homepage` field — a docs link that 404s is worse than no docs link.
+**[docs.mzizi.dev](https://docs.mzizi.dev) is live.** Checked 2026-09-27: HTTP 200, with
+Mintlify and Vercel response headers. This repository is the single home of Mzizi's
+documentation — language and registry both. Link `docs.mzizi.dev` for anything Mzizi;
+do not link the old Mzizi path on `docs.bundu.org`, which returns 404.
 
-The move is planned, not done:
-[`mzizi-registry#324`](https://github.com/mzizi-dev/mzizi-registry/pull/324),
-"Mzizi documentation moves to mzizi-docs / docs.mzizi.dev", is **open and
-unmerged**. [Making `docs.mzizi.dev` live](#making-docsmzizidev-live--for-a-human)
-below is the procedure, and it needs a human with dashboard access.
-
-Working long-form documentation lives at
-[docs.bundu.org](https://docs.bundu.org) (product) and
-[docs.nyuchi.com](https://docs.nyuchi.com) (engineering). Both resolve.
+The move was decided in
+[`mzizi-registry#324`](https://github.com/mzizi-dev/mzizi-registry/pull/324), "Mzizi
+documentation moves to mzizi-docs / docs.mzizi.dev", merged 2026-09-25.
+[docs.bundu.org](https://docs.bundu.org) remains Bundu's own product documentation and
+[docs.nyuchi.com](https://docs.nyuchi.com) nyuchi's engineering documentation; neither is
+where Mzizi's docs live.
 
 ## What it documents
 
@@ -80,7 +76,7 @@ corrupts MDX comments, so this needs doing carefully and on its own branch.
 | The install form `https://mzizi.dev/api/v1/...` |    22 | That host returns **404**. The canonical form is `https://api.mzizi.dev/v1/ui/<name>`, which returns 200              |
 | "Five African Minerals"                         |     3 | The palette is **21 colour families**: 7 minerals, 7 heritage, 7 experimental                                         |
 | "Seven African Minerals" as the whole palette   |     3 | The minerals are seven; the palette is twenty-one. Correct as a count of one group, wrong as a description of the set |
-| A link to `docs.mzizi.dev`                      |     1 | Does not resolve                                                                                                      |
+| `ecosystem.mdx` on `docs.mzizi.dev`             |     1 | Its dated subdomain table still says `docs.mzizi.dev` does not resolve. It does, as of 2026-09-27                     |
 
 Live sources to check a claim against: `GET https://api.mzizi.dev/api/v1/brand` returns
 three arrays of seven, and `GET https://api.mzizi.dev/api/v1/architecture` returns 8 nodes,
@@ -143,46 +139,20 @@ CI runs the **gitleaks binary directly**, pinned, rather than `gitleaks/gitleaks
 that wrapper now requires a paid licence for organisation repositories, while the underlying
 binary is still MIT-licensed.
 
-## How it deploys
+## Deployment
 
-Mintlify deploys from this repository through the Mintlify GitHub App. Install it from the
-[Mintlify dashboard](https://dashboard.mintlify.com/settings/organization/github-app) and
-point it at `mzizi-dev/mzizi-docs`. After that, **a merge to `main` deploys to production
-automatically**; pull requests get a preview deployment. See [`AGENTS.md`](./AGENTS.md) for
-the merge convention and the MDX/prettier gotcha.
+Mintlify deploys this repository to [docs.mzizi.dev](https://docs.mzizi.dev) through the
+Mintlify GitHub App, installed on `mzizi-dev/mzizi-docs`. **A merge to `main` deploys to
+production automatically**; pull requests get a preview deployment. Configuration lives in
+the [Mintlify dashboard](https://dashboard.mintlify.com), not in this repository.
 
-## Making `docs.mzizi.dev` live — for a human
+`mzizi.dev`'s DNS is on Cloudflare. If the `docs` record ever needs recreating, add the
+custom domain in Mintlify first and take the `CNAME` target from the Mintlify dashboard
+rather than from anything written down here — it is deployment-specific. Keep that record
+**DNS-only (grey cloud), not proxied**: proxying in front of a provider that terminates its
+own TLS fails as a certificate error, not a DNS one.
 
-Not done, deliberately, and not doable from CI. Re-checked 2026-09-12:
-
-| Address          | State                                     |
-| ---------------- | ----------------------------------------- |
-| `mzizi.dev`      | Resolves — the three-page site            |
-| `api.mzizi.dev`  | Resolves                                  |
-| `app.mzizi.dev`  | Resolves — the console                    |
-| `mcp.mzizi.dev`  | Resolves; `/mcp` answers 401 without auth |
-| `docs.mzizi.dev` | **No DNS record at all**                  |
-
-That table has changed since this section was written: `api.mzizi.dev` and `app.mzizi.dev`
-did not resolve then and do now. Only `docs.mzizi.dev` is still missing.
-
-Cutover needs three steps, in this order:
-
-1. **Connect the repository.** Install the Mintlify GitHub App on `mzizi-dev/mzizi-docs` and
-   confirm a production deployment succeeds on the Mintlify-provided subdomain first. Do not
-   point DNS at something that has never built.
-2. **Add the custom domain in Mintlify.** In the Mintlify dashboard, add `docs.mzizi.dev`
-   under the deployment's custom-domain settings. Mintlify will issue the CNAME target to
-   use — take it from there rather than from any value written down in this repository,
-   because it is deployment-specific and it changes.
-3. **Create the DNS record.** `mzizi.dev` is on Cloudflare. Add a `CNAME` for `docs` pointing
-   at the target Mintlify gave you. **Set it to DNS-only (grey cloud), not proxied** —
-   proxying in front of a provider that terminates its own TLS is the standard way this goes
-   wrong, and the failure looks like a certificate error rather than a DNS one. Then wait for
-   Mintlify to report the domain verified and the certificate issued.
-
-Afterwards, update `ecosystem.mdx` — it carries a dated table of which subdomains resolve,
-and that table is already out of date for the reasons above.
+See [`AGENTS.md`](./AGENTS.md) for the merge convention and the MDX/prettier gotcha.
 
 ## Licence
 
