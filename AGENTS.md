@@ -2,9 +2,10 @@
 
 ## About this project
 
-- A [Mintlify](https://mintlify.com) documentation site for **Mzizi**, deploying to
-  `docs.mzizi.dev`. It covers two distinct things: **Mzizi-lang** (the Phase 0 research
-  language) and **the Mzizi registry** (the shipping design system).
+- A [Mintlify](https://mintlify.com) documentation site for **Mzizi**, live at
+  [docs.mzizi.dev](https://docs.mzizi.dev) and the single home of Mzizi's documentation.
+  It covers two distinct things: **Mzizi-lang** (the Phase 0 research language) and
+  **the Mzizi registry** (the shipping design system).
 - Pages are MDX with YAML frontmatter. Mzizi-lang pages are flat at the root; registry pages
   are grouped in subdirectories (`architecture/`, `registry/`, `foundations/`, `patterns/`,
   `blocks/`, `charts/`, `content/`). Configuration is `docs.json`.
@@ -63,8 +64,9 @@ Two specific traps:
   **private — never link it**. `mzizi-dev/mzizi` is the **language**, not the registry, so
   never repair a `nyuchi/mzizi` reference by dropping the org prefix.
 - `mzizi.dev`, `mcp.mzizi.dev`, `api.mzizi.dev` and `app.mzizi.dev` all resolve (checked 26
-  September 2026). `docs.mzizi.dev` does not yet. `dig` before writing any of them as live —
-  this list moves.
+  September 2026), and so does `docs.mzizi.dev` (HTTP 200, checked 27 September 2026).
+  The old Mzizi path on `docs.bundu.org` returns 404 — never link it. `dig` before writing
+  any host as live — this list moves.
 - **`mz`** is the compiler binary. **Primitives** are `.mz` source copied into a project, not
   crates.
 - The framework is Mzizi IP; the console ("Fundi") is Nyuchi-owned. Keep the
