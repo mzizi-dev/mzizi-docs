@@ -1,22 +1,16 @@
 ---
 title: "The charter"
-description: "The thesis, the five phases, and the explicit non-goals. The research charter, v0.1 — a direction and a phasing, not a sprint plan."
+description: "The thesis, the phases, and the explicit non-goals. The Mzizi Research Charter, v0.2 — a direction and a phasing, not a sprint plan."
 icon: "scroll-text"
 ---
 
 Mzizi's direction is set by a single document:
 [`CHARTER.md`](https://github.com/mzizi-dev/mzizi/blob/main/CHARTER.md), the project's
-**research charter, v0.1**. Its own status line reads _"charter draft — defines direction and
+**Mzizi Research Charter, v0.2**. Its own status line reads _"charter draft — defines direction and
 phasing, not a sprint plan"_, and this page summarises it rather than replacing it.
 
 **Owner:** Mzizi — 100%. The Mzizi framework, components and logic are Mzizi IP. The Mzizi
 console ("Fundi") and active cyber testing are adjacent and run under Nyuchi.
-
-<Note>
-  The charter text still names the Bundu Foundation as owner. That attribution was wrong and
-  was corrected on 27 September 2026: Mzizi owns everything non-revenue, and Nyuchi runs
-  everything revenue-generating. `CHARTER.md` has not yet been updated to match.
-</Note>
 
 ## The thesis
 
@@ -69,16 +63,21 @@ Four measurable design goals, not a slogan:
 ## What is novel and what is borrowed
 
 The charter is precise about which layer is the research contribution, which matters because
-it bounds what Mzizi is claiming to have invented.
+it bounds what Mzizi is claiming to have invented. Version 0.2 widened the scope from web UI
+to general-purpose software for the agentic world; the UI benchmark in Phase 0 is the first,
+smallest, most measurable slice of that claim, not the whole of it.
 
-| Layer                             | Approach                                                                                                                                                   |
-| --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Syntax, type system, compiler** | **Novel.** The actual research contribution and the thing worth defending as IP.                                                                           |
-| **Cross-platform rendering**      | **Interop with Dioxus's existing renderer**, not a rebuilt engine. Dioxus already spent years on "one codebase, four platforms".                           |
-| **ML workloads**                  | **Native integration with Candle.** Components declare and consume inference as a first-class capability; Mzizi does not build a competing tensor runtime. |
-| **Edge**                          | First-class deployment target from day one — the one area with real existing experience (Cloudflare Workers, `workers-rs`).                                |
-| **Compiled artifact**             | **WASM, and native for desktop.** Not Astro, not any web framework. Astro is one thin optional distribution surface among several.                         |
-| **Post-quantum cryptography**     | **Explicitly deferred.** A future research thread, named so it does not dilute Phase 0.                                                                    |
+| Layer                             | Approach                                                                                                                                                                                                                |
+| --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Syntax, type system, compiler** | **Novel.** The actual research contribution and the thing worth defending as IP.                                                                                                                                        |
+| **UI layer**                      | **`mzizi-ui`, Mzizi's own component registry, is first-class.** Dioxus is a compatible third-party rendering target for it, as any Rust UI registry adopting the same contract would be — not the UI strategy itself.   |
+| **Full-stack (UI + server)**      | A component and the handler that serves it ship from the same Mzizi source. The server half is lowered per target, and handlers reach target-specific facilities only through declared capabilities.                    |
+| **Edge: Workers and Containers**  | **First-class from day one.** Workers lower to `workers-rs` (wasm32); Containers lower to a native Rust HTTP server (axum-class) packaged as a container image and reached from a Worker through the Container binding. |
+| **ML workloads**                  | **Native integration with Candle.** Components declare and consume inference as a first-class capability; Mzizi does not build a competing tensor runtime.                                                              |
+| **Native mobile**                 | Two tracks: `mzizi-ui` through a compatible mobile engine (Dioxus today) near-term; native Swift/ArkTS/Kotlin codegen from the same Rust core later, separately scoped. Named, not designed.                            |
+| **Hardware / embedded**           | A named future direction, unscoped until Phase 1 has a real deployment.                                                                                                                                                 |
+| **Compiled artifact**             | WASM, and native for desktop and compatible-renderer mobile. A real native-per-platform artifact belongs to the later native-mobile track.                                                                              |
+| **Post-quantum cryptography**     | **Explicitly deferred.** A future research thread, named so it does not dilute Phase 0.                                                                                                                                 |
 
 ## The phasing
 
@@ -95,51 +94,60 @@ it bounds what Mzizi is claiming to have invented.
     This is where the project is. See [Status](/status) and [the benchmark](/benchmark).
 
   </Step>
-  <Step title="Phase 1 — rendering interop; WASM/native as the real deliverable" icon="box">
-    Wire the compiler output into Dioxus's renderer. The artifact that comes out — a working
-    WASM bundle, and a native binary for desktop — *is* the cross-platform product, and must
-    stand on its own: embeddable via a bare `<script type="module">`, a mobile WebView or
-    native WASM host, or an edge runtime, with no framework-specific packaging assumed.
+  <Step title="Phase 1 — full stack: mzizi-ui plus Cloudflare Workers and Containers" icon="box">
+    A Mzizi-authored full-stack application, actually deployed to Cloudflare: UI through
+    `mzizi-ui` rendered by a compatible engine (Dioxus today), server and API from the same
+    source, as a Worker or a Container depending on the workload. This merges what v0.1
+    called Phase 1 (rendering interop) and Phase 2 (edge deployment).
 
-    Integration work, not framework-building. Any temptation to build a native renderer here
-    is scope creep until interop has been tried and found genuinely insufficient.
+    The UI output must also ship as a **self-contained artifact** usable without the Phase 1
+    Worker — an ES module or custom element with its WASM bundle, loadable from a plain
+    `<script type="module">`, a WebView or a WASM host. That is what "standing alone" means.
+    Building a native renderer or a bespoke edge runtime here is scope creep.
 
   </Step>
-  <Step title="Phase 2 — edge-first deployment" icon="globe">
-    Native target using existing Cloudflare and `workers-rs` experience. The cheapest phase
-    to execute given current capability.
-  </Step>
-  <Step title="Phase 3 — Candle integration" icon="brain">
+  <Step title="Phase 2 — Candle integration" icon="brain">
     First-class support for declaring ML inference inside components, backed by Candle. The
     `use ml` capability parses today and is specified to error as "not yet available".
   </Step>
-  <Step title="Phase 4 — distribution adapters, Astro first among several" icon="package">
-    Once Phase 1's WASM artifact stands alone, framework-specific adapters are thin
-    packaging layers rather than new compiler work. Astro is first because it is furthest
-    along, not because Astro is a target platform — treat it as proof the standalone
-    artifact is genuinely embeddable.
+  <Step title="Phase 3 — native mobile: interop first" icon="smartphone">
+    `mzizi-ui` through a compatible mobile engine first — the same interop bet as Phase 1.
+    Generating idiomatic native Swift/ArkTS/Kotlin from the same Rust core is real and named
+    but needs its own RFC before it is a phase with a deliverable.
+  </Step>
+  <Step title="Phase 4 — distribution adapters" icon="package">
+    Once Phase 1's self-contained artifact stands alone, framework-specific adapters are thin
+    packaging layers rather than new compiler work. Astro is one such adapter, using the
+    Custom Element pattern — no longer the flagship web story, since full-stack web ships
+    directly through Phase 1.
+  </Step>
+  <Step title="Phase 5 — hardware and embedded" icon="cpu">
+    Named, not designed. Revisit once Phase 1 has shipped a real full-stack deployment.
   </Step>
 </Steps>
 
 ## Explicit non-goals
 
 - Not building a competing tensor or ML runtime. Candle is the dependency.
-- Not building a native cross-platform renderer in Phase 0 or 1. Dioxus interop first;
-  native renderer only if interop is proven insufficient.
+- Not building a bespoke rendering engine before proven interop is tried and found
+  insufficient. Owning the component contract (`mzizi-ui`) is not the same claim as owning the
+  renderer underneath it.
 - Not addressing post-quantum cryptography in this charter.
+- Not committing to hardware or embedded specifics in this version.
 - Not blocked by, or blocking, Nyuchi/Mukoko revenue-phase work — different org, different
-  clock, per the charter's research mandate.
+  clock, per Mzizi's non-revenue research mandate.
 
 ## What the charter still leaves open
 
-Two things, and the charter says so rather than implying the plan is complete.
+The charter's open-questions section lists two items. Both have moved since it was written;
+the charter text has not yet caught up on either, so read [Status](/status) for where they
+actually stand.
 
-**Contract evaluation.** Contract blocks parse but are not checked. That is what makes the
-defect metric toolchain-measured rather than a hand-written Rust test standing in for it.
+**The reference-implementation half of the defect metric.** `mz contract` evaluates a
+component's assertions against the component itself. The charter says nothing yet compares a
+candidate against its `.rs` reference; a harness that does has since landed
+(`benchmarks/harness/` in `mzizi-dev/mzizi`), proved on the pilot tasks.
 
-**Benchmark harness mechanics.** How agent runs are invoked, sandboxed and scored end to end
-— which components from the 571-plus corpus, how many per run, how "tokens consumed" and
-"iterations to clean compile" are actually measured and reported — is unspecified past the
-task-set and defect-rate decisions. The benchmark directory's own README is blunt about the
-consequence: _"Nothing here should be built until that's designed alongside the language
-syntax itself, since the harness has to invoke a compiler that doesn't exist yet."_
+**Benchmark harness mechanics.** How agent runs are invoked, sandboxed and scored end to end.
+The `mzbench` runner now does this, and a first pilot was scored on 2026-09-27. That pilot is
+not the Phase 0 number: it used one frontier model, three tasks and no small-model arm.
