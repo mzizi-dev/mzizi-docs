@@ -157,5 +157,5 @@
       "github": "https://github.com/mzizi-dev"
     }
   },
-  "description": "Mzizi is a Bundu Foundation research project: a Rust framework whose syntax, type system and compiler feedback loop are designed for machine authorship by small open-weight models. Phase 0 is a prototype front end, and nothing has yet been measured against the charter's kill criteria."
+  "description": "Mzizi is an independent research project: a Rust framework whose syntax, type system and compiler feedback loop are designed for machine authorship by small open-weight models. Phase 0 is a prototype front end, and nothing has yet been measured against the charter's kill criteria."
 }

@@ -67,7 +67,7 @@ Two specific traps:
   this list moves.
 - **`mz`** is the compiler binary. **Primitives** are `.mz` source copied into a project, not
   crates.
-- The framework is Bundu Foundation IP; the console ("Fundi") is Nyuchi-owned. Keep the
+- The framework is Mzizi IP; the console ("Fundi") is Nyuchi-owned. Keep the
   ownership line the charter draws.
 
 ## Style preferences
