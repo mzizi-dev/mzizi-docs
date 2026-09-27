@@ -69,8 +69,12 @@ Two specific traps:
   any host as live — this list moves.
 - **`mz`** is the compiler binary. **Primitives** are `.mz` source copied into a project, not
   crates.
-- The framework is Mzizi IP; the console ("Fundi") is Nyuchi-owned. Keep the
-  ownership line the charter draws.
+- The framework, registry and docs are Mzizi IP; the console ("Fundi"), paid plans and billing
+  are Nyuchi-owned. That line is the owner decision of 27 September 2026; `CHARTER.md` still
+  names the Bundu Foundation and has not caught up, so do not cite the charter for ownership.
+- There is **one ecosystem: the Bundu ecosystem**. Mzizi, Nyuchi, Mukoko and the other brands
+  sit inside it. Never write "the Mzizi ecosystem" or "the Nyuchi ecosystem". Owning the
+  framework is a separate question from the ecosystem's name.
 
 ## Style preferences
 
