@@ -22,10 +22,10 @@ Put app-level navigation in the thumb zone on mobile, and in a sidebar on deskto
 
 ```tsx
 <div className="hidden md:block">
-  <NyuchiSidebar />
+  <MziziSidebar />
 </div>
 <div className="fixed inset-x-0 bottom-0 md:hidden">
-  <NyuchiBottomNav
+  <MziziBottomNav
     items={[
       { label: "Home", href: "/", icon: Home },
       { label: "Search", href: "/search", icon: Search },
@@ -40,8 +40,8 @@ Four or five items maximum. Beyond that the targets get too small, which defeats
 for putting them there.
 
 ```bash
-npx shadcn@latest add https://mzizi.dev/api/v1/ui/nyuchi-bottom-nav
-npx shadcn@latest add https://mzizi.dev/api/v1/ui/nyuchi-sidebar
+npx shadcn@latest add https://api.mzizi.dev/v1/ui/mzizi-bottom-nav
+npx shadcn@latest add https://api.mzizi.dev/v1/ui/mzizi-sidebar
 ```
 
 ## Sheet rather than dialog

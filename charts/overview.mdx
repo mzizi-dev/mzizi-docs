@@ -6,9 +6,12 @@ icon: "chart-column"
 ---
 
 <Note>
-  This section documents the **Mzizi registry** — the shipping design system served at
-  [mzizi.dev](https://mzizi.dev) — not **Mzizi-lang**. [The ecosystem page](/ecosystem) draws
-  the line.
+  This section documents Mzizi's **components**: the registry and design system that
+  support the language, served through [`api.mzizi.dev`](/platform/api-gateway) and browsable at
+  [mzizi.dev/components](https://mzizi.dev/components). It is not documentation for the
+  language itself; [the ecosystem page](/ecosystem) draws the line. Rust components
+  ([Mzizi Roots](/roots/overview)) lead. The React and TypeScript code on these pages is
+  **the React build**: it keeps working, but it is deprioritised and not where new work goes.
 </Note>
 
 Charts are built on **Recharts** and wrapped in a `ChartContainer` that applies the mineral
@@ -18,7 +21,7 @@ chart follows the theme without per-chart configuration.
 ## Install
 
 ```bash
-npx shadcn@latest add https://mzizi.dev/api/v1/ui/chart
+npx shadcn@latest add https://api.mzizi.dev/v1/ui/chart
 ```
 
 That installs `ChartContainer`, `ChartTooltip`, `ChartTooltipContent`, `ChartLegend` and
