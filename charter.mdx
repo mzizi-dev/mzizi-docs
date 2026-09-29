@@ -10,7 +10,9 @@ Mzizi's direction is set by a single document:
 phasing, not a sprint plan"_, and this page summarises it rather than replacing it.
 
 **Owner:** Mzizi — 100%. The Mzizi framework, components and logic are Mzizi IP. The Mzizi
-console ("Fundi") and active cyber testing are adjacent and run under Nyuchi.
+console ("Fundi") and active cyber testing are adjacent and run under Nyuchi. Copyright
+notices name the Bundu Foundation as the parent copyright holder; Mzizi is not a separate
+legal entity.
 
 ## The thesis
 
@@ -149,5 +151,15 @@ candidate against its `.rs` reference; a harness that does has since landed
 (`benchmarks/harness/` in `mzizi-dev/mzizi`), proved on the pilot tasks.
 
 **Benchmark harness mechanics.** How agent runs are invoked, sandboxed and scored end to end.
-The `mzbench` runner now does this, and a first pilot was scored on 2026-09-27. That pilot is
-not the Phase 0 number: it used one frontier model, three tasks and no small-model arm.
+The `mzbench` runner now does this. Two pilots were scored on 2026-09-27, one frontier-only
+and one with a ~7B open-weight arm, and neither showed an advantage for Mzizi. Neither is the
+Phase 0 number. See [the pilot results](/pilots).
+
+## Direction since v0.2
+
+The owner has since stated a wider direction: Mzizi builds the backend as well as the UI,
+everything built carries a contract, and the benchmark extends to other languages. The kill
+criterion is now Mzizi against the best existing language for each kind of task, not only
+raw Dioxus or Leptos, and every result is published whichever way it falls. The
+charter text has not caught up. See [the roadmap](/roadmap), which describes it as direction
+rather than as a plan of record.

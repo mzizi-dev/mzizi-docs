@@ -1,0 +1,137 @@
+---
+title: "The Phase 0 pilots"
+description: "Two small pilots of the Phase 0 benchmark ran on 2026-09-27. Neither showed an advantage for Mzizi, and neither is the run that tests the kill criterion."
+sidebarTitle: "Pilot results"
+icon: "clipboard-list"
+---
+
+<Warning>
+  **Neither pilot showed an advantage for Mzizi.** With a frontier model the two arms tied,
+  and Mzizi used about 8% fewer tokens. With a ~7B open-weight model, the size the language
+  is designed for, Mzizi did **worse** on all three metrics. Both pilots are tiny, and
+  neither is the charter's measurement. The run that tests the kill criterion has not
+  happened.
+</Warning>
+
+Every number on this page comes from the write-ups committed in
+[`benchmarks/results/`](https://github.com/mzizi-dev/mzizi/tree/main/benchmarks/results) in
+`mzizi-dev/mzizi`. The raw episodes are there too: every prompt, reply, candidate,
+diagnostic and score. Read those, not this summary, if the detail matters to you.
+
+## Why pilots, and why they were published
+
+The charter makes Phase 0 a gate: Phase 1 does not start until a benchmark run finds a
+measurable advantage. The owner has since set the bar as Mzizi against the best existing
+language for each kind of task. The pilots compared Mzizi with Dioxus only. See
+[the benchmark](/benchmark) for the design.
+
+A pilot tests the harness before it tests the thesis. It asks whether the runner, the arms
+and the scorer produce numbers that mean something. Results are always published, whichever
+way they fall: that is an owner decision, and it applied to both pilots. The Phase 1
+decision stays the owner's after reading them.
+
+## Pilot 1: frontier only
+
+[`2026-09-27-pilot/RUN.md`](https://github.com/mzizi-dev/mzizi/blob/main/benchmarks/results/2026-09-27-pilot/RUN.md)
+
+| Field  | Value                                                           |
+| ------ | --------------------------------------------------------------- |
+| Code   | `ded425a`, the `main` branch at the time                        |
+| Tasks  | `button`, `badge`, `mzizi-changelog-renderer` (then `nyuchi-…`) |
+| Arms   | Mzizi and Dioxus                                                |
+| Author | One frontier model, one seed, five compile iterations           |
+| Tokens | Not measured: no tokenizer was running                          |
+
+Every episode on both arms compiled clean on the first iteration. After a scoring fix
+(below), both arms scored 0 defects. The only difference was class fidelity: Mzizi ports
+kept fewer of the reference's Tailwind classes.
+
+The write-up names the reasons this says nothing about the thesis:
+
+- **n = 3** tasks, one seed, one model.
+- **No small-model arm**, which RFC-0002 §5.4 says the frontier arm cannot replace.
+- **No token data.**
+- **The Mzizi checker at `ded425a` could not fail on names or types.** An undefined type
+  compiled with 0 errors, so the Mzizi arm's first-time-clean result was measured against a
+  checker that could not say no. Name and type resolution landed afterwards
+  ([RFC-0008](https://github.com/mzizi-dev/mzizi/blob/main/design/RFC-0008-types-collections-records.md)).
+- **The Mzizi changelog candidate solved a smaller problem.** Mzizi had no list type then,
+  so it rendered one entry where the Dioxus candidate rendered the whole feed. The scorer
+  only reads enums, so it could not see the difference.
+
+The scoring fix: both arms first scored 2 identical "defects" on the changelog task. The
+task's spec and its Rust reference name the same four variants differently, and both
+authors followed the spec. The harness now pairs renamed variants by class string, but only
+for a task that opts in with a stated reason.
+
+## Pilot 2: the open-weight arm
+
+[`2026-09-27-pilot-2/RUN.md`](https://github.com/mzizi-dev/mzizi/blob/main/benchmarks/results/2026-09-27-pilot-2/RUN.md)
+
+The same code, `ded425a`, with a ~7B open-weight coding model running locally on CPU and
+measured tokens. The frontier arm was re-run with three seeds per task. The write-up names
+both models.
+
+| Model           | Arm    | Clean compile | Iterations to clean | Tokens (mean) | Defect rate |
+| --------------- | ------ | ------------- | ------------------- | ------------- | ----------- |
+| Frontier        | Mzizi  | 6/6           | 1.17                | 4,172         | 0/6         |
+| Frontier        | Dioxus | 6/6           | 1.00                | 4,545         | 0/6         |
+| ~7B open-weight | Mzizi  | **2/6**       | 1.50 (n=2)          | 8,608 (n=5)   | **2/2**     |
+| ~7B open-weight | Dioxus | **4/6**       | 2.00 (n=4)          | 7,782         | **0/4**     |
+
+Two scored tasks (`button` and `badge`, 11 facts) × 3 seeds per arm. One 7B Mzizi episode ran
+out of context. The table counts it as not clean, because counting it the other way would
+flatter Mzizi.
+
+### What the write-up concludes
+
+- **Frontier: the tasks were too easy to separate the arms.** Every episode compiled and
+  none had a defect. The one real difference was tokens: Mzizi was 8.2% cheaper, because the
+  ported file is smaller.
+- **7B: the repair loop did not converge on Mzizi's diagnostics.** In 15 of 16 Mzizi repair
+  attempts, the model resubmitted a byte-identical file. On Dioxus, 6 of 12. The charter bets
+  that dense compiler errors make that loop faster. For the target model size, in this
+  pilot, they did not.
+- **React idioms with no Mzizi form.** Every badge episode stalled on the spec's `...props`
+  spread and an `else` branch. Mzizi had neither, and the diagnostics did not say what to
+  write instead.
+- **The language's own variant table invited a defect.** Both clean 7B Mzizi buttons wrote a
+  touch height that disagreed with their class. RFC-0006 names this failure: one fact
+  written twice drifts.
+
+### Threats to validity, in both directions
+
+- **Tiny n.** One episode moves a rate by 17 points. Nothing here is statistically
+  significant, and nothing is claimed to be.
+- **A harness bug that penalised Mzizi.** `mz check` printed full absolute paths in every
+  diagnostic, and the Dioxus check script shortened its paths. That cost the 7B Mzizi arm
+  about 13,500 tokens, more than its whole token deficit.
+- **Public tasks.** The tasks and results are public, so a later run on these tasks may be
+  contaminated.
+- **Shared authorship.** The RFCs and guides were written by the same model family as the
+  frontier author, which may find Mzizi unusually legible for that reason.
+
+## What has to change before the real run
+
+Pilot 2 lists the fixes in order of how much each would move the result. This is their
+state on `main` at `a9c928d` (29 September 2026), checked by running `mz` against it.
+
+| Fix                                                                     | State at `a9c928d`                                              |
+| ----------------------------------------------------------------------- | --------------------------------------------------------------- |
+| Relative paths in `mz check --agent` output                             | **Open.** `mz` prints the path it was given                     |
+| Diagnostics for React idioms: `...props` spread, `asChild`              | **Open.** A spread still gives `prop needs a name, found .`     |
+| `else` in a view                                                        | **Fixed** by RFC-0008                                           |
+| Unknown types rejected                                                  | **Fixed.** `MZ0701` names the valid types                       |
+| Derive `height` from `h-N` / `size-N`, or have `mz contract` check both | **Open**                                                        |
+| A task set that can fail: more components, more facts, more seeds       | **Open**                                                        |
+| Fresh, unpublished tasks for the kill-criterion run                     | **Open.** The held-out repository does not exist yet (RFC-0004) |
+
+Work on these fixes is in progress in `mzizi-dev/mzizi`. Check the repository for their
+current state rather than this table.
+
+## How to talk about these results
+
+"Designed for small models" is accurate. Calling Mzizi "faster", "cheaper" or "better" is not:
+nothing has shown it. The honest summary is that Mzizi is a design with an argument behind
+it, that the first two pilots did not show an advantage, and that the measurement that
+decides the project has not run.

@@ -73,8 +73,8 @@ component button
   ## The rule the corpus kept breaking, as one line the compiler can hold us to.
   contract
     every button_size height at_least 48
-    button_size.default height 56
-    button_size.sm height 48
+    button_size.default height is 56
+    button_size.sm height is 48
     button_variant.default class contains "bg-primary"
     slot is "button"
   end
@@ -92,11 +92,14 @@ the whole table to the floor:
 every button_size height at_least 48
 ```
 
+`mz contract button.mz` evaluates that line and the four beside it, and exits 1 if one does
+not hold. CI runs it over every primitive: 29 clauses across the nine files, all evaluated.
+
 <Warning>
-  That line **parses and is not evaluated.** Contract bodies are syntax today; the checker
-  lands with contract evaluation, which is what will finally let `mz check` run them as
-  tests. Until then these files are verified syntax and a verified grammar exercise — which
-  is what Phase 0 needs and no more than it claims.
+  A contract checks the component against **itself**, not against anything rendered and not
+  against a reference implementation. It also cannot evaluate a Tailwind size such as
+  `size-14`, so a `height` column that disagrees with its class still passes. The second
+  pilot's 7B model wrote exactly that defect. See [the pilot results](/pilots).
 </Warning>
 
 ## No import lines, and why that is possible
@@ -158,8 +161,8 @@ being uniform.
 ## Where the primitives came from
 
 Each file names its corpus reference in a doc comment — `button.mz` points at
-`n2-primitives/button.tsx`, `connectivity_bar.mz` at `n7-shell/nyuchi-connectivity-bar`.
+`n2-primitives/button.tsx`, `connectivity_bar.mz` at `n7-shell/mzizi-connectivity-bar`.
 These are hand ports of components that already exist in the
-[Mzizi registry](/ecosystem) with working TypeScript and partially-ported
-Rust implementations, which is what makes them ground truth rather than invention. The same
+[Mzizi registry](/registry/overview) with working TypeScript implementations, and in many
+cases Rust siblings, which is what makes them ground truth rather than invention. The same
 corpus is the Phase 0 [benchmark](/benchmark) task set.

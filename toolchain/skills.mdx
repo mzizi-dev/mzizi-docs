@@ -1,0 +1,77 @@
+---
+title: "The skills bundle"
+description: "@nyuchi/mzizi-skills: nine agent skills carrying Mzizi's design-system and engineering doctrine, authored in git and served from files."
+sidebarTitle: "Skills"
+icon: "book-marked"
+---
+
+The design-system and engineering doctrine ships as an npm package of agent skills,
+[`@nyuchi/mzizi-skills`](https://www.npmjs.com/package/@nyuchi/mzizi-skills). Install it in a
+repository so an agent has the doctrine to hand instead of guessing:
+
+```bash
+npx skills add @nyuchi/mzizi-skills
+```
+
+Nine skills, from the bundle's `index.json` at version `0.6.0` (the latest on npm on
+29 September 2026):
+
+| Skill                    | Reach for it when                                                   |
+| ------------------------ | ------------------------------------------------------------------- |
+| `simplify`               | Before adding a component or style, and during any refactor         |
+| `discoverability`        | A shared link shows no preview, or you are adding a route or a site |
+| `mzizi-design`           | Cross-brand materials and brand-voice decisions                     |
+| `nyuchi-design`          | Generating a branded interface: minerals, radius, type              |
+| `mukoko-design`          | Producing or exporting mukoko visual identity                       |
+| `scaffold-component`     | Authoring a new component into the registry                         |
+| `ecosystem-app-setup`    | Bootstrapping a new app against the registry                        |
+| `cloudflare-worker-rust` | Building a Worker in Rust with `workers-rs`                         |
+| `mcp-server-cloudflare`  | Adding or changing an MCP Worker                                    |
+
+`mzizi-design` was called `bundu-design` before `0.6.0`.
+
+## The same skills, three ways
+
+| Path                                                                     | What it serves                                       |
+| ------------------------------------------------------------------------ | ---------------------------------------------------- |
+| `npx skills add @nyuchi/mzizi-skills`                                    | The npm bundle, as files on disk                     |
+| `mzizi_get_skills` on [the MCP server](/toolchain/mcp)                   | The bundle, as bundled into the server at build time |
+| [`GET https://api.mzizi.dev/v1/skills`](https://api.mzizi.dev/v1/skills) | The skills the registry generated from the bundle    |
+
+The API can lag the newest npm release, because the registry generates its copy from the
+bundle version it depends on: on 29 September 2026 that was `0.5.1`. The MCP server
+generates its copy from the bundle's source when it is built.
+`GET /v1/skills/summary` is the cheap way to check which bodies a surface is serving.
+
+## Git is the source of truth
+
+Skills are authored as `skills/<name>/SKILL.md`, with YAML frontmatter carrying `name` and
+`description`, and listed in an `index.json`. That bundle is the only home for skill content.
+
+**There is no database copy and no sync step.** The registry and the MCP server each inline
+the bundle at build time, so bumping the bundle version is a commit, and the commit is what
+changes what agents read. An older model projected skills into a database table with a sync
+script; that is gone.
+
+<Warning>
+  **Never edit a skill anywhere but the bundle.** Not a copy vendored into a consumer
+  repository, and not a `.claude/skills/*.md` file. The next regeneration overwrites them.
+</Warning>
+
+## Changing a skill
+
+The bundle is built in the private tooling repository, so outside contributors cannot open a
+pull request against it directly. Report a problem with a skill through the registry's issue
+tracker, [`mzizi-dev/mzizi-registry`](https://github.com/mzizi-dev/mzizi-registry/issues).
+
+For maintainers, the rules the bundle's own gate enforces:
+
+1. Edit `skills/<name>/SKILL.md`. Adding a skill also needs an `index.json` entry, because
+   consumers read the index and an unlisted skill is invisible.
+2. Bump the version in both `package.json` and `index.json`; they move together.
+3. The offline validator checks the version, the index, the frontmatter and the `exports`
+   map before publish, and needs no credentials.
+4. A merge without a version bump publishes nothing.
+5. Then bump the bundle version the registry depends on, so the API serves it. The MCP
+   server builds its copy from the same repository as the bundle, so it picks the change up
+   on its next deploy.

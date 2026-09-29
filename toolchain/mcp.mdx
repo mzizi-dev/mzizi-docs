@@ -1,0 +1,176 @@
+---
+title: "The MCP server"
+description: "mcp.mzizi.dev: the registry, tokens, doctrine and skills from bundled files, plus the docs as federated docs_* tools. Free with no sign-in, except the Fundi tools."
+sidebarTitle: "MCP server"
+icon: "plug"
+---
+
+The Mzizi MCP server gives agents the registry, the brand tokens, the architecture model,
+the doctrine, the agent skills and these docs over the
+[Model Context Protocol](https://modelcontextprotocol.io). It is the `mzizi-mcp` Cloudflare
+Worker, published as [`@nyuchi/mzizi-mcp`](https://www.npmjs.com/package/@nyuchi/mzizi-mcp)
+(`0.9.1`, read from npm on 29 September 2026).
+
+## Connecting
+
+```json
+{
+  "mcpServers": {
+    "mzizi": {
+      "type": "http",
+      "url": "https://mcp.mzizi.dev/mcp"
+    }
+  }
+}
+```
+
+Streamable HTTP. `mzizi.dev/mcp` answers `308` to this endpoint, so old clients keep
+working, but point new ones here directly.
+
+To run it locally over stdio, with no network for anything but the docs tools:
+
+```json
+{
+  "mcpServers": {
+    "mzizi": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@nyuchi/mzizi-mcp"]
+    }
+  }
+}
+```
+
+The stdio build takes no environment and holds no credential. The registry data and skills
+ship inside the package.
+
+## Who can use it
+
+<Note>
+  **Rolling out.** The owner decided on 29 September 2026 that the MCP server is free with no
+  gate. Every tool except the Fundi tools is to be served without sign-in. On 29 September
+  2026 the hosted endpoint still answers an unsigned request with
+  `401 {"error":"invalid_token"}`, because the change is landing in the tooling repository
+  now. Until it deploys, use the stdio build above, which has never needed sign-in.
+</Note>
+
+The intended behaviour:
+
+| Tools                                          | Sign-in                                        |
+| ---------------------------------------------- | ---------------------------------------------- |
+| Every `mzizi_*` read tool, every `docs_*` tool | **None.** Free                                 |
+| `mzizi_fundi`, `mzizi_report_issue`            | A signed-in console user, through WorkOS OAuth |
+
+The Fundi tools stay gated because they tie into the console at `app.mzizi.dev`:
+`mzizi_report_issue` files into the Fundi issue desk, and `mzizi_fundi` delegates work to
+Fundi on a user's behalf. Both need to know who the user is. The server advertises its OAuth
+metadata at
+[`/.well-known/oauth-protected-resource`](https://mcp.mzizi.dev/.well-known/oauth-protected-resource),
+so MCP clients can run the sign-in flow for those tools themselves.
+
+## Discovering the tools
+
+**Ask the server, not a page.** A list written down anywhere, this one included, is only as
+fresh as its last edit.
+
+- `tools/list` over MCP is the live answer.
+- [`https://mcp.mzizi.dev/catalogue.json`](https://mcp.mzizi.dev/catalogue.json) is the same
+  list over plain HTTP, with no sign-in, including which older tools each one replaces.
+- The `mzizi_mcp_describe` tool, and the `mzizi://tools` resource, describe the tools and
+  the data sources.
+
+On 29 September 2026, `catalogue.json` listed fourteen tools:
+
+| Tool                               | What it answers                                                            |
+| ---------------------------------- | -------------------------------------------------------------------------- |
+| `mzizi_search`                     | Word search over components, conventions, AI instruction sets and releases |
+| `mzizi_get_component`              | One component in full, source inline; optional docs and version history    |
+| `mzizi_list_components`            | The paged index, filterable by node, owner, collection and type            |
+| `mzizi_get_tokens`                 | The brand system, including all 21 colour families                         |
+| `mzizi_get_architecture`           | The DNA helix, or one node or rung                                         |
+| `mzizi_get_doctrine`               | Ubuntu pillars and principles, conventions, AI instruction sets            |
+| `mzizi_get_skills`                 | The agent skills, listed or one in full                                    |
+| `mzizi_check_accessibility`        | Contrast against the Mzizi floor, computed locally                         |
+| `mzizi_report_issue`               | Files into the Fundi issue desk. **Gated**                                 |
+| `mzizi_fundi`                      | Delegates a run to Fundi. **Gated**                                        |
+| `mzizi_mcp_describe`               | This server's tools, what each replaces, and its data sources              |
+| `docs_search_mzizi`                | Search these docs (federated)                                              |
+| `docs_query_docs_filesystem_mzizi` | Read-only `rg`, `cat` and `tree` over these docs' pages (federated)        |
+| `docs_submit_feedback`             | Report a problem with these docs (federated)                               |
+
+Start with `mzizi_search` when you do not know the name of the thing you want, and
+`mzizi_get_component` when you do.
+
+## Where its data comes from
+
+**Nothing is read from a database, and no registry data is fetched at request time.**
+
+| Data                                                                           | Source                                                                                       | How it gets in                                                                     |
+| ------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| Components, docs, tokens, the helix, doctrine, conventions, changelog, renames | [`mzizi-dev/mzizi-registry`](https://github.com/mzizi-dev/mzizi-registry) at a pinned commit | Generated at build time by running the registry's own route handlers, then bundled |
+| Agent skills                                                                   | The `@nyuchi/mzizi-skills` bundle                                                            | Generated at build time and bundled                                                |
+| Documentation                                                                  | The Mintlify MCP at `https://docs.mzizi.dev/mcp`                                             | Federated live as `docs_*` tools                                                   |
+
+Because the generator runs the registry's route handlers rather than re-deriving their
+output, a tool answers with the payload `api.mzizi.dev/v1` would give at the same commit.
+`catalogue.json` names the pinned registry commit in `source.registry`. Moving to newer
+registry content is a change to that pin, so it is a reviewed commit.
+
+The server holds no database credential. Former `nyuchi-*` component names resolve to their
+`mzizi-*` names through the registry's rename map, bundled with the rest.
+
+### The docs tools
+
+These docs run their own MCP server, which Mintlify hosts at `https://docs.mzizi.dev/mcp`.
+It is public and needs no sign-in. The Mzizi MCP server lists its tools under a `docs_`
+prefix and forwards each call unchanged:
+
+- it caches the upstream tool list for five minutes;
+- if a refresh fails it reuses the last good list, and with nothing cached it falls back to
+  a built-in snapshot of the upstream definitions;
+- a failed call comes back as a tool error naming the docs server and the reason.
+
+The `docs_*` names mirror whatever `docs.mzizi.dev/mcp` lists, so they can change when these
+docs change. You can also connect to `https://docs.mzizi.dev/mcp` directly.
+
+## The Fundi tools
+
+Fundi is the self-healing agent behind the console, run under Nyuchi. Two tools reach it.
+
+**`mzizi_report_issue`** reproduces and drafts an issue, then logs it to Fundi's issue desk.
+Fundi files the GitHub issue with its healing plan, and records the issue's lifecycle, which
+is how the desk and the console can tell you whether your report was picked up.
+
+**`mzizi_fundi`** delegates long runs, such as a security, chaos or accessibility run, to
+Fundi over the Agent2Agent (A2A) protocol. A run is a **task** with a lifecycle, not a
+blocking tool call: you submit it and get a task id back at once, then poll its status or
+cancel it. It replaces the older `fundi_status`, `fundi_submit_test`, `fundi_task_status`
+and `fundi_cancel_task` tools.
+
+<Note>
+  The A2A bridge is built through its second stage: the agent card, task submission, status
+  and cancellation. The runs behind it, streaming updates and push notifications are still
+  design. A submitted task can come back parked as accepted but not executed.
+</Note>
+
+Both tools act for a real, signed-in console user. The server never hands a machine
+credential to a client or to the CLI.
+
+## Use cases
+
+### Building against the registry
+
+1. `mzizi_list_components`, filtered to the node you are building at.
+2. `mzizi_get_component` for the full document of anything that looks right. Where a Rust
+   implementation exists, prefer it (see [Mzizi Roots](/roots/overview)).
+3. Install it (see [consuming the registry](/registry/consuming)).
+
+### Reviewing a change
+
+1. `mzizi_get_tokens` to check a component uses published tokens, not raw values.
+2. `mzizi_get_architecture` to check it sits where its imports say it does.
+3. `mzizi_check_accessibility` for contrast on any new colour pairing.
+
+### Answering a question about Mzizi
+
+`docs_search_mzizi`, then `docs_query_docs_filesystem_mzizi` to read the page it found.

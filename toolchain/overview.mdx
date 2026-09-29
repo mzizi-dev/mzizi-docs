@@ -1,0 +1,51 @@
+---
+title: "The toolchain"
+description: "The tools that support the Mzizi language: the mz compiler, the benchmark, the MCP server, the CLI and the skills bundle. Free to use, with no sign-in except for the Fundi tools."
+sidebarTitle: "Overview"
+icon: "wrench"
+---
+
+The language is the subject. The toolchain exists to make it stronger: to check it, measure
+it, and put what Mzizi knows in front of the agents that write it.
+
+## What is in it
+
+| Tool                             | What it is                                                            | Where it comes from                    | Cost                           |
+| -------------------------------- | --------------------------------------------------------------------- | -------------------------------------- | ------------------------------ |
+| [`mz`, the compiler](/compiler)  | `mz check --agent`, `mz contract`, `mz outline`, `mz hash`, `mz ir`   | `mzizi-dev/mzizi`, built from source   | Free, open source              |
+| [The benchmark](/benchmark)      | `mzbench`, the scorer, the Dioxus and Leptos arms, the pilot results  | `mzizi-dev/mzizi`, under `benchmarks/` | Free, open source              |
+| [The MCP server](/toolchain/mcp) | `mcp.mzizi.dev/mcp`: registry, tokens, doctrine, skills and the docs  | `@nyuchi/mzizi-mcp`                    | Free, no sign-in (rolling out) |
+| [The CLI](/toolchain/cli)        | `fundi explore`, `plan` and `chat`, from `@nyuchi/mzizi-cli`          | npm                                    | Free, no gate                  |
+| [The skills](/toolchain/skills)  | Nine agent skills carrying the design system and engineering doctrine | `@nyuchi/mzizi-skills`                 | Free                           |
+| [The API](/platform/api-gateway) | `api.mzizi.dev/v1`: the registry over plain HTTP                      | `mzizi-dev/mzizi-api-gateway`          | Free, no sign-in               |
+
+`mz` and the benchmark are the language's own tools. The rest serve the language's corpus:
+the component registry the benchmark is scored against, and the doctrine an agent needs to
+write for it.
+
+## Free, until Fundi
+
+The owner decided on 29 September 2026 that **the MCP server and the CLI are free, with no
+gate.** Gating starts at **Fundi**, which ties into the console at `app.mzizi.dev`. The Fundi
+tools (`mzizi_fundi`, and `mzizi_report_issue`, which files into the Fundi issue desk) need a
+signed-in console user. Everything else is served without auth.
+
+<Note>
+  **Rolling out.** On 29 September 2026 the hosted MCP server still answers an unsigned
+  request with `401 invalid_token`. The change to serve non-Fundi tools without sign-in is
+  landing in the tooling repository now. Until it deploys, the stdio build of the MCP server
+  and the HTTP API are the no-sign-in paths. See [the MCP server](/toolchain/mcp).
+</Note>
+
+## No database behind any of it
+
+The compiler reads a file and writes to standard output. The benchmark writes results into
+the repository. The MCP server and the API serve the registry's files, bundled at build
+time from a pinned registry commit. None of them has a database. The only database in Mzizi
+is the console's. See [where data lives](/platform/data).
+
+## Where the source is
+
+`mzizi-dev/mzizi` and `mzizi-dev/mzizi-api-gateway` are public. The MCP server, the CLI and
+the skills bundle are built in a private tooling repository, `mzizi-dev/agent-tools`, so
+these docs link their published npm packages rather than their source.

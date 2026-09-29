@@ -1,94 +1,128 @@
 ---
 title: "A language designed to be written by machines that are not very good at writing"
-description: "Mzizi is an independent research project: a Rust framework whose syntax, type system and compiler feedback loop are built for small open-weight models. Phase 0 is a prototype front end, and the thesis is still unmeasured."
+description: "Mzizi is a research language and compiler in Rust whose syntax, type system and compiler feedback loop are designed for machine authorship by small open-weight models. It is a Phase 0 prototype, and the first two pilots showed no advantage."
 sidebarTitle: "Overview"
 icon: "sprout"
 mode: "wide"
 ---
 
 <Note>
-  **Read [Status](/status) before anything else.** Mzizi-lang is a Phase 0 research
-  prototype. A lexer, a recovering parser, an agent diagnostic protocol, a
-  content-addressed IR and nine primitives exist and are tested. Nothing renders, nothing
-  lowers to Rust yet, contract bodies parse but are not evaluated, and the benchmark that
-  the whole thesis rests on **has not run**. These pages document a research programme in
-  progress, not a shipping framework.
+  **Read [Status](/status) first.** Mzizi is a Phase 0 research prototype. The compiler
+  front end exists and is tested: a lexer, a recovering parser, a name and type resolver, an
+  agent diagnostic protocol, contract evaluation, a content-addressed IR and nine primitives
+  written in Mzizi. Nothing lowers to Rust yet and nothing renders. Two small pilots of the
+  benchmark ran on 2026-09-27, and **neither showed an advantage** ([results](/pilots)). The
+  run that tests the kill criterion has not happened.
 </Note>
 
-_Mzizi_ is **root** in Swahili. It is an independent research project, and it names two
-related things in the Bundu ecosystem: the component registry and design system served at
-[mzizi.dev](https://mzizi.dev), and — the subject of these pages — **Mzizi-lang**, a
-language and compiler for authoring components.
+_Mzizi_ means **root**. Mzizi is a language, and these docs lead with
+it. Everything else Mzizi makes (the compiler toolchain, the MCP server, the CLI, the API
+and the components) exists to support the language and make it stronger.
 
 ## The claim worth defending
 
-Every web framework in existence was designed assuming a human is typing, reading docs, and
-holding context in their head. The charter's bet is that this is the wrong assumption for
-where development is going:
+Every web framework was designed assuming a human is typing, reading docs and holding
+context in their head. The charter's bet is that this is the wrong assumption for where
+development is going:
 
 > Mzizi's single sharp edge: **a Rust framework whose syntax, type system, and compiler
 > feedback loop are designed for machine authorship, not just human ergonomics.**
 
-And then a correction that turns out to matter more than the original claim. RFC-0001 was
-written by a frontier model optimising for its own experience; [RFC-0002](/rfcs) withdrew
-that target:
+Then a correction that matters more than the original claim. RFC-0001 was written by a
+frontier model optimising for its own experience, and [RFC-0002](/rfcs) withdrew that
+target:
 
 > **The design target is small models.** A 7B open-weight model running locally, not a
 > frontier model with a million-token context. Frontier capability is improving on its own;
 > the language cannot help there and does not need to.
 
-That inversion is load-bearing. It is why token efficiency is a first-order goal rather than
-a fading one, why `end component button` echoes the name back at you, and why the grammar is
-small and closed rather than familiar and open. A familiarity penalty is paid once. A large
-decision space is a tax paid on every generation, and it scales inversely with model size.
+That inversion is why token efficiency is a first-order goal, why `end component button`
+echoes the name back, and why the grammar is small and closed rather than familiar and open.
+It is also why the second pilot matters: it tested that design target, and the ~7B model
+did worse in Mzizi than in Dioxus.
+
+## Where Mzizi is heading
+
+<Note>
+  **Direction, not shipped.** These are the owner's stated goals as of 29 September 2026.
+  The RFCs that turn them into designs are being written in
+  [`design/`](https://github.com/mzizi-dev/mzizi/tree/main/design). Read
+  [the roadmap](/roadmap) for how they relate to the phases.
+</Note>
+
+- **The whole stack, not only the UI.** Mzizi is meant to build the backend as well as the
+  interface. Mzizi's own backend infrastructure is meant to be built with it.
+- **Two frontend shapes.** Astro with Mzizi UI ([Mzizi Roots](/roots/overview)) underneath,
+  or pure Rust end to end.
+- **Contracts everywhere.** Everything built carries a contract: components, language
+  functions and backend handlers. Today only component contracts exist.
+- **A wider benchmark.** The benchmark will extend to TypeScript and React, Python, Go and
+  C++, on frontend and backend tasks. Today it compares Mzizi with Dioxus and Leptos on UI
+  components.
+- **A higher bar.** The kill criterion is now Mzizi against the best existing language for
+  each kind of task, aiming to rank with the top languages. It has not been measured.
+- **Every result published.** Every benchmark run lands in
+  [`benchmarks/results/`](https://github.com/mzizi-dev/mzizi/tree/main/benchmarks/results),
+  whichever way it falls.
 
 ## Where to start
 
 <CardGroup cols={2}>
   <Card title="Status" icon="gauge" href="/status">
-    What exists, what is tested, what is measured, and what is still just a design
-    document. The honest version, which is shorter than you would like.
+    What exists, what is tested, what has been measured, and what is still a design.
+  </Card>
+  <Card title="Pilot results" icon="clipboard-list" href="/pilots">
+    The two Phase 0 pilots, reported as they came out: no advantage shown.
   </Card>
   <Card title="Syntax" icon="code" href="/syntax">
     Nine named failure modes an agent hits writing Rust UI code, and the syntax decision
     that answers each one.
   </Card>
   <Card title="The nine primitives" icon="layers" href="/primitives">
-    Real `.mz` source, gated in CI, plus the packaging decision — why primitives are
-    copied files and not crates.
+    Real `.mz` source with real contracts, gated in CI, and why primitives are copied files
+    and not crates.
   </Card>
   <Card title="The compiler" icon="terminal" href="/compiler">
-    `mz check`, `mz outline`, `mz hash`, `mz ir`, and the NDJSON protocol written for a
-    reader holding zero file context.
+    `mz check --agent`, `mz contract`, `mz outline`, `mz hash` and `mz ir`, and the NDJSON
+    protocol written for a reader holding zero file context.
   </Card>
   <Card title="The IR" icon="git-branch" href="/ir">
     Content addressing: one architectural decision that answers seven of eight named
     reading barriers.
   </Card>
-  <Card title="The ecosystem" icon="map" href="/ecosystem">
-    Which repository serves which domain, and which parts of it are real today.
+</CardGroup>
+
+## What supports the language
+
+<CardGroup cols={3}>
+  <Card title="The toolchain" icon="wrench" href="/toolchain/overview">
+    The compiler, the benchmark, the MCP server, the CLI and the skills. Free to use, with
+    no sign-in.
+  </Card>
+  <Card title="Mzizi Roots" icon="component" href="/roots/overview">
+    Mzizi's own UI and server components, being rebuilt in Rust for the agentic web. In
+    progress.
+  </Card>
+  <Card title="Platform" icon="server" href="/platform/api-gateway">
+    The API at `api.mzizi.dev`, where data lives, and the console.
   </Card>
 </CardGroup>
 
 ## What Mzizi is not
 
-The charter is explicit about its non-goals, and they are worth reading before anyone
-assumes a larger claim:
+The charter is explicit about its non-goals:
 
-- **Not a rendering engine.** Phase 1 is interop with Dioxus's existing renderer. Dioxus
-  already spent years on "one codebase, four platforms"; rebuilding it buys the
-  syntax/compiler layer nothing.
-- **Not a tensor runtime.** ML inference is a declared capability backed by Candle, not a
-  competing framework.
-- **Not a post-quantum cryptography project.** Named as a future research thread and
-  explicitly out of scope.
-- **Not a web-framework target.** The compiled artifact is WASM (and native, for desktop).
-  Astro is one thin, optional distribution surface among several — not a platform Mzizi
-  targets.
+- **Not a rendering engine.** Phase 1 is interop with an existing renderer (Dioxus today).
+  Rebuilding one buys the syntax and compiler layer nothing.
+- **Not a tensor runtime.** ML inference is a declared capability backed by Candle.
+- **Not a post-quantum cryptography project.** Named as a future thread and out of scope.
+- **Not a web-framework target.** The compiled artifact is WASM, and native for desktop.
+  Astro is one thin, optional distribution surface among several.
 
 ## Ownership
 
-Mzizi-the-framework is **100% Mzizi IP**. The adjacent Mzizi console ("Fundi")
-is Nyuchi-owned and serves a different domain. That line was drawn on 27 September 2026 (the
-charter text still predates it), and the [ecosystem map](/ecosystem) follows it repository by
-repository.
+Mzizi owns and operates the framework, the language, the registry, the design system, the
+docs and the API. Nyuchi operates the console and the revenue products. Copyright notices
+name the **Bundu Foundation** as the parent copyright holder; Mzizi is not a separate legal
+entity. The [charter](/charter) states the line and the [ecosystem map](/ecosystem) follows
+it repository by repository.

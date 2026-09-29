@@ -1,0 +1,73 @@
+---
+title: "Direction and roadmap"
+description: "Where the owner has said Mzizi is going, how that relates to the charter's phases, and where the real plans live. Direction, not shipped work."
+sidebarTitle: "Direction"
+icon: "compass"
+---
+
+<Warning>
+  **Everything on this page is direction, not shipped work.** Phase 0 is still open, and the
+  charter says nothing after it starts until the benchmark gives a real number. The
+  [pilots](/pilots) so far have not shown an advantage.
+</Warning>
+
+## The owner's direction, 29 September 2026
+
+- **Mzizi builds the whole stack.** It is meant to build the backend as well as the UI, and
+  Mzizi's own backend infrastructure is meant to be built with it.
+- **The frontend takes one of two shapes.** Either Astro, with Mzizi UI
+  ([Mzizi Roots](/roots/overview)) underneath, or pure Rust end to end.
+- **Everything built carries a contract.** Components, language functions and backend
+  handlers. Today, contracts exist for components only: `mz contract` evaluates a
+  component's `contract` block against its own declarations (RFC-0006).
+- **A new kill criterion.** Mzizi against the best existing language for each kind of
+  task, aiming to rank with the top languages. Not measured yet.
+- **Results are always published**, whichever way they fall, in
+  [`benchmarks/results/`](https://github.com/mzizi-dev/mzizi/tree/main/benchmarks/results).
+  Held-out task texts are published when a task set is retired; their scores are published
+  immediately.
+- **The benchmark widens.** It will extend to TypeScript and React, Python, Go and C++, on
+  frontend and backend tasks. Today it compares Mzizi with Dioxus and Leptos on UI
+  components ([the benchmark](/benchmark)).
+
+The RFCs for the wider benchmark and for contracts everywhere are being written in
+[`design/`](https://github.com/mzizi-dev/mzizi/tree/main/design) in `mzizi-dev/mzizi`. This
+page will not describe them until they exist there.
+
+## How that fits the charter
+
+The [charter](/charter) (v0.2) already widened Mzizi from web UI to general-purpose software
+for the agentic world, and merged rendering and edge deployment into one full-stack Phase 1.
+The direction above sharpens that scope and raises the bar for Phase 0. It does not remove
+the gate:
+
+> If this doesn't show a measurable advantage, nothing downstream matters — don't build
+> Phase 1 until Phase 0 has a real number attached to it.
+
+| Phase | What it delivers                                                                    | State                    |
+| ----- | ----------------------------------------------------------------------------------- | ------------------------ |
+| 0     | A compiler and syntax prototype, and a benchmark against the best language per task | **Open.** Two pilots run |
+| 1     | A full-stack application, UI and server from the same source, on Cloudflare         | Not started, gated on 0  |
+| 2     | Candle integration for ML inference                                                 | Not started              |
+| 3     | Native mobile, interop first                                                        | Not started              |
+| 4     | Distribution adapters, Astro among them                                             | Not started              |
+| 5     | Hardware and embedded                                                               | Named, not designed      |
+
+## What has to happen next
+
+The second pilot listed the fixes to make before a run that tests the kill criterion:
+relative paths in diagnostics, hints for React idioms, removing a duplicated fact from the
+variant table, a task set that can fail, and fresh unpublished tasks. See
+[the pilot results](/pilots#what-has-to-change-before-the-real-run) for where each stands.
+
+[RFC-0007](https://github.com/mzizi-dev/mzizi/blob/main/design/RFC-0007-gap-register.md) is
+the gap register: what the charter's scope needs that the language and compiler lack, and
+the order to build it in. RFC-0008 took on the first five gaps of its first tier: name and
+type resolution, `list(T)`, `record`, `option(T)` and `for each`.
+
+## Where the plans live
+
+[`design/ROADMAP.md`](https://github.com/mzizi-dev/mzizi/blob/main/design/ROADMAP.md) in
+`mzizi-dev/mzizi` is the index of every plan in the project. It holds pointers and gates,
+not work items: plans live next to the code they plan. The separate `mzizi-roadmap`
+repository is archived and points there.

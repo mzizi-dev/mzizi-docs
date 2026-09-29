@@ -1,0 +1,112 @@
+---
+title: "The CLI"
+description: "@nyuchi/mzizi-cli and its fundi binary: explore a project offline, then plan and chat about wiring Mzizi in. Free, with no gate. The mzizi add installer is not published yet."
+sidebarTitle: "CLI"
+icon: "square-terminal"
+---
+
+<Note>
+  This is the CLI for working with Mzizi's **components and doctrine** in a project. The
+  language's own command-line tool is `mz`; see [the compiler](/compiler).
+</Note>
+
+The CLI is **free, with no gate**. That is the owner's decision of 29 September 2026: gating
+starts only at Fundi, which ties into the console.
+
+## Install
+
+```bash
+pnpm add -D @nyuchi/mzizi-cli
+```
+
+The package is [`@nyuchi/mzizi-cli`](https://www.npmjs.com/package/@nyuchi/mzizi-cli), and
+its binary is named `fundi`. The latest published version is `0.4.0`, read from npm on
+29 September 2026.
+
+## Commands
+
+The loop is **explore, then plan, then apply**.
+
+| Command                             | What it does                                                                                                                                                             |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `fundi explore`                     | Reads a few files (`package.json`, `tsconfig.json`, the global stylesheet, the Tailwind config, `components.json`) and prints a project snapshot. Offline. No model call |
+| `fundi plan <goal>`                 | **Read-only.** Plans the minimal edits to wire Mzizi in, and prints them as a dry run                                                                                    |
+| `fundi chat <message>`              | One-shot chat scoped to Mzizi doctrine                                                                                                                                   |
+| `fundi login` / `logout` / `whoami` | Save, clear or show a WorkOS identity. Only the gated Fundi tools need one                                                                                               |
+
+### Model access
+
+In the published `0.4.0`, `plan` and `chat` need an `ANTHROPIC_API_KEY` in the environment,
+because they run Fundi's own agent loop.
+
+A change on the tooling repository's `main` branch makes the key optional, and it is **not
+published yet**. Without a key, `plan` prints a deterministic context bundle (the project
+snapshot plus the Mzizi skills that match your goal) for the coding agent that ran the
+command to plan from, and `chat` points you back at that agent. The reasoning: like `tsc`,
+the CLI is usually run by an agent that already has model access.
+
+### Registry access
+
+`plan` and `chat` read the registry through [the MCP server](/toolchain/mcp). While the
+server's free tier is rolling out, the hosted endpoint still asks for a sign-in, which is why
+`fundi login` exists. Once non-Fundi tools are served without auth, the CLI needs no
+sign-in at all.
+
+## Safety
+
+- **Planning is read-only.** Writing a file and running a shell command are blocked while
+  planning, and reachable only through an explicit non-dry-run apply.
+- **Everything is sandboxed to the project root.** A path that escapes it is rejected, in
+  planning and in apply.
+- **The CLI never holds a machine credential.** It reaches Fundi only through the MCP server,
+  which acts for a signed-in user.
+
+## As a library
+
+```ts
+import { createFundi } from "@nyuchi/mzizi-cli"
+
+const fundi = await createFundi({
+  projectRoot: process.cwd(),
+  anthropicApiKey: process.env.ANTHROPIC_API_KEY!,
+})
+
+const snapshot = await fundi.explore()
+const plan = await fundi.plan("add the Mzizi token layer and a button", snapshot)
+await plan.apply({ dryRun: true })
+```
+
+The SDK reads no environment variables itself; the CLI wires them in. As a library,
+`createFundi()` still takes a key.
+
+## `mzizi add`: not published yet
+
+<Warning>
+  **`mzizi add` is not published.** An installer is in progress on a branch of the tooling
+  repository and is not in any released version of `@nyuchi/mzizi-cli`. Do not document it
+  in your own project or script against it yet.
+</Warning>
+
+Its stated aim is to resolve a component and its registry dependencies from
+`api.mzizi.dev`, pick the target from the project, and refuse rather than guess when the
+target is ambiguous. For a Rust project it is meant to add the `mzizi-ui` crate rather than
+copy `.rs` files, and `mzizi-ui` has not been published to crates.io yet.
+
+Until it ships, install React components with the shadcn CLI. See
+[consuming the registry](/registry/consuming).
+
+## Two things called fundi
+
+The name appears twice, and they are different things.
+
+<CardGroup cols={2}>
+  <Card title="Fundi, the agent behind the console" icon="activity">
+    The self-healing agent and issue desk, run under Nyuchi and tied into the console. Its
+    architecture counterpart is the N9 fundi rung of [the helix](/architecture/overview).
+    It runs as a service, not as something you install.
+  </Card>
+  <Card title="`fundi`, the CLI binary" icon="terminal">
+    The binary in `@nyuchi/mzizi-cli`, described on this page. You install it in your own
+    project and it helps you set Mzizi up there. It does not run the self-healing loop.
+  </Card>
+</CardGroup>
