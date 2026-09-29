@@ -26,7 +26,7 @@ z-index, icon sizes, touch targets, density. N1 is the only node allowed to _def
 **Is it a generic UI element — button, input, card, dialog, segmented control, toolbar?** →
 **N2 primitives**
 
-- Must **not** import `useNyuchiHarness`.
+- Must **not** import `useMziziHarness`.
 - Must carry a `data-slot` attribute.
 - Must compose classes through `cn()`.
 - Must not reference mineral colours directly — semantic tokens only.
@@ -35,8 +35,9 @@ z-index, icon sizes, touch targets, density. N1 is the only node allowed to _def
 
 **Is it a branded component carrying the mineral palette?** → **N3 brand**
 
-- Name carries a brand prefix — `nyuchi-` or `mzizi-` in the current registry.
-- Imports `useNyuchiHarness` and destructures `{ log, motion, LiveRegion }`.
+- Name carries the brand prefix — `mzizi-` in the current registry. (Former `nyuchi-*`
+  names redirect to their `mzizi-*` names.)
+- Imports `useMziziHarness` and destructures `{ log, motion, LiveRegion }`.
 - Carries an animation style that respects `prefers-reduced-motion`.
 - ARIA, `data-slot`, `focus-visible`, 48px touch targets.
 

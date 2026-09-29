@@ -6,10 +6,12 @@ icon: "dna"
 ---
 
 <Note>
-  This section documents the **Mzizi registry** — the shipping component system and design
-  system served at [mzizi.dev](https://mzizi.dev). It is not documentation for **Mzizi-lang**,
-  the Phase 0 research language the rest of this site covers. [The ecosystem
-  page](/ecosystem) draws the line between them, and the distinction is load-bearing.
+  This section documents Mzizi's **components**: the registry and design system that
+  support the language, served through [`api.mzizi.dev`](/platform/api-gateway) and browsable at
+  [mzizi.dev/components](https://mzizi.dev/components). It is not documentation for the
+  language itself; [the ecosystem page](/ecosystem) draws the line. Rust components
+  ([Mzizi Roots](/roots/overview)) lead. The React components are **the React build**:
+  they keep working, but they are deprioritised.
 </Note>
 
 Mzizi's frontend architecture is a **DNA double helix**: two entwined backbones — an
@@ -22,12 +24,12 @@ Mzizi's frontend architecture is a **DNA double helix**: two entwined backbones 
 | **strand** | A backbone grouping that nodes belong to                       |
 | **rung**   | A base pair bridging both backbones, bound to no single strand |
 
-The model is served, not written down. `GET https://mzizi.dev/api/v1/architecture` returns the
-live set, and the tables below are a snapshot of it taken on 11 September 2026 — orientation,
+The model is served, not written down. `GET https://api.mzizi.dev/v1/architecture` returns the
+live set, and the tables below are a snapshot of it taken on 29 September 2026 — orientation,
 not the contract.
 
 ```bash
-curl https://mzizi.dev/api/v1/architecture
+curl https://api.mzizi.dev/v1/architecture
 ```
 
 ## The nodes
@@ -37,9 +39,9 @@ registry held at the time of the snapshot; read the endpoint for the current num
 
 | #   | `sub_label`  | Node                | Strand         | Covenant                                            | Components |
 | --- | ------------ | ------------------- | -------------- | --------------------------------------------------- | ---------- |
-| N1  | `tokens`     | Design tokens       | swappable      | Design decisions are data, not code.                | 19         |
+| N1  | `tokens`     | Design tokens       | swappable      | Design decisions are data, not code.                | 20         |
 | N2  | `primitive`  | Primitives          | core-guarantee | A primitive does one thing well.                    | 371        |
-| N3  | `brand`      | Brand components    | shipped        | A brand component is a primitive with Ubuntu in it. | 67         |
+| N3  | `brand`      | Brand components    | shipped        | A brand component is a primitive with Ubuntu in it. | 68         |
 | N4  | `safety`     | Safety rails        | core-guarantee | Nothing harmful reaches the user.                   | 14         |
 | N5  | `resilience` | Resilience patterns | core-guarantee | Failure in one part never breaks the whole.         | 14         |
 | N6  | `pages`      | Pages               | shipped        | A page is a composition, not an implementation.     | 52         |
@@ -66,7 +68,7 @@ N9 is the self-healing rung: it consumes N8 assurance signals and remediates the
 N10 is the single home for anything document-shaped. N11 is the machine-facing surface —
 preview images, structured data, `llms.txt`, `robots`, agent-readiness — and a page with no
 preview image fails N11 the way an unvalidated input fails N4. N12 holds agent skills,
-authored in git and projected into the registry.
+authored in git and generated into the registry at build time.
 
 ## The strands
 
@@ -104,7 +106,7 @@ nothing more. Two consequences follow:
 3. **N1 is the only node allowed to define CSS values.** Every other node reads them through
    `var()`.
 4. **N6 pages never hardcode a button, card or SVG** — a page is pure composition of N2 and N3.
-5. N3 destructures `{ log, motion, LiveRegion }` from `useNyuchiHarness`; **N2 never touches
+5. N3 destructures `{ log, motion, LiveRegion }` from `useMziziHarness`; **N2 never touches
    the harness**.
 
 ## The retired axis model
@@ -120,13 +122,13 @@ An earlier version of this model described ten ecosystem nodes arranged across f
 (X horizontal, Y vertical, Z depth, plus "outside" and "documentation"). That model is gone.
 Its API surfaces were retired rather than repaired, and they say so:
 
-| Endpoint                                   | Status              |
-| ------------------------------------------ | ------------------- |
-| `GET /api/v1/architecture`                 | **200** — the helix |
-| `GET /api/v1/architecture/frontend/axes`   | **410 Gone**        |
-| `GET /api/v1/architecture/frontend/layers` | **410 Gone**        |
+| Endpoint                               | Status              |
+| -------------------------------------- | ------------------- |
+| `GET /v1/architecture`                 | **200** — the helix |
+| `GET /v1/architecture/frontend/axes`   | **410 Gone**        |
+| `GET /v1/architecture/frontend/layers` | **410 Gone**        |
 
-Verified 11 September 2026 against production.
+Verified 29 September 2026 against `api.mzizi.dev`.
 
 Retirement rather than rewiring was a deliberate call, and the reasoning generalises: rewiring
 an `axis_geometry` field to return a strand would look correct and teach the wrong model to

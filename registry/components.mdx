@@ -5,39 +5,39 @@ sidebarTitle: "Browsing"
 icon: "search"
 ---
 
-Every registry component has a live preview, full source, and an API tester on the design
-portal at [mzizi.dev/components](https://mzizi.dev/components). That gallery is a live React
-surface and does not port to this documentation site; the API endpoints below cover the same
-ground.
+[mzizi.dev/components](https://mzizi.dev/components) lists every registry component on one
+page, grouped by the node of the helix it sits on, each with its install command. A
+per-component link there (`mzizi.dev/components/<name>`) redirects to the registry's own
+portal page for it. The API endpoints below cover the same ground from a script.
 
 ## Install any component
 
 ```bash
-npx shadcn@latest add https://mzizi.dev/api/v1/ui/<component-name>
+npx shadcn@latest add https://api.mzizi.dev/v1/ui/<component-name>
 ```
 
 ## List programmatically
 
 ```bash
 # Registry index — every item, metadata only
-curl https://mzizi.dev/api/v1/ui
+curl https://api.mzizi.dev/v1/ui
 
 # A single component, with inline source
-curl https://mzizi.dev/api/v1/ui/button
+curl https://api.mzizi.dev/v1/ui/button
 
-# Use cases, variants and accessibility notes
-curl https://mzizi.dev/api/v1/ui/button/docs
-
-# Version history for one component
-curl https://mzizi.dev/api/v1/ui/button/versions
+# The Rust (Dioxus) source, where one exists
+curl https://api.mzizi.dev/v1/rs/button
 ```
+
+`/v1/ui/{name}/docs` and `/v1/ui/{name}/versions` answer `503` today; see
+[the API gateway](/platform/api-gateway#four-routes-answer-503) for why.
 
 The index response is a shadcn registry document: components sit under `items`, each with
 `name`, `type` and `description`. The per-component response adds the full source in
 `files[].content`.
 
 <Note>
-  The index is not an array. `GET /api/v1/ui` returns `{ "$schema": …, "name": "mzizi",
+  The index is not an array. `GET /v1/ui` returns `{ "$schema": …, "name": "mzizi",
   "homepage": …, "items": [ … ] }`, and a client that decodes it as a bare list decodes it to
   nothing — which then renders as an empty gallery rather than an error. This has bitten a
   real consumer; decode the envelope.
@@ -46,11 +46,11 @@ The index response is a shadcn registry document: components sit under `items`, 
 ## Naming
 
 Component naming is a deliberate mix. Framework-standard primitives keep their plain shadcn
-names — `button`, `dialog`, `card` — while brand composites carry a prefix, `nyuchi-` or
-`mzizi-`. The prefix signals a brand-specific composite; an unprefixed name is a stock
-primitive re-served through the registry.
+names — `button`, `dialog`, `card` — while many brand composites carry the `mzizi-` prefix.
+Components once named `nyuchi-*` were renamed `mzizi-*` on 27 September 2026, and the old
+names answer `308` to the new ones.
 
 ## Over MCP
 
 An agent can reach the same catalogue through the MCP server rather than the HTTP API. See
-[the MCP server](/registry/mcp).
+[the MCP server](/toolchain/mcp).
