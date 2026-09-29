@@ -65,21 +65,21 @@ schema](https://ui.shadcn.com/schema/registry.json).
 
 ## Item types
 
-Counts read from `GET https://mzizi.dev/api/v1/ui` on 11 September 2026. They move; read the
+Counts read from `GET https://api.mzizi.dev/v1/ui` on 29 September 2026. They move; read the
 endpoint rather than this table.
 
 | Type             | Count | Installs to       | What it is                                                                                                                                            |
 | ---------------- | ----- | ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `registry:ui`    | 419   | `components/ui/`  | React components — CVA variants, Radix primitives, `cn()` composition                                                                                 |
+| `registry:ui`    | 420   | `components/ui/`  | React components (the React build) — CVA variants, Radix primitives, `cn()` composition                                                               |
 | `registry:block` | 105   | composed sections | Higher-level compositions of several components                                                                                                       |
-| `registry:lib`   | 46    | `lib/`            | Pure functions, patterns and infrastructure — `utils`, `observability`, `circuit-breaker`, `retry`, `timeout`, `fallback-chain`, `chaos`, `ai-safety` |
+| `registry:lib`   | 47    | `lib/`            | Pure functions, patterns and infrastructure — `utils`, `observability`, `circuit-breaker`, `retry`, `timeout`, `fallback-chain`, `chaos`, `ai-safety` |
 | `registry:hook`  | 3     | `hooks/`          | `use-toast`, `use-mobile`, `use-memory-pressure`                                                                                                      |
 | `registry:base`  | 1     | the base layer    |                                                                                                                                                       |
 | `registry:theme` | 1     | the theme         |                                                                                                                                                       |
 
 ## API response format
 
-`GET /api/v1/ui/{name}` returns the manifest entry enriched with inlined source:
+`GET /v1/ui/{name}` returns the manifest entry enriched with inlined source:
 
 ```json
 {
@@ -102,7 +102,7 @@ endpoint rather than this table.
 
 ## The index
 
-`GET /api/v1/ui` returns every item without source:
+`GET /v1/ui` returns every item without source:
 
 ```json
 {

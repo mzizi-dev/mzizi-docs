@@ -8,6 +8,27 @@ icon: "download"
 This guide covers installing components from the Mzizi registry, customising them after
 installation, and keeping them updated.
 
+## Rust first, where it exists
+
+Mzizi's components are being rebuilt in Rust as [Mzizi Roots](/roots/overview), and where a
+Rust implementation exists it is the one to prefer. You can read any Rust component's source
+today:
+
+```bash
+curl https://api.mzizi.dev/v1/rs/button
+```
+
+That route is a read surface, not an install path. A Dioxus project is meant to depend on the
+`mzizi-ui` crate rather than copy `.rs` files, and `mzizi-ui` is **not on crates.io yet**. The
+`mzizi add` installer that would wire this up is not published either (see
+[the CLI](/toolchain/cli#mzizi-add-not-published-yet)). Until both ship, the rest of this
+page, which covers the React build, is the supported install path.
+
+## The React build
+
+The React and TypeScript components are **the React build**. They keep working and install
+with the shadcn CLI, but they are deprioritised: not the lead, and not where new work goes.
+
 ## Prerequisites
 
 Before installing components, your project needs:
@@ -22,16 +43,16 @@ Before installing components, your project needs:
 ### A single component
 
 ```bash
-npx shadcn@latest add https://mzizi.dev/api/v1/ui/button
+npx shadcn@latest add https://api.mzizi.dev/v1/ui/button
 ```
 
 ### Several at once
 
 ```bash
 npx shadcn@latest add \
-  https://mzizi.dev/api/v1/ui/card \
-  https://mzizi.dev/api/v1/ui/badge \
-  https://mzizi.dev/api/v1/ui/dialog
+  https://api.mzizi.dev/v1/ui/card \
+  https://api.mzizi.dev/v1/ui/badge \
+  https://api.mzizi.dev/v1/ui/dialog
 ```
 
 ### Hooks and libraries
@@ -40,9 +61,9 @@ Hooks and library utilities install the same way — the item type in the manife
 the file lands.
 
 ```bash
-npx shadcn@latest add https://mzizi.dev/api/v1/ui/use-toast
-npx shadcn@latest add https://mzizi.dev/api/v1/ui/utils
-npx shadcn@latest add https://mzizi.dev/api/v1/ui/circuit-breaker
+npx shadcn@latest add https://api.mzizi.dev/v1/ui/use-toast
+npx shadcn@latest add https://api.mzizi.dev/v1/ui/utils
+npx shadcn@latest add https://api.mzizi.dev/v1/ui/circuit-breaker
 ```
 
 ## Dependency resolution
@@ -104,7 +125,7 @@ interface ButtonProps
 To take the latest registry version of a component, run the same add command again:
 
 ```bash
-npx shadcn@latest add https://mzizi.dev/api/v1/ui/button
+npx shadcn@latest add https://api.mzizi.dev/v1/ui/button
 ```
 
 This **overwrites** the local file. If you have customised it:
@@ -118,11 +139,11 @@ that your version control, not the registry, arbitrates.
 
 ## Using the API directly
 
-You do not need the CLI. The JSON response carries the complete source in `files[].content`:
+You do not need the CLI, and you do not need to sign in. The JSON response carries the complete source in `files[].content`:
 
 ```bash
-curl https://mzizi.dev/api/v1/ui/button
-curl https://mzizi.dev/api/v1/ui
+curl https://api.mzizi.dev/v1/ui/button
+curl https://api.mzizi.dev/v1/ui
 ```
 
 ## Practices worth keeping

@@ -8,6 +8,15 @@ icon: "git-pull-request"
 Every registry component follows the same shape. This page is what it takes to add one to
 [`mzizi-dev/mzizi-registry`](https://github.com/mzizi-dev/mzizi-registry).
 
+<Note>
+  **New work goes to Rust.** Mzizi's own components are being rebuilt in Rust as
+  [Mzizi Roots](/roots/overview), and that is where new component work goes. The `.tsx`
+  steps below are the React build, which keeps working but is deprioritised. A component
+  with a Rust sibling lives beside its `.tsx` as a `.rs` file and has a contract test
+  asserting the two agree. The design for Roots is still being written, so check the
+  registry for its current conventions before starting a Rust component.
+</Note>
+
 ## 1. Create the component file
 
 Components live under `components/registry/n<number>-<name>/`, filed by the node they sit on.
