@@ -29,104 +29,147 @@
   },
   "favicon": "/images/favicon.ico",
   "navigation": {
-    "groups": [
+    "tabs": [
       {
-        "group": "Start here",
-        "pages": ["index", "status", "ecosystem"]
-      },
-      {
-        "group": "The language",
-        "pages": ["syntax", "primitives", "compiler", "ir"]
-      },
-      {
-        "group": "The research programme",
-        "pages": ["charter", "benchmark", "rfcs"]
-      },
-      {
-        "group": "The registry",
-        "pages": [
-          "registry/overview",
-          "registry/consuming",
-          "registry/contributing",
-          "registry/schema",
-          "registry/components",
-          "registry/mcp"
+        "tab": "Language",
+        "groups": [
+          {
+            "group": "Start here",
+            "pages": ["index", "status", "pilots", "roadmap", "ecosystem"]
+          },
+          {
+            "group": "The language",
+            "pages": ["syntax", "primitives", "ir"]
+          },
+          {
+            "group": "The research programme",
+            "pages": ["charter", "benchmark", "rfcs"]
+          }
         ]
       },
       {
-        "group": "Registry architecture",
-        "pages": [
-          "architecture/overview",
-          "architecture/nodes",
-          "architecture/backlinks"
+        "tab": "Toolchain",
+        "groups": [
+          {
+            "group": "Toolchain",
+            "pages": [
+              "toolchain/overview",
+              "compiler",
+              "toolchain/mcp",
+              "toolchain/cli",
+              "toolchain/skills"
+            ]
+          }
         ]
       },
       {
-        "group": "Foundations",
-        "pages": [
-          "foundations/overview",
-          "foundations/tokens",
-          "foundations/typography",
-          "foundations/layout",
-          "foundations/motion",
-          "foundations/icons",
-          "foundations/accessibility",
-          "foundations/internationalization"
+        "tab": "Components",
+        "groups": [
+          {
+            "group": "Mzizi Roots",
+            "pages": ["roots/overview"]
+          },
+          {
+            "group": "The registry",
+            "pages": [
+              "registry/overview",
+              "registry/consuming",
+              "registry/contributing",
+              "registry/schema",
+              "registry/components"
+            ]
+          },
+          {
+            "group": "Registry architecture",
+            "pages": [
+              "architecture/overview",
+              "architecture/nodes",
+              "architecture/backlinks"
+            ]
+          },
+          {
+            "group": "Foundations",
+            "pages": [
+              "foundations/overview",
+              "foundations/tokens",
+              "foundations/typography",
+              "foundations/layout",
+              "foundations/motion",
+              "foundations/icons",
+              "foundations/accessibility",
+              "foundations/internationalization"
+            ]
+          },
+          {
+            "group": "Patterns",
+            "pages": [
+              "patterns/overview",
+              "patterns/architecture",
+              "patterns/components",
+              "patterns/error-boundaries",
+              "patterns/observability",
+              "patterns/lazy-loading",
+              "patterns/mobile-first",
+              "patterns/dashboard",
+              "patterns/authentication",
+              "patterns/resource-index",
+              "patterns/resource-detail"
+            ]
+          },
+          {
+            "group": "Blocks",
+            "pages": [
+              "blocks/overview",
+              "blocks/dashboard",
+              "blocks/authentication",
+              "blocks/sidebar"
+            ]
+          },
+          {
+            "group": "Charts",
+            "pages": [
+              "charts/overview",
+              "charts/area",
+              "charts/bar",
+              "charts/line",
+              "charts/pie",
+              "charts/radar",
+              "charts/radial",
+              "charts/tooltip"
+            ]
+          },
+          {
+            "group": "Content style",
+            "pages": [
+              "content/overview",
+              "content/writing",
+              "content/error-messages",
+              "content/inclusive-language"
+            ]
+          }
         ]
       },
       {
-        "group": "Patterns",
-        "pages": [
-          "patterns/overview",
-          "patterns/architecture",
-          "patterns/components",
-          "patterns/error-boundaries",
-          "patterns/observability",
-          "patterns/lazy-loading",
-          "patterns/mobile-first",
-          "patterns/dashboard",
-          "patterns/authentication",
-          "patterns/resource-index",
-          "patterns/resource-detail"
+        "tab": "Platform",
+        "groups": [
+          {
+            "group": "Platform",
+            "pages": ["platform/api-gateway", "platform/data", "console"]
+          }
         ]
-      },
-      {
-        "group": "Blocks",
-        "pages": [
-          "blocks/overview",
-          "blocks/dashboard",
-          "blocks/authentication",
-          "blocks/sidebar"
-        ]
-      },
-      {
-        "group": "Charts",
-        "pages": [
-          "charts/overview",
-          "charts/area",
-          "charts/bar",
-          "charts/line",
-          "charts/pie",
-          "charts/radar",
-          "charts/radial",
-          "charts/tooltip"
-        ]
-      },
-      {
-        "group": "Content style",
-        "pages": [
-          "content/overview",
-          "content/writing",
-          "content/error-messages",
-          "content/inclusive-language"
-        ]
-      },
-      {
-        "group": "Registry tooling",
-        "pages": ["tooling", "console"]
       }
     ]
   },
+  "redirects": [
+    {
+      "source": "/tooling",
+      "destination": "/toolchain/overview"
+    },
+    {
+      "source": "/registry/mcp",
+      "destination": "/toolchain/mcp"
+    }
+  ],
   "navbar": {
     "links": [
       {
@@ -157,5 +200,5 @@
       "github": "https://github.com/mzizi-dev"
     }
   },
-  "description": "Mzizi is an independent research project: a Rust framework whose syntax, type system and compiler feedback loop are designed for machine authorship by small open-weight models. Phase 0 is a prototype front end, and nothing has yet been measured against the charter's kill criteria."
+  "description": "Mzizi is a research language and compiler in Rust whose syntax, type system and compiler feedback loop are designed for machine authorship by small open-weight models. Phase 0 is a prototype front end; two small pilots have run and neither showed an advantage."
 }

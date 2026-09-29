@@ -1,11 +1,12 @@
 ---
 title: "The ecosystem"
-description: "Which repository serves which domain, who owns each one, and which of those addresses actually resolve today."
+description: "Which repository serves which address, who operates each one, and which parts are real today. The language leads; everything else supports it."
 icon: "map"
 ---
 
-"Mzizi" names more than one thing, and the pieces have different owners and very different
-maturity. This page draws the map, and marks what is real.
+"Mzizi" names more than one thing, and the pieces have different operators and very
+different maturity. This page draws the map. The language is the subject; the toolchain,
+the components and the platform support it.
 
 ## The repositories
 
@@ -13,130 +14,119 @@ All in the [`mzizi-dev`](https://github.com/mzizi-dev) org.
 
 <CardGroup cols={2}>
   <Card title="mzizi" icon="sprout" href="https://github.com/mzizi-dev/mzizi">
-    **The language.** `mz`, the RFCs, the nine primitives, the Phase 0 benchmark harness.
-    Apache-2.0. This is what the rest of this site documents.
+    **The language.** The `mz` compiler, the RFCs, the nine primitives, the benchmark
+    harness and the pilot results. Rust, Apache-2.0, public.
 
-    _Phase 0 prototype front end._
+    _Phase 0 prototype front end. Two pilots run, no advantage shown._
 
   </Card>
   <Card title="mzizi-registry" icon="library" href="https://github.com/mzizi-dev/mzizi-registry">
-    **The component registry, brand system and developer portal.** A Next.js app whose
-    `/api/v1` surface serves `registry.json` and the component files beside it — 577 registry
-    items, the Seven African Minerals palette, the DNA-helix architecture model.
+    **The component registry, brand system and DNA-helix architecture.** 577 components in
+    `registry.json` and the files beside it, the 21-family palette, and the Rust crates
+    that [Mzizi Roots](/roots/overview) grows from. **No database**: its files are the data
+    layer.
 
-    _Live at its own Workers subdomain (`mzizi-registry.nyuchi.workers.dev`). No longer the
-    apex — see `mzizi-site` below — and its own portal pages (`/components`, `/architecture`,
-    `/tokens`, `/brand`, `/observability`) are being ported there one at a time._
+    _Its files reach clients through the API and the MCP server. Its own Worker still runs
+    on a `workers.dev` address, where the per-component portal pages that
+    `mzizi.dev/components/<name>` redirects to are served._
 
   </Card>
   <Card title="mzizi-api-gateway" icon="server" href="https://github.com/mzizi-dev/mzizi-api-gateway">
-    **`api.mzizi.dev`** — the registry API as a pure-Rust Cloudflare Worker, built on
-    `workers-rs`. A strangler fig over the Next.js handlers rather than a rewrite: one route
-    (`/v1/health`) native, everything else proxied to `mzizi-registry` byte-identical.
+    **`api.mzizi.dev`.** A Hono Cloudflare Worker in TypeScript that serves the registry's
+    files, generated at a pinned registry commit and bundled at build time. No origin, no
+    database.
 
-    _Built and merged to `main`. `api.mzizi.dev` resolves today but is still answered directly
-    by `mzizi-registry`'s own Worker — this Worker has not yet been cut over to the domain._
-
-  </Card>
-  <Card title="mzizi-console" icon="layout-dashboard" href="https://github.com/mzizi-dev/mzizi-console">
-    **`app.mzizi.dev`** — Astro renders the chrome as static HTML; Rust/Dioxus islands render
-    the data, fetched live from the registry API. Client-side WorkOS AuthKit gate, fail-closed.
-    **Run under Nyuchi**, like everything revenue-generating.
-
-    _`app.mzizi.dev` resolves and is live. The AuthKit-gating work is merged to `main` but not
-    yet redeployed._
+    _Live on `api.mzizi.dev` since 29 September 2026. See [the API gateway](/platform/api-gateway)._
 
   </Card>
   <Card title="mzizi-site" icon="globe" href="https://github.com/mzizi-dev/mzizi-site">
-    **`mzizi.dev`** — the site that brings the language, the registry and the docs together.
-    Static Astro, styled on `@bundu/ui`, reading the live registry API at build time.
+    **`mzizi.dev`.** Static Astro. It leads with the language; the components live further
+    down, at `mzizi.dev/components`.
 
-    _Live — this **is** the apex today._ Six pages so far (`/`, `/language`, `/ecosystem`,
-    `/components`, `/architecture`, `/tokens`); the registry portal's other pages
-    (`/playground`, `/skills`, `/cli`, `/observability`, per-component detail pages) are not
-    ported yet, so those still 404 here.
+    _Live._
 
   </Card>
   <Card title="mzizi-docs" icon="book-open" href="https://github.com/mzizi-dev/mzizi-docs">
-    **This site.** A Mintlify deployment, destined for `docs.mzizi.dev`.
+    **`docs.mzizi.dev`**, this site. Mintlify. The one home of Mzizi's documentation, with a
+    public docs MCP server at `docs.mzizi.dev/mcp`.
 
-    _Domain not yet live — see below._
+    _Live._
+
+  </Card>
+  <Card title="mzizi-console" icon="layout-dashboard" href="https://github.com/mzizi-dev/mzizi-console">
+    **`app.mzizi.dev`.** Astro chrome with Rust islands over the registry API, behind
+    AuthKit sign-in. **Run under Nyuchi.** The only part of Mzizi with a database.
+
+    _Live. See [the console](/console)._
 
   </Card>
 </CardGroup>
 
-The org also holds `mzizi-roadmap` (currently empty) and a private tooling repository whose
-published artefacts — the MCP server, the `fundi` CLI and the skills bundle — are documented
-under [agent tooling](/tooling), though its source is not public.
+The org also holds a private tooling repository, `mzizi-dev/agent-tools`. It builds the MCP
+server (`mzizi-mcp`, at `mcp.mzizi.dev`), the CLI and the skills bundle, which are
+documented under [the toolchain](/toolchain/overview) by their published npm packages.
+`mzizi-roadmap` is archived; the plans live in
+[`design/ROADMAP.md`](https://github.com/mzizi-dev/mzizi/blob/main/design/ROADMAP.md).
 
-## The domains, measured
+## The addresses
 
-Checked 26 September 2026 by DNS lookup, because an address the ecosystem writes down is not
-the same as an address that exists — the api-gateway repository exists precisely because
-`api.mzizi.dev` was being called by a client that asserted it "still resolves", and an earlier
-measurement said `NXDOMAIN`.
+Checked 29 September 2026 with an HTTPS request to each.
 
-| Domain           | Resolves | Served by                                                           |
-| ---------------- | -------- | ------------------------------------------------------------------- |
-| `mzizi.dev`      | **Yes**  | **mzizi-site** — cut over from mzizi-registry                       |
-| `mcp.mzizi.dev`  | **Yes**  | The one Mzizi MCP server, Streamable HTTP                           |
-| `api.mzizi.dev`  | **Yes**  | mzizi-registry still — mzizi-api-gateway is built, not yet cut over |
-| `app.mzizi.dev`  | **Yes**  | mzizi-console                                                       |
-| `docs.mzizi.dev` | **No**   | This site, when the domain is cut over                              |
+| Address          | Served by                                        | Answers                                               |
+| ---------------- | ------------------------------------------------ | ----------------------------------------------------- |
+| `mzizi.dev`      | `mzizi-site`                                     | 200                                                   |
+| `api.mzizi.dev`  | `mzizi-api-gateway`                              | 200 on `/v1`; a JSON 404 on the bare host             |
+| `mcp.mzizi.dev`  | `mzizi-mcp`, from the private tooling repository | 401 on `/mcp` without sign-in (free tier rolling out) |
+| `app.mzizi.dev`  | `mzizi-console`, run under Nyuchi                | 200, behind sign-in                                   |
+| `docs.mzizi.dev` | `mzizi-docs`, on Mintlify                        | 200                                                   |
 
-<Note>
-  If you are reading this page at a URL that is not `docs.mzizi.dev`, that is why. Cutting
-  the domain over is a deliberate human step, documented in this repository's README.
-</Note>
+Addresses move. Check one before you repeat it. The old Mzizi path on `docs.bundu.org`
+returns 404; do not link it.
 
-<Warning>
-  The `mzizi.dev` cutover above happened outside version control: a custom domain was attached
-  to `mzizi-site`'s Worker directly in the Cloudflare dashboard, with no corresponding pull
-  request in either `mzizi-site` or `mzizi-registry`. A custom domain **takes** a hostname
-  something else already serves, silently, on the next request — it broke `mzizi-registry`'s
-  own portal pages (`/components`, `/brand`, `/tokens`, `/architecture`, `/observability`),
-  which had no other address and are only now being ported to `mzizi-site` one at a time.
-  Decide the target in a pull request before attaching a custom domain to a Worker in this org.
-</Warning>
+## Who operates what
 
-## Who owns what
+This line decides which organisation's clock each piece runs on.
 
-This line is not a formality — it decides which organisation's clock each piece runs on.
+|                                                                                 | Operated by |
+| ------------------------------------------------------------------------------- | ----------- |
+| The framework, the language, the registry, the design system, the docs, the API | **Mzizi**   |
+| The console, Fundi, paid plans, billing and the other revenue products          | **Nyuchi**  |
 
-|                                                          | Owner            |
-| -------------------------------------------------------- | ---------------- |
-| The Mzizi **framework**, components and logic            | **Mzizi** — 100% |
-| The Mzizi **console** ("Fundi") and active cyber testing | **Nyuchi**       |
+Copyright notices name the **Bundu Foundation** as the parent copyright holder. Mzizi is
+not a separate legal entity. There is one ecosystem, the Bundu ecosystem, and Mzizi, nyuchi,
+mukoko and the other brands sit inside it.
 
-So the framework serves `mzizi.dev` and `api.mzizi.dev`; the console serves
-`app.mzizi.dev`. Same org on GitHub, two owners in fact.
+### Reporting a security problem
 
-## Two Mzizis, and keeping them straight
+| For                                                                   | Contact               |
+| --------------------------------------------------------------------- | --------------------- |
+| The console at `app.mzizi.dev`                                        | `security@nyuchi.com` |
+| Everything else Mzizi, including these docs, the API and the language | `security@bundu.org`  |
 
-This trips people up, so it is worth stating directly.
+Where a repository has GitHub private vulnerability reporting switched on, you can use that
+instead.
+
+## The language, and what supports it
 
 <CardGroup cols={2}>
-  <Card title="Mzizi the registry" icon="library">
-    Shipping and in production. TypeScript and React components, installable with
-    `npx shadcn@latest add https://mzizi.dev/api/v1/ui/<name>`, with a live API, an MCP
-    server, and an observability dashboard. Partially ported to Rust.
+  <Card title="The language" icon="flask-conical" href="/status">
+    A Phase 0 research prototype. A language whose benchmark against the registry's
+    components has had two small pilots and no advantage shown. Nothing built with it runs
+    anywhere yet.
   </Card>
-  <Card title="Mzizi-lang" icon="flask-conical">
-    A Phase 0 research prototype. A language for authoring those same components, whose
-    benchmark against that corpus has not run. Nothing built with it runs anywhere.
+  <Card title="The components" icon="library" href="/roots/overview">
+    Shipping and installable. Rust components are becoming Mzizi Roots and lead; the React
+    components keep working as the React build.
   </Card>
 </CardGroup>
 
-The registry is the **benchmark corpus** for the language — that is the relationship. The
-nine [primitives](/primitives) are hand ports of registry components whose TypeScript and
-partially-ported Rust implementations serve as ground truth.
+The registry is the **benchmark corpus** for the language. That is the relationship. The
+nine [primitives](/primitives) are hand ports of registry components whose React and Rust
+implementations serve as ground truth.
 
 ## Where the docs went
 
-Worth recording because links to the old locations are still in circulation. The registry
-previously ran its own Mintlify site; that is retired, and its long-form documentation moved
-to product and engineering sites outside this org. `GET /api/v1/docs` answers **HTTP 410
-Gone** rather than redirecting, which is the correct status for content that was deliberately
-removed rather than moved.
-
-This site is a new deployment covering the **language**, not a revival of that one.
+Links to older locations are still in circulation. The registry used to run its own docs
+site; that is retired, and `GET https://api.mzizi.dev/v1/docs` answers **410 Gone**. The
+Mzizi pages that lived in nyuchi's engineering docs moved here. This site is the one home of
+Mzizi's documentation.

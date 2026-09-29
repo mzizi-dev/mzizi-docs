@@ -33,13 +33,13 @@ the language."_
 ## A whole component
 
 This is `examples/connectivity_bar.mz` verbatim — a hand port of a real registry component
-(`n7-shell/nyuchi-connectivity-bar`) whose TypeScript and Rust implementations both exist, so
+(`n7-shell/mzizi-connectivity-bar`) whose TypeScript and Rust implementations both exist, so
 every line is checkable against known ground truth. RFC examples come from the benchmark
 corpus, never invented.
 
 ```mz examples/connectivity_bar.mz
 ## A status strip announcing the app's network state.
-## Corpus reference: n7-shell/nyuchi-connectivity-bar.
+## Corpus reference: n7-shell/mzizi-connectivity-bar.
 component connectivity_bar
 
   use motion
@@ -60,7 +60,7 @@ component connectivity_bar
       nothing
     end
     strip
-      slot = "nyuchi-connectivity-bar"
+      slot = "mzizi-connectivity-bar"
       class = "fixed inset-x-0 top-0 z-50 {state.color}"
       role = "status"
       text = state.label
@@ -134,6 +134,22 @@ Type names are deliberately **not** reserved. The lexer's own note explains why:
 them bought nothing and cost a collision, because `text` is also a view attribute, so lexing
 it as a keyword made a valid view line unparseable. Types resolve by position.
 
+## Types, collections and records
+
+[RFC-0008](https://github.com/mzizi-dev/mzizi/blob/main/design/RFC-0008-types-collections-records.md)
+gave the language a checker that can say no. Before it, an unknown type compiled with 0
+errors, which the first pilot found. Now the resolver checks every name and type the syntax
+tree models, and an unknown type is `MZ0701`:
+
+```text
+`strng` is not a type — types are bool, int, text, list(T), option(T), and this file's enums and records
+```
+
+The same RFC added `list(T)`, `option(T)`, `record … end`, `for each x in xs … end` in
+views, and `else` in a `when` block. `record` is recognised by position, not reserved, so the
+keyword vocabulary above is unchanged. Modules, cross-file checking, enum payloads and local
+state are not settled there.
+
 ## Variant data lives on the variant — FM-1, FM-4
 
 `enum connection_state` carries `label` and `color` as **columns on the variants**. The
@@ -205,7 +221,8 @@ surface rather than a formatting lottery.
 <Warning>
   RFC-0001 §3 specifies that `mz` **rewrites every file it touches** to canonical form.
   There is no formatter in the binary today; the `.mz` files in the repository follow the
-  convention by hand. `mz` dispatches `check`, `outline`, `hash` and `ir` and nothing else.
+  convention by hand. `mz` dispatches `check`, `contract`, `outline`, `hash` and `ir`, and
+  nothing else.
 </Warning>
 
 ## Still open

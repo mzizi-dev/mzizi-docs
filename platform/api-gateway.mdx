@@ -1,0 +1,142 @@
+---
+title: "The API gateway"
+description: "api.mzizi.dev is a Hono Cloudflare Worker that serves the registry's files, generated at a pinned registry commit and bundled at build time. No origin, no database."
+sidebarTitle: "API gateway"
+icon: "server"
+---
+
+[`api.mzizi.dev`](https://api.mzizi.dev/v1) is the registry API. It is served by
+[`mzizi-dev/mzizi-api-gateway`](https://github.com/mzizi-dev/mzizi-api-gateway), a
+[Hono](https://hono.dev) Cloudflare Worker written in TypeScript. It has **no origin, no
+database and no Supabase**. Everything it serves is a file from the registry repository,
+bundled into the Worker when it is built.
+
+It has served `api.mzizi.dev` since **29 September 2026**, when it took over from the
+registry's own Worker.
+
+<Note>
+  An earlier plan for this repository was a pure-Rust `workers-rs` proxy in front of the
+  registry's Next.js handlers. That proxy is retired. The gateway is Hono, and it implements
+  the whole public `/v1` API itself, from files.
+</Note>
+
+## Using it
+
+```bash
+curl https://api.mzizi.dev/v1                 # the discovery document
+curl https://api.mzizi.dev/v1/ui              # the component index
+curl https://api.mzizi.dev/v1/ui/button       # one component, source inline (shadcn format)
+curl https://api.mzizi.dev/v1/rs/button       # its Rust (Dioxus) source, where one exists
+curl https://api.mzizi.dev/v1/brand           # the brand system: 21 colour families
+curl https://api.mzizi.dev/v1/architecture    # the DNA helix: 8 nodes, 4 rungs, 6 strands
+curl https://api.mzizi.dev/openapi            # the OpenAPI 3.1 document
+```
+
+No sign-in and no key. The API is read-only: a path with a `GET` handler answers `OPTIONS`
+with `204`, and every other method with `405`. Both `/v1/...` (canonical) and `/api/v1/...`
+answer. `api.mzizi.dev/v1/*` redirects here.
+
+Every response carries a header naming the Worker and the registry commit it was built from:
+
+```text
+x-mzizi-source: mzizi-api-gateway; registry=61c805c2d884
+```
+
+That was the value on 29 September 2026.
+
+## How the data flows
+
+```text
+mzizi-dev/mzizi-registry          registry.json, components/, content/doctrine/, lib/ …
+        │   at the commit pinned in scripts/registry-ref.json
+        ▼
+npm run build:data                checks out that commit and runs the registry's own
+        │                         readers against it, writing src/data/*.json
+        ▼
+the Worker bundle                 the JSON is imported as modules and deployed with the code
+        │
+        ▼
+api.mzizi.dev                     serves from memory; reads nothing at request time
+```
+
+Three properties follow from that shape:
+
+- **The registry's files are the data layer.** Components, doctrine, brand, changelog,
+  skills and samples are files in [`mzizi-dev/mzizi-registry`](https://github.com/mzizi-dev/mzizi-registry).
+  The gateway reads them at build time, not at request time.
+- **The shapes are the registry's own.** The build calls the registry's readers rather than
+  reimplementing them. The Supabase client is replaced with a stub that throws, so a reader
+  that reached for a database would fail the build instead of shipping an empty answer.
+- **A registry change reaches the API only through a commit.** Moving to newer registry
+  content means changing the pin, which CI checks. Wiring the registry to open that pull
+  request automatically is planned, not built.
+
+The bundle is about 917 KiB gzipped, well under the Workers limit, so the data ships inside
+the Worker rather than in separate storage.
+
+## What it answers besides data
+
+- **`308` for renamed components.** Former `nyuchi-*` names redirect to their `mzizi-*`
+  names on `/v1/ui` and `/v1/rs`, keeping the sub-path and query. For example,
+  `/v1/ui/nyuchi-sidebar` answers `308` to `/v1/ui/mzizi-sidebar`.
+- **`410 Gone`** for retired routes: `/v1/docs`, and the retired axis and layer models under
+  `/v1/architecture/`.
+- **`308 /mcp`** to `https://mcp.mzizi.dev/mcp`.
+- **`/.well-known/security.txt`**, with the contact `security@bundu.org`.
+
+### Four routes answer 503
+
+`/v1/ui/{name}/docs`, `/v1/ui/{name}/versions`, `/v1/search` and
+`/v1/ai/instructions/{name}` answer `503 {"error":"Database not configured"}`. So does the
+discovery document's `database` block, which reads `not_configured`.
+
+That is not an outage, and there is no database to configure. The registry's handlers gated
+those routes on credentials the live Worker never had, and the gateway kept them
+byte-identical so that the cutover changed nothing a client could see. Three of them have
+their data in files and can be switched on from files in a later change. Version history is
+console data, so `/versions` stays unserved here.
+
+<Warning>
+  **The served discovery document and OpenAPI text are behind.** Both are served verbatim
+  from the registry, and on 29 September 2026 they still describe the Supabase era in places
+  (for example, "All data routes read from Supabase") and name Nyuchi as operator. The routes
+  behave as this page describes. Correcting the text is a change to a public response, so it
+  is being made in the registry rather than papered over here.
+</Warning>
+
+## Parity
+
+The acceptance test for the cutover was
+[`scripts/parity.mjs`](https://github.com/mzizi-dev/mzizi-api-gateway/blob/main/scripts/parity.mjs).
+It sends read-only requests to a baseline and a candidate: every route, every component slug
+on `/v1/ui/{name}` and `/v1/rs/{name}`, the renamed names, the filters, the error paths and
+the method handling. It diffs status, `Location`, content type, the CORS, cache and security
+headers, and the body. Intentional differences are listed in the script with their reasons.
+
+Before the domain moved, parity against the deployed Worker ran **1,359 requests with 0
+unexplained differences**. Only two differences are intentional: the bare `/v1` now serves the
+discovery document instead of an HTML 404, and an unknown path gets a small JSON 404.
+
+```bash
+node scripts/parity.mjs --baseline https://api.mzizi.dev --candidate http://localhost:8787
+```
+
+## Rollback, in brief
+
+The registry's own Worker is untouched and still answers on its `workers.dev` address. To
+roll back: revert the custom-domain route in the gateway's `wrangler.jsonc` first, or the next
+deploy takes the domain back; then move `api.mzizi.dev` from the gateway Worker back to the
+registry Worker in the Cloudflare dashboard. The gateway's README keeps the exact steps.
+
+## Developing
+
+```bash
+npm ci
+npm run build:data     # check out the pinned registry commit, generate src/data/
+npm run dev            # wrangler dev on http://localhost:8787
+npm test               # offline route tests
+npm run parity         # live api.mzizi.dev against the local Worker
+```
+
+The repository is rebase-only. See its `CONTRIBUTING.md` for changing a route or moving the
+pin.

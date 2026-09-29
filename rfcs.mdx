@@ -1,6 +1,6 @@
 ---
 title: "RFC index"
-description: "Four design documents, their status lines as written, what each settles, and what each explicitly leaves open."
+description: "Seven design documents, their status lines as written, what each settles, and what each explicitly leaves open."
 icon: "file-text"
 ---
 
@@ -15,6 +15,14 @@ Two things to know before reading any of them.
 target wrong and inverting three of its conclusions. RFC-0003 records a claim its own test
 suite falsified mid-implementation. RFC-0004 opens by correcting the premise it was
 commissioned on. That is the intended shape of the record, not disorder in it.
+
+**RFC-0005 is reserved, not missing.** The number was reserved for a catalogue-and-language
+RFC in the private tooling repository before RFC-0006 was written, and it is left free rather
+than reused.
+
+**More are coming.** RFCs for a wider benchmark (TypeScript and React, Python, Go, C++) and
+for contracts on everything built are being written in `design/`. See
+[the roadmap](/roadmap). This index lists only what is merged.
 
 **The status headers are historical.** RFC-0001 and RFC-0002 both say "nothing here is
 implemented". That was true when written. The front end now exists — see
@@ -129,6 +137,63 @@ published benchmark claim.
 
 ---
 
+## RFC-0006 — Contract evaluation
+
+<Card title="design/RFC-0006-contracts.md" icon="github" href="https://github.com/mzizi-dev/mzizi/blob/main/design/RFC-0006-contracts.md" horizontal>
+  **Status as written:** draft; implemented (`compiler/src/contract.rs`, `mz contract`).
+</Card>
+
+What a `contract` block means: the clause grammar, a fixed subject-resolution order, what
+the evaluator checks and what it deliberately does not, and why contracts participate in the
+IR hash. It also argues why evaluation is its own subcommand rather than part of `mz check`:
+the Phase 0 defect metric counts what gets **past** the compiler wrong, so the two exit codes
+must stay apart. §10.1 specifies the reference comparison that the benchmark harness now
+does.
+
+**Leaves open:** lowering contracts to Rust tests (Phase 1); contract predicates over
+collections and records.
+
+→ [The compiler](/compiler#mz-contract-does-it-do-what-it-says)
+
+---
+
+## RFC-0007 — What the language is missing for the scope the charter claims
+
+<Card title="design/RFC-0007-gap-register.md" icon="github" href="https://github.com/mzizi-dev/mzizi/blob/main/design/RFC-0007-gap-register.md" horizontal>
+  **Status as written:** draft for review — a gap register and an ordering, not an
+  implementation.
+</Card>
+
+Written after the first pilot. It lists every piece of language and toolchain infrastructure
+the charter's v0.2 scope needs and the code does not have, checks each claim against the
+code, and proposes an order. Tier 0 is what the benchmark itself needs: name and type
+checking, lists, records, options and iteration.
+
+**Leaves open:** the one-way design doors it names in §4, and the order past Tier 0.
+
+→ [Direction and roadmap](/roadmap)
+
+---
+
+## RFC-0008 — Types, collections, records, and a checker that can say no
+
+<Card title="design/RFC-0008-types-collections-records.md" icon="github" href="https://github.com/mzizi-dev/mzizi/blob/main/design/RFC-0008-types-collections-records.md" horizontal>
+  **Status as written:** draft; implemented (`compiler/src/resolve.rs`, with grammar in
+  `lex.rs` and `parse.rs`).
+</Card>
+
+RFC-0007's first five Tier 0 gaps: name and type resolution for everything the syntax tree
+models, `list(T)`, `record`, `option(T)` and `for each`. It also makes `else` real, which
+RFC-0001 always listed and the parser used to reject. Every 7B badge episode in the second
+pilot stalled on that.
+
+**Leaves open:** collection and record contract predicates, enum payloads, modules and
+cross-file checking, local state, and lowering.
+
+→ [Syntax](/syntax#types-collections-and-records)
+
+---
+
 ## Reading order
 
 <Steps>
@@ -144,5 +209,9 @@ published benchmark claim.
   </Step>
   <Step title="RFC-0003, then RFC-0004">
     The IR, then the test topology that depends on it for cross-repository references.
+  </Step>
+  <Step title="RFC-0006, then the pilots, then RFC-0007 and RFC-0008">
+    Contracts, then what the first pilots found, then the gap register and the checker it
+    led to.
   </Step>
 </Steps>

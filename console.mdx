@@ -12,7 +12,13 @@ icon: "layout-dashboard"
 </Note>
 
 [`mzizi-dev/mzizi-console`](https://github.com/mzizi-dev/mzizi-console) is the Mzizi console,
-destined for `app.mzizi.dev`. **Astro in front, Rust behind.**
+live at [`app.mzizi.dev`](https://app.mzizi.dev). **Astro in front, Rust behind.** It reads
+the registry at `https://api.mzizi.dev/v1`.
+
+It is also the one part of Mzizi with a database. Accounts, component version history,
+usage telemetry and the Fundi issue desk live there, in Supabase, and nowhere else. See
+[where data lives](/platform/data). The console is where the gated [Fundi tools](/toolchain/mcp#the-fundi-tools)
+get their signed-in user.
 
 ## The split
 
@@ -28,11 +34,8 @@ is the defect class this ecosystem keeps removing.
 
 ## Status
 
-<Note>
-  `app.mzizi.dev` **resolves and is live**, checked by DNS lookup on 26 September 2026. The
-  AuthKit sign-in gate is merged to `main` but not yet redeployed. See [the ecosystem](/ecosystem)
-  for the full measured table.
-</Note>
+`app.mzizi.dev` is **live**, behind WorkOS AuthKit sign-in (checked 29 September 2026: the
+host answers 200). Report a security problem in the console to `security@nyuchi.com`.
 
 ## What it replaces
 
@@ -56,7 +59,7 @@ listed separately rather than as nodes with an empty backbone, because belonging
 backbone is the fact the model turns on. See [the helix](/architecture/overview).
 
 **Tokens** was described in the Svelte manifest as the "Five African Minerals" palette. There
-are **seven**. That naming was removed from the framework repository and guarded against
+are **seven** minerals, in a palette of 21 colour families. That naming was removed from the framework repository and guarded against
 there; the guard does not reach a separate repository, which is how the wrong count survived
 in a client.
 
@@ -90,7 +93,7 @@ the types are self-consistent — the Svelte client's types were self-consistent
 
 ```bash
 for e in ui brand architecture; do
-  curl -s "https://mzizi.dev/api/v1/$e" -o "tests/live/$e.json"
+  curl -s "https://api.mzizi.dev/v1/$e" -o "tests/live/$e.json"
 done
 ```
 
