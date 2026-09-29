@@ -102,10 +102,11 @@ jobs:
 
       # The single editorial rule this site has, enforced rather than trusted.
       #
-      # mzizi-lang is a Phase 0 prototype: contract bodies parse but are not
-      # evaluated, nothing lowers to Rust, and the benchmark the whole thesis
-      # rests on has not run. Copy that implies otherwise is not a style problem,
-      # it is a false claim — so the phrasings that would make it are blocked.
+      # The Mzizi language is a Phase 0 prototype: `mz contract` checks a
+      # component only against itself, nothing lowers to Rust, two small pilots
+      # showed no advantage, and the run that tests the kill criterion has not
+      # happened. Copy that implies otherwise is not a style problem, it is a
+      # false claim — so the phrasings that would make it are blocked.
       #
       # status.mdx is excluded because it *quotes* these framings in order to
       # deny them; matching there is the point, not a violation.
@@ -119,9 +120,12 @@ jobs:
           pattern="$pattern|compiles to (rust|wasm) today"
           pattern="$pattern|(mzizi|mz) is stable"
           pattern="$pattern|the benchmark (shows|showed|proves|proved)"
+          pattern="$pattern|the pilots? (shows|showed|proves|proved) (an|a measurable) advantage"
+          pattern="$pattern|(faster|better|cheaper) than (raw )?(dioxus|leptos)"
+          pattern="$pattern|mzizi (is|was) (faster|better|cheaper)"
           hits=$(grep -rniE "$pattern" --include='*.mdx' . | grep -vE '^\./status\.mdx:' || true)
           if [ -n "$hits" ]; then
-            echo "::error::Overclaiming found. mzizi-lang is a Phase 0 prototype — see status.mdx:"
+            echo "::error::Overclaiming found. The Mzizi language is a Phase 0 prototype — see status.mdx:"
             echo "$hits"
             exit 1
           fi

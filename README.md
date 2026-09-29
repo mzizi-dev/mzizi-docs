@@ -1,6 +1,6 @@
 # Mzizi documentation
 
-> The Mzizi documentation site — a [Mintlify](https://mintlify.com) project covering both the Mzizi language and the Mzizi registry, and keeping them apart.
+> The Mzizi documentation site — a [Mintlify](https://mintlify.com) project that leads with the Mzizi language, then the toolchain, the components and the platform that support it.
 
 [![CI](https://github.com/mzizi-dev/mzizi-docs/actions/workflows/ci.yml/badge.svg)](https://github.com/mzizi-dev/mzizi-docs/actions/workflows/ci.yml)
 [![Lint](https://github.com/mzizi-dev/mzizi-docs/actions/workflows/lint.yml/badge.svg)](https://github.com/mzizi-dev/mzizi-docs/actions/workflows/lint.yml)
@@ -13,8 +13,9 @@
 
 ## This is the home of Mzizi's documentation
 
-**[docs.mzizi.dev](https://docs.mzizi.dev) is live.** Checked 2026-09-27: HTTP 200, with
-Mintlify and Vercel response headers. This repository is the single home of Mzizi's
+**[docs.mzizi.dev](https://docs.mzizi.dev) is live.** Checked 2026-09-29: HTTP 200. Its
+Mintlify MCP server at `https://docs.mzizi.dev/mcp` is public, and `mcp.mzizi.dev` federates
+it as `docs_*` tools, so page changes here reach agents through both. This repository is the single home of Mzizi's
 documentation — language and registry both. Link `docs.mzizi.dev` for anything Mzizi;
 do not link the old Mzizi path on `docs.bundu.org`, which returns 404.
 
@@ -27,85 +28,68 @@ where Mzizi's docs live.
 
 ## What it documents
 
-It documents two things that share a name, and keeps them apart.
+Four tabs, in this order, because the language is the main subject and everything else
+supports it:
 
-**Mzizi-lang** — the Phase 0 research language, its `mz` compiler, the nine primitives, the
-content-addressed IR and the four RFCs — from
-[`mzizi-dev/mzizi`](https://github.com/mzizi-dev/mzizi). These are the pages in the flat root
-directory.
-
-**The Mzizi registry** — the shipping component system, the brand system and the DNA-helix
-architecture, from
-[`mzizi-dev/mzizi-registry`](https://github.com/mzizi-dev/mzizi-registry). These are the pages
-under `architecture/`, `registry/`, `foundations/`, `patterns/`, `blocks/`, `charts/` and
-`content/`, plus `tooling.mdx` and `console.mdx`.
-
-The registry used to be served at `mzizi.dev`. **It is not any more.** As of 2026-09-12 the
-apex serves a three-page site from
-[`mzizi-dev/mzizi-site`](https://github.com/mzizi-dev/mzizi-site), and `/components`,
-`/tokens`, `/brand`, `/architecture`, `/observability` and `/r/` all 404 there. The API
-survived on `api.mzizi.dev` and the MCP server on `mcp.mzizi.dev`; the developer portal has
-no live address. Pages here that send a reader to `mzizi.dev/<something>` are pointing at a
-404 — see [Known content debt](#known-content-debt).
-
-They are different things with different maturity, and the distinction is load-bearing.
-`ecosystem.mdx` draws the line, and every section landing page under the registry tree repeats
-it.
+| Tab            | What it covers                                                                                                                        | Source of truth                                                                                            |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| **Language**   | Status, the pilot results, direction, syntax, primitives, the IR, the charter, the benchmark, the RFCs                                | [`mzizi-dev/mzizi`](https://github.com/mzizi-dev/mzizi)                                                    |
+| **Toolchain**  | `mz`, the MCP server, the CLI, the skills bundle                                                                                      | `mzizi-dev/mzizi`, and the published `@nyuchi/mzizi-*` npm packages                                        |
+| **Components** | Mzizi Roots (Rust-first, in progress), the registry, the DNA-helix architecture, foundations, patterns, blocks, charts, content style | [`mzizi-dev/mzizi-registry`](https://github.com/mzizi-dev/mzizi-registry) and `api.mzizi.dev/v1`           |
+| **Platform**   | The API gateway, where data lives, the console                                                                                        | [`mzizi-dev/mzizi-api-gateway`](https://github.com/mzizi-dev/mzizi-api-gateway), `mzizi-dev/mzizi-console` |
 
 ## The one editorial rule
 
-Mzizi-lang is a **prototype front end**. Its own README says so: contract bodies parse but
-are not evaluated, the Phase 0 benchmark has not run, and _"nothing here has yet been
-measured against the charter's kill criteria."_
+The Mzizi language is a **prototype front end**. Two small pilots of its benchmark ran on
+2026-09-27 and **neither showed an advantage**; the run that tests the kill criterion has not
+happened. Documentation that implies a working production language would be actively
+misleading, so `status.mdx` states the position in full, `pilots.mdx` reports the results
+as they fell, and every page that touches an unimplemented feature marks it. CI enforces the
+floor of this with a grep for overclaiming phrasings (the `honesty` job in
+`.github/workflows/ci.yml`); the grep is a backstop, not the standard. The standard is that
+a claim on this site is either checkable in the source repository or labelled as a design
+intention.
 
-Documentation that implies a working production language would be actively misleading, so
-`status.mdx` states the position in full and every page that touches an unimplemented feature
-marks it. CI enforces the floor of this with a grep for overclaiming phrasings (the `honesty`
-job in `.github/workflows/ci.yml`); the grep is a backstop, not the standard. The standard is
-that a claim on this site is either checkable in the source repository or labelled as a
-design intention.
+## Facts that drift
 
-## Known content debt
+Checked 2026-09-29. Most inherited prose gets at least one of these wrong.
 
-Counted on 2026-09-12 with `grep` over `*.mdx`, and **not fixed in this change** — a
-README pass is the wrong vehicle for a 22-file content migration, and `prettier --write`
-corrupts MDX comments, so this needs doing carefully and on its own branch.
-
-| What                                            | Files | Why it is wrong                                                                                                       |
-| ----------------------------------------------- | ----: | --------------------------------------------------------------------------------------------------------------------- |
-| The install form `https://mzizi.dev/api/v1/...` |    22 | That host returns **404**. The canonical form is `https://api.mzizi.dev/v1/ui/<name>`, which returns 200              |
-| "Five African Minerals"                         |     3 | The palette is **21 colour families**: 7 minerals, 7 heritage, 7 experimental                                         |
-| "Seven African Minerals" as the whole palette   |     3 | The minerals are seven; the palette is twenty-one. Correct as a count of one group, wrong as a description of the set |
-| `ecosystem.mdx` on `docs.mzizi.dev`             |     1 | Its dated subdomain table still says `docs.mzizi.dev` does not resolve. It does, as of 2026-09-27                     |
-
-Live sources to check a claim against: `GET https://api.mzizi.dev/api/v1/brand` returns
-three arrays of seven, and `GET https://api.mzizi.dev/api/v1/architecture` returns 8 nodes,
-4 rungs and 6 strands. "Axis", "axes" and "layer" are retired vocabulary.
-
-There is **no database** behind any of it. The registry is disk — `registry.json` and
-`content/doctrine/**` in `mzizi-registry`. D1 exists only for the MCP server and for fundi
-logging.
+- **No database outside the console.** The registry is files (`registry.json`, component
+  source, `content/doctrine/**`). `api.mzizi.dev` is `mzizi-api-gateway`, a Hono Worker
+  that bundles those files from a pinned registry commit; `mcp.mzizi.dev` does the same.
+  Only `mzizi-console` uses Supabase.
+- **The install form is `https://api.mzizi.dev/v1/ui/<name>`.** `mzizi.dev/api/v1/*`
+  redirects there.
+- **The palette is 21 colour families**: 7 minerals, 7 heritage, 7 experimental.
+- **The architecture is the DNA helix**: 8 nodes, 4 rungs, 6 strands. "Axis", "axes" and
+  "layer" are retired vocabulary.
+- **`nyuchi-*` components are `mzizi-*`**, with 308 redirects from the old names.
+- **Security contacts:** `security@nyuchi.com` for the console, `security@bundu.org` for
+  everything else Mzizi.
 
 ## Layout
 
 ```
-docs.json          navigation, theme, colours, fonts, contextual menu
+docs.json          navigation (four tabs), redirects, theme, colours, fonts, contextual menu
 style.css          neutral ramp + base font size (auto-loaded by Mintlify on deploy)
-*.mdx              the Mzizi-lang pages, flat at the root
+*.mdx              the language pages, flat at the root, plus compiler.mdx and console.mdx
+toolchain/         the toolchain overview, the MCP server, the CLI, the skills bundle
+roots/             Mzizi Roots, the Rust-first components (in progress)
+registry/          consuming, contributing, schema, browsing
 architecture/      the DNA helix, node placement, component backlinks
-registry/          consuming, contributing, schema, browsing, the MCP server
 foundations/       tokens, typography, layout, motion, icons, a11y, i18n
 patterns/          the mandatory application patterns
 blocks/ charts/    composed page sections; the Recharts wrappers
 content/           voice, tone, error messages, inclusive language
+platform/          the API gateway, where data lives
 images/            favicon
 scripts/           check-contrast.mjs — the APCA 3.0 gate CI runs
 ```
 
-The registry pages were consolidated in from two other organisations' Starlight sites
-(`bundu-labs/bundu-docs` and `nyuchi/nyuchi-docs`). Nothing was removed from those sites —
-see the import notes in the pull requests that landed them. That is also where the content
-debt above came in from.
+The component pages were consolidated in from two other organisations' Starlight sites
+(`bundu-labs/bundu-docs` and `nyuchi/nyuchi-docs`). The last Mzizi pages in
+`nyuchi/nyuchi-docs` (the `mzizi-tools/` section) were folded in on 2026-09-29; see that pull
+request for what moved and what was dropped as obsolete.
 
 ## Running it locally
 
@@ -158,5 +142,5 @@ See [`AGENTS.md`](./AGENTS.md) for the merge convention and the MDX/prettier got
 
 Licensed under the [Apache License 2.0](./LICENSE).
 
-Mzizi is an independent open-architecture project that owns, operates and develops its
-framework, design system and registry.
+Mzizi owns and operates its framework, language, registry, design system, docs and API. The
+Bundu Foundation is the parent copyright holder.
