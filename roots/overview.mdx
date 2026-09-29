@@ -1,0 +1,88 @@
+---
+title: "Mzizi Roots"
+description: "Mzizi Roots: Mzizi's own UI and server components for the agentic web, being rebuilt in Rust. In progress. The React components keep working as the React build."
+sidebarTitle: "Mzizi Roots"
+icon: "component"
+---
+
+<Warning>
+  **In progress.** Mzizi Roots is a direction with work under way, not a finished library.
+  The design is being written up as an RFC in the registry (`docs/roots/RFC-roots.md`), and it
+  has not landed yet. This page describes the direction only. Where it and that RFC disagree
+  once the RFC is merged, the RFC is right.
+</Warning>
+
+**Mzizi Roots** is the name for Mzizi's own branded components rebuilt in Rust: **UI and
+server components, built for the agentic web.** It is where new component work goes.
+
+## Rust first
+
+- **Rust is the lead.** Where a Rust implementation of a component exists, it is the one to
+  use, and these docs present it first.
+- **The React build keeps working.** The React and TypeScript (`.tsx`) components stay in
+  the registry and stay installable. They are **deprioritised**: not the lead, and not where
+  new work goes. These docs call them **the React build**.
+- **UI and server.** Roots covers the handlers that serve a component as well as the
+  component, which is the charter's full-stack shape for Phase 1.
+
+This follows from the owner's direction for Mzizi as a whole: the frontend is either Astro
+with Mzizi UI (Roots) underneath, or pure Rust end to end, and everything built carries a
+contract. See [the roadmap](/roadmap).
+
+## How Roots relates to the language
+
+Roots components are written in Rust today, not in Mzizi. The language cannot produce them
+yet: nothing lowers to Rust, and Phase 1 waits on the benchmark ([Status](/status)).
+
+The relationship runs the other way for now. The registry's components, React and Rust
+together, are the **benchmark corpus**: the fixed ground truth the language is measured
+against. The nine [primitives](/primitives) are hand ports of registry components, and the
+benchmark scores a candidate against a component's Rust reference. A component with a Rust
+sibling is a component the benchmark can score.
+
+## What exists today
+
+The Rust half of the registry lives in `mzizi-rs/` in
+[`mzizi-dev/mzizi-registry`](https://github.com/mzizi-dev/mzizi-registry), a Cargo workspace:
+
+| Crate             | What it holds (from each crate's own description)                                   |
+| ----------------- | ----------------------------------------------------------------------------------- |
+| `mzizi-tokens`    | N1 design tokens: the 21-family palette as Rust consts, generated from one source   |
+| `mzizi-ui`        | N2 primitives for Dioxus: button, badge and card                                    |
+| `mzizi-shell`     | N7 app chrome for Dioxus: bottom nav, footer, command palette, connectivity, toasts |
+| `mzizi-assurance` | N8 assurance: probes, telemetry and the OTLP exporter                               |
+| `mzizi-fundi`     | The N9 fundi rung, client side: what is worth filing, and shaping the issue         |
+| `mzizi-docs`      | The N10 documentation rung: AI context, docs API and routing, changelog             |
+| `mzizi-discovery` | The N11 discovery rung: page metadata and Schema.org JSON-LD                        |
+
+They are compiled and contract-tested in the registry's CI. Every primitive with a Rust
+sibling has a test asserting that its `.tsx` and `.rs` agree on variants, `data-slot` names
+and classes.
+
+None of these crates is published to crates.io yet, including `mzizi-ui` (checked
+29 September 2026). You can read a component's Rust source over the API:
+
+```bash
+curl https://api.mzizi.dev/v1/rs/button
+```
+
+That route is a read surface, not an install path. A Rust project is meant to depend on the
+`mzizi-ui` crate, not copy `.rs` files into itself, and that has to wait for the crate to be
+published.
+
+## Where to go next
+
+<CardGroup cols={2}>
+  <Card title="The registry" icon="library" href="/registry/overview">
+    How the registry works, and how to install from it today.
+  </Card>
+  <Card title="The helix" icon="dna" href="/architecture/overview">
+    The DNA-helix architecture every component, Rust or React, is placed on.
+  </Card>
+  <Card title="Browse the components" icon="search" href="https://mzizi.dev/components">
+    Every component, grouped by node, at `mzizi.dev/components`.
+  </Card>
+  <Card title="The MCP server" icon="plug" href="/toolchain/mcp">
+    Read any component, its tokens and its doctrine from an agent.
+  </Card>
+</CardGroup>

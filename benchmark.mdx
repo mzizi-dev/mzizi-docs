@@ -1,13 +1,14 @@
 ---
 title: "The Phase 0 benchmark"
-description: "The measurement the whole thesis rests on: what it measures, why one input to it is held out, and the dependency rule that keeps the public project forkable. It has not run."
+description: "The measurement the whole thesis rests on: what it measures, the harness that runs it, why one input is held out, and the dependency rule that keeps the public project forkable. Two pilots have run; the kill-criterion run has not."
 icon: "flask-conical"
 ---
 
 <Warning>
-  **The benchmark has not run.** No arm of it — frontier or small-model — has produced a
-  number. The harness mechanics are unspecified past the decisions on this page. Everything
-  below is design, and the kill criterion has therefore never had the chance to fire.
+  **Two pilots have run, and neither showed an advantage for Mzizi.** Both ran on
+  2026-09-27, on two or three small tasks. With a frontier model the arms tied; with a ~7B
+  open-weight model Mzizi did worse on all three metrics. Neither is the run that tests the
+  kill criterion, and that run has not happened. See [the pilot results](/pilots).
 </Warning>
 
 ## What it measures
@@ -21,10 +22,18 @@ Dioxus and Leptos under the same harness. Three metrics:
 | **Iterations to a clean compile**    | FM-2 (anonymous delimiters) and FM-5 (round-trip starvation) |
 | **Defect rate** — compiles but wrong | FM-1, FM-3, FM-7, and contracts being in-language            |
 
-The stopping rule, from RFC-0001 §6:
+The stopping rule, as RFC-0001 §6 first wrote it:
 
 > If Mzizi doesn't beat both on at least two of three metrics, the thesis is wrong and Phase
 > 1 does not start.
+
+<Note>
+  **Owner decision, 29 September 2026: the kill criterion is now Mzizi against the best
+  existing language for each kind of task**, with the aim of ranking with the top languages.
+  Dioxus and Leptos are the comparison for Rust UI components today; other kinds of task
+  will be compared with whatever language is strongest at them. It has not been measured.
+  The charter and RFC-0001 still state the narrower rule above.
+</Note>
 
 And from RFC-0002 §5, an addition that matters because the whole design target changed:
 **the benchmark must include a small open-weight model arm.** The frontier arm alone cannot
@@ -34,8 +43,8 @@ validate the thesis, because the frontier model is the one the design helps leas
 
 Both resolved in the charter (§6, dated 2026-08-23).
 
-**Task set: Mzizi's own components.** The registry's 571-plus components, partially ported to
-Rust, with the existing `.tsx` and `.rs` implementations as ground truth. Explicitly **not**
+**Task set: Mzizi's own components.** The registry's 577 components, a growing number of them
+with Rust siblings, with the existing `.tsx` and `.rs` implementations as ground truth. Explicitly **not**
 a port of an external library — not shadcn, not a generic primitive set. The nine
 [primitives](/primitives) and the one worked [example](/syntax#a-whole-component) in the
 repository are hand ports from exactly this corpus.
@@ -49,6 +58,42 @@ deliberate divergence.
 Note what is _not_ a defect: a syntax or compile error. That is the normal friction the
 compile-error-density design goal is trying to minimise. The defect rate measures what gets
 **past** the compiler wrong.
+
+## The harness that runs it
+
+The public half of the benchmark is built, and lives in
+[`benchmarks/`](https://github.com/mzizi-dev/mzizi/tree/main/benchmarks) in `mzizi-dev/mzizi`:
+
+| Piece                   | What it does                                                                                        |
+| ----------------------- | --------------------------------------------------------------------------------------------------- |
+| `benchmarks/runner`     | `mzbench`, the episode runner. It drives an author through compile iterations and records every one |
+| `benchmarks/harness`    | The scorer. It diffs a candidate's variants, defaults and touch heights against the Rust reference  |
+| `benchmarks/arms`       | The Dioxus and Leptos arms, each a sandbox crate with a `check.sh`                                  |
+| `benchmarks/prompts`    | One guide per arm, built by the same prompt builder                                                 |
+| `benchmarks/tasks`      | The public pilot tasks: `button`, `badge`, `mzizi-changelog-renderer`                               |
+| `benchmarks/openweight` | Setup and drivers for a local open-weight model                                                     |
+| `benchmarks/results`    | Every pilot run, raw episodes included                                                              |
+
+CI runs the harness and runner tests with the rest of the workspace. The held-out task set
+does not exist yet (see below), so every run so far has used public tasks.
+
+## Where the benchmark is going
+
+<Note>
+  **Direction, not shipped.** The owner has said the benchmark will extend beyond UI
+  components in Rust: to TypeScript and React, Python, Go and C++, on frontend and backend
+  tasks. The RFCs for that are being written in
+  [`design/`](https://github.com/mzizi-dev/mzizi/tree/main/design). Until they land, the
+  benchmark is what this page describes: Mzizi against Dioxus and Leptos, on UI components.
+</Note>
+
+## Results are always published
+
+The owner's rule: **every run is published, whichever way it falls.** Each lands in
+[`benchmarks/results/`](https://github.com/mzizi-dev/mzizi/tree/main/benchmarks/results)
+with its raw episodes. That includes the two pilots, which did not show an advantage. For
+the held-out set, scores are published immediately; the task texts are published only when a
+task set is retired, so that publishing them does not contaminate a set still in use.
 
 ## Why one input is held out
 

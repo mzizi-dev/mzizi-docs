@@ -1,0 +1,64 @@
+---
+title: "Where data lives"
+description: "No database exists anywhere in Mzizi outside the console. The registry's files are the data layer; the API and the MCP server bundle them at build time."
+sidebarTitle: "Where data lives"
+icon: "database"
+---
+
+**There is no database outside the console.** Not behind the registry, not behind the API,
+and not behind the MCP server. Checked 29 September 2026.
+
+## Files are the data layer
+
+The registry, [`mzizi-dev/mzizi-registry`](https://github.com/mzizi-dev/mzizi-registry), holds
+no database. Supabase was removed from it on 29 September 2026
+([`mzizi-registry#368`](https://github.com/mzizi-dev/mzizi-registry/pull/368)). What it holds
+is files:
+
+| Data                                   | Lives in                                          |
+| -------------------------------------- | ------------------------------------------------- |
+| The component manifest                 | `registry.json`                                   |
+| Component source (`.tsx`, `.rs`)       | `components/registry/n<number>-<name>/`           |
+| Brand tokens, 21 colour families       | `lib/tokens/`, generated from `palette.source.ts` |
+| Doctrine, architecture, Ubuntu pillars | `content/doctrine/`                               |
+| Changelog, skills, OpenAPI             | Generated `lib/*.generated.ts` files              |
+| Former `nyuchi-*` names                | `lib/component-renames.json`                      |
+
+A human changes the registry with a file edit, where a diff and a reviewer can see it.
+Writing component source with SQL was retired before the database itself was removed, and
+no component is stored in a database row.
+
+## Who serves the files
+
+| Surface                                  | Reads the files                                                       | Database |
+| ---------------------------------------- | --------------------------------------------------------------------- | -------- |
+| [`api.mzizi.dev`](/platform/api-gateway) | At build time, from a pinned registry commit, bundled into the Worker | None     |
+| [`mcp.mzizi.dev`](/toolchain/mcp)        | At build time, from a pinned registry commit, bundled into the Worker | None     |
+| [`mzizi.dev`](https://mzizi.dev)         | At build time, from the API, into static pages                        | None     |
+| [`docs.mzizi.dev`](/)                    | These pages are files in `mzizi-dev/mzizi-docs`                       | None     |
+
+Because both Workers pin a registry commit, "what does `api.mzizi.dev` serve?" always has an
+exact answer: the registry at that commit. The API names it in its `x-mzizi-source` header,
+and the MCP server names it in
+[`catalogue.json`](https://mcp.mzizi.dev/catalogue.json).
+
+## The console is the one database
+
+The Mzizi console at [`app.mzizi.dev`](/console), run under Nyuchi, is the only part of Mzizi
+that uses a database, Supabase. It holds what cannot be a file:
+
+- accounts, users, keys and anything else per-user;
+- component version history, written by releases;
+- usage telemetry;
+- the Fundi issue desk, self-healing log and observability events.
+
+That is why the API's version-history route answers `503`, and why `/v1/stats` reports
+zeroed usage totals alongside real per-node counts. The data behind them belongs to the
+console, not to the registry.
+
+<Note>
+  If you find a Mzizi page, README or response that says the registry, the API or the MCP
+  server reads from Supabase or another database, it predates 29 September 2026 and is wrong.
+  The API's own discovery document and OpenAPI text are two such places; see
+  [the API gateway](/platform/api-gateway#four-routes-answer-503).
+</Note>
