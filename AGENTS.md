@@ -89,8 +89,10 @@ An owner rule, 2026-09-30: **docs.mzizi.dev must never lag the language or the c
 - Anyone changing the language or the components should expect a docs update to follow, and
   should say in their pull request that they changed it.
 - `node scripts/check-freshness.mjs` compares the facts it knows how to find (package and
-  crate versions, the language's test count and checked commit, the API pin, the MCP Registry
-  entry) with their live sources. `.github/workflows/freshness.yml` runs it daily and on
+  crate versions, the language's test count and checked commit, the API and MCP registry pins,
+  the crate `/v1/rs/{name}` names for each first-batch component, the MCP Registry entry) with
+  their live sources. While every Roots crate is on crates.io, it also fails on any page that
+  says one is not. `.github/workflows/freshness.yml` runs it daily and on
   demand. It needs the network, so it is not a required check. When you move one of those
   facts on a page, keep the sentence shape the script matches, or update the script.
 

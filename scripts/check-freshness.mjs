@@ -74,6 +74,7 @@ for (const [pkg, path, re] of npm) {
 }
 
 // crates.io: every crate the Roots page lists, at the version it states.
+let cratesAllPublished = false;
 await check("crates.io", async () => {
   const roots = page("roots/overview.mdx");
   const [version] = stated("roots/overview.mdx", /on crates\.io at `([0-9.]+)`/, "the crate version") ?? [];
@@ -83,6 +84,37 @@ await check("crates.io", async () => {
   for (const crate of crates) {
     const { body } = await get(`https://crates.io/api/v1/crates/${crate}`);
     compare(`crates.io ${crate} (roots/overview.mdx)`, version, body.crate.max_version);
+  }
+  cratesAllPublished = crates.length > 0;
+});
+
+// While every Roots crate is on crates.io, no page may say one is not. This wording was true
+// until 30 September 2026 and has come back in edits before; the live crates.io answer above
+// is what makes it wrong, so the check only runs once that answer is in.
+if (cratesAllPublished) {
+  const notPublished =
+    /not (yet )?(on|published (to|on)) crates\.io|crates? (is|are) (not|un)published|(until|while) (the|a|its) crates? (is|are) (un)?published/i;
+  const pages = execFileSync("git", ["ls-files", "*.mdx", "*.md"], {
+    encoding: "utf8",
+    cwd: new URL("..", import.meta.url),
+  })
+    .split("\n")
+    .filter(Boolean);
+  const hits = pages.filter((path) => notPublished.test(page(path).replace(/\s+/g, " ")));
+  if (hits.length > 0) drift.push(`a page says a Roots crate is not on crates.io, but all are: ${hits.join(", ")}`);
+  else console.log(`ok     no page says a Roots crate is not on crates.io (${pages.length} pages)`);
+}
+
+// api.mzizi.dev /v1/rs: the first Roots batch is served, each naming the crate the page says.
+await check("api.mzizi.dev /v1/rs", async () => {
+  const roots = page("roots/overview.mdx");
+  const batch = roots.slice(roots.indexOf("## The first batch"), roots.indexOf("**Each one carries a contract"));
+  const [crate] = stated("roots/overview.mdx", /They ship in `(mzizi-[a-z-]+)`/, "the batch's crate") ?? [];
+  const names = [...batch.matchAll(/`(mzizi-[a-z-]+)`/g)].map((m) => m[1]).filter((n) => n !== crate);
+  if (names.length === 0) drift.push("roots/overview.mdx: no first-batch component list found");
+  for (const name of names) {
+    const { body } = await get(`https://api.mzizi.dev/v1/rs/${name}`);
+    compare(`api.mzizi.dev /v1/rs/${name} crate (roots/overview.mdx)`, crate, body.crate?.name);
   }
 });
 
@@ -124,6 +156,34 @@ await check("api.mzizi.dev", async () => {
   const { headers } = await get("https://api.mzizi.dev/v1/health");
   const live = (headers.get("x-mzizi-source") ?? "").match(/registry=([0-9a-f]+)/)?.[1];
   compare("api.mzizi.dev registry pin (platform/api-gateway.mdx)", docs, live);
+});
+
+// mcp.mzizi.dev: the registry commit the MCP server is built from, and that the Roots page
+// names the same commit for both servers.
+await check("mcp.mzizi.dev", async () => {
+  const [docs] = stated("toolchain/mcp.mdx", /it was registry commit `([0-9a-f]+)`/, "the MCP pin") ?? [];
+  const [roots] =
+    stated("roots/overview.mdx", /the API was built from registry commit `([0-9a-f]+)`/, "the API pin") ?? [];
+  const res = await fetch("https://mcp.mzizi.dev/mcp", {
+    method: "POST",
+    headers: {
+      "user-agent": UA,
+      "content-type": "application/json",
+      accept: "application/json, text/event-stream",
+    },
+    body: JSON.stringify({
+      jsonrpc: "2.0",
+      id: 1,
+      method: "tools/call",
+      params: { name: "mzizi_mcp_describe", arguments: {} },
+    }),
+  });
+  if (!res.ok) throw new Error(`mcp.mzizi.dev answered ${res.status}`);
+  const live = (await res.text()).match(/mzizi-registry\/tree\/([0-9a-f]{40})/)?.[1];
+  if (!live) throw new Error("mzizi_mcp_describe no longer names its registry commit");
+  const short = (sha) => (sha && live.startsWith(sha) ? live.slice(0, sha.length) : live);
+  compare("mcp.mzizi.dev registry pin (toolchain/mcp.mdx)", docs, short(docs));
+  compare("registry pin roots/overview.mdx states for both servers (vs mcp.mzizi.dev)", roots, short(roots));
 });
 
 // The MCP Registry: the server name the MCP page gives, and that it is active.

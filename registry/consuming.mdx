@@ -30,8 +30,9 @@ You can read any Rust component's source too:
 curl https://api.mzizi.dev/v1/rs/button
 ```
 
-That route is a read surface, not an install path. The rest of this page covers the React
-build.
+That route is a read surface, not an install path. Its `crate` field names the crate the
+component ships in, which differs by node: `mzizi-ui` for `button`, `mzizi-brand` for
+`mzizi-alert-banner`. The rest of this page covers the React build.
 
 ## The React build
 

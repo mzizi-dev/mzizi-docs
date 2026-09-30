@@ -118,8 +118,10 @@ Start with `mzizi_search` when you do not know the name of the thing you want, a
 
 Because the generator runs the registry's route handlers rather than re-deriving their
 output, a tool answers with the payload `api.mzizi.dev/v1` would give at the same commit.
-`catalogue.json` names the pinned registry commit in `source.registry`. Moving to newer
-registry content is a change to that pin, so it is a reviewed commit.
+`catalogue.json` names the pinned registry commit in `source.registry`, and
+`mzizi_mcp_describe` reports it. On 30 September 2026 it was registry commit `9b86e03`, the
+same commit [`api.mzizi.dev`](/platform/api-gateway) is built from. Moving to newer registry
+content is a change to that pin, so it is a reviewed commit.
 
 The server holds no database credential. Former `nyuchi-*` component names resolve to their
 `mzizi-*` names through the registry's rename map, bundled with the rest.

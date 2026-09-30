@@ -128,11 +128,19 @@ You can read a component's Rust source over the API:
 curl https://api.mzizi.dev/v1/rs/button
 ```
 
-That route is a read surface, not an install path: depend on the crate instead. On
-30 September 2026 the API was built from registry commit `ce68c64`, which predates the first
-batch. So `/v1/rs/{name}` did not yet serve the twelve brand components, and its `crate` field
-named `mzizi-ui` for every component. Both change when the API's registry pin moves forward.
-The crates on crates.io already carry the batch.
+That route is a read surface, not an install path: depend on the crate instead. Each
+document's `crate` field names the crate its component ships in, so it answers which one to
+depend on:
+
+```bash
+curl -s https://api.mzizi.dev/v1/rs/mzizi-alert-banner | jq .crate
+# { "name": "mzizi-brand", "registry": "crates.io", "git": "https://github.com/mzizi-dev/mzizi-registry" }
+```
+
+On 30 September 2026 the API was built from registry commit `9b86e03`, and so was the
+[MCP server](/toolchain/mcp). At that commit `/v1/rs/{name}` serves all twelve brand
+components, each naming `mzizi-brand`, alongside the primitives in `mzizi-ui`, the app chrome
+in `mzizi-shell` and the server rungs in their own crates.
 
 ## Where to go next
 
