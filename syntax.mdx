@@ -199,9 +199,9 @@ and is specified to error as "not yet available".
 
 ## No ownership at the surface — FM-3
 
-Mzizi lowers to Rust, but **no borrow, lifetime or ownership concept exists in the surface
-language**. Values have value semantics; the compiler owns the `Rc`/signal plumbing in
-lowered code. The class of non-local-fix errors that makes Rust hard for agents is spent
+Mzizi is designed to lower to Rust (nothing lowers yet), but **no borrow, lifetime or
+ownership concept exists in the surface language**. Values have value semantics; the
+compiler is meant to own the `Rc`/signal plumbing in lowered code. The class of non-local-fix errors that makes Rust hard for agents is spent
 once, by the compiler authors, instead of on every generation.
 
 <Note>

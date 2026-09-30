@@ -89,7 +89,7 @@ This line decides which organisation's clock each piece runs on.
 
 |                                                                                 | Operated by |
 | ------------------------------------------------------------------------------- | ----------- |
-| The framework, the language, the registry, the design system, the docs, the API | **Mzizi**   |
+| The language, its toolchain, the registry, the design system, the docs, the API | **Mzizi**   |
 | The console, Fundi, paid plans, billing and the other revenue products          | **Nyuchi**  |
 
 Copyright notices name the **Bundu Foundation** as the parent copyright holder. Mzizi is
@@ -117,9 +117,9 @@ instead.
 
 <CardGroup cols={2}>
   <Card title="The language" icon="flask-conical" href="/status">
-    A Phase 0 research prototype. A language whose benchmark against the registry's
-    components has had two small pilots and no advantage shown. Nothing built with it runs
-    anywhere yet.
+    A programming language, and a Phase 0 research prototype. Phase 0 builds it, measured
+    against the best existing language for each kind of task; two small pilots have run, with no
+    advantage shown. Nothing built with it runs anywhere yet.
   </Card>
   <Card title="The components" icon="library" href="/roots/overview">
     Shipping and installable. Rust components are becoming Mzizi Roots and lead; the React
@@ -127,9 +127,11 @@ instead.
   </Card>
 </CardGroup>
 
-The registry is the **benchmark corpus** for the language. That is the relationship. The
-nine [primitives](/primitives) are hand ports of registry components whose React and Rust
-implementations serve as ground truth.
+The components are built to support the language: its UI layer, and where its output is
+meant to land. They also supply the ground truth for the benchmark's UI tasks: the nine
+[primitives](/primitives) are hand ports of registry components whose React and Rust
+implementations serve as references. That is one of their jobs, not the relationship's
+whole.
 
 ## Where the docs went
 

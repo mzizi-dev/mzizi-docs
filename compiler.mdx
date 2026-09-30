@@ -4,8 +4,10 @@ description: "Six commands, an exit-status contract, an exact-fix pass, contract
 icon: "terminal"
 ---
 
-`mz` is the Phase 0 front end: lex → parse → resolve → lower → IR, plus a contract
-evaluator. It is the centre of the [toolchain](/toolchain/overview). It is a single Rust binary with
+`mz` is the compiler that implements the Mzizi language: toolchain, not the language itself.
+Today it is the Phase 0 front end: lex → parse → resolve → lower → IR, plus a contract
+evaluator ("lower" here means into the IR; nothing lowers to Rust yet). It is the centre of
+the [toolchain](/toolchain/overview). It is a single Rust binary with
 **no dependencies at all**, which is a deliberate house convention rather than an oversight
 — a compiler whose check loop must stay sub-second on a modest laptop should not start life
 with a dependency tree to build first, and the small things it needs (JSON emission,

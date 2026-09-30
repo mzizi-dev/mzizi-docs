@@ -4,6 +4,17 @@ description: "The thesis, the phases, and the explicit non-goals. The Mzizi Rese
 icon: "scroll-text"
 ---
 
+<Note>
+  **The charter's wording is behind the owner's positioning.** Its title and thesis still
+  call Mzizi "a general-purpose framework" and "a Rust framework". The owner's positioning
+  of 30 September 2026 is that **Mzizi is a programming language**: Rust is its platform,
+  the way JavaScript is TypeScript's; its goal is to be used instead of TypeScript, Python
+  and C++; and the toolchain and the components are built to support it. Phase 0's one goal
+  is to build Mzizi as a programming language, measured against the best existing language
+  for each kind of task, which v0.3's amended criterion already adopts. A charter update is being routed to the language repository. Until it lands, the
+  quotations below are the charter's own words.
+</Note>
+
 Mzizi's direction is set by a single document:
 [`CHARTER.md`](https://github.com/mzizi-dev/mzizi/blob/main/CHARTER.md), the project's
 **Mzizi Research Charter, v0.3**. Its own status line reads _"charter draft — defines direction and
@@ -29,7 +40,8 @@ claim is made before it is measured."_
    ([RFC-0009](https://github.com/mzizi-dev/mzizi/blob/main/design/RFC-0009-comparison-benchmark.md)).
    Not yet measured.
 
-**Owner:** Mzizi — 100%. The Mzizi framework, components and logic are Mzizi IP. The Mzizi
+**Owner:** Mzizi — 100%. The Mzizi language, its toolchain, its components and its logic
+are Mzizi IP. The Mzizi
 console ("Fundi") and active cyber testing are adjacent and run under Nyuchi. Copyright
 notices name the Bundu Foundation as the parent copyright holder; Mzizi is not a separate
 legal entity.
@@ -104,17 +116,19 @@ smallest, most measurable slice of that claim, not the whole of it.
 ## The phasing
 
 <Steps>
-  <Step title="Phase 0 — prove the core claim, no rendering attached" icon="flask-conical">
-    A standalone compiler/syntax prototype with zero UI story. Success criterion: a defined
-    benchmark where an agent authors N equivalent components in Mzizi versus raw
-    Dioxus/Leptos, measured on tokens consumed, iterations to a clean compile, and defect
-    rate.
+  <Step title="Phase 0 — build Mzizi as a programming language, measured against the best existing language for each kind of task" icon="flask-conical">
+    **The goal, as amended in v0.3:** Mzizi against the best existing language for each kind
+    of task, in RFC-0009's UI and backend families (UI against Rust and TypeScript; backend
+    against TypeScript, Python, Go, C++ and Rust), with downstream work gated per family.
+
+    As v0.1 first wrote it, the charter titled this phase "prove the core claim, no
+    rendering attached": a standalone compiler/syntax prototype, and a benchmark where an
+    agent authors N equivalent components in Mzizi versus raw Dioxus/Leptos, measured on
+    tokens consumed, iterations to a clean compile, and defect rate. That is now a test
+    inside the phase, not its goal.
 
     **_"If this doesn't show a measurable advantage, nothing downstream matters — don't
     build Phase 1 until Phase 0 has a real number attached to it."_**
-
-    v0.3 amends the comparison: Mzizi against the best existing language for each kind of
-    task, in RFC-0009's UI and backend families, with downstream work gated per family.
 
     This is where the project is. The gating run has not happened. See [Status](/status) and
     [the benchmark](/benchmark).

@@ -11,6 +11,20 @@ icon: "gauge"
   kill criterion has not happened. Nothing lowers to Rust and nothing renders.
 </Warning>
 
+## Phase 0's goal
+
+**Phase 0 has one goal: to build Mzizi as a programming language, measured against the best
+existing language for each kind of task** (RFC-0009, adopted by charter v0.3). The
+languages it is measured against are TypeScript, Python, Go, C++ and Rust: Rust with Dioxus
+and Leptos and TypeScript with React for UI components, and TypeScript, Python, Go, C++ and
+Rust for backend handlers and services. **Nothing has been measured against that
+yet.** The two pilots below were the first tests inside Phase 0, on a few registry UI
+components against Dioxus. They are not its goal, and they showed no advantage. See
+[the benchmark](/benchmark#the-arms) for every arm and whether it exists.
+
+The table below is the language's front end, which lives in its toolchain, the `mz`
+compiler. The compiler implements the language; it is not the language.
+
 Checked against [`mzizi-dev/mzizi`](https://github.com/mzizi-dev/mzizi) at `e9e9233` on
 30 September 2026. Every row below can be checked in the repository; that is why it is a
 table and not a paragraph.
@@ -29,7 +43,7 @@ table and not a paragraph.
 | Content-addressed IR and SHA-256 store               | Exists, tested, measured                                     | `compiler/src/ir.rs`, `compiler/src/hash.rs`  |
 | `mz outline`                                         | Exists, tested                                               | `compiler/src/outline.rs`                     |
 | Nine primitives written in Mzizi                     | Pass `mz check` and `mz contract` in CI; 29 contract clauses | `primitives/*.mz`                             |
-| Two ported corpus components                         | Pass `mz check` and `mz contract` in CI                      | `examples/*.mz`                               |
+| Two ported registry components                       | Pass `mz check` and `mz contract` in CI                      | `examples/*.mz`                               |
 | Benchmark runner and scorer                          | Exist, tested, used for two pilots                           | `benchmarks/runner`, `benchmarks/harness`     |
 | Kill-criterion driver and task checker               | Exist, never run for real; refuse to start without `PLAN.md` | `benchmarks/kill-criterion/`                  |
 | Phase 0 pilot results                                | **Two pilots, no advantage shown**                           | `benchmarks/results/`                         |
@@ -39,6 +53,7 @@ table and not a paragraph.
 | `mz refs`, `mz path`, `mz patch`, `mz diff`          | **Designed, not built**                                      | RFC-0003 §5                                   |
 | Local state (`state x: int = 0`)                     | **Unresolved design question**                               | RFC-0001 §7, RFC-0002 §6, RFC-0003 §8         |
 | Lowering to Rust or Dioxus                           | **Not started.** Phase 1                                     | —                                             |
+| The harness, the core of Mzizi                       | **Designed, not built.** Only `mz check --agent` exists      | RFC being written                             |
 | Rendering, any target                                | **Not started.** Phase 1                                     | —                                             |
 
 The compiler source is 7,454 lines across `compiler/src`. The workspace has **308 tests in
@@ -83,7 +98,7 @@ been measured.
   the `backend` family cannot pass until the language work RFC-0009 §6.4 names exists.
 
 As first written in the charter, the Phase 0 criterion compared Mzizi with raw Dioxus and
-Leptos:
+Leptos on UI components only. That was a test, and it is superseded as the goal:
 
 > A defined benchmark where an LLM agent authors N equivalent components in Mzizi's syntax
 > vs. raw Dioxus/Leptos, measured on tokens consumed, iterations to a clean compile, and

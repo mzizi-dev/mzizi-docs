@@ -1,32 +1,62 @@
 ---
-title: "A language designed to be written by machines that are not very good at writing"
-description: "Mzizi is a research language and compiler in Rust whose syntax, type system and compiler feedback loop are designed for machine authorship by small open-weight models. It is a Phase 0 prototype, and the first two pilots showed no advantage."
+title: "Mzizi: a general-purpose programming language"
+description: "Built to make Rust better, the way TypeScript makes JavaScript better: no borrows, lifetimes or ownership in the language you write, with the harness at the core, the layer an agent reads. That is the goal Phase 0 measures, not a result. Its goal is to be used instead of TypeScript, Python and C++. It is a Phase 0 prototype, and the first two pilots showed no advantage."
 sidebarTitle: "Overview"
 icon: "sprout"
 mode: "wide"
 ---
 
 <Note>
-  **Read [Status](/status) first.** Mzizi is a Phase 0 research prototype. The compiler
-  front end exists and is tested: a lexer, a recovering parser, a name and type resolver, an
+  **Read [Status](/status) first.** Mzizi is a Phase 0 research prototype. Its goal is a
+  goal, not a result. The language's front end exists in its toolchain and is tested: a lexer, a recovering parser, a name and type resolver, an
   agent diagnostic protocol, contract evaluation, a content-addressed IR and nine primitives
   written in Mzizi. Nothing lowers to Rust yet and nothing renders. Two small pilots of the
   benchmark ran on 2026-09-27, and **neither showed an advantage** ([results](/pilots)). The
   run that tests the kill criterion has not happened.
 </Note>
 
-_Mzizi_ means **root**. Mzizi is a language, and these docs lead with
-it. Everything else Mzizi makes (the compiler toolchain, the MCP server, the CLI, the API
-and the components) exists to support the language and make it stronger.
+**Built to make Rust better, the way TypeScript makes JavaScript better.** How: no borrows,
+lifetimes or ownership in the language you write ([RFC-0001](/rfcs) §1.8), with the harness
+at the core, the layer an agent reads. "Makes Rust better" is the goal Phase 0 measures, not
+a result.
+
+_Mzizi_ means **root**. **Mzizi is a programming language**, and these docs lead with it.
+Its goal is to be the language people choose instead of TypeScript, Python and C++.
+
+**Rust is to Mzizi what JavaScript is to TypeScript: its platform.** Mzizi is designed to
+lower to Rust ([RFC-0001](/rfcs) §5), and Mzizi Roots is its component model, the way React
+is JavaScript's. The aim is that Mzizi does Rust better: you write Mzizi instead of
+TypeScript, Python or C++, and get Rust underneath. Nothing lowers yet, so that is the goal
+Phase 0 is measured on, not something Mzizi does today.
+
+**What is which:**
+
+- **The language** is its syntax, type system, semantics, and contracts as a language
+  feature.
+- **The harness** is the core of Mzizi: the layer an agent reads and works through. It covers
+  the language as an agent sees it (grammar, types, contracts, canonical form), the agent
+  protocol (`mz check --agent`, its diagnostics and fixes; RFC-0001 §4), and the plugin
+  host that the toolchain, the CLI, the MCP server and plugins attach to natively. Part of
+  it exists today, in the toolchain, as `mz check --agent`'s output. The harness as a whole
+  is designed, not built, and its RFC is being written. It lives in the language
+  repository, `mzizi-dev/mzizi`, and the agent-tools packages (the CLI, the MCP server,
+  `fundi`) are its clients.
+- **The toolchain** is built to support it: the `mz` compiler that implements it (with its
+  IR, its diagnostic protocol, `mz fix` and `mz contract`), the CLI, the MCP server, the
+  skills and the Phase 0 benchmark harness (`benchmarks/harness/`, not the harness above).
+  They are meant to attach to the harness. The compiler is not the language.
+- **The components** are built to support it too: Mzizi Roots and the registry, the
+  language's UI layer and where its output is meant to land.
 
 ## The claim worth defending
 
-Every web framework was designed assuming a human is typing, reading docs and holding
-context in their head. The charter's bet is that this is the wrong assumption for where
-development is going:
-
-> Mzizi's single sharp edge: **a Rust framework whose syntax, type system, and compiler
-> feedback loop are designed for machine authorship, not just human ergonomics.**
+No language in wide use today, TypeScript, Python, C++ and Rust included, was designed for
+an agent iterating against a compiler. They assume a human is typing, reading docs and
+holding context in their head. The bet is that this is the wrong assumption for where
+development is going, and that a language whose syntax, type system and diagnostics are
+designed for machine authorship is the answer. The charter states it as Mzizi's "single
+sharp edge": syntax, a type system and a compiler feedback loop "designed for machine
+authorship, not just human ergonomics".
 
 Then a correction that matters more than the original claim. RFC-0001 was written by a
 frontier model optimising for its own experience, and [RFC-0002](/rfcs) withdrew that
@@ -40,6 +70,22 @@ That inversion is why token efficiency is a first-order goal, why `end component
 echoes the name back, and why the grammar is small and closed rather than familiar and open.
 It is also why the second pilot matters: it tested that design target, and the ~7B model
 did worse in Mzizi than in Dioxus.
+
+## Phase 0's goal
+
+**Phase 0 has one goal: to build Mzizi as a programming language, measured against the
+best existing language for each kind of task.** That is
+[RFC-0009](https://github.com/mzizi-dev/mzizi/blob/main/design/RFC-0009-comparison-benchmark.md),
+and charter v0.3 adopts it. Two task families gate, on held-out tasks with a ~7B model:
+
+| Family    | What the agent writes                             | Measured against                                                           |
+| --------- | ------------------------------------------------- | -------------------------------------------------------------------------- |
+| `ui-spec` | UI components, from a language-neutral `spec.md`  | Rust with Dioxus and with Leptos (both exist), TypeScript with React (new) |
+| `backend` | HTTP handlers and services, scored by HTTP probes | TypeScript (Hono), Python (FastAPI), Go, C++20 and Rust (axum), all new    |
+
+Nothing has been measured against that goal yet. The two pilots of 2026-09-27, which ported
+registry UI components into Mzizi and Dioxus, were the first tests inside Phase 0, not its
+goal. See [the benchmark](/benchmark) for every arm and its state.
 
 ## Where Mzizi is heading
 
@@ -56,9 +102,9 @@ did worse in Mzizi than in Dioxus.
   or pure Rust end to end.
 - **Contracts everywhere.** Everything built carries a contract: components, language
   functions and backend handlers. Today only component contracts exist.
-- **A wider benchmark.** The benchmark will extend to TypeScript and React, Python, Go and
-  C++, on frontend and backend tasks. Today it compares Mzizi with Dioxus and Leptos on UI
-  components.
+- **A wider benchmark.** The benchmark will extend to TypeScript and React on UI tasks, and to
+  TypeScript, Python, Go, C++ and Rust on backend tasks. Today it has Dioxus and Leptos arms
+  for UI components, and only the Dioxus arm has ever run.
 - **A higher bar.** The kill criterion is now Mzizi against the best existing language for
   each kind of task, aiming to rank with the top languages. It has not been measured.
 - **Every result published.** Every benchmark run lands in
@@ -83,7 +129,7 @@ did worse in Mzizi than in Dioxus.
     and not crates.
   </Card>
   <Card title="The compiler" icon="terminal" href="/compiler">
-    `mz check --agent`, `mz fix`, `mz contract`, `mz outline`, `mz hash` and `mz ir`, and the
+    The toolchain's compiler, which implements the language: `mz check --agent`, `mz fix`, `mz contract`, `mz outline`, `mz hash` and `mz ir`, and the
     NDJSON protocol written for a reader holding zero file context.
   </Card>
   <Card title="The IR" icon="git-branch" href="/ir">
@@ -112,17 +158,20 @@ did worse in Mzizi than in Dioxus.
 
 The charter is explicit about its non-goals:
 
+- **Not its toolchain or its components.** The compiler, the CLI, the MCP server, the skills
+  and Mzizi Roots support the language; none of them is the language.
 - **Not a rendering engine.** Phase 1 is interop with an existing renderer (Dioxus today).
-  Rebuilding one buys the syntax and compiler layer nothing.
+  Rebuilding one buys the language nothing.
 - **Not a tensor runtime.** ML inference is a declared capability backed by Candle.
 - **Not a post-quantum cryptography project.** Named as a future thread and out of scope.
-- **Not a web-framework target.** The compiled artifact is WASM, and native for desktop.
-  Astro is one thin, optional distribution surface among several.
+- **Not tied to one web framework.** The compiled artifact is meant to be WASM, and native
+  for desktop. Astro with Mzizi Roots underneath is one of the two frontend paths, beside
+  pure Rust end to end, and needs no compiler work beyond Phase 1's self-contained artifact.
 
 ## Ownership
 
-Mzizi owns and operates the framework, the language, the registry, the design system, the
-docs and the API. Nyuchi operates the console and the revenue products. Copyright notices
+Mzizi owns and operates the language, its toolchain and its components: the compiler, the
+registry, the design system, the docs and the API. Nyuchi operates the console and the revenue products. Copyright notices
 name the **Bundu Foundation** as the parent copyright holder; Mzizi is not a separate legal
 entity. The [charter](/charter) states the line and the [ecosystem map](/ecosystem) follows
 it repository by repository.
