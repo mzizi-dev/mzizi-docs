@@ -9,7 +9,7 @@ The Mzizi MCP server gives agents the registry, the brand tokens, the architectu
 the doctrine, the agent skills and these docs over the
 [Model Context Protocol](https://modelcontextprotocol.io). It is the `mzizi-mcp` Cloudflare
 Worker, published as [`@nyuchi/mzizi-mcp`](https://www.npmjs.com/package/@nyuchi/mzizi-mcp)
-(`0.11.1`, read from npm on 30 September 2026; the hosted server answered `initialize` with
+(`0.11.2`, read from npm on 30 September 2026; the hosted server answered `initialize` with
 the same version, and the MCP Registry lists it). In the
 [MCP Registry](https://registry.modelcontextprotocol.io) it is
 `io.github.mzizi-dev/mzizi-mcp`, listing both the hosted endpoint and the npm package. The
@@ -168,8 +168,10 @@ output, a tool answers with the payload `api.mzizi.dev/v1` would give at the sam
 `mzizi_mcp_describe` reports it. Read the live pin there rather than from this page, and
 compare it with the pin [`api.mzizi.dev`](/platform/api-gateway) reports in its
 `X-Mzizi-Source` header. The two are meant to be the same commit, but they move separately, so
-they can differ for a while after one of them moves. Moving to newer registry content is a
-change to that pin, made in a pull request that CI checks.
+they can differ for a while after one of them moves. For example, `0.11.2` moved the pin by
+hand on 30 September 2026 to registry commit `e1c1c89`, which was then also the API's; that is
+an example, not the current value. Moving to newer registry content is a change to that pin,
+made in a pull request that CI checks.
 
 The pin, `ref` in `mzizi-mcp/registry.pin.json`, has the same bot as
 [the API gateway's](/platform/api-gateway#how-the-pin-moves). Every hour it compares the pin

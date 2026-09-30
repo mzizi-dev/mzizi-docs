@@ -32,6 +32,11 @@ entries move under it. Mintlify does not publish this file.
 
 ### Changed
 
+- **`toolchain/mcp`** says `@nyuchi/mzizi-mcp` 0.11.2 (was 0.11.1), as npm, the live
+  server's `initialize` and the MCP Registry's latest entry all report. 0.11.2 moves the
+  server's registry pin to `e1c1c89`, the commit `api.mzizi.dev` serves, so the MCP tools now
+  answer with Mzizi's hematite brand record and default `--primary`; the page gives that pin
+  as a dated example only.
 - **`toolchain/skills`** documents `@nyuchi/mzizi-skills` 0.8.1 and its five skills
   (`mzizi-language`, `mzizi-roots`, `mzizi-design`, `mzizi-backend`, `discoverability`), with
   what each covers. It was 0.7.0 with nine skills. **Breaking for readers of the old list:**
