@@ -21,6 +21,69 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
+### Changed — Mzizi is documented as a programming language, and Phase 0 by its goal
+
+The owner's positioning (2026-09-30): Mzizi is a programming language, Rust is
+its platform the way JavaScript is TypeScript's, and its goal is to be used
+instead of TypeScript, Python and C++. The harness is the core of Mzizi, the
+layer an agent reads and works through, and is designed, not built. The
+toolchain and the components are built to support the language and are not
+the language. Phase 0 has one goal: to build Mzizi as a programming language,
+measured against the best existing language for each kind of task. Every one
+of these is stated as a goal or a design, never a result.
+
+- **Overview (`/`):** the title is now the owner's headline, "Mzizi: a
+  general-purpose programming language", with the subline "Built to make Rust
+  better, the way TypeScript makes JavaScript better" and one line on how (no
+  borrows, lifetimes or ownership in the language you write, with the harness
+  at the core), stated as the goal Phase 0 measures (was "A language designed
+  to be written by machines that are not very good at writing"), and the description no
+  longer defines the language as "a research language and compiler in Rust". It opens with the Rust-as-platform framing,
+  a "what is which" list (the language; the harness at its core, the layer an
+  agent reads and works through, designed and not built; the toolchain; the
+  components), and a new "Phase 0's goal" section: to build Mzizi as a
+  programming language, measured against the best existing language for each
+  kind of task, with the two gating families and their languages. The charter's
+  "a Rust framework" quote is replaced by the charter's argument in the
+  owner's terms. Fixed: "Today it compares Mzizi with Dioxus and Leptos"
+  (only Dioxus has run); "Not a web-framework target … Astro is one thin,
+  optional surface" (charter v0.3 makes Astro with Roots one of two frontend
+  paths); "Mzizi owns and operates the framework".
+- **Status:** a new "Phase 0's goal" section says what Phase 0 is for, that
+  nothing has been measured against it, and that the pilots were tests inside
+  it. The front-end table says the compiler implements the language, and adds
+  the harness, the core of Mzizi, as designed and not built (only
+  `mz check --agent` exists). The overview and the toolchain overview say the
+  harness lives in `mzizi-dev/mzizi` and the agent-tools packages are its
+  clients.
+- **The benchmark:** leads with the goal, adds the task families and a table
+  of every RFC-0009 arm with its state (exists, never run, new, blocked), and
+  no longer describes Phase 0 as "N equivalent components in Mzizi and raw
+  Dioxus and Leptos". The components supply the UI tasks as one of their jobs;
+  a defect covers HTTP probes as well as UI facts; the repository has two
+  examples, not one.
+- **The toolchain overview and the compiler page:** the toolchain is not the
+  language; `mz` is the compiler that implements it; the toolchain is meant
+  to attach to the harness at the language's core (the language as an agent
+  sees it, the agent protocol and the plugin host), which is not the Phase 0
+  benchmark harness. Fixed: "the rest serve the language's corpus: the
+  component registry the benchmark is scored against".
+- **Mzizi Roots, the registry overview, the ecosystem page and the
+  primitives:** the components are built to support the language (its UI
+  layer and component model), not "the benchmark corpus".
+- **The charter page:** a note says the charter's own wording still calls
+  Mzizi a framework and that an update is being routed; Phase 0's step leads
+  with the v0.3 goal and labels the v0.1 wording as the original.
+- **Syntax:** "Mzizi lowers to Rust" is now "is designed to lower to Rust
+  (nothing lowers yet)". The pilots page, the roadmap and the console page
+  follow the same framing.
+
+### Fixed
+
+- The skills page says `@nyuchi/mzizi-skills` 0.8.4, which npm and the MCP
+  server serve; `api.mzizi.dev/v1/skills` still serves 0.8.2 until its next
+  registry pin (was "0.8.1" everywhere).
+
 ### Added
 
 - `CHANGELOG.md`, backfilled from every merged pull request since the

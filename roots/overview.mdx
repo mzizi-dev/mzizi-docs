@@ -36,15 +36,18 @@ contract. See [the roadmap](/roadmap).
 Roots components are written in Rust today, not in Mzizi. The language cannot produce them
 yet: nothing lowers to Rust, and Phase 1 waits on the benchmark ([Status](/status)).
 
-If the language does lower to Rust one day, Roots is its target: the RFC writes every Roots
-contract in the language's `contract … end` grammar. That is a design intention, gated on the
-benchmark like the rest of Phase 1.
+Roots is built to support the language: it is meant to be the language's component model,
+the way React is JavaScript's, with Rust as the platform underneath. When the language
+lowers to Rust, Roots is its target: the RFC writes every Roots contract in the language's
+`contract … end` grammar. That is a design intention, gated on the benchmark like the rest
+of Phase 1.
 
-The relationship runs the other way for now. The registry's components, React and Rust
-together, are the **benchmark corpus**: the fixed ground truth the language is measured
-against. The nine [primitives](/primitives) are hand ports of registry components, and the
-benchmark scores a candidate against a component's Rust reference. A component with a Rust
-sibling is a component the benchmark can score.
+Until then, the components also do a second job. The registry's components, React and Rust
+together, are the ground truth for the benchmark's UI tasks. The nine
+[primitives](/primitives) are hand ports of registry components, and the benchmark scores a
+candidate against a component's Rust reference. That is one of the components' jobs, not
+what they are, and not the benchmark's goal, which is Mzizi against the best existing
+language for each kind of task ([the benchmark](/benchmark)).
 
 ## What exists today
 
