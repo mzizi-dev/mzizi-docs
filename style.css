@@ -5,65 +5,93 @@
  * docs.json lives) on every page — no reference from docs.json or MDX needed.
  * See https://www.mintlify.com/docs/customize/custom-scripts.
  *
- * Already native to docs.json and deliberately not duplicated here: the theme,
- * the brand colour pair, the page background colours and decoration, and the
- * heading/body font pair (Noto Serif / Noto Sans — the canonical Mzizi
- * typography, chosen ecosystem-wide for broad African-language and diacritic
- * support, not a docs-specific pick). This file exists for the two things
- * docs.json has no field for: the full neutral (gray) ramp Mintlify uses across
- * borders, muted text and code-block chrome; and base font sizing (docs.json's
- * `fonts` field controls family and weight only, not size).
+ * THE SOURCE. docs.mzizi.dev wears mzizi.dev's theme (owner decision,
+ * 2026-09-30). mzizi.dev's theme is `@bundu/ui` 0.2.0 — `theme.css`,
+ * `tokens.css`, `color-scheme.css` and the `brand-mzizi.css` overlay — so every
+ * value here and in docs.json's `colors` and `background` is read from that
+ * package's `tokens.json` (`resolved.light` / `resolved.dark`) or from canon
+ * (`/v1/brand`, and the registry's `mzizi-tokens-globals.css` accessible tier),
+ * not picked for the docs:
  *
- * On the brand colour: cobalt is the mineral whose documented usage in the Mzizi
- * token set is literally "Primary blue, links, CTAs" (symbolism: "Digital
- * future, trust, knowledge"). That makes it the correct pick for a docs site's
- * link and button colour, rather than borrowing a colour that is another brand's
- * identity — sodalite belongs to Shamwari, copper to the Bundu ecosystem mark,
- * malachite to Nhimbe and Campfire.
+ *   background     #F3F3F1 light, #0E0D0C dark    `--background` (canon `base`)
+ *   foreground     #1A1A17 light, #F0EFE9 dark    `--foreground`
+ *   muted text     #5D5C57 light, #A8A6A0 dark    `--muted-foreground`
+ *   borders        #E7E5E0 light, #2A2927 dark    `--border`
+ *   decoration     none                           the site's canvas is plain
+ *   fonts          Noto Serif / Noto Sans         set in docs.json `fonts`
+ *   code           JetBrains Mono 400/600         `--font-mono`, loaded below
  *
- * Measured with APCA 3.0 — Mzizi's actual stated standard, not WCAG:
+ * THE ACCENT is hematite, Mzizi's brand mineral (owner decision, 2026-09-30;
+ * canon: `/v1/brand` `.ecosystem[name=mzizi].mineral` and `.heritage` — light
+ * #546E7A, dark #90A4AE). Mintlify renders `colors` as link and button text at
+ * body size, so the bar is APCA Lc 75 on each background, measured with the
+ * same APCA-W3 0.1.9 code as scripts/check-contrast.mjs:
  *
- *   light mode  #0047AB  on #F3F2EE  Lc  80.4   (cobalt lightHex, published)
- *   dark mode   #B3E5FC  on #1B1A17  Lc -85.0   (cobalt on-container dark, published)
+ *   dark mode   #C9D2D7  on #0E0D0C  Lc -78.1  canon `--heritage-hematite-aa`
+ *   light mode  #4A616B  on #F3F3F1  Lc  75.1  canon lightHex, walked toward
+ *                                               #000000 (see below)
  *
- * Both clear Lc 75, APCA's minimum for body-size text, which is the right bar
- * because these render as links and buttons at body size. Both values are
- * published Mzizi tokens rather than derived shades: #B3E5FC is
- * `--mineral-cobalt-on-container` in dark mode. Cobalt's published darkHex
- * (#00B0FF) is NOT usable here — Lc -53.7, well short of the floor — which is
- * the usual trap: the token designed as a *surface* accent is not the token
- * designed as *foreground on* a dark surface.
+ * Raw hematite misses on both: #90A4AE is Lc -51.0 on #0E0D0C and #546E7A is
+ * Lc 69.7 on #F3F3F1. In dark mode canon already publishes the fix, the `-aa`
+ * value, so docs.json uses it. In light mode canon's `-aa` value is #546E7A
+ * itself: canon measures the light role as a fill carrying white text (WCAG
+ * 2.2 AA on #FFFFFF, which #546E7A passes), not as text on `base`. No canon
+ * hematite clears Lc 75 as light-mode text, so #4A616B is derived with canon's
+ * own method (mzizi-registry `scripts/render-globals-css.ts` `walk()`: linear
+ * sRGB steps of 1% from the canonical hex toward #000000, first step that
+ * passes) — 12 steps, and nothing else about the colour changes. It belongs
+ * in canon's accessible tier; until it is there, this comment is its record.
+ *
+ * mzizi.dev itself colours prose links with `--info` (cobalt) and uses
+ * hematite for `--primary` and `--ring` (buttons and the focus ring). Mintlify
+ * has one accent for both roles, so the docs take the brand one.
  *
  * scripts/check-contrast.mjs enforces the above in CI.
  *
- * The backgrounds (#F3F2EE light, #1B1A17 dark) are not invented either: they
- * are mzizi.dev's own `--background` values, so the docs site sits on the same
- * ground as the site it documents. The ramp below is linearly interpolated
- * between those two endpoints, with an ease-in-out curve for perceptual spacing,
- * so borders and muted text read as part of the same family rather than
- * Mintlify's unrelated default gray.
+ * THE RAMP below is the neutral (gray) scale Mintlify uses across borders,
+ * muted text and chrome. docs.json has no field for it. Each anchor is a
+ * `@bundu/ui` 0.2.0 value, and the steps between anchors are linear sRGB
+ * midpoints:
  *
- * Note, as the sibling site (shamwari-ai/docs) found and recorded: this file is
- * NOT picked up by a local `mint dev` preview — the --gray-* values stay
- * Mintlify's own computed defaults there. Everything else in docs.json (theme,
- * colors, background, fonts) does render locally. Per Mintlify's own docs the
- * file is auto-loaded on the deployed site, so this is a local-CLI gap rather
- * than something wrong with the file — but re-verify on a real deploy preview
- * before assuming the ramp is live.
+ *   50   #F3F3F1  --background (light)    100  #EEEEEC  --surface (light)
+ *   200  #E7E5E0  --border (light)        400  #A8A6A0  --muted-foreground (dark)
+ *   600  #5D5C57  --muted-foreground (lt) 800  #2A2927  --border (dark)
+ *   900  #1A1A17  --foreground (light)    950  #0E0D0C  --background (dark)
+ *
+ * Not matched: `--card` (#FFFFFF light, #131211 dark). Mintlify has no card
+ * fill setting, and reaching it would mean hardcoding theme-internal class
+ * names that can change under us on a Mintlify upgrade.
+ *
+ * Local preview: the current `mint dev` inlines this file, so the ramp and the
+ * code font render locally as well as on the deployed site. (Older CLIs did
+ * not, which the sibling site shamwari-ai/docs recorded; if a local preview
+ * ever shows Mintlify's default grays again, check the CLI version first.)
  */
 
+/* JetBrains Mono, loaded the way mzizi.dev loads it (Google Fonts, 400 and
+ * 600). docs.json's `fonts` field takes a heading and a body family only, with
+ * no code font, so this is the one place it can be set. */
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap");
+
 :root {
-  --gray-50: 243 242 238;
-  --gray-100: 237 236 232;
-  --gray-200: 219 218 213;
-  --gray-300: 194 192 187;
-  --gray-400: 162 161 155;
-  --gray-500: 128 127 121;
-  --gray-600: 96 95 89;
-  --gray-700: 65 64 58;
-  --gray-800: 41 40 35;
-  --gray-900: 30 29 25;
-  --gray-950: 27 26 23;
+  --gray-50: 243 243 241;
+  --gray-100: 238 238 236;
+  --gray-200: 231 229 224;
+  --gray-300: 200 198 192;
+  --gray-400: 168 166 160;
+  --gray-500: 130 129 124;
+  --gray-600: 93 92 87;
+  --gray-700: 68 66 63;
+  --gray-800: 42 41 39;
+  --gray-900: 26 26 23;
+  --gray-950: 14 13 12;
+}
+
+code,
+kbd,
+pre,
+samp {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
 }
 
 /*

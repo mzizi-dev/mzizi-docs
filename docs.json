@@ -3,16 +3,15 @@
   "theme": "sequoia",
   "name": "Mzizi",
   "colors": {
-    "primary": "#0047AB",
-    "light": "#B3E5FC",
-    "dark": "#0047AB"
+    "primary": "#4A616B",
+    "light": "#C9D2D7",
+    "dark": "#4A616B"
   },
   "background": {
     "color": {
-      "light": "#F3F2EE",
-      "dark": "#1B1A17"
-    },
-    "decoration": "grid"
+      "light": "#F3F3F1",
+      "dark": "#0E0D0C"
+    }
   },
   "fonts": {
     "heading": {

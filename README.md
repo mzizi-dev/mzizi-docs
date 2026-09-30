@@ -130,9 +130,14 @@ near-black background and scores APCA **Lc -25.8** — below even the Lc 30 floo
 UI. The ratio says fine; the perceptual model says unreadable; the perceptual model is right.
 
 So `scripts/check-contrast.mjs` is the gate, and `mint a11y` runs only for the MDX alt-text
-check it is genuinely good at. Both colours in `docs.json` are published Mzizi cobalt tokens
-(`#0047AB` light, `#B3E5FC` dark) and clear Lc 75 against the site's backgrounds, which are
-`mzizi.dev`'s own `--background` values.
+check it is genuinely good at. The docs wear `mzizi.dev`'s theme, `@bundu/ui` 0.2.0 with its
+`brand-mzizi` overlay, so the accent is hematite, Mzizi's brand mineral, and the backgrounds
+are the package's `--background` (`#F3F3F1` light, `#0E0D0C` dark). Raw hematite misses Lc 75
+on both, so `docs.json` carries the accessible values: `#C9D2D7` in dark mode (canon's
+`--heritage-hematite-aa`, Lc -78.1) and `#4A616B` in light mode (Lc 75.1), derived from
+`#546E7A` with canon's own walk toward black because canon publishes no hematite that clears
+Lc 75 as light-mode text. `style.css` records the measurements and sources, and the script
+fails if a value drifts from them.
 
 ### Secret scanning
 
