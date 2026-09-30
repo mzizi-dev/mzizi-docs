@@ -68,11 +68,11 @@ Still to do — add the crate dependency:
   cargo add mzizi-ui
 ```
 
-The crate name comes from the API's `/v1/rs/{name}` response. On 30 September 2026 the API
-was built from a registry commit that named `mzizi-ui` for every component, which is wrong for
-components in other crates, such as the shell's. Check the crate against
-[the Roots crate list](/roots/overview#what-exists-today), or depend on `mzizi-roots`, which
-includes them all.
+The crate name comes from the `crate` field of the API's `/v1/rs/{name}` response, which
+names each component's own crate: `mzizi add mzizi-alert-banner` records `mzizi-brand`, and
+`mzizi add mzizi-footer` records `mzizi-shell`.
+[The Roots crate list](/roots/overview#what-exists-today) says what each crate holds, and
+`mzizi-roots` brings the UI crates in one dependency.
 
 For a React project, it writes the `.tsx` files and lists the npm packages they need, as the
 shadcn CLI would.

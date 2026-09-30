@@ -40,11 +40,13 @@ answer. `api.mzizi.dev/v1/*` redirects here.
 Every response carries a header naming the Worker and the registry commit it was built from:
 
 ```text
-x-mzizi-source: mzizi-api-gateway; registry=ce68c6446f6e
+x-mzizi-source: mzizi-api-gateway; registry=9b86e034ffd8
 ```
 
-That was the value on 30 September 2026: the gateway was pinned to registry commit
-`ce68c64`.
+That was the value on 30 September 2026, after the gateway was re-pinned from registry
+commit `ce68c64` to `9b86e03`. At `9b86e03`, `/v1/rs/{name}` serves the twelve Mzizi Roots
+brand components, and its `crate` field names each component's own crate, with a `git` field
+for the source repository. See [the Rust route](#the-rust-route).
 
 ## How the data flows
 
@@ -101,6 +103,28 @@ and at least one is required:
 request that uses it gets the same results, plus a `Deprecation: true` header and a
 `meta.deprecation` note. `node` wins when both are given. Use `node`; `layer` will be removed.
 
+### The Rust route
+
+`/v1/rs/{name}` answers with a component's Rust (Dioxus) source where one exists, and `404`
+where there is none. The document names the crate the component ships in, and the crate
+differs by node: `mzizi-ui` for the primitives, `mzizi-brand` for the brand components,
+`mzizi-shell` for the app chrome, and so on. For example, on 30 September 2026:
+
+```bash
+curl -s https://api.mzizi.dev/v1/rs/mzizi-alert-banner | jq .crate
+```
+
+```json
+{
+  "name": "mzizi-brand",
+  "registry": "crates.io",
+  "git": "https://github.com/mzizi-dev/mzizi-registry"
+}
+```
+
+Read the `crate` field rather than assuming one crate for every component. The route is a
+read surface: to use a component, depend on its crate. See [Mzizi Roots](/roots/overview).
+
 ### One route answers 503
 
 `/v1/ui/{name}/versions` answers `503`. Component version history is written by releases into
@@ -114,9 +138,9 @@ are served from files. The discovery document no longer carries a `database` blo
 
 ### The discovery document and OpenAPI text
 
-`/v1` and `/openapi` are served from the registry, and at `ce68c64` both say that files are the
-data layer and that Mzizi owns and operates the API. Neither names Supabase as a data source or
-Nyuchi as operator. Two mentions of Supabase remain in `/openapi`, and both are accurate: the
+`/v1` and `/openapi` are served from the registry, and from `ce68c64` (still so at `9b86e03`)
+both say that files are the data layer and that Mzizi owns and operates the API. Neither names
+Supabase as a data source or Nyuchi as operator. Two mentions of Supabase remain in `/openapi`, and both are accurate: the
 `/data-layer` route describes the wider ecosystem's data layer, and the retired `/docs` route
 notes that its old table is historical.
 
