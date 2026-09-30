@@ -6,18 +6,18 @@ icon: "link"
 ---
 
 Every component in the registry has a set of canonical URLs. The table below says which
-answer today, checked against `button` on 29 September 2026. Several of the portal's old
+answer today, checked against `button` on 30 September 2026. Several of the portal's old
 per-component pages did not survive the move of `mzizi.dev` to the site, and the health and
 chaos probes depended on console data that the registry no longer holds.
 
 ## URL structure
 
-| Endpoint        | URL pattern                           | Purpose                                      | On 29 Sep 2026                          |
+| Endpoint        | URL pattern                           | Purpose                                      | On 30 Sep 2026                          |
 | --------------- | ------------------------------------- | -------------------------------------------- | --------------------------------------- |
-| Portal          | `mzizi.dev/components/{name}`         | Documentation page                           | `302` to the registry's own portal page |
+| Portal          | `mzizi.dev/components/{name}`         | Documentation page                           | `200`                                   |
 | API — component | `api.mzizi.dev/v1/ui/{name}`          | Component metadata and source, shadcn format | `200`                                   |
 | API — Rust      | `api.mzizi.dev/v1/rs/{name}`          | The Dioxus source, where one exists          | `200`                                   |
-| API — docs      | `api.mzizi.dev/v1/ui/{name}/docs`     | Use cases, variants, accessibility notes     | `503`                                   |
+| API — docs      | `api.mzizi.dev/v1/ui/{name}/docs`     | Use cases, variants, accessibility notes     | `200`                                   |
 | API — versions  | `api.mzizi.dev/v1/ui/{name}/versions` | Per-component version JSON                   | `503`: console data, not the registry's |
 | Source          | `mzizi.dev/source/{name}`             | Full source view                             | `404`                                   |
 | Changelog       | `mzizi.dev/changelog/{name}`          | Per-component version history                | `404`                                   |
@@ -25,11 +25,11 @@ chaos probes depended on console data that the registry no longer holds.
 | Chaos           | `/api/chaos/{name}`                   | Supported-fault manifest                     | Not served                              |
 
 The API's own liveness probe is `api.mzizi.dev/v1/health`. For why the two API routes answer
-`503`, see [the API gateway](/platform/api-gateway#four-routes-answer-503).
+`503`, see [the API gateway](/platform/api-gateway#one-route-answers-503).
 
 ## Status semantics, as designed
 
-The health and chaos probes are not served on 29 September 2026. This is what they are
+The health and chaos probes are not served on 30 September 2026. This is what they are
 specified to answer.
 
 For `/api/health/{name}`:

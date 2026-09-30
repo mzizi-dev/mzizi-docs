@@ -1,6 +1,6 @@
 ---
 title: "The mz compiler"
-description: "Five commands, an exit-status contract, contract evaluation, and an NDJSON diagnostic protocol written for a reader holding zero file context."
+description: "Six commands, an exit-status contract, an exact-fix pass, contract evaluation, and an NDJSON diagnostic protocol written for a reader holding zero file context."
 icon: "terminal"
 ---
 
@@ -22,20 +22,23 @@ cd mzizi/compiler
 cargo test                                                          # the compiler's tests
 cargo run --bin mz -- check    ../primitives/button.mz              # does it compile
 cargo run --bin mz -- contract ../primitives/button.mz              # does it do what it says
+cargo run --bin mz -- fix      path/to/file.mz                      # apply every exact fix, check again
 cargo run --bin mz -- check --agent ../examples/connectivity_bar.mz # NDJSON for an agent
 cargo run --bin mz -- outline  ../primitives/alert.mz               # the interface, as valid Mzizi
 cargo run --bin mz -- ir       ../primitives/card.mz                # nodes, hashes, structural paths
 ```
 
-Run `cargo test --workspace` from the repository root for the whole suite: 269 tests in 12
-suites at `a9c928d`, counting the benchmark harness and runner.
+Run `cargo test --workspace` from the repository root for the whole suite: 308 tests in 14
+suites at `e9e9233`, 213 of them in the compiler crate and the rest in the benchmark harness
+and runner.
 
-## The five commands
+## The six commands
 
 | Command                      | What it does                                                        |
 | ---------------------------- | ------------------------------------------------------------------- |
 | `mz check <file.mz>`         | Human-readable diagnostics, one per line, plus a summary            |
 | `mz check --agent <file.mz>` | The same diagnostics as NDJSON, plus a summary object               |
+| `mz fix <file.mz>`           | Applies every `exact` fix in place, in one pass, then checks again  |
 | `mz contract <file.mz>`      | Evaluates the `contract` block; `--agent` gives NDJSON with a tally |
 | `mz outline <file.mz>`       | The component's interface only, emitted as valid Mzizi              |
 | `mz hash <file.mz>`          | The root hash and the stored node count                             |
@@ -45,10 +48,10 @@ With no command given, the first positional argument is treated as a file and `c
 assumed.
 
 <Note>
-  **Documented elsewhere, not implemented here.** RFC-0001 §4.3 describes `mz fix` applying
-  every `exact` fix in one shot, and RFC-0003 §5 lists `mz refs`, `mz path`, `mz patch` and
-  `mz diff` under *"designed here, next in implementation order"*. The binary dispatches
-  exactly the commands in the table above. Asking for anything else prints the usage line and
+  **Documented elsewhere, not implemented here.** RFC-0003 §5 lists `mz refs`, `mz path`,
+  `mz patch` and `mz diff` under *"designed here, next in implementation order"*. They are
+  not built. The binary dispatches exactly the commands in the table above: `check`, `fix`,
+  `contract`, `outline`, `hash` and `ir`. Asking for anything else prints the usage line and
   exits 2.
 </Note>
 
@@ -84,8 +87,8 @@ four properties define it.
   </Step>
   <Step title="Fixes are data">
     Every diagnostic carries a machine-applicable `fix` when one is unambiguous, tagged
-    `exact`, `guess` or `none`. The intent is that `mz fix` applies all `exact` fixes in one
-    shot, deleting a whole class of mechanical error from the loop.
+    `exact`, `guess` or `none`. [`mz fix`](#mz-fix-apply-every-exact-fix) applies every
+    `exact` fix in one pass, which takes a whole class of mechanical error out of the loop.
   </Step>
 </Steps>
 
@@ -147,7 +150,56 @@ And `MZ0501`, which is a warning rather than an error, and is how RFC-0001 §1.6
 
 The `end`-echo diagnostics (`MZ0206`–`MZ0208`) are the payoff for the name echo: they can
 say _which_ block on _which_ line an `end` actually closes, and hand back the exact text to
-write instead.
+write instead. Each fix rewrites the whole closer, not only the `end` word.
+
+### Codes added after pilot 2
+
+Pilot 2's 7B model brought React habits the compiler did not name, and several view mistakes
+gave a cascade instead of one error on the right line. These codes are the fixes, audited in
+[`benchmarks/READINESS.md`](https://github.com/mzizi-dev/mzizi/blob/main/benchmarks/READINESS.md).
+Each message below is quoted from `compiler/src/lex.rs` or `compiler/src/parse.rs`.
+
+| Code     | Severity | What it catches                                                                                          | Fix                                                                         |
+| -------- | -------- | -------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| `MZ0106` | error    | A spread, `...props` or `{...props}`. Mzizi has none: a component names each prop it reads               | `exact`: delete the spread, or its whole line when it stands alone          |
+| `MZ0312` | warning  | A prop named `as_child`, React's `asChild`. Mzizi elements are not polymorphic                           | `exact` (delete the prop) when nothing reads it; otherwise names the branch |
+| `MZ0313` | error    | A variant row whose `height` disagrees with the `h-N` or `size-N` class that renders it                  | `exact`: the rendered number                                                |
+| `MZ0406` | error    | An attribute written without its `=`, such as `class "flex"`                                             | Insert `=`: `exact` for a known attribute word, `guess` otherwise           |
+| `MZ0407` | error    | `if` in a view. The one conditional is `when`                                                            | `exact`: `when`                                                             |
+| `MZ0408` | error    | Attributes directly under `view`, which holds one element tree                                           | None                                                                        |
+| `MZ0409` | error    | Anything after an element word on its line, such as `span class="x"`. Before, the tail was silently kept | None                                                                        |
+
+`MZ0313` quotes both numbers, so the agent needn't work out the scale itself:
+
+```text
+`icon` declares `height 48` but its class `size-14` renders 56px (N × 4) — write `height 56`, or drop the column and let the class say it once
+```
+
+## `mz fix`: apply every exact fix
+
+`mz fix <file.mz>` checks the file, applies every `exact` fix to it in place, then checks the
+result again. The output and the exit status describe the file as it now is.
+
+```text
+$ mz fix button.mz
+mz: applied 1 exact fixes; 0 errors (0 exact-fixable) remain, 0ms
+```
+
+- **One pass.** It applies the `exact` fixes the first check reported, once. It does not loop
+  until nothing changes. The second check says what is left.
+- **`guess` fixes are never applied.** Where two `exact` fixes would overlap, the checker keeps
+  one as `exact` and demotes the other to `guess`, so the edits never collide. A demoted fix
+  may come back as `exact` on the next run.
+- **`--agent` works here too.** `mz fix --agent <file.mz>` prints the second check as NDJSON,
+  exactly as `mz check --agent` would.
+- **The exit status is the second check's:** `0` with no errors left, `1` with errors left, `2`
+  if the file could not be read or written.
+
+RFC-0001 §4.3 described this command before it existed. It landed after pilot 2, whose 7B
+model resubmitted a byte-identical file in 15 of 16 Mzizi repair attempts. `READINESS.md`
+records that applying `mz fix` to any Mzizi candidate from either pilot never raised its
+error count. Whether it helps an agent converge is for the benchmark to measure, and it has
+not been measured.
 
 ## `mz contract`: does it do what it says
 
@@ -167,9 +219,16 @@ mz: 0 errors (0 exact-fixable), 5 contract clauses, 0 failed, 0ms
 
 What it does **not** do: it checks nothing rendered, and it does not compare a component
 with a reference implementation. That comparison is the benchmark harness's job
-(`benchmarks/harness`). It also treats Tailwind sizes such as `size-14` as unevaluable, so
-a declared `height` column can disagree with the class and pass. Pilot 2 hit exactly that;
-see [the pilot results](/pilots).
+(`benchmarks/harness`).
+
+**A size's height is now read from its class.** Pilot 2's 7B buttons wrote
+`icon class "size-14" height 48`: the class renders 56px, the contract read the 48, and
+`mz contract` passed. Now a variant row may leave `height` out, and the evaluator takes the
+height its first plain `h-N` or `size-N` class token renders (`N × 4` pixels). A row that
+writes a `height` which disagrees with its class fails `mz check` with `MZ0313`. The rule is
+the one the benchmark harness scores with, and both test suites check it on the same
+examples. Tokens with a prefix or an arbitrary value, such as `md:h-10` or `h-[56px]`, are not
+read. See [the pilot results](/pilots).
 
 ## `mz outline`: the representation for dependencies
 
@@ -199,8 +258,11 @@ the repository takes about 10 ms in a debug build, against a 400 ms test budget.
 floor on a tiny corpus, not the incremental-compile figure the charter asks for. See
 [Status](/status).
 
-## A known cost in the agent output
+## Paths in the agent output
 
-`mz check --agent` prints each diagnostic's `file` exactly as it was given. The benchmark
-runner passes absolute paths, so in pilot 2 the 7B model read about 13,500 tokens of path
-strings. Relative paths are the first fix pilot 2 lists, and at `a9c928d` it is still open.
+`mz check --agent` prints each diagnostic's `file` exactly as it was given. In pilot 2 the
+benchmark runner passed absolute paths, so the 7B model read about 13,500 tokens of path
+strings. That was the first fix pilot 2 listed, and it is fixed in the runner rather than the
+compiler: the runner's default `file-name` normaliser replaces the candidate's path with its
+bare file name before the model sees it, for every arm. If you drive `mz` from your own
+loop, pass a relative path.

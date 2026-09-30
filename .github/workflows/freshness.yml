@@ -1,0 +1,36 @@
+name: Freshness
+
+# The owner's rule (2026-09-30): docs.mzizi.dev never lags the language or the components.
+# This compares the versions, test counts and pins the pages state with their live sources
+# (npm, crates.io, the language README and main branch, the api.mzizi.dev pin header and the
+# MCP Registry). See scripts/check-freshness.mjs.
+#
+# Deliberately NOT on pull_request: it depends on five third-party services, and an outage
+# in any of them would turn an unrelated pull request red. It runs daily and on demand, and
+# a red run here is the signal for a docs-freshness pull request.
+
+on:
+  schedule:
+    - cron: "17 5 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  freshness:
+    name: Docs match their sources
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+
+      - name: Check stated facts against live sources
+        run: node scripts/check-freshness.mjs
