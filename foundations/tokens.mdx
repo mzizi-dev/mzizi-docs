@@ -40,19 +40,63 @@ Each mineral also carries a container pair — a pale fill for light mode and a 
 dark — for hover states, selected rows and soft highlights.
 
 <Note>
-  **Tanzanite is `--primary`, not cobalt.** Cobalt is the exceptional mineral, reserved for
-  links, informational states and the focus ring. Reaching for cobalt as a primary action
-  colour is the most common token mistake in this system.
+  **`--primary` is never cobalt.** Cobalt is the exceptional mineral, reserved for links,
+  informational states and the focus ring, for every brand. Reaching for cobalt as a primary
+  action colour is the most common token mistake in this system. Which colour `--primary` is
+  depends on the brand; see [brand minerals](#brand-minerals).
 </Note>
+
+## Brand minerals
+
+Each brand in the Bundu ecosystem has a brand mineral, listed in the `ecosystem` array of
+`GET /v1/brand`. It sets that brand's `--primary`. Read on 30 September 2026:
+
+| Brand    | Brand mineral | Family           |
+| -------- | ------------- | ---------------- |
+| Mzizi    | Hematite      | Heritage         |
+| bundu    | Copper        | African Minerals |
+| nyuchi   | Gold          | African Minerals |
+| mukoko   | Tanzanite     | African Minerals |
+| shamwari | Sodalite      | African Minerals |
+| nhimbe   | Malachite     | African Minerals |
+
+The mukoko mini-apps and sister brands carry their own rows in the same array.
+
+**Mzizi's brand mineral is hematite**, by the owner's decision of 30 September 2026. Hematite
+is one of the seven heritage tones, not one of the Seven African Minerals: `--color-hematite`,
+`#546E7A` in light mode and `#90A4AE` in dark, "foundation, endurance, the substrate".
+
+The registry's default stylesheet, `mzizi-tokens-globals.css`
+([`GET /v1/ui/mzizi-tokens-globals`](https://api.mzizi.dev/v1/ui/mzizi-tokens-globals)),
+resolves `--primary` per brand. Set `data-brand` on `<html>` to choose one; with no
+`data-brand`, the default is Mzizi, so `--primary` is `var(--heritage-hematite-aa)`. Until
+30 September 2026 that default was gold. `--ring` stays cobalt for every brand.
+
+```css
+[data-brand="mzizi"] {
+  --primary: var(--heritage-hematite-aa);
+  --ring: var(--mineral-cobalt-aa);
+}
+
+[data-brand="mukoko"] {
+  --primary: var(--mineral-tanzanite-aa);
+  --ring: var(--mineral-cobalt-aa);
+}
+```
+
+The `-aa` variants are the accessible tier of each family. For hematite that is `#546E7A` in
+light mode, which already clears the bar, and `#C9D2D7` in dark mode.
 
 ## Semantic colours
 
 Components reference semantic names, never minerals directly. Fourteen are published; these
-are the ones components reach for most:
+are the ones components reach for most. The `--primary` value here is the one `/v1/brand`
+publishes, tanzanite; the stylesheet sets it per brand, as [brand minerals](#brand-minerals)
+describes.
 
 | Token       | Light     | Dark      | Meaning                                             |
 | ----------- | --------- | --------- | --------------------------------------------------- |
-| `--primary` | `#4B0082` | `#B388FF` | Primary brand action — tanzanite                    |
+| `--primary` | `#4B0082` | `#B388FF` | Primary brand action — tanzanite in `/v1/brand`     |
 | `--success` | `#004D40` | `#64FFDA` | Success, positive actions                           |
 | `--warning` | `#7A5C00` | `#FFD866` | Caution                                             |
 | `--error`   | `#B3261E` | `#F2B8B5` | Errors, destructive actions                         |
