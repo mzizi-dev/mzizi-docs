@@ -9,8 +9,8 @@ The Mzizi MCP server gives agents the registry, the brand tokens, the architectu
 the doctrine, the agent skills and these docs over the
 [Model Context Protocol](https://modelcontextprotocol.io). It is the `mzizi-mcp` Cloudflare
 Worker, published as [`@nyuchi/mzizi-mcp`](https://www.npmjs.com/package/@nyuchi/mzizi-mcp)
-(`0.11.0`, read from npm on 30 September 2026; the hosted server answered `initialize` with
-the same version). In the
+(`0.11.1`, read from npm on 30 September 2026; the hosted server answered `initialize` with
+the same version, and the MCP Registry lists it). In the
 [MCP Registry](https://registry.modelcontextprotocol.io) it is
 `io.github.mzizi-dev/mzizi-mcp`, listing both the hosted endpoint and the npm package. The
 earlier entry under the nyuchi namespace is deleted.
@@ -95,7 +95,7 @@ tools:
 | `mzizi_get_tokens`                 | The brand system, including all 21 colour families                         |
 | `mzizi_get_architecture`           | The DNA helix, or one node or rung                                         |
 | `mzizi_get_doctrine`               | Ubuntu pillars and principles, conventions, AI instruction sets            |
-| `mzizi_get_skills`                 | The agent skills, listed or one in full                                    |
+| `mzizi_get_skills`                 | The five agent skills, listed or one in full                               |
 | `mzizi_check_accessibility`        | Contrast against the Mzizi floor, computed locally                         |
 | `mzizi_report_issue`               | Files into the Fundi issue desk. **Gated**                                 |
 | `mzizi_fundi`                      | Delegates a run to Fundi. **Gated**                                        |
@@ -165,9 +165,10 @@ component with Rust ranks first; a better word match still wins.
 Because the generator runs the registry's route handlers rather than re-deriving their
 output, a tool answers with the payload `api.mzizi.dev/v1` would give at the same commit.
 `catalogue.json` names the pinned registry commit in `source.registry`, and
-`mzizi_mcp_describe` reports it. Read the live pin there rather than from this page; for
-example, on 30 September 2026 it was registry commit `9b86e03`, the same commit
-[`api.mzizi.dev`](/platform/api-gateway) was built from. Moving to newer registry content is a
+`mzizi_mcp_describe` reports it. Read the live pin there rather than from this page, and
+compare it with the pin [`api.mzizi.dev`](/platform/api-gateway) reports in its
+`X-Mzizi-Source` header. The two are meant to be the same commit, but they move separately, so
+they can differ for a while after one of them moves. Moving to newer registry content is a
 change to that pin, made in a pull request that CI checks.
 
 The pin, `ref` in `mzizi-mcp/registry.pin.json`, has the same bot as
@@ -179,6 +180,14 @@ the pin moves by hand.
 
 The server holds no database credential. Former `nyuchi-*` component names resolve to their
 `mzizi-*` names through the registry's rename map, bundled with the rest.
+
+### The skills
+
+`mzizi_get_skills` serves the five skills of [`@nyuchi/mzizi-skills`](/toolchain/skills),
+bundled from the skills' source when the server is built, so it answers with the same version
+as npm. From `0.11.1`, each skill's `source` names where it is authored,
+`mzizi-dev/agent-tools/mzizi-skills/skills/<name>`. The skills renamed or removed in `0.8.0`
+have no aliases; see [renamed and removed skills](/toolchain/skills#renamed-and-removed-skills).
 
 ### The docs tools
 
