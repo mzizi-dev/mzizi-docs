@@ -30,9 +30,11 @@ The stopping rule, as RFC-0001 §6 first wrote it:
 <Note>
   **Owner decision, 29 September 2026: the kill criterion is now Mzizi against the best
   existing language for each kind of task**, with the aim of ranking with the top languages.
-  Dioxus and Leptos are the comparison for Rust UI components today; other kinds of task
-  will be compared with whatever language is strongest at them. It has not been measured.
-  The charter and RFC-0001 still state the narrower rule above.
+  It is [RFC-0009](https://github.com/mzizi-dev/mzizi/blob/main/design/RFC-0009-comparison-benchmark.md)
+  §6, and charter v0.3 adopts it. Within each gating task family, Mzizi must beat the best
+  existing language's value on at least two of the three metrics, on held-out tasks, with a
+  bootstrap 95% interval that excludes zero. It has not been measured. See
+  [the pilot results](/pilots#the-kill-criterion-the-run-will-test) for the rule in full.
 </Note>
 
 And from RFC-0002 §5, an addition that matters because the whole design target changed:
@@ -64,15 +66,17 @@ compile-error-density design goal is trying to minimise. The defect rate measure
 The public half of the benchmark is built, and lives in
 [`benchmarks/`](https://github.com/mzizi-dev/mzizi/tree/main/benchmarks) in `mzizi-dev/mzizi`:
 
-| Piece                   | What it does                                                                                        |
-| ----------------------- | --------------------------------------------------------------------------------------------------- |
-| `benchmarks/runner`     | `mzbench`, the episode runner. It drives an author through compile iterations and records every one |
-| `benchmarks/harness`    | The scorer. It diffs a candidate's variants, defaults and touch heights against the Rust reference  |
-| `benchmarks/arms`       | The Dioxus and Leptos arms, each a sandbox crate with a `check.sh`                                  |
-| `benchmarks/prompts`    | One guide per arm, built by the same prompt builder                                                 |
-| `benchmarks/tasks`      | The public pilot tasks: `button`, `badge`, `mzizi-changelog-renderer`                               |
-| `benchmarks/openweight` | Setup and drivers for a local open-weight model                                                     |
-| `benchmarks/results`    | Every pilot run, raw episodes included                                                              |
+| Piece                       | What it does                                                                                                                       |
+| --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `benchmarks/runner`         | `mzbench`, the episode runner. It drives an author through compile iterations and records every one                                |
+| `benchmarks/harness`        | The scorer. It diffs a candidate's variants, defaults, touch heights and, per task, its `data-slot` set against the Rust reference |
+| `benchmarks/arms`           | The Dioxus and Leptos arms, each a sandbox crate with a `check.sh`                                                                 |
+| `benchmarks/prompts`        | One guide per arm, built by the same prompt builder                                                                                |
+| `benchmarks/tasks`          | The public tasks: `button`, `badge`, `card`, `mzizi-changelog-renderer`                                                            |
+| `benchmarks/kill-criterion` | The driver for the real run, a held-out task checker, and the plan. Refuses to run without a `PLAN.md`                             |
+| `benchmarks/openweight`     | Setup and drivers for a local open-weight model                                                                                    |
+| `benchmarks/results`        | Every pilot run, raw episodes included                                                                                             |
+| `benchmarks/READINESS.md`   | The audit of pilot 2's fixes, and what the kill-criterion run still waits on                                                       |
 
 CI runs the harness and runner tests with the rest of the workspace. The held-out task set
 does not exist yet (see below), so every run so far has used public tasks.
@@ -80,18 +84,19 @@ does not exist yet (see below), so every run so far has used public tasks.
 ## Where the benchmark is going
 
 <Note>
-  **Direction, not shipped.** The owner has said the benchmark will extend beyond UI
-  components in Rust: to TypeScript and React, Python, Go and C++, on frontend and backend
-  tasks. The RFCs for that are being written in
-  [`design/`](https://github.com/mzizi-dev/mzizi/tree/main/design). Until they land, the
-  benchmark is what this page describes: Mzizi against Dioxus and Leptos, on UI components.
+  **Designed, not built.** RFC-0009 extends the benchmark beyond UI components in Rust: a
+  `ui-spec` family with a React arm beside Dioxus and Leptos, and a `backend` family against
+  TypeScript, Python, Go, C++ and Rust. The RFC is merged; none of the new arms has been
+  added. Until they are, the harness is what this page describes: Mzizi against Dioxus and
+  Leptos, on UI components.
 </Note>
 
 ## Results are always published
 
 The owner's rule: **every run is published, whichever way it falls.** Each lands in
 [`benchmarks/results/`](https://github.com/mzizi-dev/mzizi/tree/main/benchmarks/results)
-with its raw episodes. That includes the two pilots, which did not show an advantage. For
+with its raw episodes, and RFC-0009 §7 adds a `PLAN.md` committed before a run's first
+episode, so a run that never reported is visible as exactly that. That includes the two pilots, which did not show an advantage. For
 the held-out set, scores are published immediately; the task texts are published only when a
 task set is retired, so that publishing them does not contaminate a set still in use.
 

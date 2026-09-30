@@ -9,7 +9,10 @@ The Mzizi MCP server gives agents the registry, the brand tokens, the architectu
 the doctrine, the agent skills and these docs over the
 [Model Context Protocol](https://modelcontextprotocol.io). It is the `mzizi-mcp` Cloudflare
 Worker, published as [`@nyuchi/mzizi-mcp`](https://www.npmjs.com/package/@nyuchi/mzizi-mcp)
-(`0.9.1`, read from npm on 29 September 2026).
+(`0.10.1`, read from npm on 30 September 2026). In the
+[MCP Registry](https://registry.modelcontextprotocol.io) it is
+`io.github.mzizi-dev/mzizi-mcp`, listing both the hosted endpoint and the npm package. The
+earlier entry under the nyuchi namespace is deleted.
 
 ## Connecting
 
@@ -46,15 +49,10 @@ ship inside the package.
 
 ## Who can use it
 
-<Note>
-  **Rolling out.** The owner decided on 29 September 2026 that the MCP server is free with no
-  gate. Every tool except the Fundi tools is to be served without sign-in. On 29 September
-  2026 the hosted endpoint still answers an unsigned request with
-  `401 {"error":"invalid_token"}`, because the change is landing in the tooling repository
-  now. Until it deploys, use the stdio build above, which has never needed sign-in.
-</Note>
-
-The intended behaviour:
+The MCP server is free, with no gate, as the owner decided on 29 September 2026. Every tool
+except the Fundi tools is served without sign-in. On 30 September 2026 an anonymous
+`initialize` and `tools/list` on `https://mcp.mzizi.dev/mcp` returned all fourteen tools, and
+an anonymous call to `mzizi_search` returned results.
 
 | Tools                                          | Sign-in                                        |
 | ---------------------------------------------- | ---------------------------------------------- |
@@ -66,7 +64,13 @@ The Fundi tools stay gated because they tie into the console at `app.mzizi.dev`:
 Fundi on a user's behalf. Both need to know who the user is. The server advertises its OAuth
 metadata at
 [`/.well-known/oauth-protected-resource`](https://mcp.mzizi.dev/.well-known/oauth-protected-resource),
-so MCP clients can run the sign-in flow for those tools themselves.
+so MCP clients can run the sign-in flow for those tools themselves. Called without sign-in,
+a Fundi tool answers with how to sign in rather than failing silently. A client that cannot
+run the flow can connect to `https://mcp.mzizi.dev/mcp/signin` instead, which asks you to sign
+in and then serves every tool.
+
+Anonymous requests are rate-limited to 120 per 60 seconds per IP address, according to the
+server's `catalogue.json`. Signed-in requests are not.
 
 ## Discovering the tools
 
@@ -79,7 +83,8 @@ fresh as its last edit.
 - The `mzizi_mcp_describe` tool, and the `mzizi://tools` resource, describe the tools and
   the data sources.
 
-On 29 September 2026, `catalogue.json` listed fourteen tools:
+On 30 September 2026, `catalogue.json` and an anonymous `tools/list` both listed fourteen
+tools:
 
 | Tool                               | What it answers                                                            |
 | ---------------------------------- | -------------------------------------------------------------------------- |

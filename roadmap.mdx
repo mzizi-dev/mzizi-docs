@@ -18,28 +18,33 @@ icon: "compass"
 - **The frontend takes one of two shapes.** Either Astro, with Mzizi UI
   ([Mzizi Roots](/roots/overview)) underneath, or pure Rust end to end.
 - **Everything built carries a contract.** Components, language functions and backend
-  handlers. Today, contracts exist for components only: `mz contract` evaluates a
-  component's `contract` block against its own declarations (RFC-0006).
+  handlers, specified in RFC-0010. Today, contracts exist for components only:
+  `mz contract` evaluates a component's `contract` block against its own declarations
+  (RFC-0006).
 - **A new kill criterion.** Mzizi against the best existing language for each kind of
-  task, aiming to rank with the top languages. Not measured yet.
+  task, aiming to rank with the top languages, specified in RFC-0009 §6. Not measured yet.
 - **Results are always published**, whichever way they fall, in
   [`benchmarks/results/`](https://github.com/mzizi-dev/mzizi/tree/main/benchmarks/results).
   Held-out task texts are published when a task set is retired; their scores are published
   immediately.
-- **The benchmark widens.** It will extend to TypeScript and React, Python, Go and C++, on
-  frontend and backend tasks. Today it compares Mzizi with Dioxus and Leptos on UI
+- **The benchmark widens.** RFC-0009 extends it to React, and to TypeScript, Python, Go, C++
+  and Rust backends. Today the harness compares Mzizi with Dioxus and Leptos on UI
   components ([the benchmark](/benchmark)).
 
-The RFCs for the wider benchmark and for contracts everywhere are being written in
-[`design/`](https://github.com/mzizi-dev/mzizi/tree/main/design) in `mzizi-dev/mzizi`. This
-page will not describe them until they exist there.
+Both RFCs are merged in
+[`design/`](https://github.com/mzizi-dev/mzizi/tree/main/design) in `mzizi-dev/mzizi`, and
+charter v0.3 records the direction. Both are drafts, and nothing in them is implemented yet:
+[RFC-0009](https://github.com/mzizi-dev/mzizi/blob/main/design/RFC-0009-comparison-benchmark.md)
+for the benchmark and kill criterion, and
+[RFC-0010](https://github.com/mzizi-dev/mzizi/blob/main/design/RFC-0010-contracts-everywhere.md)
+for contracts everywhere. See [the RFC index](/rfcs).
 
 ## How that fits the charter
 
-The [charter](/charter) (v0.2) already widened Mzizi from web UI to general-purpose software
-for the agentic world, and merged rendering and edge deployment into one full-stack Phase 1.
-The direction above sharpens that scope and raises the bar for Phase 0. It does not remove
-the gate:
+The [charter](/charter) (v0.2) widened Mzizi from web UI to general-purpose software for the
+agentic world, and merged rendering and edge deployment into one full-stack Phase 1. v0.3
+records the direction above, which sharpens that scope and raises the bar for Phase 0. It
+does not remove the gate:
 
 > If this doesn't show a measurable advantage, nothing downstream matters — don't build
 > Phase 1 until Phase 0 has a real number attached to it.
@@ -55,10 +60,13 @@ the gate:
 
 ## What has to happen next
 
-The second pilot listed the fixes to make before a run that tests the kill criterion:
-relative paths in diagnostics, hints for React idioms, removing a duplicated fact from the
-variant table, a task set that can fail, and fresh unpublished tasks. See
-[the pilot results](/pilots#what-has-to-change-before-the-real-run) for where each stands.
+The second pilot listed the fixes to make before a run that tests the kill criterion.
+`benchmarks/READINESS.md` audits them, and most are now made: relative paths in the check
+output, diagnostics for React idioms, a height derived from its class, `mz fix`, and a
+larger public task set. Phase 0 is still not complete. The run waits on five things: the
+runner's language-neutral input and a React arm, held-out tasks in a private repository,
+a pre-registered `PLAN.md`, a first Leptos run, and a Mzizi backend arm, which needs new
+language work. See [what remains](/pilots#what-remains-before-the-run-counts).
 
 [RFC-0007](https://github.com/mzizi-dev/mzizi/blob/main/design/RFC-0007-gap-register.md) is
 the gap register: what the charter's scope needs that the language and compiler lack, and

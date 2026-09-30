@@ -97,9 +97,11 @@ not hold. CI runs it over every primitive: 29 clauses across the nine files, all
 
 <Warning>
   A contract checks the component against **itself**, not against anything rendered and not
-  against a reference implementation. It also cannot evaluate a Tailwind size such as
-  `size-14`, so a `height` column that disagrees with its class still passes. The second
-  pilot's 7B model wrote exactly that defect. See [the pilot results](/pilots).
+  against a reference implementation. The second pilot's 7B model found a gap in that: it
+  wrote `icon class "size-14" height 48`, and the contract read the 48 while the class renders
+  56px. That gap is now closed. A row may leave `height` out and the evaluator reads it from
+  an `h-N` or `size-N` class, and a `height` that disagrees with its class fails `mz check`
+  with `MZ0313`. See [the compiler](/compiler#mz-contract-does-it-do-what-it-says).
 </Warning>
 
 ## No import lines, and why that is possible

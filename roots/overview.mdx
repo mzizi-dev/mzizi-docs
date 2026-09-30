@@ -1,15 +1,17 @@
 ---
 title: "Mzizi Roots"
-description: "Mzizi Roots: Mzizi's own UI and server components for the agentic web, being rebuilt in Rust. In progress. The React components keep working as the React build."
+description: "Mzizi Roots: Mzizi's own UI and server components for the agentic web, being rebuilt in Rust. Ten crates on crates.io at 0.1.0, and a first batch of twelve brand components. The React components keep working as the React build."
 sidebarTitle: "Mzizi Roots"
 icon: "component"
 ---
 
 <Warning>
-  **In progress.** Mzizi Roots is a direction with work under way, not a finished library.
-  The design is being written up as an RFC in the registry (`docs/roots/RFC-roots.md`), and it
-  has not landed yet. This page describes the direction only. Where it and that RFC disagree
-  once the RFC is merged, the RFC is right.
+  **In progress.** Mzizi Roots is a conversion with its first batch done, not a finished
+  library. The first batch is twelve brand components; most of the registry's 434 branded
+  items are still React only. The design is
+  [`docs/roots/RFC-roots.md`](https://github.com/mzizi-dev/mzizi-registry/blob/main/docs/roots/RFC-roots.md)
+  in the registry, merged with the status _"proposed, 2026-09-29"_. Where this page and that
+  RFC disagree, the RFC is right.
 </Warning>
 
 **Mzizi Roots** is the name for Mzizi's own branded components rebuilt in Rust: **UI and
@@ -34,6 +36,10 @@ contract. See [the roadmap](/roadmap).
 Roots components are written in Rust today, not in Mzizi. The language cannot produce them
 yet: nothing lowers to Rust, and Phase 1 waits on the benchmark ([Status](/status)).
 
+If the language does lower to Rust one day, Roots is its target: the RFC writes every Roots
+contract in the language's `contract … end` grammar. That is a design intention, gated on the
+benchmark like the rest of Phase 1.
+
 The relationship runs the other way for now. The registry's components, React and Rust
 together, are the **benchmark corpus**: the fixed ground truth the language is measured
 against. The nine [primitives](/primitives) are hand ports of registry components, and the
@@ -43,32 +49,90 @@ sibling is a component the benchmark can score.
 ## What exists today
 
 The Rust half of the registry lives in `mzizi-rs/` in
-[`mzizi-dev/mzizi-registry`](https://github.com/mzizi-dev/mzizi-registry), a Cargo workspace:
+[`mzizi-dev/mzizi-registry`](https://github.com/mzizi-dev/mzizi-registry), a Cargo workspace.
+All ten of its crates are on crates.io at `0.1.0` (checked 30 September 2026): eight node
+crates, one per node that has Rust, and two umbrella crates that re-export them.
 
-| Crate             | What it holds (from each crate's own description)                                   |
-| ----------------- | ----------------------------------------------------------------------------------- |
-| `mzizi-tokens`    | N1 design tokens: the 21-family palette as Rust consts, generated from one source   |
-| `mzizi-ui`        | N2 primitives for Dioxus: button, badge and card                                    |
-| `mzizi-shell`     | N7 app chrome for Dioxus: bottom nav, footer, command palette, connectivity, toasts |
-| `mzizi-assurance` | N8 assurance: probes, telemetry and the OTLP exporter                               |
-| `mzizi-fundi`     | The N9 fundi rung, client side: what is worth filing, and shaping the issue         |
-| `mzizi-docs`      | The N10 documentation rung: AI context, docs API and routing, changelog             |
-| `mzizi-discovery` | The N11 discovery rung: page metadata and Schema.org JSON-LD                        |
+| Crate                | What it holds (from each crate's own description)                                                          |
+| -------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `mzizi-roots`        | **Umbrella, UI side.** Re-exports the tokens, `mzizi-ui`, `mzizi-brand` and `mzizi-shell`                  |
+| `mzizi-roots-server` | **Umbrella, server side.** Re-exports `mzizi-assurance`, `mzizi-fundi`, `mzizi-docs` and `mzizi-discovery` |
+| `mzizi-tokens`       | N1 design tokens: the 21-family palette as Rust consts, generated from one source                          |
+| `mzizi-ui`           | N2 primitives for Dioxus: avatar, badge, button, card, chart, input, label, progress, separator            |
+| `mzizi-brand`        | N3 brand components for Dioxus: the first Roots batch, each with a checkable contract                      |
+| `mzizi-shell`        | N7 app chrome for Dioxus: bottom nav, footer, command palette, connectivity, theme, toasts                 |
+| `mzizi-assurance`    | N8 assurance: probes, telemetry and the OTLP exporter                                                      |
+| `mzizi-fundi`        | The N9 fundi rung, client side: what is worth filing, shaping the issue, which fixes worked                |
+| `mzizi-docs`         | The N10 documentation rung: AI context, docs API and routing, changelog, portal rendering                  |
+| `mzizi-discovery`    | The N11 discovery rung: page metadata and Schema.org JSON-LD                                               |
 
-They are compiled and contract-tested in the registry's CI. Every primitive with a Rust
-sibling has a test asserting that its `.tsx` and `.rs` agree on variants, `data-slot` names
-and classes.
+## Install
 
-None of these crates is published to crates.io yet, including `mzizi-ui` (checked
-29 September 2026). You can read a component's Rust source over the API:
+```bash
+cargo add mzizi-roots            # the UI side: tokens, primitives, brand and shell
+cargo add mzizi-roots-server     # the server side: assurance, fundi, docs and discovery
+```
+
+Each umbrella turns every feature on by default. `mzizi-roots` has the features `ui`, `brand`
+and `shell`, and always includes `mzizi-tokens`. `mzizi-roots-server` has `assurance`,
+`fundi`, `docs` and `discovery`; `docs` brings in Dioxus, because `mzizi-docs` also carries
+two documentation renderers. To take less, turn the defaults off and name what you need, or
+depend on a single node crate:
+
+```bash
+cargo add mzizi-roots --no-default-features --features brand
+cargo add mzizi-brand
+```
+
+The node crates are the ones that compile each component, and they keep their names.
+
+## The first batch: twelve brand components
+
+The first Roots batch converts twelve N3 brand components, where there was no Rust at all
+before: `mzizi-alert-banner`, `mzizi-avatar-stack`, `mzizi-cover-header`, `mzizi-empty-state`,
+`mzizi-escalation-card`, `mzizi-gauge-card`, `mzizi-hero-stat`, `mzizi-meta-tile`,
+`mzizi-stats-row`, `mzizi-success-screen`, `mzizi-suitability-card` and `mzizi-user-card`.
+They ship in `mzizi-brand`.
+
+**Each one carries a contract, checked against its rendered output.** The contract has two
+parts. The registry contract is the one every component has: one name, one set of variants,
+the same `data-slot`, `data-portal` and tokens as the React build, asserted against the
+`.tsx` sibling. On top of that, each module exports clauses in the language's
+`contract … end` grammar, three to eight per component and 65 in all. The crate's contract
+suite renders each component with `dioxus-ssr` and evaluates every clause against the markup
+it emits. A clause it cannot evaluate fails. For example, from `mzizi-alert-banner`:
+
+```text
+contract
+  slot is "mzizi-alert-banner"
+  portal is "https://mzizi.dev/components/mzizi-alert-banner"
+  role is "alert"
+  every alert_severity label not_empty
+  watch.mineral uses "--severity-cold"
+  button "Dismiss" min_height 48
+  button "View Details" min_height 48
+end
+```
+
+These clauses are evaluated by Rust tests in the registry, not by `mz contract`. The
+language's own evaluator checks a `.mz` component against itself and cannot read Rust.
+
+The ports also fix six defects the React build still has, such as a 40px button under the
+48px touch floor and an unclamped `aria-valuenow`. Each fix has a test.
+
+## Reading the Rust source
+
+You can read a component's Rust source over the API:
 
 ```bash
 curl https://api.mzizi.dev/v1/rs/button
 ```
 
-That route is a read surface, not an install path. A Rust project is meant to depend on the
-`mzizi-ui` crate, not copy `.rs` files into itself, and that has to wait for the crate to be
-published.
+That route is a read surface, not an install path: depend on the crate instead. On
+30 September 2026 the API was built from registry commit `ce68c64`, which predates the first
+batch. So `/v1/rs/{name}` did not yet serve the twelve brand components, and its `crate` field
+named `mzizi-ui` for every component. Both change when the API's registry pin moves forward.
+The crates on crates.io already carry the batch.
 
 ## Where to go next
 

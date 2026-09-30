@@ -70,15 +70,15 @@ documented under [the toolchain](/toolchain/overview) by their published npm pac
 
 ## The addresses
 
-Checked 29 September 2026 with an HTTPS request to each.
+Checked 30 September 2026 with an HTTPS request to each.
 
-| Address          | Served by                                        | Answers                                               |
-| ---------------- | ------------------------------------------------ | ----------------------------------------------------- |
-| `mzizi.dev`      | `mzizi-site`                                     | 200                                                   |
-| `api.mzizi.dev`  | `mzizi-api-gateway`                              | 200 on `/v1`; a JSON 404 on the bare host             |
-| `mcp.mzizi.dev`  | `mzizi-mcp`, from the private tooling repository | 401 on `/mcp` without sign-in (free tier rolling out) |
-| `app.mzizi.dev`  | `mzizi-console`, run under Nyuchi                | 200, behind sign-in                                   |
-| `docs.mzizi.dev` | `mzizi-docs`, on Mintlify                        | 200                                                   |
+| Address          | Served by                                        | Answers                                         |
+| ---------------- | ------------------------------------------------ | ----------------------------------------------- |
+| `mzizi.dev`      | `mzizi-site`                                     | 200                                             |
+| `api.mzizi.dev`  | `mzizi-api-gateway`                              | 200 on `/v1`; a JSON 404 on the bare host       |
+| `mcp.mzizi.dev`  | `mzizi-mcp`, from the private tooling repository | 200 on `/mcp` to an MCP client, with no sign-in |
+| `app.mzizi.dev`  | `mzizi-console`, run under Nyuchi                | 200, behind sign-in                             |
+| `docs.mzizi.dev` | `mzizi-docs`, on Mintlify                        | 200                                             |
 
 Addresses move. Check one before you repeat it. The old Mzizi path on `docs.bundu.org`
 returns 404; do not link it.

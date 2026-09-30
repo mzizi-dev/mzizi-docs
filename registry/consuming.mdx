@@ -11,18 +11,27 @@ installation, and keeping them updated.
 ## Rust first, where it exists
 
 Mzizi's components are being rebuilt in Rust as [Mzizi Roots](/roots/overview), and where a
-Rust implementation exists it is the one to prefer. You can read any Rust component's source
-today:
+Rust implementation exists it is the one to prefer. A Dioxus project depends on the crates,
+which are on crates.io:
+
+```bash
+cargo add mzizi-roots        # tokens, primitives, brand components and the app shell
+```
+
+Or take one node crate, such as `mzizi-ui` or `mzizi-brand`. See
+[Mzizi Roots](/roots/overview#install) for the features and the full list. The
+[`mzizi add` installer](/toolchain/cli#mzizi-add-the-registry-installer) in
+`@nyuchi/mzizi-cli` resolves a component by name: for a Rust project it names the crate and
+prints the `cargo add` to run, rather than copying `.rs` files.
+
+You can read any Rust component's source too:
 
 ```bash
 curl https://api.mzizi.dev/v1/rs/button
 ```
 
-That route is a read surface, not an install path. A Dioxus project is meant to depend on the
-`mzizi-ui` crate rather than copy `.rs` files, and `mzizi-ui` is **not on crates.io yet**. The
-`mzizi add` installer that would wire this up is not published either (see
-[the CLI](/toolchain/cli#mzizi-add-not-published-yet)). Until both ship, the rest of this
-page, which covers the React build, is the supported install path.
+That route is a read surface, not an install path. The rest of this page covers the React
+build.
 
 ## The React build
 

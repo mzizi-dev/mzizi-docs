@@ -56,9 +56,13 @@ Facts that inherited prose often gets wrong:
   (`mzizi-api-gateway`, a **Hono** Worker, not Rust) and `mcp.mzizi.dev` bundle those files
   at build time from a pinned registry commit. Only `mzizi-console` uses Supabase.
 - **One MCP server**, at `mcp.mzizi.dev/mcp`. `mzizi.dev/mcp` is a 308 to it. It is free
-  with no sign-in except the Fundi tools (`mzizi_fundi`, `mzizi_report_issue`); that is
-  rolling out, so check whether the live server still answers 401 before saying otherwise.
-- **The CLI is free.** `mzizi add` is not published.
+  with no sign-in except the Fundi tools (`mzizi_fundi`, `mzizi_report_issue`); an anonymous
+  `tools/list` answered on 30 September 2026. Its MCP Registry name is
+  `io.github.mzizi-dev/mzizi-mcp`.
+- **The CLI is free.** `mzizi add` is published from `@nyuchi/mzizi-cli` 0.6.1; 0.6.0's
+  binaries printed nothing.
+- **The Roots crates are on crates.io**: ten crates at 0.1.0, installed with
+  `cargo add mzizi-roots`.
 - **`nyuchi-*` components are `mzizi-*`**, and the old names 308 to the new ones.
 
 Three specific traps:
@@ -66,11 +70,29 @@ Three specific traps:
 - **Do not quote RFC examples as working syntax.** RFC-0001's view attributes have no `=`;
   the implemented parser requires `name = value`. Prefer quoting `.mz` files from the
   repository, which CI gates.
-- **Do not document `mz fix`, `mz refs`, `mz path`, `mz patch` or `mz diff` as commands.**
-  They are designed, not built. The binary dispatches `check`, `contract`, `outline`, `hash`,
-  `ir`.
+- **Do not document `mz refs`, `mz path`, `mz patch` or `mz diff` as commands.** They are
+  designed, not built. The binary dispatches `check`, `fix`, `contract`, `outline`, `hash`,
+  `ir`. `mz fix` is built and documented on the compiler page.
 - **Do not put a model name or identifier in a page.** Say "a frontier model" or "a ~7B
   open-weight model" and link the pilot write-up, which names them.
+
+## Freshness rule
+
+An owner rule, 2026-09-30: **docs.mzizi.dev must never lag the language or the components.**
+
+- The upstreams are the language ([`mzizi-dev/mzizi`](https://github.com/mzizi-dev/mzizi)),
+  the registry ([`mzizi-dev/mzizi-registry`](https://github.com/mzizi-dev/mzizi-registry)),
+  the Mzizi Roots crates on crates.io, and the `@nyuchi/mzizi-*` npm packages built in
+  `mzizi-dev/agent-tools`. Also the `api.mzizi.dev` registry pin and the MCP Registry entry.
+- A standing **docs-freshness agent** checks upstream state against what these pages say and
+  opens a pull request whenever they drift. The supervisor reviews and merges it.
+- Anyone changing the language or the components should expect a docs update to follow, and
+  should say in their pull request that they changed it.
+- `node scripts/check-freshness.mjs` compares the facts it knows how to find (package and
+  crate versions, the language's test count and checked commit, the API pin, the MCP Registry
+  entry) with their live sources. `.github/workflows/freshness.yml` runs it daily and on
+  demand. It needs the network, so it is not a required check. When you move one of those
+  facts on a page, keep the sentence shape the script matches, or update the script.
 
 ## Terminology
 
@@ -131,6 +153,7 @@ npx mint@latest validate                                        # strict: warnin
 npx mint@latest broken-links --check-anchors --check-redirects  # internal links only
 npx mint@latest a11y                                             # alt attributes
 node scripts/check-contrast.mjs                                 # APCA 3.0 brand colours
+node scripts/check-freshness.mjs                                # stated facts vs live sources (network; not in CI)
 npx prettier@3.9.4 --check '**/*.{md,mdx,json,jsonc}'           # the org lint gate
 ```
 

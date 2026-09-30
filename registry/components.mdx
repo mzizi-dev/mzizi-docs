@@ -29,8 +29,9 @@ curl https://api.mzizi.dev/v1/ui/button
 curl https://api.mzizi.dev/v1/rs/button
 ```
 
-`/v1/ui/{name}/docs` and `/v1/ui/{name}/versions` answer `503` today; see
-[the API gateway](/platform/api-gateway#four-routes-answer-503) for why.
+`/v1/ui/{name}/docs` answers with the component's use cases, variants and accessibility notes.
+`/v1/ui/{name}/versions` answers `503`, because version history is console data; see
+[the API gateway](/platform/api-gateway#one-route-answers-503) for why.
 
 The index response is a shadcn registry document: components sit under `items`, each with
 `name`, `type` and `description`. The per-component response adds the full source in

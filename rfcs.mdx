@@ -1,6 +1,6 @@
 ---
 title: "RFC index"
-description: "Seven design documents, their status lines as written, what each settles, and what each explicitly leaves open."
+description: "Nine design documents, their status lines as written, what each settles, and what each explicitly leaves open."
 icon: "file-text"
 ---
 
@@ -20,9 +20,10 @@ commissioned on. That is the intended shape of the record, not disorder in it.
 RFC in the private tooling repository before RFC-0006 was written, and it is left free rather
 than reused.
 
-**More are coming.** RFCs for a wider benchmark (TypeScript and React, Python, Go, C++) and
-for contracts on everything built are being written in `design/`. See
-[the roadmap](/roadmap). This index lists only what is merged.
+**Two RFCs set the owner's 29 September direction.** RFC-0009 is the benchmark across
+languages and the new kill criterion; RFC-0010 is contracts on everything built. Both are
+merged, and both status lines say nothing in them is implemented yet. This index lists only
+what is merged.
 
 **The status headers are historical.** RFC-0001 and RFC-0002 both say "nothing here is
 implemented". That was true when written. The front end now exists — see
@@ -194,6 +195,59 @@ cross-file checking, local state, and lowering.
 
 ---
 
+## RFC-0009 — The comparison benchmark
+
+<Card title="design/RFC-0009-comparison-benchmark.md" icon="github" href="https://github.com/mzizi-dev/mzizi/blob/main/design/RFC-0009-comparison-benchmark.md" horizontal>
+  **Status as written:** draft for review — nothing here is implemented. The kill criterion
+  (§6) and the publication rule (§7) are owner decisions of 2026-09-29, recorded as decided.
+  **Amends** RFC-0001 §6, CHARTER.md §4 and §6, and RFC-0004 §4.2.
+</Card>
+
+Every language arm, every task family, and a gate against the best incumbent. It opens with
+six ways a cross-language comparison goes wrong, such as handing a React arm a React spec to
+"port", or pooling UI and backend results so a win hides a loss. It then defines the arms
+(adding React, TypeScript, Python, Go, C++ and plain-Rust backends), the task families, what
+"compile or check" means per arm, and the fairness rules.
+
+§6 is the kill criterion: within each gating family, Mzizi must beat the best incumbent on at
+least two of three metrics, on the ~7B model, on held-out tasks, with a bootstrap 95% interval
+that excludes zero. Phase 0 passes only when both the UI and the backend families pass, and
+§6.4 counts the minimum language work for a Mzizi backend arm as Phase 0 work. §6.5 says, before
+the run, that a loss is the likely outcome on today's compiler. §7 makes every run published,
+with a `PLAN.md` registered before it.
+
+**Leaves open:** Java and plain JavaScript arms; a Workers-runtime family; a variant where
+every arm runs its own tests in the loop; Astro pages as a family; the held-out rotation
+fraction.
+
+→ [The benchmark](/benchmark) · [What remains before the run](/pilots#what-remains-before-the-run-counts)
+
+---
+
+## RFC-0010 — Contracts everywhere
+
+<Card title="design/RFC-0010-contracts-everywhere.md" icon="github" href="https://github.com/mzizi-dev/mzizi/blob/main/design/RFC-0010-contracts-everywhere.md" horizontal>
+  **Status as written:** draft for review — nothing here is implemented.
+  **Amends** RFC-0001 §1.6 and RFC-0006.
+</Card>
+
+The owner's direction that everything built carries a contract: functions, handlers,
+services, records and the standard library, not only components. It sets the clause forms,
+which are checked statically, which by generated tests once code lowers and which at runtime
+in debug builds, how they lower to Rust, and what an agent sees when one fails.
+
+Its first failure mode was measured in pilot 2: a contract that checks a value the author
+declared rather than the one the program renders (FM-14). A missing contract becomes one lint,
+`MZ0613`, with two levels, `warn` and `required`. It is proposed, not built. Its grammar
+depends on function and handler declarations that no RFC has designed yet.
+
+**Leaves open:** mutation scoring of contract strength; release-mode checks; relational
+properties; cross-file contracts; whether `mz outline` carries contracts.
+
+→ [Direction and roadmap](/roadmap)
+
+---
+
 ## Reading order
 
 <Steps>
@@ -213,5 +267,9 @@ cross-file checking, local state, and lowering.
   <Step title="RFC-0006, then the pilots, then RFC-0007 and RFC-0008">
     Contracts, then what the first pilots found, then the gap register and the checker it
     led to.
+  </Step>
+  <Step title="RFC-0009, then RFC-0010">
+    The benchmark and kill criterion the language now answers to, then contracts on
+    everything built.
   </Step>
 </Steps>

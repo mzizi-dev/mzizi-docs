@@ -50,6 +50,21 @@ floor of this with a grep for overclaiming phrasings (the `honesty` job in
 a claim on this site is either checkable in the source repository or labelled as a design
 intention.
 
+## Freshness rule
+
+An owner rule, 2026-09-30: **docs.mzizi.dev must never lag the language
+([`mzizi-dev/mzizi`](https://github.com/mzizi-dev/mzizi)) or the components (the registry,
+the Mzizi Roots crates on crates.io, and the `@nyuchi/mzizi-*` npm packages from
+`mzizi-dev/agent-tools`).**
+
+- A standing docs-freshness agent checks upstream state against these pages and opens a
+  pull request whenever they drift.
+- Anyone changing the language or the components should expect a docs update to follow.
+- [`scripts/check-freshness.mjs`](./scripts/check-freshness.mjs) compares the versions, test
+  counts and pins the pages state with their live sources. The
+  [Freshness workflow](./.github/workflows/freshness.yml) runs it daily and on demand. It is
+  kept out of the required checks because it depends on third-party services.
+
 ## Facts that drift
 
 Checked 2026-09-29. Most inherited prose gets at least one of these wrong.
@@ -83,7 +98,8 @@ blocks/ charts/    composed page sections; the Recharts wrappers
 content/           voice, tone, error messages, inclusive language
 platform/          the API gateway, where data lives
 images/            favicon
-scripts/           check-contrast.mjs — the APCA 3.0 gate CI runs
+scripts/           check-contrast.mjs — the APCA 3.0 gate CI runs;
+                   check-freshness.mjs — stated facts against live sources, run daily
 ```
 
 The component pages were consolidated in from two other organisations' Starlight sites
