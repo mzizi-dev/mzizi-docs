@@ -1,47 +1,116 @@
 ---
 title: "The skills bundle"
-description: "@nyuchi/mzizi-skills: nine agent skills carrying Mzizi's design-system and engineering doctrine, authored in git and served from files."
+description: "@nyuchi/mzizi-skills: five agent skills for the Mzizi language, Mzizi Roots, the design system, backends and discoverability, authored in git and served from files."
 sidebarTitle: "Skills"
 icon: "book-marked"
 ---
 
-The design-system and engineering doctrine ships as an npm package of agent skills,
-[`@nyuchi/mzizi-skills`](https://www.npmjs.com/package/@nyuchi/mzizi-skills). Install it in a
-repository so an agent has the doctrine to hand instead of guessing:
+What an agent needs to know to write the Mzizi language and build with Mzizi ships as an npm
+package of agent skills,
+[`@nyuchi/mzizi-skills`](https://www.npmjs.com/package/@nyuchi/mzizi-skills). Give an agent the
+skills so it has the doctrine to hand instead of guessing.
 
-```bash
-npx skills add @nyuchi/mzizi-skills
-```
-
-Nine skills, from the bundle's `index.json` at version `0.7.0` (the latest on npm on
+Five skills, from the bundle's `index.json` at version `0.8.1` (the latest on npm on
 30 September 2026):
 
-| Skill                    | Reach for it when                                                   |
-| ------------------------ | ------------------------------------------------------------------- |
-| `simplify`               | Before adding a component or style, and during any refactor         |
-| `discoverability`        | A shared link shows no preview, or you are adding a route or a site |
-| `mzizi-design`           | Cross-brand materials and brand-voice decisions                     |
-| `nyuchi-design`          | Generating a branded interface: minerals, radius, type              |
-| `mukoko-design`          | Producing or exporting mukoko visual identity                       |
-| `scaffold-component`     | Authoring a new component into the registry                         |
-| `ecosystem-app-setup`    | Bootstrapping a new app against the registry                        |
-| `cloudflare-worker-rust` | Building a Worker in Rust with `workers-rs`                         |
-| `mcp-server-cloudflare`  | Adding or changing an MCP Worker                                    |
+| Skill             | What it covers                                                                                                                                                                                                                                                                     |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `mzizi-language`  | Writing and checking `.mz`: the component syntax, the `mz check --agent` loop and its NDJSON diagnostics, `mz fix`, `mz contract` and the `contract … end` block, the diagnostic codes you will meet, and what is not built yet (lowering to Rust, a runtime, handlers, a release) |
+| `mzizi-roots`     | Mzizi's components, Rust first: `cargo add mzizi-roots` and `mzizi-roots-server`, what `mzizi_get_component` returns, the node-to-crate map, contracts, the two frontend paths (Astro with Roots, or pure Rust) and app setup, reuse before build, and contributing a component    |
+| `mzizi-design`    | The design system and brand: the 21-family palette and its generated stylesheets, the radius scale, type, pill buttons and the 48px touch floor, status and surface tokens, the brand constellation, the Ubuntu pillars and principles, and the wordmarks                          |
+| `mzizi-backend`   | A Mzizi service on Cloudflare Workers: where it stands today (every live Mzizi Worker is TypeScript), the endpoint map, a Rust Worker as a sans-IO core plus a thin host, an MCP server over bundled data, the free-except-Fundi access rule, publishing and deploying             |
+| `discoverability` | SEO and AIO: link previews, search engines and AI agents, the hive OG-image template, build-time OG images on static Astro, and a pre-ship checklist                                                                                                                               |
+
+`mzizi-language` and `mzizi-roots` are new in `0.8.0`. The React (TSX) build of the
+components is the deprioritised secondary in every skill that mentions it.
+
+## Renamed and removed skills
+
+<Warning>
+  **Breaking in `0.8.0`: the nine `0.7.0` skills became five, with no aliases.** Anything
+  that loads a skill by an old name (`mzizi_get_skills`, `GET /v1/skills/<name>`,
+  `skills/<name>/SKILL.md`, a plugin command) must switch to the new name. An old name
+  answers `404` on `api.mzizi.dev/v1/skills/<name>`.
+</Warning>
+
+The owner's decision of 30 September 2026 was fewer skills that are effective rather than
+many that are not. Where each `0.7.0` skill went, from the bundle's README:
+
+| `0.7.0` skill            | From `0.8.0`                                                                                                                 |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------- |
+| `scaffold-component`     | `mzizi-roots`, "Contributing a component"                                                                                    |
+| `simplify`               | `mzizi-roots`, "Reuse before build"                                                                                          |
+| `ecosystem-app-setup`    | `mzizi-roots`, "Starting an app", and `mzizi-design`, "What belongs in the ecosystem"                                        |
+| `nyuchi-design`          | `mzizi-design`, "The design system"; `tokens-update.css` moved with it                                                       |
+| `cloudflare-worker-rust` | `mzizi-backend`, "A Rust Worker"                                                                                             |
+| `mcp-server-cloudflare`  | `mzizi-backend`, "An MCP server"                                                                                             |
+| `mukoko-design`          | **Removed.** Its generated `tokens/*` files moved to `mzizi-design/tokens/`; the mukoko brand assets move to a Nyuchi bundle |
+| `mzizi-design`           | Kept, and absorbs the design half of the rest                                                                                |
+| `discoverability`        | Kept                                                                                                                         |
 
 `mzizi-design` was called `bundu-design` before `0.6.0`.
 
-## The same skills, three ways
+## Getting the skills
 
-| Path                                                                     | What it serves                                       |
-| ------------------------------------------------------------------------ | ---------------------------------------------------- |
-| `npx skills add @nyuchi/mzizi-skills`                                    | The npm bundle, as files on disk                     |
-| `mzizi_get_skills` on [the MCP server](/toolchain/mcp)                   | The bundle, as bundled into the server at build time |
-| [`GET https://api.mzizi.dev/v1/skills`](https://api.mzizi.dev/v1/skills) | The skills the registry generated from the bundle    |
+Four ways, all serving the same bundle. On 30 September 2026 all four served `0.8.1`, with
+the same five skills.
 
-The API can lag the newest npm release, because the registry generates its copy from the
-bundle version it depends on: on 30 September 2026 that was still `0.5.1`. The MCP server
-generates its copy from the bundle's source when it is built.
-`GET /v1/skills/summary` is the cheap way to check which bodies a surface is serving.
+### From npm
+
+```bash
+npm install -D @nyuchi/mzizi-skills
+npx skills experimental_sync          # links the bundled skills into .agents/skills/
+```
+
+`npx skills add @nyuchi/mzizi-skills` does not work: the `skills` CLI reads that argument as a
+GitHub repository and fails to clone it. `experimental_sync` is its route for skills shipped
+in `node_modules`.
+
+### From the MCP server
+
+`mzizi_get_skills` on [the MCP server](/toolchain/mcp) lists the skills, or returns one in
+full. It is free, with no sign-in and nothing to install. Each skill's `source` names where it
+is authored, `mzizi-dev/agent-tools/mzizi-skills/skills/<name>`, from `mzizi-mcp` `0.11.1`.
+
+### From the API
+
+[`GET https://api.mzizi.dev/v1/skills`](https://api.mzizi.dev/v1/skills) lists them, and
+`GET /v1/skills/<name>` returns one. `GET /v1/skills/summary` is the cheap way to check which
+version a surface is serving: its `meta` carries `version` and `count`.
+
+### As a Claude Code plugin
+
+The public `mzizi` plugin carries the five skills and connects the Mzizi MCP server:
+
+```text
+/plugin marketplace add mzizi-dev/mzizi-registry
+/plugin install mzizi@mzizi
+```
+
+It lives in the `plugin/` directory of
+[`mzizi-dev/mzizi-registry`](https://github.com/mzizi-dev/mzizi-registry/tree/main/plugin),
+which holds a byte-for-byte copy of the bundle's `skills/`, and its manifest points the MCP
+connection at `https://mcp.mzizi.dev/mcp`.
+
+<Note>
+  The plugin and the `mzizi-tools` marketplace that used to live in the private tooling
+  repository are retired. If you installed them, remove them with
+  `/plugin uninstall mzizi@mzizi-tools` and `/plugin marketplace remove mzizi-tools`, then
+  install the public plugin above.
+</Note>
+
+## How each copy stays current
+
+| Copy                      | Where it gets the bundle                                                                                          |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| npm                       | Published from the bundle's source on every merge that bumps its version                                          |
+| `mzizi_get_skills`        | The MCP server bundles the skills from the same source when it is built                                           |
+| `api.mzizi.dev/v1/skills` | The registry depends on the npm package and inlines it at build time; the gateway serves a pinned registry commit |
+| The plugin                | The registry's `plugin/skills/`, regenerated from the npm package it depends on                                   |
+
+The API and the plugin can lag the newest npm release: a release reaches them only when the
+registry's dependency is bumped and, for the API, the gateway is re-pinned. Check the
+versions rather than assuming they agree.
 
 ## Git is the source of truth
 
@@ -55,7 +124,8 @@ script; that is gone.
 
 <Warning>
   **Never edit a skill anywhere but the bundle.** Not a copy vendored into a consumer
-  repository, and not a `.claude/skills/*.md` file. The next regeneration overwrites them.
+  repository, not the plugin's copy, and not a `.claude/skills/*.md` file. The next
+  regeneration overwrites them.
 </Warning>
 
 ## Changing a skill
@@ -68,10 +138,11 @@ For maintainers, the rules the bundle's own gate enforces:
 
 1. Edit `skills/<name>/SKILL.md`. Adding a skill also needs an `index.json` entry, because
    consumers read the index and an unlisted skill is invisible.
-2. Bump the version in both `package.json` and `index.json`; they move together.
+2. Bump the version in both `package.json` and `index.json`; they move together. Any change
+   to skill text needs a bump, so npm and `mzizi_get_skills` stay on the same version.
 3. The offline validator checks the version, the index, the frontmatter and the `exports`
    map before publish, and needs no credentials.
 4. A merge without a version bump publishes nothing.
-5. Then bump the bundle version the registry depends on, so the API serves it. The MCP
-   server builds its copy from the same repository as the bundle, so it picks the change up
-   on its next deploy.
+5. Then bump the bundle version the registry depends on, and regenerate its skills and the
+   plugin's copy, so the API and the plugin serve it. The MCP server builds its copy from the
+   same repository as the bundle, so it picks the change up on its next deploy.

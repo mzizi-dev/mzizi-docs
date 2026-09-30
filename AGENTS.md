@@ -59,8 +59,16 @@ Facts that inherited prose often gets wrong:
   with no sign-in except the Fundi tools (`mzizi_fundi`, `mzizi_report_issue`); an anonymous
   `tools/list` answered on 30 September 2026. Its MCP Registry name is
   `io.github.mzizi-dev/mzizi-mcp`.
-- **The CLI is free.** `mzizi add` is published from `@nyuchi/mzizi-cli` 0.6.1; 0.6.0's
-  binaries printed nothing.
+- **The CLI is free.** `mzizi add` is published from `@nyuchi/mzizi-cli` (0.6.3 on
+  30 September 2026); 0.6.0's binaries printed nothing, so pages say "0.6.1 or later".
+- **Five skills, not nine.** `@nyuchi/mzizi-skills` 0.8.0 cut the bundle to `mzizi-language`,
+  `mzizi-roots`, `mzizi-design`, `mzizi-backend` and `discoverability`, with no aliases for
+  the old names. The Claude Code plugin is the public one in `mzizi-dev/mzizi-registry`
+  (`/plugin install mzizi@mzizi`); the private `mzizi-tools` marketplace is retired.
+  `npx skills add @nyuchi/mzizi-skills` does not work.
+- **Mzizi's brand mineral is hematite**, a heritage tone, not one of the Seven African
+  Minerals. It is the default `--primary` of the registry's `mzizi-tokens-globals.css`;
+  `/v1/brand`'s semantic `--primary` is still tanzanite.
 - **The Roots crates are on crates.io**: ten crates at 0.1.0, installed with
   `cargo add mzizi-roots`.
 - **`nyuchi-*` components are `mzizi-*`**, and the old names 308 to the new ones.

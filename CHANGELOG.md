@@ -30,6 +30,39 @@ entries move under it. Mintlify does not publish this file.
   non-exempt file without adding to this file. `scripts/changelog-gate.test.sh`
   tests the gate, and the check runs it first.
 
+### Changed
+
+- **`toolchain/skills`** documents `@nyuchi/mzizi-skills` 0.8.1 and its five skills
+  (`mzizi-language`, `mzizi-roots`, `mzizi-design`, `mzizi-backend`, `discoverability`), with
+  what each covers. It was 0.7.0 with nine skills. **Breaking for readers of the old list:**
+  a new "Renamed and removed skills" section maps each retired name (`scaffold-component`,
+  `simplify`, `ecosystem-app-setup`, `nyuchi-design`, `cloudflare-worker-rust`,
+  `mcp-server-cloudflare`, `mukoko-design`) to where its content went; there are no aliases.
+- **`toolchain/skills`** gives four ways to get the skills: npm (`npm install -D` then
+  `npx skills experimental_sync`, replacing `npx skills add @nyuchi/mzizi-skills`, which does
+  not work), `mzizi_get_skills` on the MCP server, `GET /v1/skills`, and the public Claude
+  Code plugin (`/plugin marketplace add mzizi-dev/mzizi-registry`, then
+  `/plugin install mzizi@mzizi`), which ships the five skills and the Mzizi MCP from the
+  registry's `plugin/` directory. The retired private `mzizi-tools` marketplace gets uninstall
+  steps. The "API lags at 0.5.1" note is gone: all four served 0.8.1 on 30 September 2026.
+- **`toolchain/cli`** says `@nyuchi/mzizi-cli` 0.6.3 (was 0.6.1), with what changed: 0.6.2
+  sends `support@bundu.org` in its crates.io `User-Agent` instead of a person's address, and
+  0.6.3 depends on skills `^0.8.0`. The "use 0.6.1 or later" warning stays.
+- **`toolchain/mcp`** says `@nyuchi/mzizi-mcp` 0.11.1 (was 0.11.0) on npm, the live server
+  and the MCP Registry, and gains a "The skills" section: from 0.11.1 each skill's `source`
+  is `mzizi-dev/agent-tools/mzizi-skills/skills/<name>`. It no longer says the MCP server's
+  registry pin is the same commit as `api.mzizi.dev`'s; it says to compare the two, which can
+  differ while one moves.
+- **`toolchain/overview`** lists five skills, not nine.
+- **`foundations/tokens`** gains a "Brand minerals" section: Mzizi's brand mineral is
+  hematite (a heritage tone, `#546E7A` light and `#90A4AE` dark), as `/v1/brand` lists it,
+  and the registry's `mzizi-tokens-globals.css` resolves `--primary` per `data-brand`, with
+  Mzizi's hematite as the default (it was gold). The note that said "tanzanite is
+  `--primary`" now says `--primary` is never cobalt and depends on the brand; tanzanite is
+  the value `/v1/brand` publishes.
+- **`AGENTS.md`** lists the five skills, the public plugin, Mzizi's hematite and CLI 0.6.3
+  among the facts that inherited prose gets wrong.
+
 ## [2026-09-30]
 
 ### Changed
