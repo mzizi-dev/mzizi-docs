@@ -101,6 +101,23 @@ An owner rule, 2026-09-30: **docs.mzizi.dev must never lag the language or the c
   demand. It needs the network, so it is not a required check. When you move one of those
   facts on a page, keep the sentence shape the script matches, or update the script.
 
+## Changelog (hard rule)
+
+An owner rule, 2026-09-30: "changelogs are super important".
+
+- **Every pull request that changes a page, a documented fact, the navigation, a redirect or a
+  default adds an entry under `## [Unreleased]` in `CHANGELOG.md`**, in the same pull request.
+  Use the Keep a Changelog headings (Added, Changed, Deprecated, Removed, Fixed, Security), mark
+  a moved or removed page **Breaking** unless a redirect keeps its URL, and say what a reader
+  finds differently, not the commit text. A freshness pull request is no exception: name the
+  facts that moved and the pages they are on.
+- The `changelog / entry required` check (`.github/workflows/changelog.yml`) fails a pull
+  request without one. Pull requests that touch only `.github/`, lockfiles or lint config pass,
+  and pure CI, lint or typo pull requests can carry the `no-changelog` label instead.
+- The logic is `scripts/changelog-gate.sh`, tested by `scripts/changelog-gate.test.sh`. Keep
+  both identical to the copies in the other Mzizi repositories. Mintlify publishes neither
+  `CHANGELOG.md` nor `scripts/`.
+
 ## Terminology
 
 - Write the wordmark as **Mzizi**. The other wordmarks stay lowercase: nyuchi, mukoko,
