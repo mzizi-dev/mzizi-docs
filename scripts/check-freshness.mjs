@@ -18,7 +18,9 @@
  */
 
 import { execFileSync } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 
 const UA = "mzizi-docs-freshness (+https://github.com/mzizi-dev/mzizi-docs)";
 const drift = [];
@@ -134,6 +136,15 @@ await check("mzizi-dev/mzizi", async () => {
     compare(`language tests (${path})`, got[0], liveTests);
     compare(`language suites (${path})`, got[1], liveSuites);
   }
+  const lines = readme.match(/`compiler\/src` is ([\d,]+) lines/)?.[1];
+  if (!lines) throw new Error("the language README no longer states compiler/src's line count");
+  for (const [path, re] of [
+    ["status.mdx", /The compiler source is ([\d,]+) lines/],
+    ["compiler.mdx", /`compiler\/src` is ([\d,]+) lines/],
+  ]) {
+    const [docs] = stated(path, re, "the compiler's line count") ?? [];
+    compare(`compiler/src lines (${path})`, docs, lines);
+  }
   const [checkedAt] = stated("status.mdx", /mzizi-dev\/mzizi\) at `([0-9a-f]{7,40})`/, "the checked commit") ?? [];
   const sha = execFileSync("git", ["ls-remote", "https://github.com/mzizi-dev/mzizi", "refs/heads/main"], {
     encoding: "utf8",
@@ -146,6 +157,79 @@ await check("mzizi-dev/mzizi", async () => {
     );
   } else if (checkedAt) {
     console.log(`ok     language main (status.mdx): ${checkedAt}`);
+  }
+});
+
+// The language's charter, tracker and benchmark arms, read from a shallow, blobless clone of
+// main (anonymous git, so no API rate limit). The tracker is the one list of what Mzizi still
+// needs (owner, 2026-09-30), and every capability claim on these pages comes from it.
+await check("mzizi-dev/mzizi charter, tracker and arms", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "mzizi-lang-"));
+  try {
+    const git = (...args) => execFileSync("git", ["-C", dir, ...args], { encoding: "utf8" });
+    execFileSync(
+      "git",
+      ["clone", "--quiet", "--depth", "1", "--filter=blob:none", "--no-checkout",
+        "https://github.com/mzizi-dev/mzizi", dir],
+      { encoding: "utf8" },
+    );
+    const show = (path) => git("show", `HEAD:${path}`);
+
+    // The charter: charter.mdx names its version and title, and no page names another version.
+    const charter = show("CHARTER.md");
+    const version = charter.match(/Mzizi Research Charter, v(\d+\.\d+)/)?.[1];
+    const title = charter.match(/^# (.+)$/m)?.[1].trim();
+    if (!version || !title) throw new Error("CHARTER.md no longer states its version and title");
+    const [docsVersion] = stated("charter.mdx", /\*\*Mzizi Research Charter, v(\d+\.\d+)\*\*/, "the charter version") ?? [];
+    compare("charter version (charter.mdx)", docsVersion, version);
+    if (!page("charter.mdx").includes(title)) drift.push(`charter.mdx: does not carry the charter's title, "${title}"`);
+    const pages = execFileSync("git", ["ls-files", "*.mdx"], { encoding: "utf8", cwd: new URL("..", import.meta.url) })
+      .split("\n")
+      .filter(Boolean);
+    const other = pages.filter((path) =>
+      [...page(path).replace(/\s+/g, " ").matchAll(/\bcharter,? v(\d+\.\d+)\b/gi)].some((m) => m[1] !== version),
+    );
+    if (other.length > 0) drift.push(`a page names a charter version other than v${version}: ${other.join(", ")}`);
+    else console.log(`ok     every page that names a charter version names v${version}`);
+
+    // The tracker: tracker.mdx gives every row the mark LANGUAGE-TRACKER.md gives it.
+    const tracker = show("LANGUAGE-TRACKER.md");
+    const marks = new Map(
+      [...tracker.matchAll(/^\|\s*([A-Z]\d+)\s*\|[^|]*\|\s*(✅|🟡|📝|❌)\s*\|/gm)].map((m) => [m[1], m[2]]),
+    );
+    if (marks.size === 0) throw new Error("LANGUAGE-TRACKER.md no longer has tier rows in the expected shape");
+    const ours = [...page("tracker.mdx").matchAll(/^\|\s*([A-Z]\d+)\s*\|[^|]*\|\s*(✅|🟡|📝|❌)\s*\|/gm)];
+    if (ours.length === 0) drift.push("tracker.mdx: no tier rows found; the page changed shape, update this script");
+    for (const [, id, mark] of ours) compare(`tracker row ${id} (tracker.mdx)`, mark, marks.get(id) ?? "missing");
+    const missing = [...marks.keys()].filter((id) => !ours.some((m) => m[1] === id));
+    if (missing.length > 0) drift.push(`tracker.mdx: rows missing from the page: ${missing.join(", ")}`);
+    // The sentence every capability page carries, while the rows it names are not done.
+    const sentence = "no expressions, bindings, callable functions, loops, error handling, modules or standard library yet";
+    const named = { C1: "expressions", C2: "bindings", C3: "callable functions", C4: "loops", C9: "error handling", P1: "modules", P2: "standard library" };
+    const done = Object.entries(named).filter(([id]) => marks.get(id) === "✅").map(([, what]) => what);
+    for (const path of ["index.mdx", "status.mdx", "tracker.mdx"]) {
+      const says = page(path).replace(/\s+/g, " ").replace(/\*\*/g, "").includes(sentence);
+      if (!says) drift.push(`${path}: does not say Mzizi has ${sentence}`);
+      else if (done.length > 0) drift.push(`${path}: says Mzizi has none of these, but the tracker marks ${done.join(", ")} ✅`);
+      else console.log(`ok     ${path} says what Mzizi does not have yet, as the tracker does`);
+    }
+
+    // The arms: benchmark.mdx says "Exists" for exactly the directories in benchmarks/arms/.
+    const present = new Set(git("ls-tree", "--name-only", "HEAD", "benchmarks/arms/").split("\n").filter(Boolean).map((p) => p.split("/").pop()));
+    if (present.size === 0) throw new Error("benchmarks/arms/ is empty or missing");
+    const bench = page("benchmark.mdx");
+    const table = bench.slice(bench.indexOf("## The arms"), bench.indexOf("## What it measures"));
+    const rows = [...table.matchAll(/^\| `([a-z-]+)`\s*\|[^|]*\|[^|]*\|\s*([^|]+?)\s*\|$/gm)].map((m) => [m[1], m[2]]);
+    if (rows.length === 0) drift.push("benchmark.mdx: no arms table found; the page changed shape, update this script");
+    for (const [arm, state] of rows) {
+      const exists = /^Exists/.test(state);
+      compare(`arm ${arm} (benchmark.mdx)`, exists ? "exists" : "not added", present.has(arm) ? "exists" : "not added");
+    }
+    for (const arm of present) {
+      if (!rows.some(([id]) => id === arm)) drift.push(`benchmark.mdx: the arm ${arm} is in benchmarks/arms/ but not in the table`);
+    }
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
   }
 });
 

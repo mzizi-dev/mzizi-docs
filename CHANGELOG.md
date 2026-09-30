@@ -21,6 +21,58 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
+### Changed — the docs match language main `62a0f32`
+
+A freshness update. Every capability claim now comes from
+`LANGUAGE-TRACKER.md` in `mzizi-dev/mzizi`, the language's one tracker of what
+it still needs. The facts that moved, and where:
+
+- **Added: What still has to be built (`/tracker`)**, in "Start here" after
+  Status. It summarises `LANGUAGE-TRACKER.md`: where Mzizi stands, Mzizi's
+  column against Python, Go, C++, TypeScript and Rust, every tier row with its
+  mark, what each step unlocks for the benchmark, and milestones M1 (a language
+  that computes) and M2 (a working programming language), neither reached. The
+  overview, Status, the roadmap and the ecosystem map link it, and the
+  overview, Status and the new page say plainly that Mzizi has no expressions,
+  bindings, callable functions, loops, error handling, modules or standard
+  library yet.
+- **Changed: what lowers.** "Nothing lowers to Rust" is replaced everywhere
+  (overview, Status, the compiler, syntax, Mzizi Roots) with the narrower
+  truth: `mz build <service.mz> --out <dir>` lowers a `service` to a local
+  Rust + axum package, which CI compiles, tests and serves. No component
+  lowers, and there are no Workers, Containers or WebAssembly targets.
+- **Added: `mz build` and services on the compiler page.** A new "`mz build`:
+  lower a service" section with real output, `mz build` in the command table,
+  and `mz contract` running a service in process (22 clauses, `ensure` tested
+  over 61 generated requests: tested, not proven). The commands are check, fix,
+  contract, outline and build, plus hash and ir (was "six commands").
+- **Added: RFC-0011 (handlers) and RFC-0012 (the harness)** to the RFC index,
+  with what each settles, what is built and what each leaves open. RFC-0009's
+  and RFC-0010's entries say what has been built since their status lines were
+  written. The harness's design is cited as RFC-0012 (was "its RFC is being
+  written").
+- **Changed: charter v0.4.** The charter page summarises v0.4, "Mzizi: a
+  general-purpose programming language", with its tagline as the goal Phase 0
+  tests, its five changes, the five design goals (adding "Everything has a
+  contract"), the harness as the core of the language, and Phase 0 by v0.4's
+  title. It no longer says the charter calls Mzizi a framework. Every page
+  cites charter v0.4, and no page names v0.3.
+- **Changed: the benchmark arms** on the benchmark page, the overview and the
+  roadmap follow `benchmarks/arms/`: React exists and has never run (was "new,
+  not built"); `mzizi-be` exists with the probe crate `mzprobe` and task B1 and
+  has never run (was "blocked"); the Hono, FastAPI, Go, C++ and axum arms are
+  "not added yet" (was "new, not built"). What the kill-criterion run waits on
+  follows `benchmarks/READINESS.md` on the pilots page and the roadmap.
+- **Figures:** 425 tests in 18 suites, 294 of them in the compiler crate (was
+  308, 14 and 213), and 12,644 lines in `compiler/src` (was 7,454), at
+  `62a0f32` (was `e9e9233`). The IR measurements were re-run at `62a0f32` and
+  are unchanged.
+- **Freshness check:** `check-freshness.mjs` now also reads the charter's
+  version and title, every tracker row's mark (against `/tracker`), the
+  `benchmarks/arms/` listing (against the benchmark page's arms table) and the
+  compiler's line count, from a shallow clone of language `main`, and fails
+  when a page drifts, including when a row the pages call missing turns ✅.
+
 ### Changed — Mzizi is documented as a programming language, and Phase 0 by its goal
 
 The owner's positioning (2026-09-30): Mzizi is a programming language, Rust is

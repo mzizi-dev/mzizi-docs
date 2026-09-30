@@ -103,9 +103,9 @@ jobs:
       # The single editorial rule this site has, enforced rather than trusted.
       #
       # The Mzizi language is a Phase 0 prototype: `mz contract` checks a
-      # component only against itself, nothing lowers to Rust, two small pilots
-      # showed no advantage, and the run that tests the kill criterion has not
-      # happened. Copy that implies otherwise is not a style problem, it is a
+      # component only against itself, only a service lowers to Rust (a local
+      # axum package), two small pilots showed no advantage, and the run that
+      # tests the kill criterion has not happened. Copy that implies otherwise is not a style problem, it is a
       # false claim — so the phrasings that would make it are blocked.
       #
       # status.mdx is excluded because it *quotes* these framings in order to

@@ -1,6 +1,6 @@
 ---
 title: "RFC index"
-description: "Nine design documents, their status lines as written, what each settles, and what each explicitly leaves open."
+description: "Eleven design documents, their status lines as written, what each settles, and what each explicitly leaves open."
 icon: "file-text"
 ---
 
@@ -21,9 +21,14 @@ RFC in the private tooling repository before RFC-0006 was written, and it is lef
 than reused.
 
 **Two RFCs set the owner's 29 September direction.** RFC-0009 is the benchmark across
-languages and the new kill criterion; RFC-0010 is contracts on everything built. Both are
-merged, and both status lines say nothing in them is implemented yet. This index lists only
-what is merged.
+languages and the new kill criterion; RFC-0010 is contracts on everything built. Both status
+lines still say nothing in them is implemented; parts of each have since been built, and their
+sections below say which.
+
+**Two more are new on 30 September.** RFC-0011 is handlers, the backend measurement slice, and
+most of it is built. RFC-0012 is the harness, the core of the language and what the agent
+reads, and it is a design. This index lists only what is merged, and takes every capability
+claim from [`LANGUAGE-TRACKER.md`](/tracker).
 
 **The status headers are historical.** RFC-0001 and RFC-0002 both say "nothing here is
 implemented". That was true when written. The front end now exists — see
@@ -203,6 +208,10 @@ cross-file checking, local state, and lowering.
   **Amends** RFC-0001 §6, CHARTER.md §4 and §6, and RFC-0004 §4.2.
 </Card>
 
+**Built since:** the runner's `arm.toml` and `spec.md` input, the `react` arm (never run, its
+pins provisional) and the `mzizi-be` arm with the probe crate and task B1 (never run)
+(`benchmarks/READINESS.md`). Nothing has been measured.
+
 Every language arm, every task family, and a gate against the best incumbent. It opens with
 six ways a cross-language comparison goes wrong, such as handing a React arm a React spec to
 "port", or pooling UI and backend results so a win hides a loss. It then defines the arms
@@ -231,6 +240,10 @@ fraction.
   **Amends** RFC-0001 §1.6 and RFC-0006.
 </Card>
 
+**Built since:** through RFC-0011, a service's contracts run in process. `mz contract` sends
+each `example` as one request and tests each `ensure` over a generated set of requests, which is
+tested, not proven. Contracts for functions and records are not built.
+
 The owner's direction that everything built carries a contract: functions, handlers,
 services, records and the standard library, not only components. It sets the clause forms,
 which are checked statically, which by generated tests once code lowers and which at runtime
@@ -238,13 +251,70 @@ in debug builds, how they lower to Rust, and what an agent sees when one fails.
 
 Its first failure mode was measured in pilot 2: a contract that checks a value the author
 declared rather than the one the program renders (FM-14). A missing contract becomes one lint,
-`MZ0613`, with two levels, `warn` and `required`. It is proposed, not built. Its grammar
-depends on function and handler declarations that no RFC has designed yet.
+`MZ0613`, with two levels, `warn` and `required`. It is proposed, not built. Its grammar for
+functions depends on function declarations that no RFC has designed yet; RFC-0011 has since
+designed the handler declarations.
 
 **Leaves open:** mutation scoring of contract strength; release-mode checks; relational
 properties; cross-file contracts; whether `mz outline` carries contracts.
 
 → [Direction and roadmap](/roadmap)
+
+---
+
+## RFC-0011 — Handlers: the backend measurement slice
+
+<Card title="design/RFC-0011-handlers.md" icon="github" href="https://github.com/mzizi-dev/mzizi/blob/main/design/RFC-0011-handlers.md" horizontal>
+  **Status as written:** draft for review. A design only; later pull requests implement it,
+  and each one updates §12 with what landed. Nothing here has been measured, and no benchmark
+  episode has run on it. **Amends** RFC-0010 §3.2 and §3.3.
+</Card>
+
+The smallest language surface that lets a Mzizi program answer the HTTP probes of RFC-0009's
+backend tasks: a `service` declaration with `route` blocks, handler bodies (`when`, `header`,
+`respond`), boundary data, the error model for handlers, handler contracts, and the lowering to
+Rust and axum. It opens with named failure modes (`HD-`) predicted from the incumbents and from
+the API gateway, such as an `Allow` header nobody updates.
+
+**Built** (§12, language PRs #29–#33): the front end, checked by `mz check`; the evaluator, so
+`mz contract` runs a service in process (`examples/registry.mz`, 22 clauses, its `ensure`
+clauses tested over 61 generated requests); the lowering, so `mz build` writes a local Rust +
+axum package, which CI compiles, tests and serves; and the `mzizi-be` arm, the probe crate
+`mzprobe` and task B1, whose Mzizi and axum references both hold all 59 of its facts. Not built:
+request bodies, and the runner scoring an episode with probes. No component lowers, and there is
+no Workers, Containers or WebAssembly target.
+
+**Leaves open:** state for B4; the text operations B3 needs; top-level routes once modules
+exist; property tests in the lowered crate.
+
+→ [The compiler](/compiler#mz-build-lower-a-service) · [What still has to be built](/tracker)
+
+---
+
+## RFC-0012 — The harness: the core of the language
+
+<Card title="design/RFC-0012-harness.md" icon="github" href="https://github.com/mzizi-dev/mzizi/blob/main/design/RFC-0012-harness.md" horizontal>
+  **Status as written:** draft for review. Nothing here is implemented beyond what the code
+  already does, and §2 says exactly which parts that is. Everything else is design.
+</Card>
+
+The harness is the core of the language: what the agent reads. It has three parts: the
+language as an agent reads it (grammar, types, contract forms and canonical form, as one
+machine-readable definition), the agent protocol (`mz check --agent`, `mz fix`, `mz contract`
+and the RFC-0003 read surface), and the plugin host that the toolchain, the CLI, the MCP server
+and plugins attach to natively. It lives in the language repository; `mzizi-cli`, `mzizi-mcp`
+and fundi are its clients. It also plans how the agent skills fold into it. It is a different
+thing from `benchmarks/harness/`, which is always called the benchmark harness.
+
+**Exists today** (§2): the agent protocol and the read surface (`mz outline`, `mz ir`,
+`mz hash`). **Design only:** the language as one machine-readable definition, the plugin host,
+and `mz harness`.
+
+**Leaves open:** the implementation language, the shape of the language definition, dynamic
+plugin discovery, whether the skills are retired or generated, protocol versioning, and the
+plugin sandbox.
+
+→ [What still has to be built](/tracker)
 
 ---
 
@@ -271,5 +341,9 @@ properties; cross-file contracts; whether `mz outline` carries contracts.
   <Step title="RFC-0009, then RFC-0010">
     The benchmark and kill criterion the language now answers to, then contracts on
     everything built.
+  </Step>
+  <Step title="RFC-0011, then RFC-0012">
+    The backend slice, the first code that lowers to Rust, then the harness at the core of
+    the language.
   </Step>
 </Steps>
