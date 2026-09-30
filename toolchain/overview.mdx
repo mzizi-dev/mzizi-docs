@@ -1,12 +1,23 @@
 ---
 title: "The toolchain"
-description: "The tools that support the Mzizi language: the mz compiler, the benchmark, the MCP server, the CLI and the skills bundle. Free to use, with no sign-in except for the Fundi tools."
+description: "The tools built to support the Mzizi language: the mz compiler that implements it, the benchmark, the MCP server, the CLI and the skills bundle. The toolchain is not the language. Free to use, with no sign-in except for the Fundi tools."
 sidebarTitle: "Overview"
 icon: "wrench"
 ---
 
-The language is the subject. The toolchain exists to make it stronger: to check it, measure
-it, and put what Mzizi knows in front of the agents that write it.
+**The toolchain is not the language.** Mzizi is a programming language: its syntax, type
+system, semantics and contracts. The toolchain is built to support it: to implement it,
+check it, measure it, and put what Mzizi knows in front of the agents that write it.
+
+**The harness is the core of Mzizi, and the toolchain attaches to it natively.** The harness
+is the layer an agent reads and works through: the language as an agent sees it (grammar,
+types, contracts, canonical form), the agent protocol (`mz check --agent`, its diagnostics
+and fixes; RFC-0001 §4), and the plugin host that `mz`, the CLI, the MCP server and plugins
+attach to. Part of it exists today, in this toolchain, as `mz check --agent`'s output. The
+harness as a whole is designed, not built, and the language is writing its RFC. It lives in
+the language repository, `mzizi-dev/mzizi`, and the CLI, the MCP server and `fundi` are its
+clients. It is not
+the Phase 0 benchmark harness in `benchmarks/harness/`, which is the scorer listed below.
 
 ## What is in it
 
@@ -19,9 +30,11 @@ it, and put what Mzizi knows in front of the agents that write it.
 | [The skills](/toolchain/skills)  | Five agent skills: the language, Mzizi Roots, the design system, backends and discoverability   | `@nyuchi/mzizi-skills`                 | Free              |
 | [The API](/platform/api-gateway) | `api.mzizi.dev/v1`: the registry over plain HTTP                                                | `mzizi-dev/mzizi-api-gateway`          | Free, no sign-in  |
 
-`mz` and the benchmark are the language's own tools. The rest serve the language's corpus:
-the component registry the benchmark is scored against, and the doctrine an agent needs to
-write for it.
+`mz` implements the language, and the benchmark measures it against the best existing
+language for each kind of task. The rest put the language, its components and its docs
+within an agent's reach: the MCP server, the CLI, the skills and the API serve the
+[components](/roots/overview) (the language's UI layer) and the doctrine an agent needs to
+write for them.
 
 ## Free, until Fundi
 

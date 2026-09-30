@@ -1,6 +1,6 @@
 ---
 title: "The Phase 0 benchmark"
-description: "The measurement the whole thesis rests on: what it measures, the harness that runs it, why one input is held out, and the dependency rule that keeps the public project forkable. Two pilots have run; the kill-criterion run has not."
+description: "Phase 0's one goal: to build Mzizi as a programming language, measured against the best existing language for each kind of task, TypeScript, Python, Go, C++ and Rust among them. The arms, the task families, the benchmark harness, why one input is held out, and the rule that keeps the project forkable. Two pilots have run; the kill-criterion run has not."
 icon: "flask-conical"
 ---
 
@@ -11,10 +11,56 @@ icon: "flask-conical"
   kill criterion, and that run has not happened. See [the pilot results](/pilots).
 </Warning>
 
+## The goal
+
+**Phase 0 has one goal: to build Mzizi as a programming language, measured against the best
+existing language for each kind of task.** The measure: an agent writes the same task in Mzizi
+and in each incumbent language, under the same benchmark harness, and the result is scored
+per task family, never pooled. This is
+[RFC-0009](https://github.com/mzizi-dev/mzizi/blob/main/design/RFC-0009-comparison-benchmark.md),
+a draft whose kill criterion (§6) and publication rule (§7) are owner decisions. Nothing
+else in it is built yet.
+
+The pilots measured a few registry UI components against Dioxus. That was a test inside
+Phase 0, not its goal.
+
+## The task families
+
+| Family        | Input the agent sees                               | Role                                       |
+| ------------- | -------------------------------------------------- | ------------------------------------------ |
+| `ui-spec`     | `spec.md`, language-neutral                        | **Gating**, on held-out tasks              |
+| `backend`     | `spec.md`, language-neutral; scored by HTTP probes | **Gating**, on held-out tasks              |
+| `ui-port`     | `spec.tsx`, as both pilots used                    | Development and comparison with the pilots |
+| Public suites | Each suite's own prompt                            | Comparability with the field; never gating |
+
+`ui-spec` exists because handing every arm a React component would make a React arm a copy
+task. The backend tasks are grounded in the one real backend Mzizi operates, the API
+gateway, and every fact is checked at the HTTP boundary, so no language's syntax is scored.
+
+## The arms
+
+What Mzizi is measured against, from RFC-0009 §1. The benchmark's design, not a result:
+nothing has been measured against TypeScript, Python, Go, C++ or a Rust backend.
+
+| Arm        | Family  | Language and framework                              | State                                                |
+| ---------- | ------- | --------------------------------------------------- | ---------------------------------------------------- |
+| `mzizi`    | UI      | Mzizi                                               | Exists                                               |
+| `dioxus`   | UI      | Rust, Dioxus `=0.7.10`                              | Exists; both pilots ran it                           |
+| `leptos`   | UI      | Rust, Leptos `=0.8.21`                              | Exists; never run                                    |
+| `react`    | UI      | TypeScript, React, `class-variance-authority`       | New, not built                                       |
+| `mzizi-be` | backend | Mzizi                                               | **Blocked**: Mzizi cannot write a handler yet (§6.4) |
+| `ts`       | backend | TypeScript, Hono on Node                            | New, not built                                       |
+| `python`   | backend | Python, FastAPI with pydantic v2, served by uvicorn | New, not built                                       |
+| `go`       | backend | Go, `net/http` from the standard library            | New, not built                                       |
+| `cpp`      | backend | C++20, `cpp-httplib` and `nlohmann/json`            | New, not built                                       |
+| `rust`     | backend | Rust, axum on tokio, serde                          | New, not built                                       |
+
+The public suites (MultiPL-E, EvalPlus, Aider polyglot, BaxBench) wait until Mzizi has
+functions, expressions and a way to run them.
+
 ## What it measures
 
-An agent authors N equivalent components in Mzizi's syntax, and the same components in raw
-Dioxus and Leptos under the same harness. Three metrics:
+Three metrics, for every arm in a family:
 
 | Metric                               | Which failure modes it tests                                 |
 | ------------------------------------ | ------------------------------------------------------------ |
@@ -41,18 +87,22 @@ And from RFC-0002 §5, an addition that matters because the whole design target 
 **the benchmark must include a small open-weight model arm.** The frontier arm alone cannot
 validate the thesis, because the frontier model is the one the design helps least.
 
-## The corpus, and what counts as a defect
+## The UI tasks, and what counts as a defect
 
-Both resolved in the charter (§6, dated 2026-08-23).
+Both resolved in the charter (§6, dated 2026-08-23), and widened by RFC-0009.
 
-**Task set: Mzizi's own components.** The registry's 577 components, a growing number of them
-with Rust siblings, with the existing `.tsx` and `.rs` implementations as ground truth. Explicitly **not**
-a port of an external library — not shadcn, not a generic primitive set. The nine
-[primitives](/primitives) and the one worked [example](/syntax#a-whole-component) in the
-repository are hand ports from exactly this corpus.
+**The UI tasks come from Mzizi's own components.** The registry's 577 components, a growing
+number of them with Rust siblings, are the ground truth for the UI families, with their
+existing `.tsx` and `.rs` implementations as references. Explicitly **not** a port of an
+external library — not shadcn, not a generic primitive set. The nine
+[primitives](/primitives) and the two examples in the repository are hand ports of
+registry components. Supplying these tasks is one of the components' jobs; they are built
+to support the language as its UI layer, and they are not the benchmark's goal. The
+`backend` family's tasks come from the API gateway instead.
 
-**A defect is code that compiles cleanly but is behaviourally wrong.** It passes the
-compiler and fails a contract or behaviour test against the reference implementation. This
+**A defect is code that checks cleanly but is behaviourally wrong.** It passes its check and
+fails a fact against the reference implementation: a UI fact, or an HTTP probe for a backend
+task. This
 mirrors the contract-test pattern already used for the `.tsx` → `.rs` ports: the reference
 is read from disk, and disagreement is the new code's fault unless it is a documented,
 deliberate divergence.
@@ -61,7 +111,7 @@ Note what is _not_ a defect: a syntax or compile error. That is the normal frict
 compile-error-density design goal is trying to minimise. The defect rate measures what gets
 **past** the compiler wrong.
 
-## The harness that runs it
+## The benchmark harness that runs it
 
 The public half of the benchmark is built, and lives in
 [`benchmarks/`](https://github.com/mzizi-dev/mzizi/tree/main/benchmarks) in `mzizi-dev/mzizi`:
@@ -84,11 +134,11 @@ does not exist yet (see below), so every run so far has used public tasks.
 ## Where the benchmark is going
 
 <Note>
-  **Designed, not built.** RFC-0009 extends the benchmark beyond UI components in Rust: a
-  `ui-spec` family with a React arm beside Dioxus and Leptos, and a `backend` family against
-  TypeScript, Python, Go, C++ and Rust. The RFC is merged; none of the new arms has been
-  added. Until they are, the harness is what this page describes: Mzizi against Dioxus and
-  Leptos, on UI components.
+  **Designed, not built.** RFC-0009's new arms ([above](#the-arms)) are the goal's
+  comparison: a React arm beside Dioxus and Leptos in `ui-spec`, and TypeScript, Python, Go,
+  C++ and Rust in `backend`. The RFC is merged; none of the new arms has been added. Until
+  they are, the benchmark harness can run only Mzizi against Dioxus and Leptos, on UI
+  components, which is a test and not the goal.
 </Note>
 
 ## Results are always published
