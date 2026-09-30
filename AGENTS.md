@@ -89,10 +89,15 @@ An owner rule, 2026-09-30: **docs.mzizi.dev must never lag the language or the c
 - Anyone changing the language or the components should expect a docs update to follow, and
   should say in their pull request that they changed it.
 - `node scripts/check-freshness.mjs` compares the facts it knows how to find (package and
-  crate versions, the language's test count and checked commit, the API and MCP registry pins,
-  the crate `/v1/rs/{name}` names for each first-batch component, the MCP Registry entry) with
-  their live sources. While every Roots crate is on crates.io, it also fails on any page that
-  says one is not. `.github/workflows/freshness.yml` runs it daily and on
+  crate versions, the language's test count and checked commit, the version `mcp.mzizi.dev`
+  serves, the crate `/v1/rs/{name}` names for each first-batch component, the MCP Registry
+  entry) with their live sources. While every Roots crate is on crates.io, it also fails on any
+  page that says one is not.
+- **Registry pins are not stated as current.** The API's and the MCP server's pins each have a
+  bot that moves them to registry `main` hourly once the owner adds its token. Pages say how to
+  read the live pin (the `x-mzizi-source` header; `catalogue.json`'s `source.registry`) and
+  quote a commit only as a dated example. The script warns when the API pin trails registry
+  `main` or the two pins differ, and fails when the header changes shape. `.github/workflows/freshness.yml` runs it daily and on
   demand. It needs the network, so it is not a required check. When you move one of those
   facts on a page, keep the sentence shape the script matches, or update the script.
 
@@ -118,6 +123,8 @@ An owner rule, 2026-09-30: **docs.mzizi.dev must never lag the language or the c
   entity.
 - **Security contacts.** The console: `security@nyuchi.com`. Everything else Mzizi,
   including this site: `security@bundu.org`.
+- **General contact.** `support@bundu.org`, for every public contact point that is not a
+  security report (owner, 30 September 2026). Never put a person's own email address on a page.
 - There is **one ecosystem: the Bundu ecosystem**. Mzizi, Nyuchi, Mukoko and the other brands
   sit inside it. Never write "the Mzizi ecosystem" or "the Nyuchi ecosystem".
 

@@ -137,10 +137,14 @@ curl -s https://api.mzizi.dev/v1/rs/mzizi-alert-banner | jq .crate
 # { "name": "mzizi-brand", "registry": "crates.io", "git": "https://github.com/mzizi-dev/mzizi-registry" }
 ```
 
-On 30 September 2026 the API was built from registry commit `9b86e03`, and so was the
-[MCP server](/toolchain/mcp). At that commit `/v1/rs/{name}` serves all twelve brand
-components, each naming `mzizi-brand`, alongside the primitives in `mzizi-ui`, the app chrome
-in `mzizi-shell` and the server rungs in their own crates.
+From registry commit `9b86e03` on, `/v1/rs/{name}` serves all twelve brand components, each
+naming `mzizi-brand`, alongside the primitives in `mzizi-ui`, the app chrome in `mzizi-shell`
+and the server rungs in their own crates. On 30 September 2026 the API was built from that
+commit, and so was the [MCP server](/toolchain/mcp). Both pins move, so read the live one from
+the source: the API's `x-mzizi-source` header, or the MCP server's `catalogue.json`.
+
+The MCP server is Rust first too: `mzizi_get_component` leads with the component's crate,
+its `cargo add` line, its contract and its `.rs` source, and gives the React build second.
 
 ## Where to go next
 

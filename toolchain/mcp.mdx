@@ -9,7 +9,8 @@ The Mzizi MCP server gives agents the registry, the brand tokens, the architectu
 the doctrine, the agent skills and these docs over the
 [Model Context Protocol](https://modelcontextprotocol.io). It is the `mzizi-mcp` Cloudflare
 Worker, published as [`@nyuchi/mzizi-mcp`](https://www.npmjs.com/package/@nyuchi/mzizi-mcp)
-(`0.10.1`, read from npm on 30 September 2026). In the
+(`0.11.0`, read from npm on 30 September 2026; the hosted server answered `initialize` with
+the same version). In the
 [MCP Registry](https://registry.modelcontextprotocol.io) it is
 `io.github.mzizi-dev/mzizi-mcp`, listing both the hosted endpoint and the npm package. The
 earlier entry under the nyuchi namespace is deleted.
@@ -89,8 +90,8 @@ tools:
 | Tool                               | What it answers                                                            |
 | ---------------------------------- | -------------------------------------------------------------------------- |
 | `mzizi_search`                     | Word search over components, conventions, AI instruction sets and releases |
-| `mzizi_get_component`              | One component in full, source inline; optional docs and version history    |
-| `mzizi_list_components`            | The paged index, filterable by node, owner, collection and type            |
+| `mzizi_get_component`              | One component in full, Rust first; optional docs and version history       |
+| `mzizi_list_components`            | The paged index, filterable by node, owner, collection, type and `rust`    |
 | `mzizi_get_tokens`                 | The brand system, including all 21 colour families                         |
 | `mzizi_get_architecture`           | The DNA helix, or one node or rung                                         |
 | `mzizi_get_doctrine`               | Ubuntu pillars and principles, conventions, AI instruction sets            |
@@ -106,6 +107,51 @@ tools:
 Start with `mzizi_search` when you do not know the name of the thing you want, and
 `mzizi_get_component` when you do.
 
+## Components, Rust first
+
+From `0.11.0` the component tools lead with [Mzizi Roots](/roots/overview), the Rust
+implementation, wherever one exists. The React (TSX) components are the React build: they
+keep working, but they are deprioritised and come second.
+
+`mzizi_get_component` takes `name` (a former `nyuchi-*` name resolves to its `mzizi-*`
+successor) and an optional `include` of `"docs"`, `"versions"` or both. It answers with these
+fields, in this order:
+
+| Field         | What it holds                                                                                                             |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `name`        | The component's current name                                                                                              |
+| `renamedFrom` | The name you asked for, when it was a former name. Absent otherwise                                                       |
+| `lead`        | `"rust"` when the component has a Rust implementation, otherwise `"react"`                                                |
+| `note`        | Which build to use, in words                                                                                              |
+| `rust`        | The Roots implementation, or `null` when there is none                                                                    |
+| `react`       | The React build: `build: "react"`, `status: "deprioritised"`, an `install` line, then the registry's `/v1/ui/{name}` body |
+| `docs`        | With `include: ["docs"]`: use cases, variants and accessibility                                                           |
+| `versions`    | With `include: ["versions"]`: version history, from the registry's changelog                                              |
+
+`rust` is the registry's `GET /v1/rs/{name}` answer, with the install before the source:
+
+- `crate`: `{ name, registry, git }`, the crate the component ships in, such as `mzizi-brand`;
+- `install.cargo`: `cargo add <crate>`, the crates.io release;
+- `install.pinned`: the same `cargo add` with `--git` and `--rev` at the server's registry
+  pin, which builds exactly the source shown;
+- `module`: the crate's Rust path, such as `mzizi_brand`;
+- `contract`: the component's `contract … end` block, or `null` when its source declares none;
+- `files`: the `.rs` source, inline.
+
+`react.install` is `npx shadcn@latest add https://api.mzizi.dev/v1/ui/<name>`. If the registry
+refuses the React build but Rust exists, `react` is `{ build, error }` and the Rust still leads.
+
+<Warning>
+  **Breaking for readers of `0.10.x`:** the React body moved from `component` to `react`, and
+  `renamedFrom` moved to the top level.
+</Warning>
+
+`mzizi_list_components` rows carry `rustCrate` when the component has Rust, the response
+carries `withRust` (how many of `total` have it), and `rust: true` or `rust: false` filters on
+it. On 30 September 2026, `rust: true` listed 55 of the registry's 577 components.
+`mzizi_search` component hits carry `rustCrate` the same way, and at an equal score a
+component with Rust ranks first; a better word match still wins.
+
 ## Where its data comes from
 
 **Nothing is read from a database, and no registry data is fetched at request time.**
@@ -119,9 +165,17 @@ Start with `mzizi_search` when you do not know the name of the thing you want, a
 Because the generator runs the registry's route handlers rather than re-deriving their
 output, a tool answers with the payload `api.mzizi.dev/v1` would give at the same commit.
 `catalogue.json` names the pinned registry commit in `source.registry`, and
-`mzizi_mcp_describe` reports it. On 30 September 2026 it was registry commit `9b86e03`, the
-same commit [`api.mzizi.dev`](/platform/api-gateway) is built from. Moving to newer registry
-content is a change to that pin, so it is a reviewed commit.
+`mzizi_mcp_describe` reports it. Read the live pin there rather than from this page; for
+example, on 30 September 2026 it was registry commit `9b86e03`, the same commit
+[`api.mzizi.dev`](/platform/api-gateway) was built from. Moving to newer registry content is a
+change to that pin, made in a pull request that CI checks.
+
+The pin, `ref` in `mzizi-mcp/registry.pin.json`, has the same bot as
+[the API gateway's](/platform/api-gateway#how-the-pin-moves). Every hour it compares the pin
+with registry `main` and keeps one pull request, from the branch `bot/registry-pin`, that
+moves it. That pull request merges itself (rebase) only when every check on it is green, and
+otherwise waits for review. The bot acts only once the owner has added its token; until then
+the pin moves by hand.
 
 The server holds no database credential. Former `nyuchi-*` component names resolve to their
 `mzizi-*` names through the registry's rename map, bundled with the rest.
@@ -169,7 +223,8 @@ credential to a client or to the CLI.
 
 1. `mzizi_list_components`, filtered to the node you are building at.
 2. `mzizi_get_component` for the full document of anything that looks right. Where a Rust
-   implementation exists, prefer it (see [Mzizi Roots](/roots/overview)).
+   implementation exists, it leads: depend on the crate in `rust.install` (see
+   [Mzizi Roots](/roots/overview)). `mzizi_list_components` with `rust: true` lists only those.
 3. Install it (see [consuming the registry](/registry/consuming)).
 
 ### Reviewing a change

@@ -149,53 +149,72 @@ await check("mzizi-dev/mzizi", async () => {
   }
 });
 
-// api.mzizi.dev: the registry commit the gateway is built from.
+// api.mzizi.dev and mcp.mzizi.dev: the registry commit each is built from. Neither pin is stated
+// on a page as current any more: the gateway's moves by itself through an hourly bot pull
+// request, so the pages say how to read it and quote dated examples only. What is checked is
+// that the header still has the shape the gateway page documents, and, as warnings, that the
+// gateway has caught up with registry main and that the MCP server is on the same commit.
+let gatewayPin;
 await check("api.mzizi.dev", async () => {
-  const [docs] =
-    stated("platform/api-gateway.mdx", /x-mzizi-source: mzizi-api-gateway; registry=([0-9a-f]+)/, "the gateway pin") ?? [];
+  const shape = "x-mzizi-source: mzizi-api-gateway; registry=<registry commit>";
+  if (!page("platform/api-gateway.mdx").includes(shape)) {
+    drift.push(`platform/api-gateway.mdx: could not find the header shape "${shape}"; update this script`);
+  }
   const { headers } = await get("https://api.mzizi.dev/v1/health");
-  const live = (headers.get("x-mzizi-source") ?? "").match(/registry=([0-9a-f]+)/)?.[1];
-  compare("api.mzizi.dev registry pin (platform/api-gateway.mdx)", docs, live);
+  const header = headers.get("x-mzizi-source") ?? "";
+  gatewayPin = header.match(/^mzizi-api-gateway; registry=([0-9a-f]{12})$/)?.[1];
+  if (!gatewayPin) {
+    drift.push(`api.mzizi.dev x-mzizi-source is "${header}", not the shape platform/api-gateway.mdx documents`);
+    return;
+  }
+  console.log(`ok     api.mzizi.dev x-mzizi-source has the documented shape: registry=${gatewayPin}`);
+  const registryMain = execFileSync(
+    "git",
+    ["ls-remote", "https://github.com/mzizi-dev/mzizi-registry", "refs/heads/main"],
+    { encoding: "utf8" },
+  ).split(/\s/)[0];
+  if (!/^[0-9a-f]{40}$/.test(registryMain)) throw new Error("git ls-remote returned no commit for registry main");
+  if (!registryMain.startsWith(gatewayPin)) {
+    warnings.push(
+      `api.mzizi.dev is pinned at registry ${gatewayPin}; registry main is ${registryMain.slice(0, 12)}. ` +
+        "Once PIN_BUMP_TOKEN is set, the gateway's pin bot bumps it within the hour (check its bot/registry-pin " +
+          "pull request); until then the pin moves by hand.",
+    );
+  } else {
+    console.log(`ok     api.mzizi.dev pin is registry main: ${gatewayPin}`);
+  }
 });
 
-// mcp.mzizi.dev: the registry commit the MCP server is built from, and that the Roots page
-// names the same commit for both servers.
+// mcp.mzizi.dev: the version it serves matches the version the MCP page states, and its pin.
 await check("mcp.mzizi.dev", async () => {
-  const [docs] = stated("toolchain/mcp.mdx", /it was registry commit `([0-9a-f]+)`/, "the MCP pin") ?? [];
-  const [roots] =
-    stated("roots/overview.mdx", /the API was built from registry commit `([0-9a-f]+)`/, "the API pin") ?? [];
-  const res = await fetch("https://mcp.mzizi.dev/mcp", {
-    method: "POST",
-    headers: {
-      "user-agent": UA,
-      "content-type": "application/json",
-      accept: "application/json, text/event-stream",
-    },
-    body: JSON.stringify({
-      jsonrpc: "2.0",
-      id: 1,
-      method: "tools/call",
-      params: { name: "mzizi_mcp_describe", arguments: {} },
-    }),
-  });
-  if (!res.ok) throw new Error(`mcp.mzizi.dev answered ${res.status}`);
-  const live = (await res.text()).match(/mzizi-registry\/tree\/([0-9a-f]{40})/)?.[1];
-  if (!live) throw new Error("mzizi_mcp_describe no longer names its registry commit");
-  const short = (sha) => (sha && live.startsWith(sha) ? live.slice(0, sha.length) : live);
-  compare("mcp.mzizi.dev registry pin (toolchain/mcp.mdx)", docs, short(docs));
-  compare("registry pin roots/overview.mdx states for both servers (vs mcp.mzizi.dev)", roots, short(roots));
+  const [docs] = stated("toolchain/mcp.mdx", /\(`([0-9.]+)`, read from npm/, "the MCP version") ?? [];
+  const { body } = await get("https://mcp.mzizi.dev/catalogue.json");
+  compare("mcp.mzizi.dev served version (toolchain/mcp.mdx)", docs, body.version);
+  const pin = String(body.source?.registry ?? "").match(/mzizi-registry\/tree\/([0-9a-f]{40})/)?.[1];
+  if (!pin) throw new Error("catalogue.json no longer names its registry commit in source.registry");
+  if (gatewayPin && !pin.startsWith(gatewayPin)) {
+    warnings.push(
+      `mcp.mzizi.dev is pinned at registry ${pin.slice(0, 12)}, api.mzizi.dev at ${gatewayPin}. ` +
+        "The docs say both are built from the same registry content; check which one lags.",
+    );
+  } else if (gatewayPin) {
+    console.log(`ok     mcp.mzizi.dev pin matches api.mzizi.dev: ${pin.slice(0, 12)}`);
+  }
 });
 
-// The MCP Registry: the server name the MCP page gives, and that it is active.
+// The MCP Registry: the server name the MCP page gives, its latest entry active and at the
+// version the page states.
 await check("MCP Registry", async () => {
   const [name] = stated("toolchain/mcp.mdx", /it is\s+`(io\.github\.[^`]+)`/, "the MCP Registry name") ?? [];
+  const [version] = stated("toolchain/mcp.mdx", /\(`([0-9.]+)`, read from npm/, "the MCP version") ?? [];
   if (!name) return;
   const { body } = await get(
     `https://registry.modelcontextprotocol.io/v0/servers?search=${encodeURIComponent(name)}`,
   );
-  const entry = (body.servers ?? []).find((s) => s.server.name === name);
-  const status = entry?._meta?.["io.modelcontextprotocol.registry/official"]?.status;
-  compare(`MCP Registry ${name} (toolchain/mcp.mdx)`, "active", status ?? "missing");
+  const official = (s) => s._meta?.["io.modelcontextprotocol.registry/official"];
+  const entry = (body.servers ?? []).find((s) => s.server.name === name && official(s)?.isLatest);
+  compare(`MCP Registry ${name} latest status (toolchain/mcp.mdx)`, "active", official(entry ?? {})?.status ?? "missing");
+  compare(`MCP Registry ${name} latest version (toolchain/mcp.mdx)`, version, entry?.server.version ?? "missing");
 });
 
 for (const w of warnings) console.log(`::warning::${w}`);

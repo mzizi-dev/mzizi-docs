@@ -81,6 +81,7 @@ Checked 2026-09-29. Most inherited prose gets at least one of these wrong.
 - **`nyuchi-*` components are `mzizi-*`**, with 308 redirects from the old names.
 - **Security contacts:** `security@nyuchi.com` for the console, `security@bundu.org` for
   everything else Mzizi.
+- **General contact:** `support@bundu.org`, for everything that is not a security report.
 
 ## Layout
 
