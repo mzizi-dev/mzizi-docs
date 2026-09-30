@@ -32,6 +32,11 @@ entries move under it. Mintlify does not publish this file.
 
 ### Changed
 
+- **The hematite accent now cites canon's `--heritage-hematite-text`** (mzizi-registry #385)
+  instead of a value the docs derived themselves. The colours do not change: `#4A616B` in
+  light mode (Lc 75.1 on `#F3F3F1`) and `#C9D2D7` in dark mode (Lc -78.1 on `#0E0D0C`).
+  `scripts/check-contrast.mjs` and the `style.css` record name the canon token as the
+  source.
 - **The docs now wear mzizi.dev's theme** (owner decision, 2026-09-30): `@bundu/ui` 0.2.0
   with its `brand-mzizi` overlay. The accent is hematite, Mzizi's brand mineral, in place of
   cobalt: `#4A616B` in light mode and `#C9D2D7` in dark mode (was `#0047AB` / `#B3E5FC`).

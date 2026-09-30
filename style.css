@@ -27,20 +27,18 @@
  * body size, so the bar is APCA Lc 75 on each background, measured with the
  * same APCA-W3 0.1.9 code as scripts/check-contrast.mjs:
  *
- *   dark mode   #C9D2D7  on #0E0D0C  Lc -78.1  canon `--heritage-hematite-aa`
- *   light mode  #4A616B  on #F3F3F1  Lc  75.1  canon lightHex, walked toward
- *                                               #000000 (see below)
+ *   dark mode   #C9D2D7  on #0E0D0C  Lc -78.1  canon `--heritage-hematite-text`
+ *   light mode  #4A616B  on #F3F3F1  Lc  75.1  canon `--heritage-hematite-text`
  *
  * Raw hematite misses on both: #90A4AE is Lc -51.0 on #0E0D0C and #546E7A is
- * Lc 69.7 on #F3F3F1. In dark mode canon already publishes the fix, the `-aa`
- * value, so docs.json uses it. In light mode canon's `-aa` value is #546E7A
- * itself: canon measures the light role as a fill carrying white text (WCAG
- * 2.2 AA on #FFFFFF, which #546E7A passes), not as text on `base`. No canon
- * hematite clears Lc 75 as light-mode text, so #4A616B is derived with canon's
- * own method (mzizi-registry `scripts/render-globals-css.ts` `walk()`: linear
- * sRGB steps of 1% from the canonical hex toward #000000, first step that
- * passes) — 12 steps, and nothing else about the colour changes. It belongs
- * in canon's accessible tier; until it is there, this comment is its record.
+ * Lc 69.7 on #F3F3F1. Canon's `-text` tier (mzizi-registry
+ * `mzizi-tokens-globals.css`, #385) is the value of each colour family as text
+ * on `base`, measured at Lc 75, and docs.json uses it in both themes. Canon's
+ * `-aa` is not the right source in light mode: there it is measured as a fill
+ * carrying white text, so light `--heritage-hematite-aa` is #546E7A itself.
+ * `-text` is derived with canon's `walk()` (linear sRGB steps of 1% from the
+ * canonical hex toward #000000, first step that passes; 12 steps for
+ * hematite). In dark mode it is the same value as `-aa`.
  *
  * mzizi.dev itself colours prose links with `--info` (cobalt) and uses
  * hematite for `--primary` and `--ring` (buttons and the focus ring). Mintlify

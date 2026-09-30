@@ -66,9 +66,9 @@ const bgDark = docs.background.color.dark;
 // changes without its source changing is drift, so it fails here; change the
 // row and its source together. style.css records the measurements in full.
 const EXPECTED = {
-  "colors.primary": ["#4A616B", "hematite lightHex #546E7A, walked toward #000000 to Lc 75 on base (canon walk())"],
+  "colors.primary": ["#4A616B", "canon --heritage-hematite-text, light (hematite lightHex #546E7A is Lc 69.7 on base)"],
   "colors.dark": ["#4A616B", "the same value: Mintlify renders colors.dark in light mode"],
-  "colors.light": ["#C9D2D7", "canon --heritage-hematite-aa, dark (hematite darkHex #90A4AE is Lc -51.0)"],
+  "colors.light": ["#C9D2D7", "canon --heritage-hematite-text, dark (= -aa; hematite darkHex #90A4AE is Lc -51.0)"],
   "background.color.light": ["#F3F3F1", "@bundu/ui 0.2.0 --background, light (canon base)"],
   "background.color.dark": ["#0E0D0C", "@bundu/ui 0.2.0 --background, dark (canon base)"],
 };
