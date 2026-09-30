@@ -163,7 +163,13 @@ An owner rule, 2026-09-30: "changelogs are super important".
 
 ## Colours
 
-`docs.json`'s brand colours are gated by `scripts/check-contrast.mjs` at APCA 3.0 Lc 75.
+The docs wear `mzizi.dev`'s theme: `@bundu/ui` 0.2.0 plus `brand-mzizi.css`, so the accent is
+hematite (`#4A616B` light, `#C9D2D7` dark, the accessible values) on `#F3F3F1` / `#0E0D0C`,
+with no background decoration. `style.css` names the source of every value. Change a colour
+only when that source changes.
+
+`docs.json`'s brand colours are gated by `scripts/check-contrast.mjs` at APCA 3.0 Lc 75, and
+the script fails if they drift from the recorded values.
 Remember `colors.light` renders in DARK mode and `colors.dark` renders in LIGHT mode. Do not
 substitute a WCAG ratio check for this — see the README for why that masks real failures in
 this palette.
