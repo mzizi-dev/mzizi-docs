@@ -21,6 +21,25 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
+### Changed — the skills page describes `@nyuchi/mzizi-skills` 0.8.5
+
+`toolchain/skills.mdx` now matches the 0.8.5 bundle (agent-tools#166), which
+follows language main `62a0f32`:
+
+- **The version is `0.8.5`** (was `0.8.4`). "Getting the skills" now says all
+  four copies (npm, the MCP server, the API and the plugin) served `0.8.5` on
+  30 September 2026, where it said the API still served `0.8.2`.
+- **`mzizi-language`** is described as the skill that points agents at
+  `LANGUAGE-TRACKER.md` before any capability claim. It covers the backend
+  `service` syntax (routes, handlers with `when`, `header` and `respond`, and
+  `example` and `ensure` contracts; RFC-0011), `mz contract` running a
+  service in process, and `mz build`, which lowers a service to a local
+  Rust + axum package. It gives the harness as designed in RFC-0012, a draft,
+  and lists exactly what is not built yet.
+- **`mzizi-backend`** is described as covering the language's `service`
+  slice, which runs in process and lowers to a local axum package, with no
+  Workers target and nothing deployed.
+
 ### Changed — the docs match language main `62a0f32`
 
 A freshness update. Every capability claim now comes from
