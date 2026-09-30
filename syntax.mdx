@@ -199,14 +199,15 @@ and is specified to error as "not yet available".
 
 ## No ownership at the surface — FM-3
 
-Mzizi is designed to lower to Rust (nothing lowers yet), but **no borrow, lifetime or
+Mzizi is designed to lower to Rust (today only a `service` lowers), but **no borrow, lifetime or
 ownership concept exists in the surface language**. Values have value semantics; the
 compiler is meant to own the `Rc`/signal plumbing in lowered code. The class of non-local-fix errors that makes Rust hard for agents is spent
 once, by the compiler authors, instead of on every generation.
 
 <Note>
-  This is a design commitment, not a demonstrated one — there is no lowering yet. See
-  [Status](/status).
+  This is a design commitment, not a demonstrated one. The only lowering today is a
+  `service` to a local Rust + axum package, where a service has no ownership in its source;
+  no component lowers ([what still has to be built](/tracker), P10). See [Status](/status).
 </Note>
 
 ## Canonical form — FM-8, FM-4
@@ -221,8 +222,8 @@ surface rather than a formatting lottery.
 <Warning>
   RFC-0001 §3 specifies that `mz` **rewrites every file it touches** to canonical form.
   There is no formatter in the binary today; the `.mz` files in the repository follow the
-  convention by hand. `mz` dispatches `check`, `contract`, `outline`, `hash` and `ir`, and
-  nothing else.
+  convention by hand. `mz` dispatches `check`, `fix`, `contract`, `outline` and `build`,
+  plus `hash` and `ir`, and nothing else; `mz fmt` is designed, not built.
 </Warning>
 
 ## Still open

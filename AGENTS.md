@@ -30,10 +30,20 @@
 ## The rule that overrides everything else
 
 The Mzizi language is a **Phase 0 prototype front end**. `mz contract` evaluates a
-component's contract against the component itself; nothing lowers to Rust; nothing renders.
+component's contract against the component itself, and runs a `service` in process. Only a
+`service` lowers to Rust (`mz build`, to a local Rust + axum package); no component lowers,
+there is no Workers, Containers or WebAssembly target, and nothing renders. Mzizi has no
+expressions, bindings, callable functions, loops, error handling, modules or standard library
+yet.
 **Two small pilots ran on 2026-09-27 and neither showed an advantage.** The run that tests
 the kill criterion (now: Mzizi against the best existing language for each kind of task)
 has not happened.
+
+**Every capability claim comes from
+[`LANGUAGE-TRACKER.md`](https://github.com/mzizi-dev/mzizi/blob/main/LANGUAGE-TRACKER.md)**,
+the language's one tracker of what it still needs (owner, 2026-09-30): if a row is not ✅
+there, Mzizi does not have it. `tracker.mdx` summarises it, and `check-freshness.mjs` fails
+when a row's mark on that page drifts from the file.
 
 So: **a claim on this site is either checkable in the source repository, or labelled as a
 design intention.** "Designed for" is fine; "faster" or "better" is not. Owner direction
@@ -78,9 +88,10 @@ Three specific traps:
 - **Do not quote RFC examples as working syntax.** RFC-0001's view attributes have no `=`;
   the implemented parser requires `name = value`. Prefer quoting `.mz` files from the
   repository, which CI gates.
-- **Do not document `mz refs`, `mz path`, `mz patch` or `mz diff` as commands.** They are
-  designed, not built. The binary dispatches `check`, `fix`, `contract`, `outline`, `hash`,
-  `ir`. `mz fix` is built and documented on the compiler page.
+- **Do not document `mz refs`, `mz path`, `mz patch`, `mz diff`, `mz run`, `mz test` or
+  `mz fmt` as commands.** They are designed, not built. The binary dispatches `check`, `fix`,
+  `contract`, `outline` and `build` (`mz build <service.mz> --out <dir>`, a service only), plus
+  `hash` and `ir`. All are documented on the compiler page.
 - **Do not put a model name or identifier in a page.** Say "a frontier model" or "a ~7B
   open-weight model" and link the pilot write-up, which names them.
 
@@ -97,7 +108,9 @@ An owner rule, 2026-09-30: **docs.mzizi.dev must never lag the language or the c
 - Anyone changing the language or the components should expect a docs update to follow, and
   should say in their pull request that they changed it.
 - `node scripts/check-freshness.mjs` compares the facts it knows how to find (package and
-  crate versions, the language's test count and checked commit, the version `mcp.mzizi.dev`
+  crate versions, the language's test count, line count and checked commit, the charter's
+  version and title, every `LANGUAGE-TRACKER.md` row's mark on `tracker.mdx`, the arms in
+  `benchmarks/arms/` against `benchmark.mdx`, the version `mcp.mzizi.dev`
   serves, the crate `/v1/rs/{name}` names for each first-batch component, the MCP Registry
   entry) with their live sources. While every Roots crate is on crates.io, it also fails on any
   page that says one is not.

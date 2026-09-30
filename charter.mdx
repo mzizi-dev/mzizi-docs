@@ -1,30 +1,46 @@
 ---
 title: "The charter"
-description: "The thesis, the phases, and the explicit non-goals. The Mzizi Research Charter, v0.3 — a direction and a phasing, not a sprint plan."
+description: "The thesis, the phases, and the explicit non-goals. The Mzizi Research Charter, v0.4, “Mzizi: a general-purpose programming language” — a direction and a phasing, not a sprint plan."
 icon: "scroll-text"
 ---
 
 <Note>
-  **The charter's wording is behind the owner's positioning.** Its title and thesis still
-  call Mzizi "a general-purpose framework" and "a Rust framework". The owner's positioning
-  of 30 September 2026 is that **Mzizi is a programming language**: Rust is its platform,
-  the way JavaScript is TypeScript's; its goal is to be used instead of TypeScript, Python
-  and C++; and the toolchain and the components are built to support it. Phase 0's one goal
-  is to build Mzizi as a programming language, measured against the best existing language
-  for each kind of task, which v0.3's amended criterion already adopts. A charter update is being routed to the language repository. Until it lands, the
-  quotations below are the charter's own words.
+  **Charter v0.4 is on `main`.** Its title is _"Mzizi: a general-purpose programming
+  language"_, and it opens with the owner's tagline: _"Mzizi is built to make Rust better, the
+  way TypeScript makes JavaScript better."_ It states that as the goal Phase 0 exists to test,
+  not a result: _"Nothing in this charter has been measured against it yet."_ What Mzizi can do
+  today is tracked in [`LANGUAGE-TRACKER.md`](/tracker), not in the charter.
 </Note>
 
 Mzizi's direction is set by a single document:
 [`CHARTER.md`](https://github.com/mzizi-dev/mzizi/blob/main/CHARTER.md), the project's
-**Mzizi Research Charter, v0.3**. Its own status line reads _"charter draft — defines direction and
+**Mzizi Research Charter, v0.4**. Its own status line reads _"charter draft — defines direction and
 phasing, not a sprint plan"_, and this page summarises it rather than replacing it.
 
-## What v0.3 changed
+## What v0.4 changed
 
-Version 0.3 records four owner-directed changes of 29 September 2026. The charter's own
-summary: _"Phase 0's discipline is unchanged: the gate still blocks downstream work, and no
-claim is made before it is measured."_
+Version 0.4 records five owner-directed changes of 30 September 2026. The charter's own
+summary: _"The gate, the kill criterion and the benchmark settings are unchanged, and nothing
+is claimed before it is measured."_
+
+1. **Mzizi is a general-purpose programming language**, not a framework. Rust is its
+   platform, the way JavaScript is TypeScript's, and Mzizi Roots is its component model, the
+   way React is JavaScript's.
+2. **One goal.** The language repository's goal, and Phase 0's only goal, is building Mzizi as
+   a language that stands against the best existing language for each kind of task:
+   TypeScript, Python, C++, Go and Rust.
+3. **The harness is the core of the language:** what an agent reads, and what the toolchain
+   and plugins attach to. It lives in the language repository, and its design is
+   [RFC-0012](/rfcs), a draft.
+4. **The toolchain and the components support the language; they are not the language.**
+5. **Phase 0 is scoped to the goal.** The component tasks against Dioxus and Leptos, the pilots
+   among them, are tests within it, and the 29 September amendment to §4 is folded into the
+   main text.
+
+## The 29 September changes, still in force
+
+The charter's previous revision recorded four owner-directed changes of 29 September 2026,
+and v0.4 keeps all of them:
 
 1. **The backend goal.** Mzizi builds Mzizi's entire backend infrastructure in Mzizi. None of
    it is today: `api.mzizi.dev` is a Hono Worker in TypeScript. It is the target, not the
@@ -34,7 +50,7 @@ claim is made before it is measured."_
 3. **Everything has a contract.** Components, language functions, handlers, services and the
    standard library, specified in
    [RFC-0010](https://github.com/mzizi-dev/mzizi/blob/main/design/RFC-0010-contracts-everywhere.md).
-   Proposed, not built.
+   Components' and services' contracts run today; the rest is proposed, not built.
 4. **The kill criterion is Mzizi against the best existing language for each kind of task**,
    and every benchmark run is published
    ([RFC-0009](https://github.com/mzizi-dev/mzizi/blob/main/design/RFC-0009-comparison-benchmark.md)).
@@ -48,29 +64,46 @@ legal entity.
 
 ## The thesis
 
-Every major web framework won by being unmistakably better at one thing first, not by
-matching an incumbent's full feature set on day one. React was Facebook's internal fix for
-one rendering problem. Vue was one person's answer to Angular's complexity. Svelte bet on a
-single contrarian idea — compile the framework away — years before anyone else took it
-seriously.
+The charter opens with how languages and frameworks win: by being unmistakably better at one
+thing first. _"TypeScript did not replace JavaScript: it made JavaScript better to write, and
+it still compiles to JavaScript and runs wherever JavaScript runs."_
+
+What Mzizi is, in v0.4's words:
+
+> A general-purpose programming language, with Rust as its platform, the way JavaScript is
+> TypeScript's.
+
+Mzizi is designed to lower to Rust, with no borrow, lifetime or ownership concept at the
+surface: the compiler is to own that plumbing in the Rust it emits, so an agent never has to.
+The aim is that Mzizi does Rust better: you write Mzizi instead of TypeScript, Python or C++,
+and get Rust underneath. The charter is explicit: _"That is the design and the goal, not the
+state."_ Its §1 still says `mz` emits no Rust; since the backend slice merged (language PRs
+#29–#33), `mz build` lowers a `service` to a local Rust + axum package, and nothing else lowers.
+[The tracker](/tracker) is the fact.
 
 Mzizi's single sharp edge:
 
-> A Rust framework whose syntax, type system, and compiler feedback loop are designed for
-> machine authorship, not just human ergonomics.
+> Its syntax, type system, and compiler feedback loop are designed for machine authorship,
+> not just human ergonomics.
 
-The charter's argument for why the field is open: every existing framework, Rust or
-otherwise, was designed assuming a human is typing, reading docs, and holding context in
-their head. None of them are designed for an agent iterating against a compiler thousands of
-times, where compile speed, error density and token-efficient representation are first-order
-metrics.
+The charter's argument for why the field is open: every existing language, Rust, TypeScript,
+Python or otherwise, was designed assuming a human is typing, reading docs, and holding
+context in their head. None of them are designed for an agent iterating against a compiler
+thousands of times, where compile speed, error density and token-efficient representation
+are first-order metrics.
+
+**The harness is the core of the language.** It is what an agent reads and works through: the
+language's agent-facing definition, the agent protocol (`mz check --agent`, its diagnostics
+and fixes) and the plugin host the toolchain, the CLI, the MCP server and plugins attach to
+natively. It lives in the language repository; `mzizi-cli`, `mzizi-mcp` and fundi are its
+clients. Of it, only the agent protocol and the IR exist today.
 
 Everything else — cross-platform reach, ML integration, edge deployment — is Mzizi
 _integrating_ with what already exists well, not out-building specialists at their own game.
 
 ## What that has to cash out as
 
-Four measurable design goals, not a slogan:
+Five measurable design goals, not a slogan:
 
 <AccordionGroup>
   <Accordion title="Low syntactic ambiguity">
@@ -87,6 +120,13 @@ Four measurable design goals, not a slogan:
     session treats compile latency as the dominant cost of the whole workflow. Compile speed
     is a Phase 0 success metric, not an optimisation to defer.
   </Accordion>
+  <Accordion title="Everything has a contract">
+    Every component, language function, handler, service and standard-library function
+    carries an in-language contract the toolchain checks. A contract may constrain only a value
+    the program renders or returns, never a declared copy of it: pilot 2 caught a touch-floor
+    contract checking a number the component does not render. Components and services carry
+    contracts today; the rest is [RFC-0010](/rfcs).
+  </Accordion>
   <Accordion title="Token-efficient representation">
     A codebase that fits more real logic into a context window per token spent is one an
     agent can reason about more completely, with less summarisation loss. Applies to the
@@ -98,34 +138,38 @@ Four measurable design goals, not a slogan:
 
 The charter is precise about which layer is the research contribution, which matters because
 it bounds what Mzizi is claiming to have invented. Version 0.2 widened the scope from web UI
-to general-purpose software for the agentic world, and v0.3 adds Mzizi's own backend; the UI benchmark in Phase 0 is the first,
-smallest, most measurable slice of that claim, not the whole of it.
+to general-purpose software for the agentic world, the 29 September revision added Mzizi's
+own backend, and v0.4 calls Mzizi a general-purpose programming language; the UI component tasks in Phase 0 are the
+first, smallest, most measurable slice of that claim, not the whole of it.
 
-| Layer                             | Approach                                                                                                                                                                                                                |
-| --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Syntax, type system, compiler** | **Novel.** The actual research contribution and the thing worth defending as IP.                                                                                                                                        |
-| **UI layer**                      | **`mzizi-ui`, Mzizi's own component registry, is first-class.** Dioxus is a compatible third-party rendering target for it, as any Rust UI registry adopting the same contract would be — not the UI strategy itself.   |
-| **Full-stack (UI + server)**      | A component and the handler that serves it ship from the same Mzizi source. The server half is lowered per target, and handlers reach target-specific facilities only through declared capabilities.                    |
-| **Edge: Workers and Containers**  | **First-class from day one.** Workers lower to `workers-rs` (wasm32); Containers lower to a native Rust HTTP server (axum-class) packaged as a container image and reached from a Worker through the Container binding. |
-| **ML workloads**                  | **Native integration with Candle.** Components declare and consume inference as a first-class capability; Mzizi does not build a competing tensor runtime.                                                              |
-| **Native mobile**                 | Two tracks: `mzizi-ui` through a compatible mobile engine (Dioxus today) near-term; native Swift/ArkTS/Kotlin codegen from the same Rust core later, separately scoped. Named, not designed.                            |
-| **Hardware / embedded**           | A named future direction, unscoped until Phase 1 has a real deployment.                                                                                                                                                 |
-| **Compiled artifact**             | WASM, and native for desktop and compatible-renderer mobile. A real native-per-platform artifact belongs to the later native-mobile track.                                                                              |
-| **Post-quantum cryptography**     | **Explicitly deferred.** A future research thread, named so it does not dilute Phase 0.                                                                                                                                 |
+| Layer                                          | Approach                                                                                                                                                                                                                                  |
+| ---------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **The language, with the harness at its core** | **Novel.** The syntax, the type system, the semantics and the contracts, and the harness an agent reads them through. The research contribution. The toolchain is not the language: the compiler, CLI, MCP server and plugins support it. |
+| **UI layer**                                   | **`mzizi-ui`, Mzizi's own component registry, is first-class.** Dioxus is a compatible third-party rendering target for it, as any Rust UI registry adopting the same contract would be — not the UI strategy itself.                     |
+| **Full-stack (UI + server)**                   | A component and the handler that serves it ship from the same Mzizi source. The server half is lowered per target, and handlers reach target-specific facilities only through declared capabilities.                                      |
+| **Edge: Workers and Containers**               | **First-class from day one.** Workers lower to `workers-rs` (wasm32); Containers lower to a native Rust HTTP server (axum-class) packaged as a container image and reached from a Worker through the Container binding.                   |
+| **ML workloads**                               | **Native integration with Candle.** Components declare and consume inference as a first-class capability; Mzizi does not build a competing tensor runtime.                                                                                |
+| **Native mobile**                              | Two tracks: `mzizi-ui` through a compatible mobile engine (Dioxus today) near-term; native Swift/ArkTS/Kotlin codegen from the same Rust core later, separately scoped. Named, not designed.                                              |
+| **Hardware / embedded**                        | A named future direction, unscoped until Phase 1 has a real deployment.                                                                                                                                                                   |
+| **Compiled artifact**                          | WASM, and native for desktop and compatible-renderer mobile. A real native-per-platform artifact belongs to the later native-mobile track.                                                                                                |
+| **Post-quantum cryptography**                  | **Explicitly deferred.** A future research thread, named so it does not dilute Phase 0.                                                                                                                                                   |
 
 ## The phasing
 
 <Steps>
-  <Step title="Phase 0 — build Mzizi as a programming language, measured against the best existing language for each kind of task" icon="flask-conical">
-    **The goal, as amended in v0.3:** Mzizi against the best existing language for each kind
-    of task, in RFC-0009's UI and backend families (UI against Rust and TypeScript; backend
-    against TypeScript, Python, Go, C++ and Rust), with downstream work gated per family.
+  <Step title="Phase 0 — show that Mzizi can stand against the best existing language for each kind of task" icon="flask-conical">
+    **The goal (v0.4 §4):** show, on a real measurement, that Mzizi can stand against the best
+    existing language for each kind of task, in RFC-0009's gating families: UI components
+    (against Dioxus, Leptos and React/TypeScript) and backend handlers and services (against
+    TypeScript, Python, Go, C++ and Rust), with downstream work gated per family. Phase 0
+    builds Mzizi as a programming language to that end, and it is the language repository's
+    only goal.
 
     As v0.1 first wrote it, the charter titled this phase "prove the core claim, no
     rendering attached": a standalone compiler/syntax prototype, and a benchmark where an
     agent authors N equivalent components in Mzizi versus raw Dioxus/Leptos, measured on
-    tokens consumed, iterations to a clean compile, and defect rate. That is now a test
-    inside the phase, not its goal.
+    tokens consumed, iterations to a clean compile, and defect rate. v0.4 says so outright:
+    _"The component tasks are tests within Phase 0, not its goal."_
 
     **_"If this doesn't show a measurable advantage, nothing downstream matters — don't
     build Phase 1 until Phase 0 has a real number attached to it."_**
@@ -158,7 +202,7 @@ smallest, most measurable slice of that claim, not the whole of it.
   <Step title="Phase 4 — distribution adapters" icon="package">
     Once Phase 1's self-contained artifact stands alone, framework-specific adapters are thin
     packaging layers rather than new compiler work. Astro is one such adapter, using the
-    Custom Element pattern. v0.3 makes Astro with Mzizi Roots underneath one of the two
+    Custom Element pattern. Since 29 September, Astro with Mzizi Roots underneath is one of the two
     frontend paths, so that integration is a packaging task that can ship as soon as Phase 1's
     self-contained artifact exists, without waiting for the rest of this phase.
   </Step>
@@ -194,4 +238,7 @@ number. The held-out task set is still open. See [the pilot results](/pilots).
 
 **The backend measurement slice.** Settled: the minimum language work to author, check, lower
 and run the backend tasks locally counts as Phase 0 measurement work (RFC-0009 §6.4). It covers
-no deployment and no port of a live service. See [the roadmap](/roadmap).
+no deployment and no port of a live service. It is now mostly built as
+[RFC-0011](/rfcs): a `service` is checked, run in process and lowered to a local Rust + axum
+package, and the `mzizi-be` arm exists. No backend episode has run. See
+[the roadmap](/roadmap).

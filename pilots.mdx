@@ -118,8 +118,8 @@ flatter Mzizi.
 Pilot 2 lists the fixes to make before a run that tests the kill criterion.
 [`benchmarks/READINESS.md`](https://github.com/mzizi-dev/mzizi/blob/main/benchmarks/READINESS.md)
 audits every one of them: each item was checked by running it on `main` at `a9c928d`, then
-fixed where the fix was code. Those fixes are on `main` at `e9e9233` (30 September 2026). The
-tables below follow its audit. Read `READINESS.md` itself for the commands and file paths.
+fixed where the fix was code. Those fixes are on `main` (checked at `62a0f32`, 30 September
+2026). The tables below follow its audit. Read `READINESS.md` itself for the commands and file paths.
 
 ### Pilot 2's list, in its order
 
@@ -168,8 +168,11 @@ the run possible; they are not a result. The gating task families are `ui-spec` 
 `backend` ([RFC-0009](https://github.com/mzizi-dev/mzizi/blob/main/design/RFC-0009-comparison-benchmark.md)
 §2), and Phase 0 passes only if both pass. What remains, in `READINESS.md`'s order:
 
-1. **The runner and its input.** Arms read from `arm.toml`, a language-neutral `spec.md` as
-   the task input, a `react` arm, and the per-arm guides rebalanced to one token budget.
+1. **The runner and its input. Built, except the React pins.** Every arm is read from
+   `arm.toml`, `ui-spec` hands the author a language-neutral `spec.md`, a `react` arm exists
+   (a strict `tsc` check in an offline sandbox), and the four UI guides are rebalanced to
+   within 5% of one token budget. Open: the React arm's pins are provisional until taken from
+   the registry's lockfile. Neither the React arm nor the Leptos arm has run end to end.
 2. **Held-out tasks** for each gating family, in a private repository that does not exist
    yet. Who writes them is open: maintainers by hand, or another vendor's model with a
    person reviewing each task, and not drafted by the model family that wrote the RFCs. The
@@ -177,9 +180,13 @@ the run possible; they are not a result. The gating task families are `ui-spec` 
 3. **A pre-registered `PLAN.md`**, committed before the first episode and before any held-out
    score is seen. The driver refuses to start without one.
 4. **A Leptos arm run**, end to end, at least once. Neither pilot ran it.
-5. **A `mzizi-be` arm** for the `backend` family. It needs the language work in RFC-0009
-   §6.4: today Mzizi cannot declare, lower or run a handler. Until that arm exists, the
-   `backend` family has not passed, and so neither has Phase 0.
+5. **The `backend` family.** The language work in RFC-0009 §6.4 is now mostly built
+   ([RFC-0011](/rfcs)): `mz check` checks a `service`, `mz contract` runs it, and `mz build`
+   lowers it to an axum package that serves locally. The `mzizi-be` arm exists, with the probe
+   crate `mzprobe` and B1 as its first task, whose Mzizi and axum references both hold all 59
+   of its facts. Still open: the runner does not score an episode with probes, tasks B2–B5 and
+   the other-language backend arms do not exist, and nothing has been measured. Until they
+   do, the `backend` family has not passed, and so neither has Phase 0.
 
 ### The settings the plan is to register
 

@@ -18,8 +18,8 @@ existing language for each kind of task.** The measure: an agent writes the same
 and in each incumbent language, under the same benchmark harness, and the result is scored
 per task family, never pooled. This is
 [RFC-0009](https://github.com/mzizi-dev/mzizi/blob/main/design/RFC-0009-comparison-benchmark.md),
-a draft whose kill criterion (§6) and publication rule (§7) are owner decisions. Nothing
-else in it is built yet.
+a draft whose kill criterion (§6) and publication rule (§7) are owner decisions. Parts of its
+runner work are built (below); nothing has been measured.
 
 The pilots measured a few registry UI components against Dioxus. That was a test inside
 Phase 0, not its goal.
@@ -39,24 +39,27 @@ gateway, and every fact is checked at the HTTP boundary, so no language's syntax
 
 ## The arms
 
-What Mzizi is measured against, from RFC-0009 §1. The benchmark's design, not a result:
-nothing has been measured against TypeScript, Python, Go, C++ or a Rust backend.
+What Mzizi is measured against, from RFC-0009 §1, with each arm's state as
+[`benchmarks/arms/`](https://github.com/mzizi-dev/mzizi/tree/main/benchmarks/arms) holds it at
+language `main` `62a0f32`. The benchmark's design, not a result: nothing has been measured
+against TypeScript, Python, Go, C++ or a Rust backend.
 
-| Arm        | Family  | Language and framework                              | State                                                |
-| ---------- | ------- | --------------------------------------------------- | ---------------------------------------------------- |
-| `mzizi`    | UI      | Mzizi                                               | Exists                                               |
-| `dioxus`   | UI      | Rust, Dioxus `=0.7.10`                              | Exists; both pilots ran it                           |
-| `leptos`   | UI      | Rust, Leptos `=0.8.21`                              | Exists; never run                                    |
-| `react`    | UI      | TypeScript, React, `class-variance-authority`       | New, not built                                       |
-| `mzizi-be` | backend | Mzizi                                               | **Blocked**: Mzizi cannot write a handler yet (§6.4) |
-| `ts`       | backend | TypeScript, Hono on Node                            | New, not built                                       |
-| `python`   | backend | Python, FastAPI with pydantic v2, served by uvicorn | New, not built                                       |
-| `go`       | backend | Go, `net/http` from the standard library            | New, not built                                       |
-| `cpp`      | backend | C++20, `cpp-httplib` and `nlohmann/json`            | New, not built                                       |
-| `rust`     | backend | Rust, axum on tokio, serde                          | New, not built                                       |
+| Arm        | Family  | Language and framework                              | State                                                                                                    |
+| ---------- | ------- | --------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `mzizi`    | UI      | Mzizi                                               | Exists                                                                                                   |
+| `dioxus`   | UI      | Rust, Dioxus `=0.7.10`                              | Exists; both pilots ran it                                                                               |
+| `leptos`   | UI      | Rust, Leptos `=0.8.21`                              | Exists; never run                                                                                        |
+| `react`    | UI      | TypeScript, React, `class-variance-authority`       | Exists; never run. Its pins are provisional until taken from the registry's lockfile                     |
+| `mzizi-be` | backend | Mzizi, a `service` (RFC-0011)                       | Exists, with the probe crate `mzprobe` and task B1; never run: the runner does not score with probes yet |
+| `ts`       | backend | TypeScript, Hono on Node                            | Not added yet                                                                                            |
+| `python`   | backend | Python, FastAPI with pydantic v2, served by uvicorn | Not added yet                                                                                            |
+| `go`       | backend | Go, `net/http` from the standard library            | Not added yet                                                                                            |
+| `cpp`      | backend | C++20, `cpp-httplib` and `nlohmann/json`            | Not added yet                                                                                            |
+| `rust`     | backend | Rust, axum on tokio, serde                          | Not added yet                                                                                            |
 
-The public suites (MultiPL-E, EvalPlus, Aider polyglot, BaxBench) wait until Mzizi has
-functions, expressions and a way to run them.
+Task B1's reference implementations, one in Mzizi and one in plain axum, both hold all 59 of
+its facts; a reference is not an arm. The public suites (MultiPL-E, EvalPlus, Aider polyglot,
+BaxBench) are blocked: Mzizi has no functions yet ([what still has to be built](/tracker)).
 
 ## What it measures
 
@@ -77,7 +80,7 @@ The stopping rule, as RFC-0001 §6 first wrote it:
   **Owner decision, 29 September 2026: the kill criterion is now Mzizi against the best
   existing language for each kind of task**, with the aim of ranking with the top languages.
   It is [RFC-0009](https://github.com/mzizi-dev/mzizi/blob/main/design/RFC-0009-comparison-benchmark.md)
-  §6, and charter v0.3 adopts it. Within each gating task family, Mzizi must beat the best
+  §6, and charter v0.4 §4 states it. Within each gating task family, Mzizi must beat the best
   existing language's value on at least two of the three metrics, on held-out tasks, with a
   bootstrap 95% interval that excludes zero. It has not been measured. See
   [the pilot results](/pilots#the-kill-criterion-the-run-will-test) for the rule in full.
@@ -95,7 +98,7 @@ Both resolved in the charter (§6, dated 2026-08-23), and widened by RFC-0009.
 number of them with Rust siblings, are the ground truth for the UI families, with their
 existing `.tsx` and `.rs` implementations as references. Explicitly **not** a port of an
 external library — not shadcn, not a generic primitive set. The nine
-[primitives](/primitives) and the two examples in the repository are hand ports of
+[primitives](/primitives) and the two component examples in the repository are hand ports of
 registry components. Supplying these tasks is one of the components' jobs; they are built
 to support the language as its UI layer, and they are not the benchmark's goal. The
 `backend` family's tasks come from the API gateway instead.
@@ -116,17 +119,18 @@ compile-error-density design goal is trying to minimise. The defect rate measure
 The public half of the benchmark is built, and lives in
 [`benchmarks/`](https://github.com/mzizi-dev/mzizi/tree/main/benchmarks) in `mzizi-dev/mzizi`:
 
-| Piece                       | What it does                                                                                                                       |
-| --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `benchmarks/runner`         | `mzbench`, the episode runner. It drives an author through compile iterations and records every one                                |
-| `benchmarks/harness`        | The scorer. It diffs a candidate's variants, defaults, touch heights and, per task, its `data-slot` set against the Rust reference |
-| `benchmarks/arms`           | The Dioxus and Leptos arms, each a sandbox crate with a `check.sh`                                                                 |
-| `benchmarks/prompts`        | One guide per arm, built by the same prompt builder                                                                                |
-| `benchmarks/tasks`          | The public tasks: `button`, `badge`, `card`, `mzizi-changelog-renderer`                                                            |
-| `benchmarks/kill-criterion` | The driver for the real run, a held-out task checker, and the plan. Refuses to run without a `PLAN.md`                             |
-| `benchmarks/openweight`     | Setup and drivers for a local open-weight model                                                                                    |
-| `benchmarks/results`        | Every pilot run, raw episodes included                                                                                             |
-| `benchmarks/READINESS.md`   | The audit of pilot 2's fixes, and what the kill-criterion run still waits on                                                       |
+| Piece                       | What it does                                                                                                                                      |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `benchmarks/runner`         | `mzbench`, the episode runner. It drives an author through compile iterations and records every one                                               |
+| `benchmarks/harness`        | The scorer. It diffs a candidate's variants, defaults, touch heights and, per task, its `data-slot` set against the Rust reference                |
+| `benchmarks/arms`           | Every arm as an `arm.toml`: `mzizi`, `dioxus`, `leptos`, `react` (a strict `tsc` check) and `mzizi-be` (`serve.sh` lowers and serves a candidate) |
+| `benchmarks/probe`          | `mzprobe`, which sends a backend task's HTTP probes and judges each fact                                                                          |
+| `benchmarks/prompts`        | One guide per arm, built by the same prompt builder                                                                                               |
+| `benchmarks/tasks`          | The public tasks: `button`, `badge`, `card`, `mzizi-changelog-renderer`, and backend task `b1-routing`                                            |
+| `benchmarks/kill-criterion` | The driver for the real run, a held-out task checker, and the plan. Refuses to run without a `PLAN.md`                                            |
+| `benchmarks/openweight`     | Setup and drivers for a local open-weight model                                                                                                   |
+| `benchmarks/results`        | Every pilot run, raw episodes included                                                                                                            |
+| `benchmarks/READINESS.md`   | The audit of pilot 2's fixes, and what the kill-criterion run still waits on                                                                      |
 
 CI runs the harness and runner tests with the rest of the workspace. The held-out task set
 does not exist yet (see below), so every run so far has used public tasks.
@@ -134,11 +138,11 @@ does not exist yet (see below), so every run so far has used public tasks.
 ## Where the benchmark is going
 
 <Note>
-  **Designed, not built.** RFC-0009's new arms ([above](#the-arms)) are the goal's
-  comparison: a React arm beside Dioxus and Leptos in `ui-spec`, and TypeScript, Python, Go,
-  C++ and Rust in `backend`. The RFC is merged; none of the new arms has been added. Until
-  they are, the benchmark harness can run only Mzizi against Dioxus and Leptos, on UI
-  components, which is a test and not the goal.
+  **Partly built.** RFC-0009's new arms ([above](#the-arms)) are the goal's comparison: a
+  React arm beside Dioxus and Leptos in `ui-spec`, and TypeScript, Python, Go, C++ and Rust in
+  `backend`. The React arm and the Mzizi backend arm are added, and neither has run; the
+  Hono, FastAPI, Go, C++ and axum arms are not added yet. Until they are, and until the runner
+  scores backend episodes with probes, the `backend` family cannot run.
 </Note>
 
 ## Results are always published
