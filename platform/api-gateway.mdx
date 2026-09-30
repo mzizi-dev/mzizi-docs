@@ -37,16 +37,26 @@ No sign-in and no key. The API is read-only: a path with a `GET` handler answers
 with `204`, and every other method with `405`. Both `/v1/...` (canonical) and `/api/v1/...`
 answer. `api.mzizi.dev/v1/*` redirects here.
 
-Every response carries a header naming the Worker and the registry commit it was built from:
+Every response carries a header naming the Worker and the registry commit it was built from.
+The pin moves (see [how the pin moves](#how-the-pin-moves)), so read it from the header
+rather than from this page:
 
-```text
-x-mzizi-source: mzizi-api-gateway; registry=9b86e034ffd8
+```bash
+curl -sI https://api.mzizi.dev/v1/health | grep -i x-mzizi-source
 ```
 
-That was the value on 30 September 2026, after the gateway was re-pinned from registry
-commit `ce68c64` to `9b86e03`. At `9b86e03`, `/v1/rs/{name}` serves the twelve Mzizi Roots
-brand components, and its `crate` field names each component's own crate, with a `git` field
-for the source repository. See [the Rust route](#the-rust-route).
+The answer has this shape, with the first twelve characters of the pinned registry commit:
+
+```text
+x-mzizi-source: mzizi-api-gateway; registry=<registry commit>
+```
+
+For example, on 30 September 2026 it read `registry=9b86e034ffd8`. That is an example, not
+the current value; the header is.
+
+From registry commit `9b86e03` on, `/v1/rs/{name}` serves the twelve Mzizi Roots brand
+components, and its `crate` field names each component's own crate, with a `git` field for
+the source repository. See [the Rust route](#the-rust-route).
 
 ## How the data flows
 
@@ -72,11 +82,34 @@ Three properties follow from that shape:
   reimplementing them. The Supabase client is replaced with a stub that throws, so a reader
   that reached for a database would fail the build instead of shipping an empty answer.
 - **A registry change reaches the API only through a commit.** Moving to newer registry
-  content means changing the pin, which CI checks. Wiring the registry to open that pull
-  request automatically is planned, not built.
+  content means changing the pin, which CI checks. A bot is built to open that commit: see
+  [how the pin moves](#how-the-pin-moves).
 
 The bundle is about 917 KiB gzipped, well under the Workers limit, so the data ships inside
 the Worker rather than in separate storage.
+
+### How the pin moves
+
+The pin is `ref` in the gateway's `scripts/registry-ref.json`. The owner decided on 30
+September 2026 to keep the pin and move it automatically, and the gateway has a bot built to
+keep it on registry `main`. The gateway's README describes it under
+[Registry pin bump](https://github.com/mzizi-dev/mzizi-api-gateway#registry-pin-bump).
+
+1. **Every hour** the bot compares the pin with registry `main`. When they differ, it
+   opens or updates one pull request, from the branch `bot/registry-pin`, that moves the pin.
+   The pull request lists the registry commits the bump brings in.
+2. **Every check runs on it**, including **parity in strict mode** against production
+   `https://api.mzizi.dev`: any difference at all between the bump and what is live fails it.
+3. **It merges itself (rebase) only when every check is green**, including parity and the
+   checks `main`'s rules require. The merge deploys as usual.
+4. **Anything else waits for a person.** A failed check gets a comment listing what failed,
+   and the bot leaves the pull request for review. An unexplained parity difference usually
+   means the registry changed a route handler that has to be ported to the gateway.
+
+The bot acts only once the owner has added its token, the `PIN_BUMP_TOKEN` Actions secret.
+Until then every run logs a warning and changes nothing, and the pin moves by hand, in a pull
+request that CI checks. A bump by hand keeps working afterwards too, and the bot steps aside
+for it. [The MCP server's pin](/toolchain/mcp#where-its-data-comes-from) has the same bot.
 
 ## What it answers besides data
 
@@ -138,7 +171,7 @@ are served from files. The discovery document no longer carries a `database` blo
 
 ### The discovery document and OpenAPI text
 
-`/v1` and `/openapi` are served from the registry, and from `ce68c64` (still so at `9b86e03`)
+`/v1` and `/openapi` are served from the registry, and from `ce68c64` on
 both say that files are the data layer and that Mzizi owns and operates the API. Neither names
 Supabase as a data source or Nyuchi as operator. Two mentions of Supabase remain in `/openapi`, and both are accurate: the
 `/data-layer` route describes the wider ecosystem's data layer, and the retired `/docs` route

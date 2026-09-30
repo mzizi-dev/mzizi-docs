@@ -198,7 +198,22 @@
   "footer": {
     "socials": {
       "github": "https://github.com/mzizi-dev"
-    }
+    },
+    "links": [
+      {
+        "header": "Contact",
+        "items": [
+          {
+            "label": "support@bundu.org",
+            "href": "mailto:support@bundu.org"
+          },
+          {
+            "label": "Security: security@bundu.org",
+            "href": "mailto:security@bundu.org"
+          }
+        ]
+      }
+    ]
   },
   "description": "Mzizi is a research language and compiler in Rust whose syntax, type system and compiler feedback loop are designed for machine authorship by small open-weight models. Phase 0 is a prototype front end; two small pilots have run and neither showed an advantage."
 }
