@@ -32,6 +32,18 @@ entries move under it. Mintlify does not publish this file.
 
 ### Changed
 
+- **The docs now wear mzizi.dev's theme** (owner decision, 2026-09-30): `@bundu/ui` 0.2.0
+  with its `brand-mzizi` overlay. The accent is hematite, Mzizi's brand mineral, in place of
+  cobalt: `#4A616B` in light mode and `#C9D2D7` in dark mode (was `#0047AB` / `#B3E5FC`).
+  Both are the accessible forms, because raw hematite misses APCA Lc 75 as link text:
+  `#C9D2D7` is canon's `--heritage-hematite-aa` (Lc -78.1), and `#4A616B` is `#546E7A` walked
+  toward black with canon's own method (Lc 75.1), since canon has no light hematite that
+  clears the bar on `base`. The page background is the package's `--background`, `#F3F3F1` /
+  `#0E0D0C` (was `#F3F2EE` / `#1B1A17`), with no grid decoration. `style.css` rebuilds the
+  gray ramp from `@bundu/ui`'s `--background`, `--surface`, `--border`, `--muted-foreground`
+  and `--foreground`, and sets code in JetBrains Mono as mzizi.dev does.
+  `scripts/check-contrast.mjs` now also fails when a `docs.json` colour drifts from those
+  recorded sources.
 - **`toolchain/mcp`** says `@nyuchi/mzizi-mcp` 0.11.2 (was 0.11.1), as npm, the live
   server's `initialize` and the MCP Registry's latest entry all report. 0.11.2 moves the
   server's registry pin to `e1c1c89`, the commit `api.mzizi.dev` serves, so the MCP tools now

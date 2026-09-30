@@ -60,6 +60,35 @@ const { primary, light, dark } = docs.colors;
 const bgLight = docs.background.color.light;
 const bgDark = docs.background.color.dark;
 
+// The values docs.json is expected to hold, and where each one comes from.
+// docs.mzizi.dev wears mzizi.dev's theme (owner decision, 2026-09-30), whose
+// source is `@bundu/ui` 0.2.0 + `brand-mzizi.css` (hematite). A value that
+// changes without its source changing is drift, so it fails here; change the
+// row and its source together. style.css records the measurements in full.
+const EXPECTED = {
+  "colors.primary": ["#4A616B", "hematite lightHex #546E7A, walked toward #000000 to Lc 75 on base (canon walk())"],
+  "colors.dark": ["#4A616B", "the same value: Mintlify renders colors.dark in light mode"],
+  "colors.light": ["#C9D2D7", "canon --heritage-hematite-aa, dark (hematite darkHex #90A4AE is Lc -51.0)"],
+  "background.color.light": ["#F3F3F1", "@bundu/ui 0.2.0 --background, light (canon base)"],
+  "background.color.dark": ["#0E0D0C", "@bundu/ui 0.2.0 --background, dark (canon base)"],
+};
+const actual = {
+  "colors.primary": primary,
+  "colors.dark": dark,
+  "colors.light": light,
+  "background.color.light": bgLight,
+  "background.color.dark": bgDark,
+};
+
+let failed = false;
+console.log("Expected values (mzizi.dev's theme: @bundu/ui 0.2.0 + brand-mzizi)\n");
+for (const [role, [hex, source]] of Object.entries(EXPECTED)) {
+  const ok = String(actual[role]).toUpperCase() === hex;
+  if (!ok) failed = true;
+  console.log(`  ${ok ? "PASS" : "FAIL"}  ${role.padEnd(22)} ${String(actual[role]).padEnd(8)} ${ok ? source : `expected ${hex}: ${source}`}`);
+}
+console.log("");
+
 // Each colour is checked ONLY against the background it actually renders on.
 const checks = [
   { role: "colors.primary", fg: primary, bg: bgLight, mode: "light mode" },
@@ -67,7 +96,6 @@ const checks = [
   { role: "colors.light", fg: light, bg: bgDark, mode: "dark mode" },
 ];
 
-let failed = false;
 console.log(`APCA 3.0 contrast check (minimum Lc ${MIN_LC} for body-size text)\n`);
 for (const { role, fg, bg, mode } of checks) {
   const lc = apca(fg, bg);
@@ -81,10 +109,10 @@ for (const { role, fg, bg, mode } of checks) {
 
 if (failed) {
   console.error(
-    `\n::error::APCA contrast below Lc ${MIN_LC}. Brand colours are set in docs.json.\n` +
+    `\n::error::A docs.json colour drifted from mzizi.dev's theme or is below APCA Lc ${MIN_LC}.\n` +
       `Remember colors.light renders in DARK mode and colors.dark renders in LIGHT mode —\n` +
       `a value that fails is usually one that was picked for the wrong theme.`,
   );
   process.exit(1);
 }
-console.log("\nAll brand colours meet APCA 3.0 body-text contrast.");
+console.log("\nAll brand colours meet APCA 3.0 body-text contrast and match mzizi.dev's theme.");
