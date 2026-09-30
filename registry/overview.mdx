@@ -22,10 +22,10 @@ served over the public API at [`api.mzizi.dev`](/platform/api-gateway) and the
 
 ## Two builds of the same components
 
-| Build               | What it is                                                                               | State                                                           |
-| ------------------- | ---------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
-| **Rust**            | Dioxus components in the `mzizi-rs/` crates, growing into [Mzizi Roots](/roots/overview) | Leads. Readable at `/v1/rs/{name}`; crates not on crates.io yet |
-| **The React build** | TypeScript and React (`.tsx`) components, shadcn-compatible                              | Works and installs today. Deprioritised                         |
+| Build               | What it is                                                                               | State                                                              |
+| ------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| **Rust**            | Dioxus components in the `mzizi-rs/` crates, growing into [Mzizi Roots](/roots/overview) | Leads. `cargo add mzizi-roots`; source readable at `/v1/rs/{name}` |
+| **The React build** | TypeScript and React (`.tsx`) components, shadcn-compatible                              | Works and installs today. Deprioritised                            |
 
 Every primitive with a Rust sibling has a contract test in the registry asserting that the
 `.tsx` and the `.rs` agree on variants, `data-slot` names and classes. Where both exist,

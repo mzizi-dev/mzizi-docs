@@ -1,6 +1,6 @@
 ---
 title: "The CLI"
-description: "@nyuchi/mzizi-cli and its fundi binary: explore a project offline, then plan and chat about wiring Mzizi in. Free, with no gate. The mzizi add installer is not published yet."
+description: "@nyuchi/mzizi-cli: the mzizi add installer, Rust first, and the fundi commands that explore a project and plan wiring Mzizi in. Free, with no gate."
 sidebarTitle: "CLI"
 icon: "square-terminal"
 ---
@@ -19,38 +19,81 @@ starts only at Fundi, which ties into the console.
 pnpm add -D @nyuchi/mzizi-cli
 ```
 
-The package is [`@nyuchi/mzizi-cli`](https://www.npmjs.com/package/@nyuchi/mzizi-cli), and
-its binary is named `fundi`. The latest published version is `0.4.0`, read from npm on
-29 September 2026.
+The package is [`@nyuchi/mzizi-cli`](https://www.npmjs.com/package/@nyuchi/mzizi-cli). It
+installs two names for the same program, `mzizi` and `fundi`. The latest published version
+is `0.6.1`, read from npm on 30 September 2026. It needs Node 20 or later.
+
+<Warning>
+  **Use `0.6.1` or later, not `0.6.0`.** In `0.6.0` both binaries printed nothing and exited
+  `0`, because the entry-point check compared a symlinked path with the resolved file.
+  `0.6.1` fixes it.
+</Warning>
 
 ## Commands
 
-The loop is **explore, then plan, then apply**.
-
 | Command                             | What it does                                                                                                                                                             |
 | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `mzizi add <name...>`               | Installs components from the registry, with their dependencies. Rust first. No API key and no sign-in                                                                    |
 | `fundi explore`                     | Reads a few files (`package.json`, `tsconfig.json`, the global stylesheet, the Tailwind config, `components.json`) and prints a project snapshot. Offline. No model call |
 | `fundi plan <goal>`                 | **Read-only.** Plans the minimal edits to wire Mzizi in, and prints them as a dry run                                                                                    |
 | `fundi chat <message>`              | One-shot chat scoped to Mzizi doctrine                                                                                                                                   |
-| `fundi login` / `logout` / `whoami` | Save, clear or show a WorkOS identity. Only the gated Fundi tools need one                                                                                               |
+| `fundi login` / `logout` / `whoami` | Save, clear or show a console token. Only the gated Fundi tools need one                                                                                                 |
 
-### Model access
+Every command works under either name: `fundi add` and `mzizi add` are the same.
 
-In the published `0.4.0`, `plan` and `chat` need an `ANTHROPIC_API_KEY` in the environment,
-because they run Fundi's own agent loop.
+## `mzizi add`: the registry installer
 
-A change on the tooling repository's `main` branch makes the key optional, and it is **not
-published yet**. Without a key, `plan` prints a deterministic context bundle (the project
-snapshot plus the Mzizi skills that match your goal) for the coding agent that ran the
-command to plan from, and `chat` points you back at that agent. The reasoning: like `tsc`,
-the CLI is usually run by an agent that already has model access.
+```bash
+mzizi add button --target rust     # the Rust build, explicitly
+mzizi add button                   # infer the target from the project
+mzizi add address-input --dry-run  # print the plan, write nothing
+mzizi add card --overwrite         # replace files that already exist
+```
 
-### Registry access
+It resolves a component and its registry dependencies from `api.mzizi.dev` and needs no
+account and no API key. It does not touch the MCP server.
 
-`plan` and `chat` read the registry through [the MCP server](/toolchain/mcp). While the
-server's free tier is rolling out, the hosted endpoint still asks for a sign-in, which is why
-`fundi login` exists. Once non-Fundi tools are served without auth, the CLI needs no
-sign-in at all.
+**Rust first.** For a Rust project, `mzizi add` does not copy `.rs` sources in. It names the
+crate that holds the component and prints the `cargo add` to run, because the crates are on
+crates.io (see [Mzizi Roots](/roots/overview#install)). In a project with only a
+`Cargo.toml`:
+
+```text
+$ mzizi add button
+target: rust (Cargo.toml present and no package.json)
+…
+crate dependency: mzizi-ui (crates.io)
+
+Still to do — add the crate dependency:
+  cargo add mzizi-ui
+```
+
+The crate name comes from the API's `/v1/rs/{name}` response. On 30 September 2026 the API
+was built from a registry commit that named `mzizi-ui` for every component, which is wrong for
+components in other crates, such as the shell's. Check the crate against
+[the Roots crate list](/roots/overview#what-exists-today), or depend on `mzizi-roots`, which
+includes them all.
+
+For a React project, it writes the `.tsx` files and lists the npm packages they need, as the
+shadcn CLI would.
+
+**The target** is inferred from the project, and `--target rust` or `--target tsx` overrides
+it. A project with both a `Cargo.toml` and a `package.json` is ambiguous, so `mzizi add`
+refuses and asks for `--target` rather than guess. An Astro project is refused too, with the
+reason: the registry has no `.astro` components to install.
+
+## Model access
+
+`ANTHROPIC_API_KEY` is optional. Like `tsc`, the CLI is usually run by a coding agent that
+already has model access. Without a key, `plan` prints a deterministic context bundle, the
+project snapshot plus the Mzizi skills that match your goal, for that agent to plan from, and
+`chat` points you back at the agent. With a key, `plan` and `chat` run Fundi's own agent loop.
+
+## Registry access
+
+`plan` and `chat` read the registry through [the MCP server](/toolchain/mcp), which serves
+every tool but the Fundi tools without sign-in. So `explore`, `plan`, `chat` and `add` need no
+account. `fundi login` exists only for the Fundi tools, which act as a Mzizi console user.
 
 ## Safety
 
@@ -58,6 +101,8 @@ sign-in at all.
   planning, and reachable only through an explicit non-dry-run apply.
 - **Everything is sandboxed to the project root.** A path that escapes it is rejected, in
   planning and in apply.
+- **`mzizi add` does not overwrite by default.** A file that already exists is not replaced unless you
+  pass `--overwrite`.
 - **The CLI never holds a machine credential.** It reaches Fundi only through the MCP server,
   which acts for a signed-in user.
 
@@ -78,22 +123,6 @@ await plan.apply({ dryRun: true })
 
 The SDK reads no environment variables itself; the CLI wires them in. As a library,
 `createFundi()` still takes a key.
-
-## `mzizi add`: not published yet
-
-<Warning>
-  **`mzizi add` is not published.** An installer is in progress on a branch of the tooling
-  repository and is not in any released version of `@nyuchi/mzizi-cli`. Do not document it
-  in your own project or script against it yet.
-</Warning>
-
-Its stated aim is to resolve a component and its registry dependencies from
-`api.mzizi.dev`, pick the target from the project, and refuse rather than guess when the
-target is ambiguous. For a Rust project it is meant to add the `mzizi-ui` crate rather than
-copy `.rs` files, and `mzizi-ui` has not been published to crates.io yet.
-
-Until it ships, install React components with the shadcn CLI. See
-[consuming the registry](/registry/consuming).
 
 ## Two things called fundi
 

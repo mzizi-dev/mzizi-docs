@@ -29,6 +29,7 @@ curl https://api.mzizi.dev/v1/ui/button       # one component, source inline (sh
 curl https://api.mzizi.dev/v1/rs/button       # its Rust (Dioxus) source, where one exists
 curl https://api.mzizi.dev/v1/brand           # the brand system: 21 colour families
 curl https://api.mzizi.dev/v1/architecture    # the DNA helix: 8 nodes, 4 rungs, 6 strands
+curl "https://api.mzizi.dev/v1/search?q=card&node=3"   # search, filtered by node
 curl https://api.mzizi.dev/openapi            # the OpenAPI 3.1 document
 ```
 
@@ -39,10 +40,11 @@ answer. `api.mzizi.dev/v1/*` redirects here.
 Every response carries a header naming the Worker and the registry commit it was built from:
 
 ```text
-x-mzizi-source: mzizi-api-gateway; registry=61c805c2d884
+x-mzizi-source: mzizi-api-gateway; registry=ce68c6446f6e
 ```
 
-That was the value on 29 September 2026.
+That was the value on 30 September 2026: the gateway was pinned to registry commit
+`ce68c64`.
 
 ## How the data flows
 
@@ -84,25 +86,39 @@ the Worker rather than in separate storage.
 - **`308 /mcp`** to `https://mcp.mzizi.dev/mcp`.
 - **`/.well-known/security.txt`**, with the contact `security@bundu.org`.
 
-### Four routes answer 503
+### Search
 
-`/v1/ui/{name}/docs`, `/v1/ui/{name}/versions`, `/v1/search` and
-`/v1/ai/instructions/{name}` answer `503 {"error":"Database not configured"}`. So does the
-discovery document's `database` block, which reads `not_configured`.
+`/v1/search` searches the registry's files. It takes up to three parameters, which combine,
+and at least one is required:
 
-That is not an outage, and there is no database to configure. The registry's handlers gated
-those routes on credentials the live Worker never had, and the gateway kept them
-byte-identical so that the cutover changed nothing a client could see. Three of them have
-their data in files and can be switched on from files in a later change. Version history is
-console data, so `/versions` stays unserved here.
+| Parameter  | What it matches                                                   |
+| ---------- | ----------------------------------------------------------------- |
+| `q`        | A case-insensitive substring of a component's name or description |
+| `node`     | The component's node on the helix, as a number: `node=3`          |
+| `category` | One of the component's `categories`: `category=brand`             |
 
-<Warning>
-  **The served discovery document and OpenAPI text are behind.** Both are served verbatim
-  from the registry, and on 29 September 2026 they still describe the Supabase era in places
-  (for example, "All data routes read from Supabase") and name Nyuchi as operator. The routes
-  behave as this page describes. Correcting the text is a change to a public response, so it
-  is being made in the registry rather than papered over here.
-</Warning>
+`layer` is a **deprecated alias** of `node`, kept so older clients keep their results. A
+request that uses it gets the same results, plus a `Deprecation: true` header and a
+`meta.deprecation` note. `node` wins when both are given. Use `node`; `layer` will be removed.
+
+### One route answers 503
+
+`/v1/ui/{name}/versions` answers `503`. Component version history is written by releases into
+the console's database, and it is not one of the registry's files, so this API does not serve
+it. The response says so and points to `/v1/changelog` for release history.
+
+Earlier builds also answered `503` on `/v1/search`, `/v1/ui/{name}/docs` and
+`/v1/ai/instructions/{name}`. Their data is in files, and from registry commit `ce68c64` they
+are served from files. The discovery document no longer carries a `database` block; its
+`data` block reads `"source": "files"`.
+
+### The discovery document and OpenAPI text
+
+`/v1` and `/openapi` are served from the registry, and at `ce68c64` both say that files are the
+data layer and that Mzizi owns and operates the API. Neither names Supabase as a data source or
+Nyuchi as operator. Two mentions of Supabase remain in `/openapi`, and both are accurate: the
+`/data-layer` route describes the wider ecosystem's data layer, and the retired `/docs` route
+notes that its old table is historical.
 
 ## Parity
 

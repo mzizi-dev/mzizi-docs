@@ -11,35 +11,38 @@ icon: "gauge"
   kill criterion has not happened. Nothing lowers to Rust and nothing renders.
 </Warning>
 
-Checked against [`mzizi-dev/mzizi`](https://github.com/mzizi-dev/mzizi) at `a9c928d` on
-29 September 2026. Every row below can be checked in the repository; that is why it is a
+Checked against [`mzizi-dev/mzizi`](https://github.com/mzizi-dev/mzizi) at `e9e9233` on
+30 September 2026. Every row below can be checked in the repository; that is why it is a
 table and not a paragraph.
 
 ## What exists
 
-| Piece                                                 | State                                                        | Where                                        |
-| ----------------------------------------------------- | ------------------------------------------------------------ | -------------------------------------------- |
-| Lexer                                                 | Exists, tested                                               | `compiler/src/lex.rs`                        |
-| Recovering parser                                     | Exists, tested                                               | `compiler/src/parse.rs`                      |
-| Name and type resolver                                | Exists, tested (RFC-0008)                                    | `compiler/src/resolve.rs`                    |
-| `list(T)`, `option(T)`, `record`, `for each`, `else`  | Exist, tested (RFC-0008)                                     | `compiler/src/parse.rs`, `resolve.rs`        |
-| Agent diagnostic protocol (NDJSON)                    | Exists, tested                                               | `compiler/src/diagnostic.rs`                 |
-| Contract evaluation, `mz contract`                    | Exists, tested (RFC-0006). Checks a component against itself | `compiler/src/contract.rs`                   |
-| Content-addressed IR and SHA-256 store                | Exists, tested, measured                                     | `compiler/src/ir.rs`, `compiler/src/hash.rs` |
-| `mz outline`                                          | Exists, tested                                               | `compiler/src/outline.rs`                    |
-| Nine primitives written in Mzizi                      | Pass `mz check` and `mz contract` in CI; 29 contract clauses | `primitives/*.mz`                            |
-| Two ported corpus components                          | Pass `mz check` and `mz contract` in CI                      | `examples/*.mz`                              |
-| Benchmark runner and scorer                           | Exist, tested, used for two pilots                           | `benchmarks/runner`, `benchmarks/harness`    |
-| Phase 0 pilot results                                 | **Two pilots, no advantage shown**                           | `benchmarks/results/`                        |
-| Kill-criterion benchmark run                          | **Has not happened**                                         | —                                            |
-| Held-out task set                                     | **Not created**, deliberately (RFC-0004)                     | —                                            |
-| `mz fix`, `mz refs`, `mz path`, `mz patch`, `mz diff` | **Designed, not built**                                      | RFC-0001 §4.3, RFC-0003 §5                   |
-| Local state (`state x: int = 0`)                      | **Unresolved design question**                               | RFC-0001 §7, RFC-0002 §6, RFC-0003 §8        |
-| Lowering to Rust or Dioxus                            | **Not started.** Phase 1                                     | —                                            |
-| Rendering, any target                                 | **Not started.** Phase 1                                     | —                                            |
+| Piece                                                | State                                                        | Where                                         |
+| ---------------------------------------------------- | ------------------------------------------------------------ | --------------------------------------------- |
+| Lexer                                                | Exists, tested                                               | `compiler/src/lex.rs`                         |
+| Recovering parser                                    | Exists, tested                                               | `compiler/src/parse.rs`                       |
+| Name and type resolver                               | Exists, tested (RFC-0008)                                    | `compiler/src/resolve.rs`                     |
+| `list(T)`, `option(T)`, `record`, `for each`, `else` | Exist, tested (RFC-0008)                                     | `compiler/src/parse.rs`, `resolve.rs`         |
+| Agent diagnostic protocol (NDJSON)                   | Exists, tested                                               | `compiler/src/diagnostic.rs`                  |
+| `mz fix`: every `exact` fix in one pass              | Exists, tested                                               | `compiler/src/main.rs`, `compiler/src/lib.rs` |
+| Contract evaluation, `mz contract`                   | Exists, tested (RFC-0006). Checks a component against itself | `compiler/src/contract.rs`                    |
+| Content-addressed IR and SHA-256 store               | Exists, tested, measured                                     | `compiler/src/ir.rs`, `compiler/src/hash.rs`  |
+| `mz outline`                                         | Exists, tested                                               | `compiler/src/outline.rs`                     |
+| Nine primitives written in Mzizi                     | Pass `mz check` and `mz contract` in CI; 29 contract clauses | `primitives/*.mz`                             |
+| Two ported corpus components                         | Pass `mz check` and `mz contract` in CI                      | `examples/*.mz`                               |
+| Benchmark runner and scorer                          | Exist, tested, used for two pilots                           | `benchmarks/runner`, `benchmarks/harness`     |
+| Kill-criterion driver and task checker               | Exist, never run for real; refuse to start without `PLAN.md` | `benchmarks/kill-criterion/`                  |
+| Phase 0 pilot results                                | **Two pilots, no advantage shown**                           | `benchmarks/results/`                         |
+| Readiness audit of pilot 2's fixes                   | **Mostly fixed; the run still waits on five things**         | `benchmarks/READINESS.md`                     |
+| Kill-criterion benchmark run                         | **Has not happened**                                         | —                                             |
+| Held-out task set                                    | **Not created**; who writes it is for the owner to confirm   | —                                             |
+| `mz refs`, `mz path`, `mz patch`, `mz diff`          | **Designed, not built**                                      | RFC-0003 §5                                   |
+| Local state (`state x: int = 0`)                     | **Unresolved design question**                               | RFC-0001 §7, RFC-0002 §6, RFC-0003 §8         |
+| Lowering to Rust or Dioxus                           | **Not started.** Phase 1                                     | —                                             |
+| Rendering, any target                                | **Not started.** Phase 1                                     | —                                             |
 
-The compiler source is 6,684 lines across `compiler/src`. The workspace has **269 tests in
-12 suites**: the compiler's unit and integration tests plus the benchmark harness and
+The compiler source is 7,454 lines across `compiler/src`. The workspace has **308 tests in
+14 suites**, 213 of them in the compiler crate and the rest in the benchmark harness and
 runner. CI gates on `cargo fmt --check`, `cargo clippy --all-targets -D warnings`,
 `cargo test`, and `mz check` and `mz contract` over every primitive and example.
 
@@ -51,7 +54,9 @@ you do not have it.
 
 `mz contract <file>` evaluates a component's own `contract` block against the component's
 own declarations, and exits 1 if a clause does not hold. Across the nine primitives there are
-29 clauses, and every one is evaluated.
+29 clauses, and every one is evaluated. A variant row that leaves out `height` takes the
+height its `h-N` or `size-N` class renders, and a row whose `height` disagrees with its class
+fails `mz check` with `MZ0313`.
 
 It checks nothing rendered, and it does not compare a component with a reference
 implementation. That comparison is the other half of the Phase 0 defect metric, and it
@@ -60,30 +65,41 @@ RFC-0006.
 
 ## The kill criterion
 
-<Note>
-  **Owner decision, 29 September 2026.** The kill criterion is now **Mzizi against the best
-  existing language for each kind of task**, with the aim of ranking with the top languages.
-  It has not been measured. The charter's text still states the earlier, narrower criterion
-  below, and has not caught up.
-</Note>
+The rule is now
+[RFC-0009](https://github.com/mzizi-dev/mzizi/blob/main/design/RFC-0009-comparison-benchmark.md)
+§6, the owner's decision of 29 September 2026: **Mzizi against the best existing language for
+each kind of task.** Charter v0.3 adopts it, amending the Phase 0 criterion below. It has not
+been measured.
 
-As written in the charter, the Phase 0 criterion compared Mzizi with raw Dioxus and Leptos:
+- The kinds of task are RFC-0009's gating families: `ui-spec` (UI components, against Dioxus,
+  Leptos and React) and `backend` (handlers and services, against TypeScript, Python, Go, C++
+  and Rust).
+- Within each family, and for each metric, the bar is the best value any existing language
+  reached. Mzizi passes the family when it beats that bar on **at least two of the three
+  metrics**, on the headline ~7B model, on held-out tasks.
+- A win counts only if a paired bootstrap gives a **95% interval** for the difference that
+  excludes zero.
+- **Phase 0 passes only when both families pass.** Mzizi cannot write a backend handler yet, so
+  the `backend` family cannot pass until the language work RFC-0009 §6.4 names exists.
+
+As first written in the charter, the Phase 0 criterion compared Mzizi with raw Dioxus and
+Leptos:
 
 > A defined benchmark where an LLM agent authors N equivalent components in Mzizi's syntax
 > vs. raw Dioxus/Leptos, measured on tokens consumed, iterations to a clean compile, and
 > defect rate. If this doesn't show a measurable advantage, nothing downstream matters —
 > don't build Phase 1 until Phase 0 has a real number attached to it.
 
-RFC-0001 §6 sharpened that to _"at least two of three metrics"_, and RFC-0002 §5 requires a
-small open-weight model arm. The owner's decision widens the comparison to the strongest
-language for each kind of task. The gate itself is unchanged: Phase 1 waits for a real
-number.
+RFC-0009 §6.3 argues the change is not moving the goalposts, because it only goes the harder
+way: beating the best on a metric implies beating Dioxus and Leptos on it. The gate itself
+is unchanged: Phase 1 waits for a real number.
 
 The two pilots are not that run. They used two or three public tasks, one comparison
 language and a checker that was still growing. Their honest reading is that they did not
-show an advantage, and that the second one found concrete fixes to make before the real
-run. Every claim on this site about _why_ a design decision is right is a **stated
-rationale**, not a measured result.
+show an advantage. The second one found concrete fixes to make before the real run, and
+most of those are now made; see
+[what remains](/pilots#what-remains-before-the-run-counts). Every claim on this site about
+_why_ a design decision is right is a **stated rationale**, not a measured result.
 
 ## Results are always published
 
@@ -98,7 +114,7 @@ retired.
 From `compiler/tests/ir_measured.rs`, over the nine primitives and the two examples. Eleven
 files is a tiny corpus, and the numbers should be read that way.
 
-| Property                | Measured at `a9c928d`                                                                                     |
+| Property                | Measured at `e9e9233`                                                                                     |
 | ----------------------- | --------------------------------------------------------------------------------------------------------- |
 | Structural sharing      | 242 shared nodes against 248 isolated: 6 saved across 11 files                                            |
 | `mz outline` cost       | Worst case **38% of source** (`spinner.mz`); the test fails above 75%                                     |
@@ -123,18 +139,17 @@ Worth knowing before you copy an example out of an RFC and expect it to compile.
   <Accordion title="View attributes take `=` in the implemented grammar">
     RFC-0001 §1 writes view attributes without an equals sign, as in `text state.label`. The
     parser requires `name = value`, and every `.mz` file in the repository is written that
-    way. [Syntax](/syntax) documents the implemented form. A missing `=` still produces
-    several errors rather than one.
+    way. [Syntax](/syntax) documents the implemented form. A missing `=` is one `MZ0406` on
+    the line, with the `=` as its fix.
   </Accordion>
   <Accordion title="The primitives carry a `portal` attribute the RFC never mentions">
     Every primitive sets `portal = "https://mzizi.dev/components/<name>"`, pointing back at
     the registry entry for the component it ports. It is not in RFC-0001's attribute list.
   </Accordion>
-  <Accordion title="`mz fix`, `mz refs`, `mz path`, `mz patch` and `mz diff` do not exist">
-    RFC-0001 §4.3 describes `mz fix` applying every `exact` fix at once, and RFC-0003 §5
-    lists `refs`, `path`, `patch` and `diff` as next in implementation order. The binary
-    dispatches five commands: `check`, `contract`, `outline`, `hash` and `ir`. See
-    [the compiler](/compiler).
+  <Accordion title="`mz refs`, `mz path`, `mz patch` and `mz diff` do not exist">
+    RFC-0003 §5 lists `refs`, `path`, `patch` and `diff` as next in implementation order. The
+    binary dispatches six commands: `check`, `fix`, `contract`, `outline`, `hash` and `ir`.
+    `mz fix`, which RFC-0001 §4.3 described, now exists. See [the compiler](/compiler).
   </Accordion>
   <Accordion title="RFC-0003's outline example is illustrative">
     RFC-0003 §4 shows a compact outline for `button`. The emitter in
