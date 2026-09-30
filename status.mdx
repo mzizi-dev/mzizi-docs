@@ -1,6 +1,6 @@
 ---
 title: "Status"
-description: "What exists, what is tested, what has been measured, and what is still only a design. The Mzizi language is a Phase 0 prototype front end. Two small pilots have run and neither showed an advantage."
+description: "What exists, what is tested, what has been measured, and what is still only a design. The Mzizi language is a Phase 0 prototype front end, with a first backend slice that lowers a service to Rust and axum. Two small pilots have run and neither showed an advantage."
 icon: "gauge"
 ---
 
@@ -8,13 +8,16 @@ icon: "gauge"
   **Nothing on this site documents a working production language.** Mzizi is a Phase 0
   prototype front end. Two small pilots of the benchmark ran on 2026-09-27, and **neither
   showed an advantage** for Mzizi ([results](/pilots)). The run that tests the charter's
-  kill criterion has not happened. Nothing lowers to Rust and nothing renders.
+  kill criterion has not happened. Only a `service` lowers to Rust, as a local Rust + axum
+  package; no component lowers, and nothing renders. Mzizi has no expressions, bindings,
+  callable functions, loops, error handling, modules or standard library yet: see
+  [what still has to be built](/tracker).
 </Warning>
 
 ## Phase 0's goal
 
 **Phase 0 has one goal: to build Mzizi as a programming language, measured against the best
-existing language for each kind of task** (RFC-0009, adopted by charter v0.3). The
+existing language for each kind of task** (RFC-0009, and charter v0.4 §4). The
 languages it is measured against are TypeScript, Python, Go, C++ and Rust: Rust with Dioxus
 and Leptos and TypeScript with React for UI components, and TypeScript, Python, Go, C++ and
 Rust for backend handlers and services. **Nothing has been measured against that
@@ -25,41 +28,53 @@ components against Dioxus. They are not its goal, and they showed no advantage. 
 The table below is the language's front end, which lives in its toolchain, the `mz`
 compiler. The compiler implements the language; it is not the language.
 
-Checked against [`mzizi-dev/mzizi`](https://github.com/mzizi-dev/mzizi) at `e9e9233` on
+Checked against [`mzizi-dev/mzizi`](https://github.com/mzizi-dev/mzizi) at `62a0f32` on
 30 September 2026. Every row below can be checked in the repository; that is why it is a
-table and not a paragraph.
+table and not a paragraph. The language's own list of what is missing, against Python, Go,
+C++, TypeScript and Rust, is
+[`LANGUAGE-TRACKER.md`](https://github.com/mzizi-dev/mzizi/blob/main/LANGUAGE-TRACKER.md),
+summarised on [What still has to be built](/tracker).
 
 ## What exists
 
-| Piece                                                | State                                                        | Where                                         |
-| ---------------------------------------------------- | ------------------------------------------------------------ | --------------------------------------------- |
-| Lexer                                                | Exists, tested                                               | `compiler/src/lex.rs`                         |
-| Recovering parser                                    | Exists, tested                                               | `compiler/src/parse.rs`                       |
-| Name and type resolver                               | Exists, tested (RFC-0008)                                    | `compiler/src/resolve.rs`                     |
-| `list(T)`, `option(T)`, `record`, `for each`, `else` | Exist, tested (RFC-0008)                                     | `compiler/src/parse.rs`, `resolve.rs`         |
-| Agent diagnostic protocol (NDJSON)                   | Exists, tested                                               | `compiler/src/diagnostic.rs`                  |
-| `mz fix`: every `exact` fix in one pass              | Exists, tested                                               | `compiler/src/main.rs`, `compiler/src/lib.rs` |
-| Contract evaluation, `mz contract`                   | Exists, tested (RFC-0006). Checks a component against itself | `compiler/src/contract.rs`                    |
-| Content-addressed IR and SHA-256 store               | Exists, tested, measured                                     | `compiler/src/ir.rs`, `compiler/src/hash.rs`  |
-| `mz outline`                                         | Exists, tested                                               | `compiler/src/outline.rs`                     |
-| Nine primitives written in Mzizi                     | Pass `mz check` and `mz contract` in CI; 29 contract clauses | `primitives/*.mz`                             |
-| Two ported registry components                       | Pass `mz check` and `mz contract` in CI                      | `examples/*.mz`                               |
-| Benchmark runner and scorer                          | Exist, tested, used for two pilots                           | `benchmarks/runner`, `benchmarks/harness`     |
-| Kill-criterion driver and task checker               | Exist, never run for real; refuse to start without `PLAN.md` | `benchmarks/kill-criterion/`                  |
-| Phase 0 pilot results                                | **Two pilots, no advantage shown**                           | `benchmarks/results/`                         |
-| Readiness audit of pilot 2's fixes                   | **Mostly fixed; the run still waits on five things**         | `benchmarks/READINESS.md`                     |
-| Kill-criterion benchmark run                         | **Has not happened**                                         | —                                             |
-| Held-out task set                                    | **Not created**; who writes it is for the owner to confirm   | —                                             |
-| `mz refs`, `mz path`, `mz patch`, `mz diff`          | **Designed, not built**                                      | RFC-0003 §5                                   |
-| Local state (`state x: int = 0`)                     | **Unresolved design question**                               | RFC-0001 §7, RFC-0002 §6, RFC-0003 §8         |
-| Lowering to Rust or Dioxus                           | **Not started.** Phase 1                                     | —                                             |
-| The harness, the core of Mzizi                       | **Designed, not built.** Only `mz check --agent` exists      | RFC being written                             |
-| Rendering, any target                                | **Not started.** Phase 1                                     | —                                             |
+| Piece                                                | State                                                                                    | Where                                             |
+| ---------------------------------------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| Lexer                                                | Exists, tested                                                                           | `compiler/src/lex.rs`                             |
+| Recovering parser                                    | Exists, tested                                                                           | `compiler/src/parse.rs`                           |
+| Name and type resolver                               | Exists, tested (RFC-0008)                                                                | `compiler/src/resolve.rs`                         |
+| `list(T)`, `option(T)`, `record`, `for each`, `else` | Exist, tested (RFC-0008)                                                                 | `compiler/src/parse.rs`, `resolve.rs`             |
+| Agent diagnostic protocol (NDJSON)                   | Exists, tested                                                                           | `compiler/src/diagnostic.rs`                      |
+| `mz fix`: every `exact` fix in one pass              | Exists, tested                                                                           | `compiler/src/main.rs`, `compiler/src/lib.rs`     |
+| Contract evaluation, `mz contract`                   | Exists, tested (RFC-0006). Checks a component against itself                             | `compiler/src/contract.rs`                        |
+| Content-addressed IR and SHA-256 store               | Exists, tested, measured                                                                 | `compiler/src/ir.rs`, `compiler/src/hash.rs`      |
+| `mz outline`                                         | Exists, tested                                                                           | `compiler/src/outline.rs`                         |
+| Nine primitives written in Mzizi                     | Pass `mz check` and `mz contract` in CI; 29 contract clauses                             | `primitives/*.mz`                                 |
+| Two ported registry components                       | Pass `mz check` and `mz contract` in CI                                                  | `examples/*.mz`                                   |
+| A `service` with HTTP routes and handlers            | Exists, tested (RFC-0011). Checked by `mz check`                                         | `compiler/src/service.rs`, `examples/registry.mz` |
+| `mz contract` on a service                           | Exists, tested. Runs it in process; `ensure` tested, not proven                          | `compiler/src/serve.rs`                           |
+| `mz build`: a service lowered to Rust + axum         | Exists, tested. A local package CI compiles, tests and serves                            | `compiler/src/lower.rs`                           |
+| Benchmark runner and scorer                          | Exist, tested, used for two pilots                                                       | `benchmarks/runner`, `benchmarks/harness`         |
+| Benchmark arms                                       | `mzizi`, `dioxus`, `leptos`, `react`, `mzizi-be`; React, Leptos and `mzizi-be` never run | `benchmarks/arms/`                                |
+| Backend probe crate and task B1                      | Exist, tested; the runner does not score with probes yet                                 | `benchmarks/probe`, `benchmarks/tasks/b1-routing` |
+| Kill-criterion driver and task checker               | Exist, never run for real; refuse to start without `PLAN.md`                             | `benchmarks/kill-criterion/`                      |
+| Phase 0 pilot results                                | **Two pilots, no advantage shown**                                                       | `benchmarks/results/`                             |
+| Readiness audit of pilot 2's fixes                   | **Mostly fixed; the run still waits on the items listed there**                          | `benchmarks/READINESS.md`                         |
+| Kill-criterion benchmark run                         | **Has not happened**                                                                     | —                                                 |
+| Held-out task set                                    | **Not created**; who writes it is for the owner to confirm                               | —                                                 |
+| `mz refs`, `mz path`, `mz patch`, `mz diff`          | **Designed, not built**                                                                  | RFC-0003 §5                                       |
+| Expressions, bindings, callable functions, loops     | **Not built** (`fn` is a name plus `emit`)                                               | `LANGUAGE-TRACKER.md` C1–C4                       |
+| Error handling, modules, a standard library          | **Not built**                                                                            | `LANGUAGE-TRACKER.md` C9, P1, P2                  |
+| Local state (`state x: int = 0`)                     | **Unresolved design question**                                                           | RFC-0001 §7, RFC-0002 §6, RFC-0003 §8             |
+| Lowering a component to Rust or Dioxus               | **Not started.** Only a service lowers                                                   | `LANGUAGE-TRACKER.md` P3                          |
+| Workers, Containers or WebAssembly targets           | **Not started**                                                                          | `LANGUAGE-TRACKER.md` P11                         |
+| The harness, the core of Mzizi                       | **Designed, not built.** Only the agent protocol exists                                  | RFC-0012                                          |
+| Rendering, any target                                | **Not started.** Phase 1                                                                 | —                                                 |
 
-The compiler source is 7,454 lines across `compiler/src`. The workspace has **308 tests in
-14 suites**, 213 of them in the compiler crate and the rest in the benchmark harness and
-runner. CI gates on `cargo fmt --check`, `cargo clippy --all-targets -D warnings`,
-`cargo test`, and `mz check` and `mz contract` over every primitive and example.
+The compiler source is 12,644 lines across `compiler/src`. The workspace has **425 tests in
+18 suites**, 294 of them in the compiler crate and the rest in the benchmark harness, runner
+and probe crate. CI gates on `cargo fmt --check`, `cargo clippy --all-targets -D warnings`,
+`cargo test`, `mz check` and `mz contract` over every primitive and example, and a `lowering`
+job that builds, tests and serves the example service.
 
 The compiler crate is `version = "0.0.0"` with `publish = false`. There is no
 `cargo install mz`, no published crate and no release. You build it from the repository or
@@ -78,13 +93,17 @@ implementation. That comparison is the other half of the Phase 0 defect metric, 
 lives outside the compiler, in the benchmark harness. See [the compiler](/compiler) and
 RFC-0006.
 
+For a service it runs the service in process instead: each `example` is one request, and each
+`ensure` is tested over a generated set of requests. `examples/registry.mz` has 22 clauses,
+tested over 61 requests. That is tested, not proven (RFC-0010 C-4).
+
 ## The kill criterion
 
 The rule is now
 [RFC-0009](https://github.com/mzizi-dev/mzizi/blob/main/design/RFC-0009-comparison-benchmark.md)
 §6, the owner's decision of 29 September 2026: **Mzizi against the best existing language for
-each kind of task.** Charter v0.3 adopts it, amending the Phase 0 criterion below. It has not
-been measured.
+each kind of task.** Charter v0.4 §4 states it, superseding the Phase 0 criterion below. It
+has not been measured.
 
 - The kinds of task are RFC-0009's gating families: `ui-spec` (UI components, against Dioxus,
   Leptos and React) and `backend` (handlers and services, against TypeScript, Python, Go, C++
@@ -94,8 +113,10 @@ been measured.
   metrics**, on the headline ~7B model, on held-out tasks.
 - A win counts only if a paired bootstrap gives a **95% interval** for the difference that
   excludes zero.
-- **Phase 0 passes only when both families pass.** Mzizi cannot write a backend handler yet, so
-  the `backend` family cannot pass until the language work RFC-0009 §6.4 names exists.
+- **Phase 0 passes only when both families pass.** A Mzizi `service` and its `mzizi-be` arm
+  now exist, but no backend episode has run: the runner does not score with probes yet, and
+  tasks B2–B5 and the other-language arms do not exist. Until they do, the `backend` family
+  cannot pass.
 
 As first written in the charter, the Phase 0 criterion compared Mzizi with raw Dioxus and
 Leptos on UI components only. That was a test, and it is superseded as the goal:
@@ -126,10 +147,11 @@ retired.
 
 ## What has been measured about the IR
 
-From `compiler/tests/ir_measured.rs`, over the nine primitives and the two examples. Eleven
-files is a tiny corpus, and the numbers should be read that way.
+From `compiler/tests/ir_measured.rs`, over the nine primitives and the two component
+examples. Services have no IR yet, so the example service is not in it. Eleven files is a tiny
+corpus, and the numbers should be read that way.
 
-| Property                | Measured at `e9e9233`                                                                                     |
+| Property                | Measured at `62a0f32`                                                                                     |
 | ----------------------- | --------------------------------------------------------------------------------------------------------- |
 | Structural sharing      | 242 shared nodes against 248 isolated: 6 saved across 11 files                                            |
 | `mz outline` cost       | Worst case **38% of source** (`spinner.mz`); the test fails above 75%                                     |
@@ -163,7 +185,8 @@ Worth knowing before you copy an example out of an RFC and expect it to compile.
   </Accordion>
   <Accordion title="`mz refs`, `mz path`, `mz patch` and `mz diff` do not exist">
     RFC-0003 §5 lists `refs`, `path`, `patch` and `diff` as next in implementation order. The
-    binary dispatches six commands: `check`, `fix`, `contract`, `outline`, `hash` and `ir`.
+    binary dispatches `check`, `fix`, `contract`, `outline` and `build`, plus `hash` and `ir`
+    for the IR.
     `mz fix`, which RFC-0001 §4.3 described, now exists. See [the compiler](/compiler).
   </Accordion>
   <Accordion title="RFC-0003's outline example is illustrative">

@@ -34,7 +34,14 @@
         "groups": [
           {
             "group": "Start here",
-            "pages": ["index", "status", "pilots", "roadmap", "ecosystem"]
+            "pages": [
+              "index",
+              "status",
+              "tracker",
+              "pilots",
+              "roadmap",
+              "ecosystem"
+            ]
           },
           {
             "group": "The language",

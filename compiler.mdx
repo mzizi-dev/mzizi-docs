@@ -1,13 +1,15 @@
 ---
 title: "The mz compiler"
-description: "Six commands, an exit-status contract, an exact-fix pass, contract evaluation, and an NDJSON diagnostic protocol written for a reader holding zero file context."
+description: "The commands (check, fix, contract, outline and build, plus hash and ir), an exit-status contract, an exact-fix pass, contract evaluation, the lowering of a service to Rust and axum, and an NDJSON diagnostic protocol written for a reader holding zero file context."
 icon: "terminal"
 ---
 
 `mz` is the compiler that implements the Mzizi language: toolchain, not the language itself.
 Today it is the Phase 0 front end: lex → parse → resolve → lower → IR, plus a contract
-evaluator ("lower" here means into the IR; nothing lowers to Rust yet). It is the centre of
-the [toolchain](/toolchain/overview). It is a single Rust binary with
+evaluator ("lower" here means into the IR for a component). One thing lowers to Rust: a
+`service`, which [`mz build`](#mz-build-lower-a-service) turns into a local Rust + axum
+package. No component lowers to Rust yet. It is the centre of the
+[toolchain](/toolchain/overview). It is a single Rust binary with
 **no dependencies at all**, which is a deliberate house convention rather than an oversight
 — a compiler whose check loop must stay sub-second on a modest laptop should not start life
 with a dependency tree to build first, and the small things it needs (JSON emission,
@@ -28,23 +30,25 @@ cargo run --bin mz -- fix      path/to/file.mz                      # apply ever
 cargo run --bin mz -- check --agent ../examples/connectivity_bar.mz # NDJSON for an agent
 cargo run --bin mz -- outline  ../primitives/alert.mz               # the interface, as valid Mzizi
 cargo run --bin mz -- ir       ../primitives/card.mz                # nodes, hashes, structural paths
+cargo run --bin mz -- build    ../examples/registry.mz --out out    # a service, lowered to Rust + axum
 ```
 
-Run `cargo test --workspace` from the repository root for the whole suite: 308 tests in 14
-suites at `e9e9233`, 213 of them in the compiler crate and the rest in the benchmark harness
-and runner.
+Run `cargo test --workspace` from the repository root for the whole suite: 425 tests in 18
+suites at `62a0f32`, 294 of them in the compiler crate and the rest in the benchmark harness,
+runner and probe crate. `compiler/src` is 12,644 lines.
 
-## The six commands
+## The commands
 
-| Command                      | What it does                                                        |
-| ---------------------------- | ------------------------------------------------------------------- |
-| `mz check <file.mz>`         | Human-readable diagnostics, one per line, plus a summary            |
-| `mz check --agent <file.mz>` | The same diagnostics as NDJSON, plus a summary object               |
-| `mz fix <file.mz>`           | Applies every `exact` fix in place, in one pass, then checks again  |
-| `mz contract <file.mz>`      | Evaluates the `contract` block; `--agent` gives NDJSON with a tally |
-| `mz outline <file.mz>`       | The component's interface only, emitted as valid Mzizi              |
-| `mz hash <file.mz>`          | The root hash and the stored node count                             |
-| `mz ir <file.mz>`            | Every node with its hash and structural path                        |
+| Command                          | What it does                                                                            |
+| -------------------------------- | --------------------------------------------------------------------------------------- |
+| `mz check <file.mz>`             | Human-readable diagnostics, one per line, plus a summary                                |
+| `mz check --agent <file.mz>`     | The same diagnostics as NDJSON, plus a summary object                                   |
+| `mz fix <file.mz>`               | Applies every `exact` fix in place, in one pass, then checks again                      |
+| `mz contract <file.mz>`          | Evaluates the `contract` block; `--agent` gives NDJSON with a tally                     |
+| `mz outline <file.mz>`           | The component's interface only, emitted as valid Mzizi                                  |
+| `mz hash <file.mz>`              | The root hash and the stored node count                                                 |
+| `mz ir <file.mz>`                | Every node with its hash and structural path                                            |
+| `mz build <file.mz> --out <dir>` | A service only: writes a local Rust + axum package ([below](#mz-build-lower-a-service)) |
 
 With no command given, the first positional argument is treated as a file and `check` is
 assumed.
@@ -52,9 +56,11 @@ assumed.
 <Note>
   **Documented elsewhere, not implemented here.** RFC-0003 §5 lists `mz refs`, `mz path`,
   `mz patch` and `mz diff` under *"designed here, next in implementation order"*. They are
-  not built. The binary dispatches exactly the commands in the table above: `check`, `fix`,
-  `contract`, `outline`, `hash` and `ir`. Asking for anything else prints the usage line and
-  exits 2.
+  not built, and neither are `mz run`, `mz test` or `mz fmt` ([what still has to be
+  built](/tracker)). The binary dispatches exactly the commands in the table above: `check`,
+  `fix`, `contract`, `outline` and `build`, plus `hash` and `ir` for the IR. Asking for anything
+  else prints the usage line and exits 2. `mz outline`, `mz hash` and `mz ir` refuse a service
+  with exit status 2, because services have no IR yet.
 </Note>
 
 ### Exit status is a contract
@@ -223,6 +229,15 @@ What it does **not** do: it checks nothing rendered, and it does not compare a c
 with a reference implementation. That comparison is the benchmark harness's job
 (`benchmarks/harness`).
 
+**For a service, `mz contract` runs it in process** ([RFC-0011](/rfcs) §6–§7). Each `example`
+clause is one request, and each `ensure` clause is tested over a generated set of requests:
+tested, not proven. Over the example service:
+
+```text
+$ mz contract examples/registry.mz
+mz: 0 errors (0 exact-fixable), 22 contract clauses, 0 failed, tested over 61 generated requests, 1ms
+```
+
 **A size's height is now read from its class.** Pilot 2's 7B buttons wrote
 `icon class "size-14" height 48`: the class renders 56px, the contract read the 48, and
 `mz contract` passed. Now a variant row may leave `height` out, and the evaluator takes the
@@ -231,6 +246,26 @@ writes a `height` which disagrees with its class fails `mz check` with `MZ0313`.
 the one the benchmark harness scores with, and both test suites check it on the same
 examples. Tokens with a prefix or an arbitrary value, such as `md:h-10` or `h-[56px]`, are not
 read. See [the pilot results](/pilots).
+
+## `mz build`: lower a service
+
+`mz build <file.mz> --out <dir>` lowers a `service` to Rust ([RFC-0011](/rfcs) §8). It is
+the first thing in Mzizi that lowers to Rust, and the only one: it takes a service, and refuses
+a component or a file with errors.
+
+```text
+$ mz build examples/registry.mz --out out/registry
+mz: built `service registry` into out/registry (3 routes, 1 fixtures); run it with `cargo run --release --manifest-path out/registry/Cargo.toml`
+```
+
+The output is an ordinary local Cargo package: the runtime (RFC-0011 §6 as one Rust function),
+the generated route table and handlers, and one `#[tokio::test]` per `example`. It pins
+`axum =0.8.9` and `tokio =1.53.1`. CI's `lowering` job builds the example service, runs its 18
+generated tests, starts the server and sends a request over a socket.
+
+What it is **not**: there is no Workers, Containers or WebAssembly target, no `mz run`, and no
+component lowering. A generated package runs locally as a native server. See
+[what still has to be built](/tracker).
 
 ## `mz outline`: the representation for dependencies
 
@@ -246,7 +281,7 @@ It is emitted as **valid Mzizi**, deliberately: a reader who can read the langua
 already read this, so there is no second format to learn and no second parser to keep in
 step.
 
-Measured over the nine primitives and the two examples, the worst case is **38% of source**
+Measured over the nine primitives and the two component examples, the worst case is **38% of source**
 (`spinner.mz`); the test in `compiler/tests/ir_measured.rs` fails above 75%.
 
 ## Compile speed is a protocol property
@@ -255,7 +290,7 @@ RFC-0001 §4.6 makes this explicit: _"A slow compiler fails Phase 0 no matter ho
 errors are."_ The stated budget is sub-second incremental for a single-component change, and
 the benchmark is specified to record it per iteration.
 
-What has been measured so far is much narrower: parse and lower of all eleven `.mz` files in
+What has been measured so far is much narrower: parse and lower of all eleven component `.mz` files in
 the repository takes about 10 ms in a debug build, against a 400 ms test budget. That is a
 floor on a tiny corpus, not the incremental-compile figure the charter asks for. See
 [Status](/status).
