@@ -30,6 +30,7 @@ mzizi-registry removed its Next.js app, its `/api/*` handlers and its OpenNext d
 - **`registry/components.mdx`:** `mzizi.dev/components/<name>` is the component's page on the site. It no longer redirects to a registry portal page.
 - **`registry/contributing.mdx`:** steps 4 and 5 used `pnpm registry:build`, `public/r/` and `pnpm dev` with `localhost:3000/api/v1`. None of those exist now. The steps now run the generators and `pnpm build` (every generator, with CI failing on a diff), then `pnpm registry:validate` and `pnpm registry:verify`. They say the API serves the component once the API's pin moves to it. The checklist follows.
 - **`registry/schema.mdx`:** "Static build output" (`public/r/*.json`) is now "No static build output". Each item is served by `api.mzizi.dev/v1/ui/<name>`.
+- **`platform/api-gateway.mdx`, "How the pin moves":** the pin bot reads `RELEASE_BUMP_TOKEN` (renamed from `PIN_BUMP_TOKEN` on 2026-09-30) and is live: it opened mzizi-api-gateway#29 and agent-tools#169 on 2026-10-02. It merges its own pull request only when the token also has Checks and Commit statuses read access; otherwise the pull request waits for a person. The page used to say the bot did nothing until a `PIN_BUMP_TOKEN` was added.
 - **`patterns/architecture.mdx`, `patterns/lazy-loading.mdx`:** the design portal's live demos went with the registry's app, and no live demo replaces them.
 
 ### Changed — lint runs once, from the org-required workflow (2026-10-03)

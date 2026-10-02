@@ -108,10 +108,14 @@ keep it on registry `main`. The gateway's README describes it under
    means the registry changed a file the gateway reads, and the gateway's route has to
    follow it.
 
-The bot acts only once the owner has added its token, the `PIN_BUMP_TOKEN` Actions secret.
-Until then every run logs a warning and changes nothing, and the pin moves by hand, in a pull
-request that CI checks. A bump by hand keeps working afterwards too, and the bot steps aside
-for it. [The MCP server's pin](/toolchain/mcp#where-its-data-comes-from) has the same bot.
+The bot runs on its own token, the `RELEASE_BUMP_TOKEN` Actions secret (a fine-grained token
+with Contents, Pull requests and Workflows read and write), and it is live: on 2 October 2026 it opened
+mzizi-api-gateway#29 and, for the MCP server's pin, agent-tools#169. It merges its own pull request only if the token
+also has **Checks: Read-only** and **Commit statuses: Read-only**, because it reads the bump's
+check runs and commit status before merging; without them that read fails with a `403` and
+the pull request waits for a person. A bump by hand keeps working too, and the bot steps aside
+for it: while another open pull request moves the pin to registry `main` it opens none, and
+when a bump lands any other way it closes its own. [The MCP server's pin](/toolchain/mcp#where-its-data-comes-from) has the same bot.
 
 ## What it answers besides data
 
