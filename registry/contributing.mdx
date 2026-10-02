@@ -107,22 +107,28 @@ An item with more than one source file where the schema expects exactly one is a
 rather than a bad request, and the API says so — worth knowing when a component 500s and the
 source looks fine.
 
-## 4. Rebuild the static registry
+## 4. Run the generators
 
 ```bash
-pnpm registry:build
+pnpm registry:paths        # fill file paths from what is on disk
+pnpm registry:metadata     # derive title, categories, docs and author from meta
+pnpm registry:normalize    # canonical ordering
+pnpm build                 # every generator in write mode; commit what it writes
 ```
 
-This regenerates the static JSON under `public/r/`.
+`pnpm build` is the registry's whole build. There is no app to build: it runs every generator,
+and CI's `Build` job fails if running it changes a committed file.
 
-## 5. Check it serves
+## 5. Check it resolves
 
 ```bash
-pnpm dev
-curl http://localhost:3000/api/v1/ui/my-component
+pnpm registry:validate     # the item resolves on disk and its dependencies are addressable
+pnpm registry:verify       # registry.json is canonical (the CI gate)
 ```
 
-The response should carry the metadata and the inlined source.
+There is no local server: the registry removed its app, `/api/*` included, on 2 October 2026.
+Once the change is on `main` and the API's pin has moved to it,
+`curl https://api.mzizi.dev/v1/ui/my-component` returns the metadata and the inlined source.
 
 ## 6. Add tests
 
@@ -146,7 +152,10 @@ describe("MyComponent", () => {
 pnpm test
 pnpm lint
 pnpm typecheck
+pnpm build
 ```
+
+`pnpm check` chains every CI gate locally.
 
 ## Checklist
 
@@ -155,7 +164,7 @@ pnpm typecheck
 - [ ] `data-slot` on the root element
 - [ ] Named exports, no default export
 - [ ] Entry in `registry.json` with the right type and dependencies
-- [ ] `pnpm registry:build` runs clean
-- [ ] The API serves it
+- [ ] `pnpm registry:validate` and `pnpm registry:verify` pass
+- [ ] `pnpm build` leaves no diff
 - [ ] Tests, lint and types pass
 - [ ] APCA 3.0 contrast, 48px minimum touch targets, keyboard navigation

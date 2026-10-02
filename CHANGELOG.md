@@ -21,6 +21,17 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
+### Changed — the registry has no app any more (2026-10-02)
+
+mzizi-registry removed its Next.js app, its `/api/*` handlers and its OpenNext deployment on 2026-10-02 (mzizi-registry #389 and #391). These pages stop describing them.
+
+- **`platform/api-gateway.mdx`:** the retired-proxy note says the registry's own API handlers are gone too. An unexplained parity difference now means the registry changed a file the gateway reads, not "a route handler". **"Rollback, in brief"** no longer moves `api.mzizi.dev` back to the registry's Worker, which is being deleted: it reverts in a pull request, or rolls the gateway Worker back to its previous deployment.
+- **`ecosystem.mdx`:** the mzizi-registry card no longer says its Worker serves the per-component portal pages on a `workers.dev` address. Those pages are on the site, at `mzizi.dev/components/<name>`.
+- **`registry/components.mdx`:** `mzizi.dev/components/<name>` is the component's page on the site. It no longer redirects to a registry portal page.
+- **`registry/contributing.mdx`:** steps 4 and 5 used `pnpm registry:build`, `public/r/` and `pnpm dev` with `localhost:3000/api/v1`. None of those exist now. The steps now run the generators and `pnpm build` (every generator, with CI failing on a diff), then `pnpm registry:validate` and `pnpm registry:verify`. They say the API serves the component once the API's pin moves to it. The checklist follows.
+- **`registry/schema.mdx`:** "Static build output" (`public/r/*.json`) is now "No static build output". Each item is served by `api.mzizi.dev/v1/ui/<name>`.
+- **`patterns/architecture.mdx`, `patterns/lazy-loading.mdx`:** the design portal's live demos went with the registry's app, and no live demo replaces them.
+
 ### Changed — lint runs once, from the org-required workflow (2026-10-03)
 
 - **Removed `.github/workflows/lint.yml`.** The `mzizi-dev` org ruleset now runs the shared lint on every pull request through `mzizi-dev/.github`'s `org-lint.yml`, publishing the same five `lint / …` checks, so the repo's own caller only ran lint a second time.

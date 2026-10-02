@@ -121,17 +121,9 @@ endpoint rather than this table.
   manifest is the authority and it does not.
 </Note>
 
-## Static build output
+## No static build output
 
-`pnpm registry:build` writes one JSON file per item:
-
-```
-public/r/
-  button.json
-  card.json
-  dialog.json
-  use-toast.json
-  circuit-breaker.json
-```
-
-Each file carries the same shape as the API response, inlined source included.
+The registry does not write one JSON file per item. There is no `pnpm registry:build` and no
+`public/r/`: the registry has had no `public/` since it removed its app on 2 October 2026.
+Each item is served by the API instead: `GET https://api.mzizi.dev/v1/ui/<name>` returns the
+shape above, inlined source included, from the registry's files at the API's pinned commit.

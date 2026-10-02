@@ -16,8 +16,9 @@ registry's own Worker.
 
 <Note>
   An earlier plan for this repository was a pure-Rust `workers-rs` proxy in front of the
-  registry's Next.js handlers. That proxy is retired. The gateway is Hono, and it implements
-  the whole public `/v1` API itself, from files.
+  registry's own API handlers. That proxy is retired, and so are the handlers: the registry
+  removed its Next.js app, `/api/*` handlers included, on 2 October 2026. The gateway is Hono,
+  and it implements the whole public `/v1` API itself, from files.
 </Note>
 
 ## Using it
@@ -104,7 +105,8 @@ keep it on registry `main`. The gateway's README describes it under
    checks `main`'s rules require. The merge deploys as usual.
 4. **Anything else waits for a person.** A failed check gets a comment listing what failed,
    and the bot leaves the pull request for review. An unexplained parity difference usually
-   means the registry changed a route handler that has to be ported to the gateway.
+   means the registry changed a file the gateway reads, and the gateway's route has to
+   follow it.
 
 The bot acts only once the owner has added its token, the `PIN_BUMP_TOKEN` Actions secret.
 Until then every run logs a warning and changes nothing, and the pin moves by hand, in a pull
@@ -196,10 +198,12 @@ node scripts/parity.mjs --baseline https://api.mzizi.dev --candidate http://loca
 
 ## Rollback, in brief
 
-The registry's own Worker is untouched and still answers on its `workers.dev` address. To
-roll back: revert the custom-domain route in the gateway's `wrangler.jsonc` first, or the next
-deploy takes the domain back; then move `api.mzizi.dev` from the gateway Worker back to the
-registry Worker in the Cloudflare dashboard. The gateway's README keeps the exact steps.
+There is no older Worker to fall back to. The registry's own Worker served the app the
+registry removed on 2 October 2026, and it is being deleted, so `api.mzizi.dev` stays on the
+gateway. To undo a bad change, revert it in a pull request; the merge redeploys. To undo a bad
+deploy faster than that, roll the `mzizi-api-gateway` Worker back to its previous deployment
+(`wrangler rollback`, or _Deployments_ in the Cloudflare dashboard), then revert on `main` so
+the next deploy does not bring the change back.
 
 ## Developing
 
