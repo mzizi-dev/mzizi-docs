@@ -79,8 +79,7 @@ Checked 2026-09-29. Most inherited prose gets at least one of these wrong.
 - **The architecture is the DNA helix**: 8 nodes, 4 rungs, 6 strands. "Axis", "axes" and
   "layer" are retired vocabulary.
 - **`nyuchi-*` components are `mzizi-*`**, with 308 redirects from the old names.
-- **Security contacts:** `security@nyuchi.com` for the console, `security@bundu.org` for
-  everything else Mzizi.
+- **Security contact:** `security@nyuchi.com`, for the console and everything else Mzizi.
 - **General contact:** `support@bundu.org`, for everything that is not a security report.
 
 ## Layout

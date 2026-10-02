@@ -159,8 +159,8 @@ An owner rule, 2026-09-30: "changelogs are super important".
   docs and API. Nyuchi operates the console and the revenue products. Copyright notices name
   the **Bundu Foundation** as the parent copyright holder; Mzizi is not a separate legal
   entity.
-- **Security contacts.** The console: `security@nyuchi.com`. Everything else Mzizi,
-  including this site: `security@bundu.org`.
+- **Security contact.** `security@nyuchi.com`, for the console and everything else Mzizi,
+  including this site (owner, 3 October 2026).
 - **General contact.** `support@bundu.org`, for every public contact point that is not a
   security report (owner, 30 September 2026). Never put a person's own email address on a page.
 - There is **one ecosystem: the Bundu ecosystem**. Mzizi, Nyuchi, Mukoko and the other brands
