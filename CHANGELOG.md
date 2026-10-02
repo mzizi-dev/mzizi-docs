@@ -21,6 +21,10 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
+### Changed — lint runs once, from the org-required workflow (2026-10-03)
+
+- **Removed `.github/workflows/lint.yml`.** The `mzizi-dev` org ruleset now runs the shared lint on every pull request through `mzizi-dev/.github`'s `org-lint.yml`, publishing the same five `lint / …` checks, so the repo's own caller only ran lint a second time.
+
 ### Changed — the skills page describes `@nyuchi/mzizi-skills` 0.8.5
 
 `toolchain/skills.mdx` now matches the 0.8.5 bundle (agent-tools#166), which
