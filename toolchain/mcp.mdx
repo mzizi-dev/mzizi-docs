@@ -156,14 +156,23 @@ component with Rust ranks first; a better word match still wins.
 
 **Nothing is read from a database, and no registry data is fetched at request time.**
 
-| Data                                                                           | Source                                                                                       | How it gets in                                                                     |
-| ------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| Components, docs, tokens, the helix, doctrine, conventions, changelog, renames | [`mzizi-dev/mzizi-registry`](https://github.com/mzizi-dev/mzizi-registry) at a pinned commit | Generated at build time by running the registry's own route handlers, then bundled |
-| Agent skills                                                                   | The `@nyuchi/mzizi-skills` bundle                                                            | Generated at build time and bundled                                                |
-| Documentation                                                                  | The Mintlify MCP at `https://docs.mzizi.dev/mcp`                                             | Federated live as `docs_*` tools                                                   |
+| Data                                                                           | Source                                                                                       | How it gets in                                                               |
+| ------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| Components, docs, tokens, the helix, doctrine, conventions, changelog, renames | [`mzizi-dev/mzizi-registry`](https://github.com/mzizi-dev/mzizi-registry) at a pinned commit | Generated at build time by running the registry's API handlers, then bundled |
+| Agent skills                                                                   | The `@nyuchi/mzizi-skills` bundle                                                            | Generated at build time and bundled                                          |
+| Documentation                                                                  | The Mintlify MCP at `https://docs.mzizi.dev/mcp`                                             | Federated live as `docs_*` tools                                             |
 
-Because the generator runs the registry's route handlers rather than re-deriving their
-output, a tool answers with the payload `api.mzizi.dev/v1` would give at the same commit.
+Because the generator runs the registry's API handlers rather than re-deriving their output,
+a tool answers with the payload `api.mzizi.dev/v1` would give at the same commit. The registry
+no longer carries those handlers: it removed its Next.js app, `app/api/v1/**` included, on
+2 October 2026 (mzizi-registry #389 and #391). `mzizi-mcp` keeps the eleven it calls in
+`mzizi-mcp/scripts/registry-handlers/`, ported unchanged from registry commit `270af9f`, the
+last with them (agent-tools #172). They run at build time only and are not part of the
+Worker's bundle. They still read through the registry's own `lib/` modules, which resolve into
+the checkout at the pinned commit, so the data is that commit's. The generator replaces every
+npm import those handlers make with a module that throws when used (`next/server` gets a small
+response shim instead), so a handler that reaches for a database or a service fails the build
+rather than shipping an empty answer.
 `catalogue.json` names the pinned registry commit in `source.registry`, and
 `mzizi_mcp_describe` reports it. Read the live pin there rather than from this page, and
 compare it with the pin [`api.mzizi.dev`](/platform/api-gateway) reports in its
@@ -177,8 +186,8 @@ The pin, `ref` in `mzizi-mcp/registry.pin.json`, has the same bot as
 [the API gateway's](/platform/api-gateway#how-the-pin-moves). Every hour it compares the pin
 with registry `main` and keeps one pull request, from the branch `bot/registry-pin`, that
 moves it. That pull request merges itself (rebase) only when every check on it is green, and
-otherwise waits for review. The bot acts only once the owner has added its token; until then
-the pin moves by hand.
+otherwise waits for review. The bot is live on the `RELEASE_BUMP_TOKEN` secret (it opened
+agent-tools #169 on 2 October 2026), and a bump by hand still works.
 
 The server holds no database credential. Former `nyuchi-*` component names resolve to their
 `mzizi-*` names through the registry's rename map, bundled with the rest.
