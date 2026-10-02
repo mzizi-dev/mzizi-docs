@@ -21,6 +21,11 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
+### Changed — the MCP server carries the registry API handlers it runs (2026-10-03)
+
+- **`toolchain/mcp.mdx`, "Where its data comes from":** `mzizi-mcp` still generates its data by running the registry's API handlers at build time, but the registry no longer has them (it removed its Next.js app, `app/api/v1/**` included, on 2026-10-02). The page now says `mzizi-mcp` keeps the eleven handlers it calls in `mzizi-mcp/scripts/registry-handlers/`, ported unchanged from registry `270af9f` (agent-tools #172). They are build-time only, they read the pinned registry checkout through its own `lib/` modules, and any npm import they make throws if used, so a handler that reaches for a database fails the build. The pin paragraph no longer says the bot waits for its token: it runs on `RELEASE_BUMP_TOKEN` and opened agent-tools #169 on 2026-10-02.
+- **`scripts/check-freshness.mjs`:** its warning for a gateway pin behind registry `main` no longer says the bot waits for a `PIN_BUMP_TOKEN`.
+
 ### Changed — one security contact: `security@nyuchi.com` (2026-10-03)
 
 - **Security reports for everything Mzizi go to `security@nyuchi.com`** (owner, 3 October

@@ -261,8 +261,8 @@ await check("api.mzizi.dev", async () => {
   if (!registryMain.startsWith(gatewayPin)) {
     warnings.push(
       `api.mzizi.dev is pinned at registry ${gatewayPin}; registry main is ${registryMain.slice(0, 12)}. ` +
-        "Once PIN_BUMP_TOKEN is set, the gateway's pin bot bumps it within the hour (check its bot/registry-pin " +
-          "pull request); until then the pin moves by hand.",
+        "The gateway's pin bot bumps it within the hour; check its bot/registry-pin pull request, which waits " +
+          "for a person if a check fails.",
     );
   } else {
     console.log(`ok     api.mzizi.dev pin is registry main: ${gatewayPin}`);
