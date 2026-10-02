@@ -21,6 +21,13 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
+### Changed — one security contact: `security@nyuchi.com` (2026-10-03)
+
+- **Security reports for everything Mzizi go to `security@nyuchi.com`** (owner, 3 October
+  2026). The "Reporting a security problem" table on `/ecosystem` becomes one sentence, the
+  footer's security link and the `/.well-known/security.txt` contact on
+  `/platform/api-gateway` name it, and `security@bundu.org` is no longer used.
+
 ### Changed — the registry has no app any more (2026-10-02)
 
 mzizi-registry removed its Next.js app, its `/api/*` handlers and its OpenNext deployment on 2026-10-02 (mzizi-registry #389 and #391). These pages stop describing them.
