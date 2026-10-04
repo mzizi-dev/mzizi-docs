@@ -187,6 +187,16 @@ Remember `colors.light` renders in DARK mode and `colors.dark` renders in LIGHT 
 substitute a WCAG ratio check for this — see the README for why that masks real failures in
 this palette.
 
+## The published design system
+
+The Mzizi design system is published on claude.ai as the
+[Design System artifact](https://claude.ai/artifact/G8CCtAbZ8w717uQ3R5itCc): voice and
+content fundamentals, visual foundations (surfaces, ink and accent, status colours), the
+marks, and component previews. Its source of truth is the `design-system/` folder in
+`mzizi-dev/mzizi-registry` (arriving with mzizi-registry#418), which the artifact is built
+from file for file. Edit the folder, never the artifact page; the artifact is republished
+from registry `main` after a merge that touches it. `foundations/overview.mdx` links it.
+
 ## Commands
 
 ```bash
