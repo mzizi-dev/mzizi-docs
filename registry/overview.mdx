@@ -30,7 +30,9 @@ served over the public API at [`api.mzizi.dev`](/platform/api-gateway) and the
 
 Every primitive with a Rust sibling has a contract test in the registry asserting that the
 `.tsx` and the `.rs` agree on variants, `data-slot` names and classes. Where both exist,
-present the Rust one first.
+present the Rust one first. The components of the
+[Mzizi Dashboard Standard](/patterns/dashboard-standard) also carry a versioned JSON contract
+each, in the registry's `contracts/`: see [Component contracts](/registry/contracts).
 
 The React build installs with the shadcn CLI, one command per component:
 

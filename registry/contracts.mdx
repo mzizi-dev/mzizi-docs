@@ -1,0 +1,191 @@
+---
+title: "Component contracts"
+description: "The machine-readable, versioned contract each Dashboard Standard component carries: where the files are, what a contract states, how it is checked, and how to change one."
+sidebarTitle: "Contracts"
+icon: "list-checks"
+---
+
+Every component of the [Mzizi Dashboard Standard](/patterns/dashboard-standard) has a
+contract: one machine-readable, versioned JSON file stating what every implementation of the
+component must render and do. In the owner's words (4 October 2026), "the components should
+also be updated, same as the mzizi language — every component should have a contract."
+
+The contracts live in the registry, in
+[`mzizi-dev/mzizi-registry` `contracts/`](https://github.com/mzizi-dev/mzizi-registry/tree/main/contracts),
+added on 4 October 2026 ([mzizi-registry#406](https://github.com/mzizi-dev/mzizi-registry/pull/406),
+tracking issue [#404](https://github.com/mzizi-dev/mzizi-registry/issues/404)). The first
+family, `app/`, covers the 31 server-rendered app components of `@bundu/ui`
+(`@bundu/ui/app/*.astro`, built in `mzizi-dev/packages-npm`).
+
+<Note>
+  A contract is the specification. Read it before you build or change an app component, in
+  any language. The Astro build is checked against all of it. A React or Rust build is a
+  port of the same contract, and is done when it passes.
+</Note>
+
+## Where they live
+
+| File                                                                                                                                                       | What it is                                                                        |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| [`contracts/schema/component-contract.schema.json`](https://github.com/mzizi-dev/mzizi-registry/blob/main/contracts/schema/component-contract.schema.json) | The format (JSON Schema 2020-12)                                                  |
+| [`contracts/app/<name>.contract.json`](https://github.com/mzizi-dev/mzizi-registry/tree/main/contracts/app)                                                | One component's contract. The `app/` family is the Dashboard Standard             |
+| [`contracts/index.json`](https://github.com/mzizi-dev/mzizi-registry/blob/main/contracts/index.json)                                                       | Every contract, with its version and its React (`.tsx`) and Rust (`.rs`) siblings |
+| [`contracts/README.md`](https://github.com/mzizi-dev/mzizi-registry/blob/main/contracts/README.md)                                                         | The coverage table, the recorded gaps, and how to add or change a contract        |
+
+The 31 `app/` contracts, by the [helix node](/architecture/nodes) each component belongs to:
+
+| Node          | Contracts                                                                                                                                                                                                                    |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| N7 shell      | `app-shell`, `side-nav`, `workspace-switcher`, `quick-search`, `command-palette`, `top-bar-action`, `account-menu`                                                                                                           |
+| N6 pages      | `page-header`, `toolbar`, `toolbar-menu`, `stat-tiles`, `stat-tile`, `info-tip`, `empty-state`, `data-table`, `filter-bar`, `pagination`, `detail-panel`, `form-layout`, `form-field`, `state-message`, `toast`, `bar-chart` |
+| N3 brand      | `brand-mark`                                                                                                                                                                                                                 |
+| N2 primitives | `button`, `badge`, `card`, `alert`, `input`, `label`, `skeleton`                                                                                                                                                             |
+
+Each name is the file `contracts/app/<name>.contract.json`. Every one is at version 1.0.0 as of
+4 October 2026; `contracts/index.json` is the current list.
+
+## What a contract states
+
+| Field             | What it holds                                                                                                                                                                                      |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `props`, `slots`  | Every prop with its TypeScript type, whether it is required, its default and its closed set of values; every slot and what it is for.                                                              |
+| `behaviour`       | What the component does, in sentences.                                                                                                                                                             |
+| `states`          | Named fixtures: props and slot HTML. `default` is required. Every runner renders every state.                                                                                                      |
+| `accessibility`   | Roles, keyboard, focus and ARIA, and the WCAG 2.2 criteria the component is built to meet.                                                                                                         |
+| `density`         | Heights in px for a fine pointer (mouse or trackpad) and a coarse one (touch), read from the rendered classes by the spacing scale.                                                                |
+| `theming`         | The semantic tokens it reads, what a brand overlay changes, and the status colours it may name.                                                                                                    |
+| `noJs`            | `none` (no script) or `enhancement` (one script; everything in `without` works when it does not run).                                                                                              |
+| `responsive`      | Its rules from 320px up.                                                                                                                                                                           |
+| `contract`        | A `contract … end` block in the Mzizi language's clause grammar.                                                                                                                                   |
+| `checks`          | Assertions on the rendered markup by CSS selector: a count, a minimum, absence, attributes, text. Each `say` is the rule in a sentence and the failure message.                                    |
+| `implementations` | The Astro export, and the `.tsx` and `.rs` registry items that implement the same contract, or `null`. `related` lists items with a similar purpose and a different contract: not implementations. |
+| `gaps`            | Where the current build falls short of the standard, recorded rather than hidden.                                                                                                                  |
+
+Part of
+[`contracts/app/button.contract.json`](https://github.com/mzizi-dev/mzizi-registry/blob/main/contracts/app/button.contract.json):
+
+```json
+{
+  "name": "app/button",
+  "title": "Button",
+  "version": "1.0.0",
+  "node": 2,
+  "kind": "primitive",
+  "density": [
+    { "part": "md", "select": "button", "fine": 36, "coarse": 48 },
+    { "part": "sm", "state": "link", "select": "a", "fine": 32, "coarse": 44 }
+  ],
+  "noJs": {
+    "script": "none",
+    "without": "Everything: the component is server-rendered HTML with no script."
+  }
+}
+```
+
+Its `contract` field, with one clause per line:
+
+```text
+contract
+  slot is "button"
+  class uses "--app-accent"
+  class uses "--primary"
+  button "Save" min_height 36
+  when link shows a "Go"
+  when destructive class contains "bg-destructive"
+  when destructive-outline class contains "border-destructive"
+end
+```
+
+### Versioning
+
+Each contract is versioned on its own, with semver. **Major** when a clause, prop, slot or
+state is removed or narrowed; **minor** when one is added; **patch** for prose only.
+
+## The `contract` block and the language
+
+The `contract` field uses the clause grammar of the Mzizi language
+([RFC-0006](https://github.com/mzizi-dev/mzizi/blob/main/design/RFC-0006-contracts.md) and
+[RFC-0010](https://github.com/mzizi-dev/mzizi/blob/main/design/RFC-0010-contracts-everywhere.md)),
+the subset that applies to rendered markup:
+
+- **Subjects:** `slot`, `role`, `label`, `class` and `portal` (the root element's attribute),
+  `<element> "<text>"` (with `min_height`), `uses <data-slot>`, and `when <state> …`.
+- **Predicates:** `is`, `contains`, `not_empty`, `in`, `uses "--token"`, `min_height` and
+  `shows`.
+
+As in the language, **a clause, check or density row that a runner cannot evaluate fails**.
+An unevaluable contract must never read as a passing one (RFC-0006, FM-12).
+
+It is the same grammar the Mzizi Roots crates use for their `pub const CONTRACT` (today the
+twelve `mzizi-brand` components), which each crate's suite evaluates on `dioxus-ssr` markup.
+Neither is run by the language's `mz contract`: no component is written in Mzizi yet, so
+package test suites evaluate these contracts. The grammar is shared so that `mz contract` can
+check them once components are written in Mzizi; that is a design intention, not built.
+
+## Requirements
+
+Three fields are rules every implementation meets, and the Astro contract test evaluates
+them:
+
+- **No JavaScript.** `noJs.script` is `none` for 29 of the 31. AppShell and CommandPalette are
+  `enhancement`: each ships one script, and everything its `noJs.without` lists works when the
+  script does not run. See [Without JavaScript](/patterns/dashboard-standard#without-javascript).
+- **Density.** Every interactive part declares a fine and a coarse height, and each row is
+  evaluated. Controls are dense on a mouse (mostly 32–40px) and 44–48px on touch. See
+  [Density](/patterns/dashboard-standard#density).
+- **Theming.** A brand overlay changes colour only (`--primary`, `--ring`, AppShell's
+  `--app-accent`, and the mark). Layout never varies by brand. The markup carries no colour
+  values, and a mineral class appears only as one of the component's declared
+  `statusColours`. See [Brand overlays](/patterns/dashboard-standard#brand-overlays).
+
+## How each implementation is checked
+
+| Where                                                                                                                                                     | What runs                                                                                                                                                                                                                                                                                                  |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `mzizi-dev/packages-npm`, `src/app/contracts.test.ts`                                                                                                     | Ships a copy of `contracts/` in `@bundu/ui` (`pnpm contracts:fetch`, `pnpm contracts:check`). Renders every Astro component in every state and evaluates the clauses, checks and density, the brand-overlay rule, the no-JS rule, and that the `.astro` file's props and slots are exactly the contract's. |
+| [`mzizi-registry` `__tests__/contracts/contracts.test.tsx`](https://github.com/mzizi-dev/mzizi-registry/blob/main/__tests__/contracts/contracts.test.tsx) | Validates every contract against the schema and the clause grammar, keeps `index.json` and the README's coverage table honest, renders each declared `.tsx` sibling and checks its identity, and checks each declared `.rs` sibling emits the same `data-slot`, variants and role.                         |
+
+`identity` is what a sibling shares with the Astro build: `slot`, `slot+role` or
+`slot+variants`. A sibling's differences from the contract are listed in its `divergences`.
+
+## Coverage and gaps
+
+Seven primitives have siblings in the registry: a `.tsx` for `button`, `badge`, `card`,
+`alert`, `input`, `label` and `skeleton`, and a `.rs` for `button`, `badge`, `card`, `input`
+and `label`. The 24 shell and page patterns have neither. The plan is
+[mzizi-registry#397](https://github.com/mzizi-dev/mzizi-registry/issues/397) (an Astro target,
+so these `.astro` files move into the registry) and
+[#401](https://github.com/mzizi-dev/mzizi-registry/issues/401) (Rust ports of the console
+patterns). The coverage table in
+[`contracts/README.md`](https://github.com/mzizi-dev/mzizi-registry/blob/main/contracts/README.md#coverage)
+is kept true by the registry's test.
+
+Four contracts record gaps:
+
+- **AppShell:** the collapse toggle is 32px on every pointer. On a touch screen at 64rem or
+  wider it is under the 44px the rest of the shell keeps (WCAG 2.5.8 is met at 24px; 2.5.5
+  is not).
+- **PageHeader:** the "View docs" pill is 24px on touch.
+- **InfoTip:** 32px on touch.
+- **BrandMark:** only the Nyuchi mark ships. Mukoko, Bundu, Mzizi and the sub-brands need
+  their registry icon pairs before their dashboards can adopt the standard.
+
+## Adding or changing a contract
+
+<Steps>
+  <Step title="Edit the contract in the registry">
+    Edit or add `contracts/app/<name>.contract.json` and bump its `version` by the rules above.
+  </Step>
+  <Step title="Update the index and the coverage table">
+    `contracts/index.json` and the table in `contracts/README.md`. The registry's test fails if
+    a file or version is missing from the index, or a coverage row disagrees.
+  </Step>
+  <Step title="Test both sides">
+    `pnpm test` in the registry, then in `mzizi-dev/packages-npm`
+    `pnpm contracts:fetch <your branch>` and `pnpm test`. The Astro build must pass the new
+    contract before either side merges.
+  </Step>
+</Steps>
+
+Never edit the copy of `contracts/` in packages-npm. Change the contract in the registry, and
+the package follows.

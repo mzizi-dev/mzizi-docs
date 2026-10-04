@@ -21,6 +21,11 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
+### Added — component contracts, the reference (2026-10-04)
+
+- **New page, `registry/contracts`** (Components → The registry → Contracts): the machine-readable, versioned contracts that the Dashboard Standard's 31 `@bundu/ui` app components carry in `mzizi-dev/mzizi-registry` `contracts/` (mzizi-registry#406). It links the schema, `index.json`, the README and every `app/` contract by node, and walks through each field with part of the Button contract as an example. It covers the versioning rule (major, minor, patch), the clause subset and the rule that an unevaluable clause fails, how the block relates to the Roots crates' `CONTRACT` and to `mz contract`, and the no-JS, density and theming requirements. It also says how each implementation is checked, which primitives have React and Rust siblings, the four recorded gaps, and how to add or change a contract.
+- **`patterns/dashboard-standard`** (Contracts) and **`registry/overview`** link to the new page.
+
 ### Added — the Mzizi Dashboard Standard (2026-10-04)
 
 - **New page, `patterns/dashboard-standard`** (Components → Patterns → Dashboard Standard): the owner's decision of 4 October 2026 that the Nyuchi console shell is the one dashboard design for the whole Bundu ecosystem, with each brand's mineral as an overlay. It covers the anatomy (sidebar groups, top bar, page header, toolbar, stat tiles, content cards, empty states, footer) mapped to the 31 `@bundu/ui` app components, density for fine and coarse pointers, the brand overlay rules and the ecosystem minerals, the accessibility baseline, the no-JavaScript behaviour, the component contracts (format, how each implementation is tested, and which have no React or Rust build), and how to adopt it. Five console screenshots are the reference, in `images/dashboard-standard/`. Tracking: mzizi-dev/mzizi-registry#404.
