@@ -1,0 +1,257 @@
+---
+title: "Mzizi Discover Standard"
+description: "One design for every public discover and browse page in the Mukoko family (circles, news, events, weather and the super-app on the web): eleven pure Astro components in @bundu/ui, each with a contract."
+sidebarTitle: "Discover Standard"
+icon: "compass"
+---
+
+Owner decision, 4 October 2026: "Across news, events, circles, weather the discover pages need
+to be identical, because as we build the web version of the super app, bringing things over is
+easy. Also anything new that is not in Mzizi, or altered from the Mzizi ones, we need to adjust
+Mzizi so the design is always updating so we maintain consistency."
+
+This page is the standard. The components are the eleven Discover components of
+[`@bundu/ui`](https://www.npmjs.com/package/@bundu/ui) (`@bundu/ui/discover/*`, pure Astro,
+no framework and no client JavaScript). Their contracts live in the registry, in
+[`mzizi-dev/mzizi-registry` `contracts/discover/`](https://github.com/mzizi-dev/mzizi-registry/tree/main/contracts/discover).
+Tracking: [mzizi-registry#413](https://github.com/mzizi-dev/mzizi-registry/issues/413).
+
+<Note>
+  The standard is new. The components ship in the next `@bundu/ui` release; npm serves 0.2.0
+  until the owner publishes it. The builds are Astro only: news, events and weather are
+  Next.js apps today, and adopt the standard when they move to Astro or into the super-app on
+  the web (their adoption issues say how).
+</Note>
+
+## The reference
+
+circles.mukoko.com, the first site built to the standard. Its pages are Astro shells that a
+Rust Worker fills with live data, so it also shows the components working in a server-filled
+template.
+
+<Frame caption="Home at 1280px: header, hero with search and actions, a featured section, category chips, more circles with &quot;See every circle&quot;.">
+  <img
+    src="/images/discover-standard/home-1280-light.png"
+    alt="The Mukoko Circles home page at 1280 pixels in light mode: a header with the mukoko circles mark, All circles, Fediverse and About links and a Create a circle button; a hero reading Find your people. Keep them close, with a search box and actions; a Featured section of three circle cards with a letter monogram, a Public badge, a summary, the member count and categories; category chips with counts; and a grid of more circles."
+  />
+</Frame>
+
+<Frame caption="The same page in dark mode. Only tokens change.">
+  <img
+    src="/images/discover-standard/home-1280-dark.png"
+    alt="The Mukoko Circles home page at 1280 pixels in dark mode, with the same layout on a near-black surface."
+  />
+</Frame>
+
+<Frame caption="A category page: breadcrumbs, the hero with the search box, the result grid with its status line, then the categories.">
+  <img
+    src="/images/discover-standard/category-1280-light.png"
+    alt="A Mukoko Circles category page at 1280 pixels: breadcrumbs reading Circles / Music, a Category eyebrow and a Music heading, a search box, a line reading 2 circles, two circle cards, and a Browse by category band of chips."
+  />
+</Frame>
+
+<Frame caption="Search with no results: the empty state, the Dashboard Standard's EmptyState in ResultGrid's empty slot.">
+  <img
+    src="/images/discover-standard/search_empty-1280-light.png"
+    alt="A search results page with no matches: the hero with the query in the search box, a line reading 0 circles, an empty state card reading No circles here yet, with Create a circle and All circles actions, and the category chips."
+  />
+</Frame>
+
+<Frame caption="All circles at 375px. The navigation wraps under the brand; cards stack; nothing scrolls sideways.">
+  <img
+    src="/images/discover-standard/all-375-light.png"
+    alt="The All circles page at 375 pixels wide: the header with the mark, a Create a circle button and the navigation on its own row; the hero; a search box with the Search button under it; and circle cards in one column."
+  />
+</Frame>
+
+## Anatomy
+
+| Region         | Component                                             | What it holds                                                                                                                                                       |
+| -------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Head           | `DiscoverMeta`                                        | `<title>`, description, robots, canonical, Open Graph, the X card, and JSON-LD.                                                                                     |
+| Frame          | `DiscoverShell`                                       | Skip link, the mineral strip, a header (the brand, the "Main" navigation, one action), `<main id="main">`, and a footer.                                            |
+| Hero           | `DiscoverHero`                                        | Breadcrumbs, an eyebrow, the page's one `<h1>`, a lead, the search box and the actions. `size="home"` is larger.                                                    |
+| Search         | `DiscoverSearch`                                      | A GET form to `/search?q=`: every search is a URL, and it works with no JavaScript.                                                                                 |
+| Sections       | `DiscoverSection`                                     | A named band: eyebrow, heading, description and a "See all" link over its content. `state="empty"` hides it.                                                        |
+| Categories     | `CategoryChips`, `CategoryChip`                       | A named navigation of category links with counts. Choosing a category is navigation to its URL, never a filter in the browser.                                      |
+| Results        | `ResultGrid`                                          | A polite status line ("24 circles"), the cards, the empty state and "load more". Layouts: `grid`, `list`, and `rail` (a featured strip that scrolls inside itself). |
+| Card           | `DiscoverCard`                                        | One card for everything; see below.                                                                                                                                 |
+| Paging         | `LoadMore`                                            | One `rel="next"` link to `?cursor=…`.                                                                                                                               |
+| Open in Mukoko | `OpenInApp`                                           | The action that opens the item in the Mukoko super-app, with one line saying what happens.                                                                          |
+| States         | `EmptyState`, `StateMessage` (the Dashboard Standard) | Empty, error, unavailable and loading, worded once.                                                                                                                 |
+
+A page is always: `DiscoverMeta` in `<head>`, then `DiscoverShell` → `DiscoverHero` (with
+`DiscoverSearch`) → one or more `DiscoverSection`s, each holding a `ResultGrid` of
+`DiscoverCard`s or `CategoryChips`. A featured rail is a `DiscoverSection` holding a
+`ResultGrid`.
+
+## One card
+
+`DiscoverCard` is one contract with four variants. They share one anatomy and change emphasis,
+never structure:
+
+| Slot or prop                 | `article` (news)   | `event` (events)            | `circle` (circles)                   | `place` (weather, directories)  |
+| ---------------------------- | ------------------ | --------------------------- | ------------------------------------ | ------------------------------- |
+| Media                        | 16:9 image on top  | 16:9 image on top           | monogram (`initial`) or image        | `media` slot (an icon) or image |
+| `eyebrow`                    | source or category | category                    | (none)                               | region                          |
+| `title` (the primary link)   | headline           | event name                  | circle name                          | place name                      |
+| `dateLabel` / `datetime`     | published          | starts, in bold             | (none)                               | (none)                          |
+| `badge` / `badgeTone`        | (rare)             | "Free", status              | "Public" (brand), "Broadcast" (info) | alert                           |
+| `figure` / `figureLabel`     | (none)             | price                       | (none)                               | "24°" / "Partly cloudy"         |
+| `summary`                    | standfirst         | (rare)                      | description                          | (rare)                          |
+| `place`, `meta`              | reading time       | venue and town, "312 going" | members, categories                  | elevation                       |
+| `appHref` ("Open in Mukoko") | optional           | optional                    | "Join in Mukoko"                     | optional                        |
+
+The title is a heading holding the card's one primary link, stretched over the whole card; other
+actions sit above it and stay separately focusable. `external` marks a link to a news source
+(`rel="external noopener"`). Badge tones are `neutral`, `brand`, `info`, `success`, `warning` and
+`danger`; the status tones use the status minerals, so they mean the same in every brand.
+
+## Behaviour every Discover page shares
+
+- **URLs, not client state.** Search is `?q=`, a category is a path or `?category=`, paging is
+  `?cursor=`. Every view can be linked, cached and opened without JavaScript.
+- **Cursor paging.** `LoadMore` links to the next page; there are no page numbers. Pages past
+  the first and search results are `noindex` (`DiscoverMeta noindex`).
+- **No client JavaScript, no inline styles.** The components ship neither, and their tests fail
+  on a `style` attribute, so a site can run with `script-src 'none'` and `style-src 'self'`, as
+  circles.mukoko.com does. JSON-LD is data, not script.
+- **"Open in Mukoko" is an https link**: a universal or app link, or a server redirect such as
+  circles.mukoko.com's `/c/{slug}/join`. It opens the app where it is installed and the web
+  otherwise. A bare `mukoko://` link does nothing without the app, so it is never the `href`.
+- **SEO.** Title "&lt;page&gt; · &lt;Service&gt;" (the home page "&lt;Service&gt;: &lt;promise&gt;"),
+  `en_GB`, a 1200×630 image. JSON-LD: `WebSite` with a `SearchAction` on the home page;
+  `CollectionPage` → `ItemList` and a `BreadcrumbList` on lists.
+
+## Server-filled shells
+
+circles.mukoko.com builds each page once with `{{placeholders}}`, and its Rust Worker fills them
+per request. Every Discover component works that way, so the design stays in Astro and the
+logic in Rust:
+
+- every text prop is a plain string, and text that fills to `""` hides itself (`empty:hidden`);
+- state switches are attributes styled by classes: `ResultGrid state`, `DiscoverSection state`,
+  `LoadMore state`, `DiscoverCard badgeTone` (`data-tone`), `CategoryChip current`
+  (`aria-current`, which accepts `"false"`);
+- `DiscoverCard` and `CategoryChip` render their own `<li>`, so they can be repeated as
+  fragments.
+
+```astro
+---
+// src/pages/tpl/card.astro: one circle, repeated by the Worker.
+import DiscoverCard from "@bundu/ui/discover/DiscoverCard.astro";
+---
+<DiscoverCard variant="circle" href="{{href}}" title="{{name}}" initial="{{initial}}"
+  badge="{{type_label}}" badgeTone="{{type_tone}}" summary="{{summary}}"
+  meta={["{{members}}", "{{categories}}"]} />
+```
+
+Each Discover contract has a `template` state with placeholders where this matters.
+
+## Density, brand and accessibility
+
+Discover pages are public and touch-first, so controls are the same size on every pointer:
+the search field and its button, "See all", "Load more" and "Open in Mukoko" are 48px; chips,
+navigation links and the home link are at least 44px.
+
+The layout never varies by brand. A brand changes the overlay stylesheet (`--primary` and
+`--ring`, its mineral) and the `brand` slot (its mark). The hero wash, the card monogram, the
+`brand` badge tone and primary buttons follow `--primary`; nothing else does. The brand
+overlays are the same as the [Dashboard Standard's](/patterns/dashboard-standard#brand-overlays):
+`brand-mukoko.css` for the super-app and circles, `brand-news.css`, `brand-events.css`,
+`brand-weather.css`.
+
+Landmarks are a header, the "Main" navigation, one `<main>`, named regions for each section, a
+search landmark and a footer. Each page has one `<h1>`, and headings step down without gaps.
+The results summary is a polite live region. A rail is keyboard-focusable so it scrolls without
+a pointer. Meaning is never colour alone: badges carry text and the current chip is marked
+with `aria-current`.
+
+## Contracts
+
+The eleven contracts are `contracts/discover/<name>.contract.json` in the registry, in the
+same format as the Dashboard Standard's ([Component contracts](/registry/contracts)):
+
+| Contract                    | Component         | Node |
+| --------------------------- | ----------------- | ---- |
+| `discover/discover-shell`   | `DiscoverShell`   | N7   |
+| `discover/discover-meta`    | `DiscoverMeta`    | N6   |
+| `discover/discover-hero`    | `DiscoverHero`    | N6   |
+| `discover/discover-search`  | `DiscoverSearch`  | N6   |
+| `discover/category-chips`   | `CategoryChips`   | N6   |
+| `discover/category-chip`    | `CategoryChip`    | N6   |
+| `discover/discover-section` | `DiscoverSection` | N6   |
+| `discover/result-grid`      | `ResultGrid`      | N6   |
+| `discover/discover-card`    | `DiscoverCard`    | N6   |
+| `discover/load-more`        | `LoadMore`        | N6   |
+| `discover/open-in-app`      | `OpenInApp`       | N6   |
+
+`mzizi-dev/packages-npm` renders every component in every state and evaluates each clause,
+check and density row, the brand-overlay and no-inline-style rule, the no-JS rule, and that the
+`.astro` file's props and slots are exactly the contract's. `src/discover/discover.test.ts`
+also renders a whole Discover page and the server-filled mode. No React or Rust build exists
+yet; a port is done when it passes the same contract.
+
+## How to adopt
+
+<Steps>
+  <Step title="Install and import the styles">
+    ```bash
+    npm install @bundu/ui
+    ```
+    ```css
+    @import "tailwindcss";
+    @import "@bundu/ui/styles/theme.css";
+    @import "@bundu/ui/styles/globals.css";
+    @import "@bundu/ui/styles/color-scheme.css";
+    @import "@bundu/ui/styles/brand-mukoko.css"; /* your brand, last */
+    @source "../../node_modules/@bundu/ui/src";  /* so Tailwind sees the components' classes */
+    ```
+  </Step>
+  <Step title="Put DiscoverMeta in <head> and DiscoverShell in <body>">
+    ```astro
+    <head>
+      <DiscoverMeta title="Running · Mukoko Circles" description="…"
+        canonical={Astro.url.href} siteName="Mukoko Circles" image={og} jsonLd={ld} />
+    </head>
+    <body>
+      <DiscoverShell homeLabel="mukoko circles, home"
+        nav={[{ label: "All circles", href: "/circles" }]}>
+        <Fragment slot="brand"><Mark /> mukoko circles</Fragment>
+        <a slot="action" class="btn-primary" href="/create">Create a circle</a>
+        <slot />
+      </DiscoverShell>
+    </body>
+    ```
+  </Step>
+  <Step title="Build each page from the anatomy">
+    ```astro
+    <DiscoverHero size="home" eyebrow="Mukoko Circles" title="Find your people.">
+      <DiscoverSearch slot="search" label="Search circles" />
+    </DiscoverHero>
+    <DiscoverSection id="featured" title="Circles worth joining" seeAllHref="/circles">
+      <ResultGrid label="Featured circles" summary={`${total} circles`}
+        state={items.length ? "ok" : "empty"}>
+        {items.map((c) => <DiscoverCard variant="circle" href={c.href} title={c.name}
+          initial={c.name[0]} meta={[c.members]} />)}
+        <EmptyState slot="empty" title="No circles here yet." level={3} />
+        <LoadMore slot="more" href={next} label="More circles" />
+      </ResultGrid>
+    </DiscoverSection>
+    ```
+  </Step>
+</Steps>
+
+## Upstream first
+
+Do not fork a Discover component, restyle it locally or wrap it to change it. A component your
+page needs that Mzizi does not have, or a change to one it has, goes upstream immediately: its
+contract in the registry and its build in `@bundu/ui`, in the same piece of work. An app keeps a
+local copy only while that upstream pull request is open, marked at the top of the file with
+`TODO(mzizi): <pull request URL>`, and deletes it when the release is installed. The registry's
+`CONTRIBUTING.md` holds the rule.
+
+Adopting the standard in circles.mukoko.com did exactly this: a section that hides when its data
+is empty (`DiscoverSection state`), a second action beside "Open in Mukoko" (`OpenInApp`'s
+slot), the `.link` text-link class, and removing the inline styles that made its CSP allow
+`style-src-attr 'unsafe-inline'` all went into `@bundu/ui` rather than into the site.

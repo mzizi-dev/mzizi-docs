@@ -236,3 +236,14 @@ Any substantial build, migration, investigation or multi-step task gets a GitHub
 - Post progress, decisions and a hand-off note (what's done, what's left, branch names) as issue comments — at each merge and before a session or agent finishes.
 - Work spanning repos gets a tracking issue that links the per-repo issues.
 - Never put secrets, credential status or exploitable detail in issues on public repos.
+
+## Upstream first (hard rule)
+
+Owner, 2026-10-04: "anything new that is not in Mzizi, or altered from the Mzizi ones, we
+need to adjust Mzizi so the design is always updating so we maintain consistency." A
+component an app needs that Mzizi lacks, or a change to one it has, goes upstream at once:
+its contract in `mzizi-dev/mzizi-registry` `contracts/`, its build in `@bundu/ui`, and its
+page here, in the same piece of work. An app keeps a local copy only while that upstream PR
+is open, marked `TODO(mzizi): <PR URL>`. Pages here never show a forked component as the
+way to do it; the standards are `patterns/dashboard-standard` and
+`patterns/discover-standard`.

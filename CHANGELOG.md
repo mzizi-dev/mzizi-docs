@@ -21,6 +21,19 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
+### Changed — `@bundu/ui` 0.3.0 carries the Dashboard Standard (2026-10-04)
+
+- **Dashboard Standard: `@bundu/ui` 0.3.0, not 0.4.x.** Owner decision,
+  2026-10-04: unpublished versions are reset to the org versioning policy, so
+  the next `@bundu/ui` release is 0.3.0 (one minor above 0.2.0 on npm) and
+  carries the standard, including AppShell's `accent`. The page now says 0.3.0
+  where it said 0.4.0, 0.4.1 or 0.4.x.
+
+### Added — the Mzizi Discover Standard (2026-10-04)
+
+- **`patterns/discover-standard`**: one design for every public discover and browse page in the Mukoko family (circles, news, events, weather, the super-app on the web). The anatomy, the one `DiscoverCard` with its four variants, shared behaviour (URLs, cursor paging, no client JavaScript or inline styles, "Open in Mukoko" as an https link, SEO), server-filled shells, density, brand and accessibility, the eleven contracts, how to adopt, and the upstream-first rule. Screenshots from circles.mukoko.com. Tracking: mzizi-dev/mzizi-registry#413.
+- **`registry/contracts`** names the second contract family, `discover/`.
+
 ### Changed — Mukoko Events replaces nhimbe (2026-10-04)
 
 - The owner's decision of 4 October 2026 retires the _nhimbe_ brand. The events platform is Mukoko Events at events.mukoko.com, and its mineral stays malachite. Canon's ecosystem row is now `events`, and `nhimbe` is kept as a deprecated alias (mukoko-dev/nhimbe#155).

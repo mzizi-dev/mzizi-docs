@@ -17,7 +17,7 @@ framework under them). Their contracts live in the registry, in
 [`mzizi-dev/mzizi-registry` `contracts/`](https://github.com/mzizi-dev/mzizi-registry/tree/main/contracts).
 
 <Note>
-  The standard is new. `@bundu/ui` 0.4.x carries it, and npm serves an older
+  The standard is new. `@bundu/ui` 0.3.0 carries it, and npm serves an older
   release until the owner publishes the next one. React (`.tsx`) and Rust
   (`.rs`) builds exist for seven primitives only; the shell and page patterns
   are Astro-only today ([coverage](#contracts)).
@@ -26,8 +26,8 @@ framework under them). Their contracts live in the registry, in
 ## The reference
 
 The Nyuchi console, the first dashboard built to the standard. The screenshots were
-taken with `@bundu/ui` 0.4.0; from 0.4.1, AppShell's `accent` fills primary actions with the
-brand mineral (Nyuchi gold) instead of the deep text variant shown here.
+taken with a pre-release build of `@bundu/ui` 0.3.0; in 0.3.0, AppShell's `accent` fills primary
+actions with the brand mineral (Nyuchi gold) instead of the deep text variant shown here.
 
 <Frame caption="Home at 1280px, light. Sidebar: workspace switcher, quick search (⌘K), grouped navigation with the current item marked. Main column: top bar, page header, stat tiles, content cards, quiet footer.">
   <img
@@ -105,7 +105,7 @@ The layout never varies by brand. A brand changes colour and mark, and nothing e
 
 1. **One overlay stylesheet**, imported after the tokens: it repoints `--primary` and
    `--ring` to the brand's mineral.
-2. **`AppShell accent="<mineral>"`** (from 0.4.1) fills primary actions and the current nav
+2. **`AppShell accent="<mineral>"`** (from 0.3.0) fills primary actions and the current nav
    indicator with the mineral's brand fill (`--color-<mineral>-brand`, text
    `--color-<mineral>-on-brand`). Text links and the focus ring keep the contrast-safe
    `--primary` and `--ring`.
@@ -224,7 +224,7 @@ in [`contracts/README.md`](https://github.com/mzizi-dev/mzizi-registry/blob/main
     ```bash
     pnpm add @bundu/ui
     ```
-    Use 0.4.1 or later once it is published. Astro 7 is the host; no framework integration is
+    Use 0.3.0 or later once it is published. Astro 7 is the host; no framework integration is
     needed for the app components.
   </Step>
   <Step title="Import the tokens and your brand's overlay">
