@@ -15,7 +15,10 @@ The contracts live in the registry, in
 added on 4 October 2026 ([mzizi-registry#406](https://github.com/mzizi-dev/mzizi-registry/pull/406),
 tracking issue [#404](https://github.com/mzizi-dev/mzizi-registry/issues/404)). The first
 family, `app/`, covers the 31 server-rendered app components of `@bundu/ui`
-(`@bundu/ui/app/*.astro`, built in `mzizi-dev/packages-npm`).
+(`@bundu/ui/app/*.astro`, built in `mzizi-dev/packages-npm`). The second family, `discover/`, covers the
+eleven Discover components (`@bundu/ui/discover/*.astro`): the
+[Mzizi Discover Standard](/patterns/discover-standard), added on 4 October 2026
+([mzizi-registry#413](https://github.com/mzizi-dev/mzizi-registry/issues/413)).
 
 <Note>
   A contract is the specification. Read it before you build or change an app component, in
@@ -29,6 +32,7 @@ family, `app/`, covers the 31 server-rendered app components of `@bundu/ui`
 | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
 | [`contracts/schema/component-contract.schema.json`](https://github.com/mzizi-dev/mzizi-registry/blob/main/contracts/schema/component-contract.schema.json) | The format (JSON Schema 2020-12)                                                  |
 | [`contracts/app/<name>.contract.json`](https://github.com/mzizi-dev/mzizi-registry/tree/main/contracts/app)                                                | One component's contract. The `app/` family is the Dashboard Standard             |
+| [`contracts/discover/<name>.contract.json`](https://github.com/mzizi-dev/mzizi-registry/tree/main/contracts/discover)                                      | One component's contract. The `discover/` family is the Discover Standard         |
 | [`contracts/index.json`](https://github.com/mzizi-dev/mzizi-registry/blob/main/contracts/index.json)                                                       | Every contract, with its version and its React (`.tsx`) and Rust (`.rs`) siblings |
 | [`contracts/README.md`](https://github.com/mzizi-dev/mzizi-registry/blob/main/contracts/README.md)                                                         | The coverage table, the recorded gaps, and how to add or change a contract        |
 
