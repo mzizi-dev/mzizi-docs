@@ -21,6 +21,12 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
+### Changed — Mukoko Events replaces nhimbe (2026-10-04)
+
+- The owner's decision of 4 October 2026 retires the *nhimbe* brand. The events platform is Mukoko Events at events.mukoko.com, and its mineral stays malachite. Canon's ecosystem row is now `events`, and `nhimbe` is kept as a deprecated alias (mukoko-dev/nhimbe#155).
+- **`patterns/dashboard-standard`**: the overlay table names `brand-events.css` and says that `brand-nhimbe.css` is a deprecated alias of it. The lingo, bushtrade, campfire and events overlays are no longer marked "proposed", because they shipped in packages-npm#24.
+- **`foundations/tokens`**: the brand-mineral table's `nhimbe` row is now `events`, with a note on the alias. **`foundations/typography`** drops Nhimbe from the wordmark examples.
+
 ### Added — component contracts, the reference (2026-10-04)
 
 - **New page, `registry/contracts`** (Components → The registry → Contracts): the machine-readable, versioned contracts that the Dashboard Standard's 31 `@bundu/ui` app components carry in `mzizi-dev/mzizi-registry` `contracts/` (mzizi-registry#406). It links the schema, `index.json`, the README and every `app/` contract by node, and walks through each field with part of the Button contract as an example. It covers the versioning rule (major, minor, patch), the clause subset and the rule that an unevaluable clause fails, how the block relates to the Roots crates' `CONTRACT` and to `mz contract`, and the no-JS, density and theming requirements. It also says how each implementation is checked, which primitives have React and Rust siblings, the four recorded gaps, and how to add or change a contract.
