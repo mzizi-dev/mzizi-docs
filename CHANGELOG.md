@@ -23,7 +23,7 @@ entries move under it. Mintlify does not publish this file.
 
 ### Changed — Mukoko Events replaces nhimbe (2026-10-04)
 
-- The owner's decision of 4 October 2026 retires the *nhimbe* brand. The events platform is Mukoko Events at events.mukoko.com, and its mineral stays malachite. Canon's ecosystem row is now `events`, and `nhimbe` is kept as a deprecated alias (mukoko-dev/nhimbe#155).
+- The owner's decision of 4 October 2026 retires the _nhimbe_ brand. The events platform is Mukoko Events at events.mukoko.com, and its mineral stays malachite. Canon's ecosystem row is now `events`, and `nhimbe` is kept as a deprecated alias (mukoko-dev/nhimbe#155).
 - **`patterns/dashboard-standard`**: the overlay table names `brand-events.css` and says that `brand-nhimbe.css` is a deprecated alias of it. The lingo, bushtrade, campfire and events overlays are no longer marked "proposed", because they shipped in packages-npm#24.
 - **`foundations/tokens`**: the brand-mineral table's `nhimbe` row is now `events`, with a note on the alias. **`foundations/typography`** drops Nhimbe from the wordmark examples.
 
