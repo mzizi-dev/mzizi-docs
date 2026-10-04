@@ -21,6 +21,15 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
+### Added — the published design system is linked (2026-10-04)
+
+- **Foundations links the Design System artifact.** `foundations/overview.mdx`
+  says the design system is also published on claude.ai as the
+  [Design System artifact](https://claude.ai/artifact/G8CCtAbZ8w717uQ3R5itCc),
+  built from the `design-system/` folder in `mzizi-dev/mzizi-registry`
+  (arriving with mzizi-registry#418), which is the copy to change. `AGENTS.md`
+  says the same for contributors.
+
 ### Changed — `@bundu/ui` 0.3.0 carries the Dashboard Standard (2026-10-04)
 
 - **Dashboard Standard: `@bundu/ui` 0.3.0, not 0.4.x.** Owner decision,
