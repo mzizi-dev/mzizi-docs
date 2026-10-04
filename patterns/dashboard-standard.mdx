@@ -1,0 +1,289 @@
+---
+title: "Mzizi Dashboard Standard"
+description: "One dashboard design for every admin and operator surface in the Bundu ecosystem: the console shell from @bundu/ui, each brand's mineral as an overlay, and a contract for every component."
+sidebarTitle: "Dashboard Standard"
+icon: "layout-dashboard"
+---
+
+Owner decision, 4 October 2026: the Nyuchi console shell is **the** dashboard design for the
+whole Bundu ecosystem. Every admin and operator dashboard, in every organisation, uses the
+same shell and the same components. Only the brand changes: its mineral colour and its
+mark. In the owner's words, "the components should also be updated, same as the mzizi
+language — every component should have a contract."
+
+This page is the standard. The components are the 31 app components of
+[`@bundu/ui`](https://www.npmjs.com/package/@bundu/ui) (`@bundu/ui/app/*`, pure Astro, no
+framework under them). Their contracts live in the registry, in
+[`mzizi-dev/mzizi-registry` `contracts/`](https://github.com/mzizi-dev/mzizi-registry/tree/main/contracts).
+
+<Note>
+  The standard is new. `@bundu/ui` 0.4.x carries it, and npm serves an older
+  release until the owner publishes the next one. React (`.tsx`) and Rust
+  (`.rs`) builds exist for seven primitives only; the shell and page patterns
+  are Astro-only today ([coverage](#contracts)).
+</Note>
+
+## The reference
+
+The Nyuchi console, the first dashboard built to the standard. The screenshots were
+taken with `@bundu/ui` 0.4.0; from 0.4.1, AppShell's `accent` fills primary actions with the
+brand mineral (Nyuchi gold) instead of the deep text variant shown here.
+
+<Frame caption="Home at 1280px, light. Sidebar: workspace switcher, quick search (⌘K), grouped navigation with the current item marked. Main column: top bar, page header, stat tiles, content cards, quiet footer.">
+  <img
+    src="/images/dashboard-standard/home-1280-light.png"
+    alt="The Nyuchi console home page at 1280 pixels in light mode: a left sidebar with the nyuchi console mark, a quick search box, and navigation grouped under Overview, Identity and people, Content, Commerce and Platform, with Home highlighted; a top bar with Ask Nyuchi AI, Support and the signed-in user; a welcome header; six stat tiles; a list of submissions waiting for review; recent activity; and side cards for Nyuchi AI and the API status."
+  />
+</Frame>
+
+<Frame caption="The same page in dark mode. The layout is identical; only tokens change.">
+  <img
+    src="/images/dashboard-standard/home-1280-dark.png"
+    alt="The Nyuchi console home page at 1280 pixels in dark mode, with the same sidebar, top bar, stat tiles and cards as the light version on a near-black surface."
+  />
+</Frame>
+
+<Frame caption="A list page: page header with breadcrumbs, a filter bar as a GET form, a data table, and the pagination summary.">
+  <img
+    src="/images/dashboard-standard/users-1280-light.png"
+    alt="The Users page at 1280 pixels: breadcrumbs reading Console / Users, a title and one line of description, a filter bar with a search field, a role select and an Apply button, and a table of three people with name and email, role badge, last seen and status badge, followed by Showing 1–3 of 3 people."
+  />
+</Frame>
+
+<Frame caption="A list page with tabs, at 1280px.">
+  <img
+    src="/images/dashboard-standard/news-1280-light.png"
+    alt="The News page at 1280 pixels with Articles, Organisations and Journalists tabs, a filter bar, and a table of two articles with headline, organisation and published date."
+  />
+</Frame>
+
+<Frame caption="The Users page at 375px. The sidebar is a drawer behind the menu button; each table row is a card with its column names; nothing scrolls sideways.">
+  <img
+    src="/images/dashboard-standard/users-375-light.png"
+    alt="The Users page at 375 pixels wide: a top bar with a menu button, the nyuchi console mark and icon-only actions; the page header; a stacked filter form; and each person shown as a card listing name and email, role, last seen and status."
+  />
+</Frame>
+
+## Anatomy
+
+| Region                 | Component                                                                  | What it holds                                                                                                                                                                                                                                    |
+| ---------------------- | -------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Frame                  | `AppShell`                                                                 | A fixed 16.25rem sidebar (a 3.5rem icon rail when collapsed) and a main column that fills the rest of the viewport. No centred page container.                                                                                                   |
+| Sidebar head           | `WorkspaceSwitcher` + `BrandMark`                                          | The product's mark and wordmark over the current workspace or organisation. With nothing to switch to, it is a plain link home.                                                                                                                  |
+| Sidebar search         | `QuickSearch` → `CommandPalette`                                           | "Quick search…" with a ⌘K / Ctrl+K hint, opening a palette of every navigation item.                                                                                                                                                             |
+| Sidebar groups         | `SideNav`                                                                  | Quiet group labels (Overview, Identity & people, Content, Commerce, Platform…), one 32px row per item with an icon, nested items under a disclosure, the current item filled with the brand indicator. Descriptions are tooltips, never printed. |
+| Sidebar foot           | `AppShell`                                                                 | The collapse toggle.                                                                                                                                                                                                                             |
+| Top bar                | `TopBarAction`, `AccountMenu`                                              | A 48px bar: the menu button and the mark below 64rem, then actions ("Ask Nyuchi AI", "Support") and the account menu, right-aligned.                                                                                                             |
+| Page header            | `PageHeader`                                                               | Breadcrumbs, the page's one `<h1>` (20px), a "View docs" pill, one line of description, page actions.                                                                                                                                            |
+| Toolbar                | `Toolbar`, `ToolbarMenu`, or `FilterBar`                                   | Search and filters as a GET form, so every filtered view is a URL.                                                                                                                                                                               |
+| Stat tiles             | `StatTiles`, `StatTile`, `InfoTip`                                         | Headline figures as a description list. Trends in words ("Up 12.5% on the previous 30 days") with a short badge; a missing value reads "Not available", never 0.                                                                                 |
+| Content cards          | `Card`, `DataTable`, `DetailPanel`, `FormLayout` + `FormField`, `BarChart` | Tables become one card per row on phones; charts carry their figures in a real table.                                                                                                                                                            |
+| Empty and other states | `EmptyState`, `StateMessage`, `Skeleton`, `Toast`                          | Empty, error, not configured, unavailable and loading, worded once; flash messages in a polite live region that waits to be dismissed.                                                                                                           |
+| Footer                 | `AppShell` `footerLinks`                                                   | Support, status, documentation, security, copyright.                                                                                                                                                                                             |
+
+## Density
+
+Dashboards are dense on a mouse and generous on touch. Every interactive control declares
+both heights, and its contract checks them.
+
+| Control                                                                      | Fine pointer          | Coarse pointer (touch)             |
+| ---------------------------------------------------------------------------- | --------------------- | ---------------------------------- |
+| Nav row, quick search, toolbar menu, top-bar action, account menu, page link | 32px                  | 44px                               |
+| Button `md` / input / select                                                 | 36px                  | 48px                               |
+| Button `sm` / `lg`                                                           | 32px / 40px           | 44px / 48px                        |
+| Command palette result                                                       | 36px                  | 44px                               |
+| Top bar                                                                      | 48px                  | 48px                               |
+| Text                                                                         | 14px (`text-body-sm`) | 16px (so iOS never zooms an input) |
+
+Corners use the small radius, not the marketing pill. Three controls are under 44px on touch
+today and are recorded as gaps in their contracts: the sidebar collapse toggle (32px), the
+"View docs" pill (24px) and the info tip (32px). All three meet WCAG 2.2's 24px minimum.
+
+## Brand overlays
+
+The layout never varies by brand. A brand changes colour and mark, and nothing else.
+
+1. **One overlay stylesheet**, imported after the tokens: it repoints `--primary` and
+   `--ring` to the brand's mineral.
+2. **`AppShell accent="<mineral>"`** (from 0.4.1) fills primary actions and the current nav
+   indicator with the mineral's brand fill (`--color-<mineral>-brand`, text
+   `--color-<mineral>-on-brand`). Text links and the focus ring keep the contrast-safe
+   `--primary` and `--ring`.
+3. **`BrandMark`** shows the brand's official mark, the registry's icon pair, never redrawn.
+
+The mineral is the brand's row in the ecosystem table (`mzizi_get_tokens` with family
+`ecosystem`, or `GET https://api.mzizi.dev/v1/brand` `.ecosystem`):
+
+| Brand            | Mineral                    | Overlay                                             |
+| ---------------- | -------------------------- | --------------------------------------------------- |
+| nyuchi           | gold                       | `brand-nyuchi.css`, `accent="gold"`                 |
+| mukoko           | tanzanite                  | `brand-mukoko.css`, `accent="tanzanite"`            |
+| bundu            | copper                     | `brand-bundu.css`, `accent="copper"`                |
+| shamwari         | sodalite                   | `brand-shamwari.css`, `accent="sodalite"`           |
+| Mzizi            | hematite (a heritage tone) | `brand-mzizi.css`                                   |
+| nhimbe, campfire | malachite                  | `brand-nhimbe.css`, `brand-campfire.css` (proposed) |
+| lingo            | cobalt                     | `brand-lingo.css` (proposed)                        |
+| bushtrade        | gold                       | `brand-bushtrade.css` (proposed)                    |
+
+The sub-app overlays marked proposed are in review in
+[mzizi-dev/packages-npm#24](https://github.com/mzizi-dev/packages-npm/pull/24), with Mukoko
+News and Weather. Mzizi's hematite is a heritage tone, so AppShell's `accent` (which takes
+the seven minerals) does not apply to it; its overlay sets `--primary`.
+
+Status colours do **not** follow the brand: success is malachite, warnings gold, errors
+terracotta or the destructive token, and information cobalt, in every brand. Each
+component's contract lists the status colours it may use, and its tests fail on any other
+mineral class or any literal colour value.
+
+## Accessibility baseline
+
+Every component's contract lists its roles, keyboard behaviour, focus handling, ARIA and the
+WCAG 2.2 criteria it is built to meet. Across the standard:
+
+- **Landmarks.** The sidebar is a named `<aside>`, the top bar a `<header>`, the page is in
+  one `<main id="main" tabindex="-1">` (the skip-link target), and the footer is a
+  `<footer>`. Navigation, breadcrumbs and pagination are named `<nav>`s.
+- **One `<h1>` per page**, in the page header; empty states and panels use real headings at
+  the level you give them.
+- **Keyboard.** Everything works with the keyboard: disclosures are `<details>`, the drawer
+  and the palette are Popover API elements (Escape and a click outside close them), and
+  ⌘K / Ctrl+K opens the palette.
+- **Focus.** A visible `--ring` focus ring on every control.
+- **Current location.** `aria-current="page"` on the current nav item, crumb and page link.
+- **Tooltips** (nav descriptions, info tips) show on hover and keyboard focus, are the
+  control's accessible description, and Escape hides them (WCAG 1.4.13).
+- **Meaning is never colour alone.** Trends are written out; badges carry text; charts have
+  a figures table.
+- **No timeouts.** Toasts wait to be dismissed (WCAG 2.2.3).
+- **Touch targets** of 44–48px on a coarse pointer, with the three recorded exceptions
+  above.
+
+## Without JavaScript
+
+The standard is server-rendered HTML that works with no script: navigation, the drawer,
+collapse, disclosures, filters, paging, forms and toast dismissal all use HTML and CSS
+(`<details>`, the Popover API, checkboxes and `:has()`, GET and POST forms). Two components
+carry one small script each, as enhancement only:
+
+- **AppShell**: saves the collapse choice to a cookie, and lets Escape hide tooltips.
+- **CommandPalette**: the ⌘K shortcut, live filtering with an announced match count, Enter
+  for the first match, and arrow keys. Without it, every result is a link and, with
+  `action`, the search box submits to your server.
+
+## Contracts
+
+Each component has a machine-readable, versioned contract,
+`contracts/app/<name>.contract.json`, in the format
+`contracts/schema/component-contract.schema.json`. A contract states:
+
+- props and slots with types, behaviour, and named states (fixtures every implementation is
+  rendered in);
+- accessibility, density (fine and coarse pointer), theming and the no-JS fallback;
+- responsive rules;
+- a `contract … end` block in the Mzizi language's clause grammar (see
+  [RFC-0006](https://github.com/mzizi-dev/mzizi/blob/main/design/RFC-0006-contracts.md));
+- selector checks on the rendered markup.
+
+```text
+contract
+  slot is "side-nav"
+  label is "Sections"
+  a "Home" min_height 32
+  when default shows a "News"
+  when default shows summary "Content"
+  when flat shows a "B"
+end
+```
+
+How each implementation is tested against its contract:
+
+| Implementation | Where                                                 | What runs                                                                                                                                                                                                        |
+| -------------- | ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Astro, all 31  | `mzizi-dev/packages-npm`, `src/app/contracts.test.ts` | Every component rendered in every state: each clause, check and density row, the brand-overlay rule, the no-JS rule, and props and slots against the `.astro` source. A clause the runner cannot evaluate fails. |
+| React `.tsx`   | `mzizi-dev/mzizi-registry`, `__tests__/contracts`     | The seven primitives that have one are rendered and must carry the contract's slot, and its variants or role.                                                                                                    |
+| Rust `.rs`     | the same, plus each crate's `tests/contract.rs`       | Five primitives (`badge`, `button`, `card`, `input`, `label`) must emit the same slot and variants.                                                                                                              |
+
+These are package test suites, not the language's `mz contract`: no component is written in
+Mzizi yet. The contract text uses the language's grammar so that it can be checked by `mz
+contract` once components are.
+
+The 24 shell and page patterns have no React or Rust build yet. That work is tracked in
+[mzizi-registry#397](https://github.com/mzizi-dev/mzizi-registry/issues/397) (an Astro
+target in the registry) and [#401](https://github.com/mzizi-dev/mzizi-registry/issues/401)
+(Rust ports); a port is done when it passes the same contract. The full coverage table is
+in [`contracts/README.md`](https://github.com/mzizi-dev/mzizi-registry/blob/main/contracts/README.md).
+
+## How to adopt
+
+<Steps>
+  <Step title="Install">
+    ```bash
+    pnpm add @bundu/ui
+    ```
+    Use 0.4.1 or later once it is published. Astro 7 is the host; no framework integration is
+    needed for the app components.
+  </Step>
+  <Step title="Import the tokens and your brand's overlay">
+    ```css
+    @import "tailwindcss";
+    @import "@bundu/ui/styles/globals.css";
+    @import "@bundu/ui/styles/brand-nyuchi.css"; /* your brand, last */
+    ```
+  </Step>
+  <Step title="Describe your navigation as data">
+    ```ts
+    import { groupNav } from "@bundu/ui/app/nav";
+
+    export const groups = groupNav(
+      [
+        { href: "/", label: "Home", icon: "home", group: "Overview" },
+        { href: "/users", label: "Users", icon: "users", group: "Identity & people",
+          description: "Everyone with a person record" },
+      ],
+      ["Overview", "Identity & people"],
+    );
+    ```
+    One object per section. The sidebar and the command palette both read it.
+
+  </Step>
+  <Step title="Wrap every signed-in page in AppShell">
+    ```astro
+    ---
+    import AppShell from "@bundu/ui/app/AppShell.astro";
+    import WorkspaceSwitcher from "@bundu/ui/app/WorkspaceSwitcher.astro";
+    import BrandMark from "@bundu/ui/app/BrandMark.astro";
+    import QuickSearch from "@bundu/ui/app/QuickSearch.astro";
+    import SideNav from "@bundu/ui/app/SideNav.astro";
+    import TopBarAction from "@bundu/ui/app/TopBarAction.astro";
+    import AccountMenu from "@bundu/ui/app/AccountMenu.astro";
+    import CommandPalette from "@bundu/ui/app/CommandPalette.astro";
+    import { groups } from "../nav";
+    ---
+    <AppShell
+      accent="gold"
+      collapsed={Astro.cookies.get("sidebar")?.value === "collapsed"}
+      persist="sidebar"
+      footerLinks={[{ label: "Support", href: "/support" }]}
+    >
+      <WorkspaceSwitcher slot="workspace" name="Nyuchi Africa">
+        <BrandMark slot="mark" wordmark suffix="console" />
+      </WorkspaceSwitcher>
+      <QuickSearch slot="search" />
+      <SideNav slot="nav" groups={groups} />
+      <TopBarAction slot="actions" label="Support" icon="help" href="/support" />
+      <AccountMenu slot="account" name="Tendai Moyo" signOutAction="/auth/sign-out" />
+      <slot />
+      <CommandPalette slot="overlay" groups={groups} action="/search" />
+    </AppShell>
+    ```
+  </Step>
+  <Step title="Build pages from the patterns">
+    `PageHeader` first, then a `Toolbar` or `FilterBar`, `StatTiles`, and content in `Card`,
+    `DataTable`, `DetailPanel` or `FormLayout`. Use `StateMessage` for every empty, error and
+    loading state rather than writing your own.
+  </Step>
+</Steps>
+
+Do not fork the shell or restyle it locally. If a component is missing or wrong, fix it
+upstream: change its contract in the registry and its build in `@bundu/ui`, in the same
+change.

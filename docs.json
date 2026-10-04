@@ -117,6 +117,7 @@
               "patterns/lazy-loading",
               "patterns/mobile-first",
               "patterns/dashboard",
+              "patterns/dashboard-standard",
               "patterns/authentication",
               "patterns/resource-index",
               "patterns/resource-detail"

@@ -21,6 +21,10 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
+### Added — the Mzizi Dashboard Standard (2026-10-04)
+
+- **New page, `patterns/dashboard-standard`** (Components → Patterns → Dashboard Standard): the owner's decision of 4 October 2026 that the Nyuchi console shell is the one dashboard design for the whole Bundu ecosystem, with each brand's mineral as an overlay. It covers the anatomy (sidebar groups, top bar, page header, toolbar, stat tiles, content cards, empty states, footer) mapped to the 31 `@bundu/ui` app components, density for fine and coarse pointers, the brand overlay rules and the ecosystem minerals, the accessibility baseline, the no-JavaScript behaviour, the component contracts (format, how each implementation is tested, and which have no React or Rust build), and how to adopt it. Five console screenshots are the reference, in `images/dashboard-standard/`. Tracking: mzizi-dev/mzizi-registry#404.
+
 ### Changed — the MCP server carries the registry API handlers it runs (2026-10-03)
 
 - **`toolchain/mcp.mdx`, "Where its data comes from":** `mzizi-mcp` still generates its data by running the registry's API handlers at build time, but the registry no longer has them (it removed its Next.js app, `app/api/v1/**` included, on 2026-10-02). The page now says `mzizi-mcp` keeps the eleven handlers it calls in `mzizi-mcp/scripts/registry-handlers/`, ported unchanged from registry `270af9f` (agent-tools #172). They are build-time only, they read the pinned registry checkout through its own `lib/` modules, and any npm import they make throws if used, so a handler that reaches for a database fails the build. The pin paragraph no longer says the bot waits for its token: it runs on `RELEASE_BUMP_TOKEN` and opened agent-tools #169 on 2026-10-02.
