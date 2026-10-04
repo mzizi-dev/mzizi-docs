@@ -17,10 +17,10 @@ framework under them). Their contracts live in the registry, in
 [`mzizi-dev/mzizi-registry` `contracts/`](https://github.com/mzizi-dev/mzizi-registry/tree/main/contracts).
 
 <Note>
-  The standard is new. `@bundu/ui` 0.4.x carries it, and npm serves an older release until
-  the owner publishes the next one. React (`.tsx`) and Rust (`.rs`) builds exist for seven
-  primitives only; the shell and page patterns are Astro-only today
-  ([coverage](#contracts)).
+  The standard is new. `@bundu/ui` 0.4.x carries it, and npm serves an older
+  release until the owner publishes the next one. React (`.tsx`) and Rust
+  (`.rs`) builds exist for seven primitives only; the shell and page patterns
+  are Astro-only today ([coverage](#contracts)).
 </Note>
 
 ## The reference
@@ -66,34 +66,34 @@ brand mineral (Nyuchi gold) instead of the deep text variant shown here.
 
 ## Anatomy
 
-| Region | Component | What it holds |
-| --- | --- | --- |
-| Frame | `AppShell` | A fixed 16.25rem sidebar (a 3.5rem icon rail when collapsed) and a main column that fills the rest of the viewport. No centred page container. |
-| Sidebar head | `WorkspaceSwitcher` + `BrandMark` | The product's mark and wordmark over the current workspace or organisation. With nothing to switch to, it is a plain link home. |
-| Sidebar search | `QuickSearch` → `CommandPalette` | "Quick search…" with a ⌘K / Ctrl+K hint, opening a palette of every navigation item. |
-| Sidebar groups | `SideNav` | Quiet group labels (Overview, Identity & people, Content, Commerce, Platform…), one 32px row per item with an icon, nested items under a disclosure, the current item filled with the brand indicator. Descriptions are tooltips, never printed. |
-| Sidebar foot | `AppShell` | The collapse toggle. |
-| Top bar | `TopBarAction`, `AccountMenu` | A 48px bar: the menu button and the mark below 64rem, then actions ("Ask Nyuchi AI", "Support") and the account menu, right-aligned. |
-| Page header | `PageHeader` | Breadcrumbs, the page's one `<h1>` (20px), a "View docs" pill, one line of description, page actions. |
-| Toolbar | `Toolbar`, `ToolbarMenu`, or `FilterBar` | Search and filters as a GET form, so every filtered view is a URL. |
-| Stat tiles | `StatTiles`, `StatTile`, `InfoTip` | Headline figures as a description list. Trends in words ("Up 12.5% on the previous 30 days") with a short badge; a missing value reads "Not available", never 0. |
-| Content cards | `Card`, `DataTable`, `DetailPanel`, `FormLayout` + `FormField`, `BarChart` | Tables become one card per row on phones; charts carry their figures in a real table. |
-| Empty and other states | `EmptyState`, `StateMessage`, `Skeleton`, `Toast` | Empty, error, not configured, unavailable and loading, worded once; flash messages in a polite live region that waits to be dismissed. |
-| Footer | `AppShell` `footerLinks` | Support, status, documentation, security, copyright. |
+| Region                 | Component                                                                  | What it holds                                                                                                                                                                                                                                    |
+| ---------------------- | -------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Frame                  | `AppShell`                                                                 | A fixed 16.25rem sidebar (a 3.5rem icon rail when collapsed) and a main column that fills the rest of the viewport. No centred page container.                                                                                                   |
+| Sidebar head           | `WorkspaceSwitcher` + `BrandMark`                                          | The product's mark and wordmark over the current workspace or organisation. With nothing to switch to, it is a plain link home.                                                                                                                  |
+| Sidebar search         | `QuickSearch` → `CommandPalette`                                           | "Quick search…" with a ⌘K / Ctrl+K hint, opening a palette of every navigation item.                                                                                                                                                             |
+| Sidebar groups         | `SideNav`                                                                  | Quiet group labels (Overview, Identity & people, Content, Commerce, Platform…), one 32px row per item with an icon, nested items under a disclosure, the current item filled with the brand indicator. Descriptions are tooltips, never printed. |
+| Sidebar foot           | `AppShell`                                                                 | The collapse toggle.                                                                                                                                                                                                                             |
+| Top bar                | `TopBarAction`, `AccountMenu`                                              | A 48px bar: the menu button and the mark below 64rem, then actions ("Ask Nyuchi AI", "Support") and the account menu, right-aligned.                                                                                                             |
+| Page header            | `PageHeader`                                                               | Breadcrumbs, the page's one `<h1>` (20px), a "View docs" pill, one line of description, page actions.                                                                                                                                            |
+| Toolbar                | `Toolbar`, `ToolbarMenu`, or `FilterBar`                                   | Search and filters as a GET form, so every filtered view is a URL.                                                                                                                                                                               |
+| Stat tiles             | `StatTiles`, `StatTile`, `InfoTip`                                         | Headline figures as a description list. Trends in words ("Up 12.5% on the previous 30 days") with a short badge; a missing value reads "Not available", never 0.                                                                                 |
+| Content cards          | `Card`, `DataTable`, `DetailPanel`, `FormLayout` + `FormField`, `BarChart` | Tables become one card per row on phones; charts carry their figures in a real table.                                                                                                                                                            |
+| Empty and other states | `EmptyState`, `StateMessage`, `Skeleton`, `Toast`                          | Empty, error, not configured, unavailable and loading, worded once; flash messages in a polite live region that waits to be dismissed.                                                                                                           |
+| Footer                 | `AppShell` `footerLinks`                                                   | Support, status, documentation, security, copyright.                                                                                                                                                                                             |
 
 ## Density
 
 Dashboards are dense on a mouse and generous on touch. Every interactive control declares
 both heights, and its contract checks them.
 
-| Control | Fine pointer | Coarse pointer (touch) |
-| --- | --- | --- |
-| Nav row, quick search, toolbar menu, top-bar action, account menu, page link | 32px | 44px |
-| Button `md` / input / select | 36px | 48px |
-| Button `sm` / `lg` | 32px / 40px | 44px / 48px |
-| Command palette result | 36px | 44px |
-| Top bar | 48px | 48px |
-| Text | 14px (`text-body-sm`) | 16px (so iOS never zooms an input) |
+| Control                                                                      | Fine pointer          | Coarse pointer (touch)             |
+| ---------------------------------------------------------------------------- | --------------------- | ---------------------------------- |
+| Nav row, quick search, toolbar menu, top-bar action, account menu, page link | 32px                  | 44px                               |
+| Button `md` / input / select                                                 | 36px                  | 48px                               |
+| Button `sm` / `lg`                                                           | 32px / 40px           | 44px / 48px                        |
+| Command palette result                                                       | 36px                  | 44px                               |
+| Top bar                                                                      | 48px                  | 48px                               |
+| Text                                                                         | 14px (`text-body-sm`) | 16px (so iOS never zooms an input) |
 
 Corners use the small radius, not the marketing pill. Three controls are under 44px on touch
 today and are recorded as gaps in their contracts: the sidebar collapse toggle (32px), the
@@ -114,16 +114,16 @@ The layout never varies by brand. A brand changes colour and mark, and nothing e
 The mineral is the brand's row in the ecosystem table (`mzizi_get_tokens` with family
 `ecosystem`, or `GET https://api.mzizi.dev/v1/brand` `.ecosystem`):
 
-| Brand | Mineral | Overlay |
-| --- | --- | --- |
-| nyuchi | gold | `brand-nyuchi.css`, `accent="gold"` |
-| mukoko | tanzanite | `brand-mukoko.css`, `accent="tanzanite"` |
-| bundu | copper | `brand-bundu.css`, `accent="copper"` |
-| shamwari | sodalite | `brand-shamwari.css`, `accent="sodalite"` |
-| Mzizi | hematite (a heritage tone) | `brand-mzizi.css` |
-| nhimbe, campfire | malachite | `brand-nhimbe.css`, `brand-campfire.css` (proposed) |
-| lingo | cobalt | `brand-lingo.css` (proposed) |
-| bushtrade | gold | `brand-bushtrade.css` (proposed) |
+| Brand            | Mineral                    | Overlay                                             |
+| ---------------- | -------------------------- | --------------------------------------------------- |
+| nyuchi           | gold                       | `brand-nyuchi.css`, `accent="gold"`                 |
+| mukoko           | tanzanite                  | `brand-mukoko.css`, `accent="tanzanite"`            |
+| bundu            | copper                     | `brand-bundu.css`, `accent="copper"`                |
+| shamwari         | sodalite                   | `brand-shamwari.css`, `accent="sodalite"`           |
+| Mzizi            | hematite (a heritage tone) | `brand-mzizi.css`                                   |
+| nhimbe, campfire | malachite                  | `brand-nhimbe.css`, `brand-campfire.css` (proposed) |
+| lingo            | cobalt                     | `brand-lingo.css` (proposed)                        |
+| bushtrade        | gold                       | `brand-bushtrade.css` (proposed)                    |
 
 The sub-app overlays marked proposed are in review in
 [mzizi-dev/packages-npm#24](https://github.com/mzizi-dev/packages-npm/pull/24), with Mukoko
@@ -197,11 +197,11 @@ end
 
 How each implementation is tested against its contract:
 
-| Implementation | Where | What runs |
-| --- | --- | --- |
-| Astro, all 31 | `mzizi-dev/packages-npm`, `src/app/contracts.test.ts` | Every component rendered in every state: each clause, check and density row, the brand-overlay rule, the no-JS rule, and props and slots against the `.astro` source. A clause the runner cannot evaluate fails. |
-| React `.tsx` | `mzizi-dev/mzizi-registry`, `__tests__/contracts` | The seven primitives that have one are rendered and must carry the contract's slot, and its variants or role. |
-| Rust `.rs` | the same, plus each crate's `tests/contract.rs` | Five primitives (`badge`, `button`, `card`, `input`, `label`) must emit the same slot and variants. |
+| Implementation | Where                                                 | What runs                                                                                                                                                                                                        |
+| -------------- | ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Astro, all 31  | `mzizi-dev/packages-npm`, `src/app/contracts.test.ts` | Every component rendered in every state: each clause, check and density row, the brand-overlay rule, the no-JS rule, and props and slots against the `.astro` source. A clause the runner cannot evaluate fails. |
+| React `.tsx`   | `mzizi-dev/mzizi-registry`, `__tests__/contracts`     | The seven primitives that have one are rendered and must carry the contract's slot, and its variants or role.                                                                                                    |
+| Rust `.rs`     | the same, plus each crate's `tests/contract.rs`       | Five primitives (`badge`, `button`, `card`, `input`, `label`) must emit the same slot and variants.                                                                                                              |
 
 These are package test suites, not the language's `mz contract`: no component is written in
 Mzizi yet. The contract text uses the language's grammar so that it can be checked by `mz
@@ -244,6 +244,7 @@ in [`contracts/README.md`](https://github.com/mzizi-dev/mzizi-registry/blob/main
     );
     ```
     One object per section. The sidebar and the command palette both read it.
+
   </Step>
   <Step title="Wrap every signed-in page in AppShell">
     ```astro
