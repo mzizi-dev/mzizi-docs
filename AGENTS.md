@@ -142,7 +142,7 @@ An owner rule, 2026-09-30: "changelogs are super important".
 ## Terminology
 
 - Write the wordmark as **Mzizi**. The other wordmarks stay lowercase: nyuchi, mukoko,
-  shamwari, bundu, nhimbe. npm packages keep the `@nyuchi/` scope.
+  shamwari, bundu. npm packages keep the `@nyuchi/` scope.
 - **The language** (older pages say "Mzizi-lang") for the research project, and **the
   registry** or **the components** for what `api.mzizi.dev` serves. They are different
   things; `ecosystem.mdx` holds the line.

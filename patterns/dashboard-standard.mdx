@@ -114,21 +114,23 @@ The layout never varies by brand. A brand changes colour and mark, and nothing e
 The mineral is the brand's row in the ecosystem table (`mzizi_get_tokens` with family
 `ecosystem`, or `GET https://api.mzizi.dev/v1/brand` `.ecosystem`):
 
-| Brand            | Mineral                    | Overlay                                             |
-| ---------------- | -------------------------- | --------------------------------------------------- |
-| nyuchi           | gold                       | `brand-nyuchi.css`, `accent="gold"`                 |
-| mukoko           | tanzanite                  | `brand-mukoko.css`, `accent="tanzanite"`            |
-| bundu            | copper                     | `brand-bundu.css`, `accent="copper"`                |
-| shamwari         | sodalite                   | `brand-shamwari.css`, `accent="sodalite"`           |
-| Mzizi            | hematite (a heritage tone) | `brand-mzizi.css`                                   |
-| nhimbe, campfire | malachite                  | `brand-nhimbe.css`, `brand-campfire.css` (proposed) |
-| lingo            | cobalt                     | `brand-lingo.css` (proposed)                        |
-| bushtrade        | gold                       | `brand-bushtrade.css` (proposed)                    |
+| Brand            | Mineral                    | Overlay                                   |
+| ---------------- | -------------------------- | ----------------------------------------- |
+| nyuchi           | gold                       | `brand-nyuchi.css`, `accent="gold"`       |
+| mukoko           | tanzanite                  | `brand-mukoko.css`, `accent="tanzanite"`  |
+| bundu            | copper                     | `brand-bundu.css`, `accent="copper"`      |
+| shamwari         | sodalite                   | `brand-shamwari.css`, `accent="sodalite"` |
+| Mzizi            | hematite (a heritage tone) | `brand-mzizi.css`                         |
+| events, campfire | malachite                  | `brand-events.css`, `brand-campfire.css`  |
+| lingo            | cobalt                     | `brand-lingo.css`                         |
+| bushtrade        | gold                       | `brand-bushtrade.css`                     |
 
-The sub-app overlays marked proposed are in review in
+The sub-app overlays shipped in
 [mzizi-dev/packages-npm#24](https://github.com/mzizi-dev/packages-npm/pull/24), with Mukoko
-News and Weather. Mzizi's hematite is a heritage tone, so AppShell's `accent` (which takes
-the seven minerals) does not apply to it; its overlay sets `--primary`.
+News and Weather. `events` is Mukoko Events (events.mukoko.com). The _nhimbe_ brand was
+retired on 4 October 2026, and `brand-nhimbe.css` stays as a deprecated alias that re-exports
+`brand-events.css`, so existing imports keep working. Import `brand-events.css` in new code.
+Mzizi's hematite is a heritage tone, so AppShell's `accent` (which takes the seven minerals) does not apply to it; its overlay sets `--primary`.
 
 Status colours do **not** follow the brand: success is malachite, warnings gold, errors
 terracotta or the destructive token, and information cobalt, in every brand. Each
