@@ -119,6 +119,7 @@
               "patterns/mobile-first",
               "patterns/dashboard",
               "patterns/dashboard-standard",
+              "patterns/discover-standard",
               "patterns/authentication",
               "patterns/resource-index",
               "patterns/resource-detail"
