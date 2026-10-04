@@ -82,6 +82,7 @@
               "registry/consuming",
               "registry/contributing",
               "registry/schema",
+              "registry/contracts",
               "registry/components"
             ]
           },
