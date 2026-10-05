@@ -144,23 +144,24 @@ them:
 
 ## How each implementation is checked
 
-| Where                                                                                                                                                     | What runs                                                                                                                                                                                                                                                                                                  |
-| --------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `mzizi-dev/packages-npm`, `src/app/contracts.test.ts`                                                                                                     | Ships a copy of `contracts/` in `@bundu/ui` (`pnpm contracts:fetch`, `pnpm contracts:check`). Renders every Astro component in every state and evaluates the clauses, checks and density, the brand-overlay rule, the no-JS rule, and that the `.astro` file's props and slots are exactly the contract's. |
-| [`mzizi-registry` `__tests__/contracts/contracts.test.tsx`](https://github.com/mzizi-dev/mzizi-registry/blob/main/__tests__/contracts/contracts.test.tsx) | Validates every contract against the schema and the clause grammar, keeps `index.json` and the README's coverage table honest, renders each declared `.tsx` sibling and checks its identity, and checks each declared `.rs` sibling emits the same `data-slot`, variants and role.                         |
+| Where                                                                                                                                                             | What runs                                                                                                                                                                                                                                                                                                  |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`mzizi-registry` `__tests__/astro/contracts.test.ts`](https://github.com/mzizi-dev/mzizi-registry/blob/main/__tests__/astro/contracts.test.ts)                   | Renders every contract's `.astro` (`implementations.astro.registry`) in every state through Astro's container, with no framework renderer, and evaluates the clauses, checks and density, the brand-overlay rule, the no-JS rule, and that the `.astro` file's props and slots are exactly the contract's. |
+| [`mzizi-registry` `__tests__/contracts/tsx-contracts.test.tsx`](https://github.com/mzizi-dev/mzizi-registry/blob/main/__tests__/contracts/tsx-contracts.test.tsx) | Renders every `.tsx` whose `identity` is `contract` in every state and holds it to the whole contract with the same runner (`contracts/runner.ts`).                                                                                                                                                        |
+| `mzizi-dev/packages-npm`, `src/app/contracts.test.ts`                                                                                                             | Runs the same contracts again on the built `@bundu/ui`, which is built from the registry (`pnpm registry:sync`) and fails CI on drift (`pnpm registry:check`).                                                                                                                                             |
+| [`mzizi-registry` `__tests__/contracts/contracts.test.tsx`](https://github.com/mzizi-dev/mzizi-registry/blob/main/__tests__/contracts/contracts.test.tsx)         | Validates every contract against the schema and the clause grammar, keeps `index.json` and the README's coverage table honest, renders each declared `.tsx` sibling and checks its identity, and checks each declared `.rs` sibling emits the same `data-slot`, variants and role.                         |
 
-`identity` is what a sibling shares with the Astro build: `slot`, `slot+role` or
-`slot+variants`. A sibling's differences from the contract are listed in its `divergences`.
+`identity` is what a sibling shares with the contract: the whole `contract`, or only `slot`,
+`slot+role` or `slot+variants`. A sibling's differences from the contract are listed in its `divergences`.
 
 ## Coverage and gaps
 
-Seven primitives have siblings in the registry: a `.tsx` for `button`, `badge`, `card`,
-`alert`, `input`, `label` and `skeleton`, and a `.rs` for `button`, `badge`, `card`, `input`
-and `label`. The 24 shell and page patterns have neither. The plan is
-[mzizi-registry#397](https://github.com/mzizi-dev/mzizi-registry/issues/397) (an Astro target,
-so these `.astro` files move into the registry) and
-[#401](https://github.com/mzizi-dev/mzizi-registry/issues/401) (Rust ports of the console
-patterns). The coverage table in
+Every contract has an `.astro` and a `.tsx` in the registry
+([mzizi-registry#397](https://github.com/mzizi-dev/mzizi-registry/issues/397)). The seven app
+primitives' `.tsx` are the registry's own `button`, `badge`, `card`, `alert`, `input`, `label`
+and `skeleton`, which share only their identity; every other `.tsx` keeps the whole contract.
+A `.rs` exists for `button`, `badge`, `card`, `input` and `label`;
+[#401](https://github.com/mzizi-dev/mzizi-registry/issues/401) tracks Rust ports of the rest. The coverage table in
 [`contracts/README.md`](https://github.com/mzizi-dev/mzizi-registry/blob/main/contracts/README.md#coverage)
 is kept true by the registry's test.
 

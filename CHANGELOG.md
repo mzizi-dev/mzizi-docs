@@ -21,6 +21,14 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
+### Added — the Discover detail pattern, the Astro target and Open in Mukoko (2026-10-05)
+
+- **Added: `patterns/discover-detail`.** The page for one item reached from a Discover page uses five parts (DetailHero, DiscoverBreadcrumb, MetaList, DetailActions, RelatedRail), each with a contract, an `.astro` and a `.tsx` (mzizi-registry#429). The page also covers the canonical Open in Mukoko link, `https://mukoko.com/open/<service>/<id>`.
+- **Changed: `toolchain/cli`**: `--target astro`, inferred in Astro projects.
+- **Changed: `registry/consuming`** gains "The Astro build": `mzizi add --target astro`, `/v1/astro/{name}`, and `@bundu/ui` built from the registry.
+- **Changed: `registry/contracts`.** Every format is tested in the registry (the Astro and React runners), every contract has an `.astro` and a `.tsx`, and `identity` gains `contract`.
+- **Changed: `patterns/discover-standard`.** The Next.js apps adopt the standard through the registry's React build. "Open in Mukoko" is the canonical link (`OpenInApp` 1.1.0).
+
 ### Changed — `@bundu/ui` 0.3.0 carries the Dashboard Standard (2026-10-04)
 
 - **Dashboard Standard: `@bundu/ui` 0.3.0, not 0.4.x.** Owner decision,
