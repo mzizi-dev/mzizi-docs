@@ -29,6 +29,47 @@ entries move under it. Mintlify does not publish this file.
 - **Changed: `registry/contracts`.** Every format is tested in the registry (the Astro and React runners), every contract has an `.astro` and a `.tsx`, and `identity` gains `contract`.
 - **Changed: `patterns/discover-standard`.** The Next.js apps adopt the standard through the registry's React build. "Open in Mukoko" is the canonical link (`OpenInApp` 1.1.0).
 
+### Changed — the language pages are re-checked at language main `6da2170` (2026-10-04)
+
+A freshness update (#38). The language's six commits since `62a0f32` (`dd9bc85`,
+`d8e65e8`, `03975c6`, `8e9d317`, `57b4b50`, `6da2170`) change its docs, its CI
+and its security contact. None touches `compiler/`, the tests, `primitives/`,
+`examples/`, `benchmarks/` code, `LANGUAGE-TRACKER.md` or `CHARTER.md`.
+
+- **Every "checked at" and "measured at" marker moves from `62a0f32` to
+  `6da2170`**, on Status (the checked commit, now 4 October 2026, and the IR
+  table), the compiler page (the test count), IR (the measurements), the
+  benchmark (the arms), What still has to be built and the pilot results (the
+  readiness fixes). Each was re-checked at `6da2170`, not just carried over:
+  `cargo test --workspace` gives 425 tests in 18 suites, 294 in the compiler
+  crate; `compiler/src` is 12,644 lines; `compiler/tests/ir_measured.rs` gives
+  242 shared nodes against 248 isolated and a worst outline of 38%
+  (`spinner.mz`); `mz contract` gives 29 clauses over the nine primitives and
+  22 over `examples/registry.mz`, tested over 61 requests; `mz build` writes the
+  documented package with 18 generated tests; and the binary dispatches the
+  same commands. The tracker marks, the charter version (v0.4), the RFC list
+  and the diagnostic codes are unchanged.
+- **`/ecosystem`, "Reporting a security problem":** says the language
+  repository asks for GitHub private reporting first, with
+  `security@nyuchi.com` as the address when that is unavailable, as its
+  `SECURITY.md` now does (language `03975c6`).
+- No other page changes. The language now describes `mz build` the way these
+  pages already did (`dd9bc85`). The "corpus" wording on IR, Status,
+  Primitives and Syntax stays, because RFC-0001, RFC-0003 and the `.mz` doc
+  comments still use it. The language's other changes (its lint now runs from
+  the org workflow, big work is tracked in issues, `nhimbe` leaves its wordmark
+  list, and its README and `AGENTS.md` link the published design system) state
+  nothing these pages say differently.
+
+### Added — the published design system is linked (2026-10-04)
+
+- **Foundations links the Design System artifact.** `foundations/overview.mdx`
+  says the design system is also published on claude.ai as the
+  [Design System artifact](https://claude.ai/artifact/G8CCtAbZ8w717uQ3R5itCc),
+  built from the `design-system/` folder in `mzizi-dev/mzizi-registry`
+  (arriving with mzizi-registry#418), which is the copy to change. `AGENTS.md`
+  says the same for contributors.
+
 ### Changed — `@bundu/ui` 0.3.0 carries the Dashboard Standard (2026-10-04)
 
 - **Dashboard Standard: `@bundu/ui` 0.3.0, not 0.4.x.** Owner decision,
