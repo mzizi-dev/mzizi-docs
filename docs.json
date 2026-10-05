@@ -120,6 +120,7 @@
               "patterns/dashboard",
               "patterns/dashboard-standard",
               "patterns/discover-standard",
+              "patterns/discover-detail",
               "patterns/authentication",
               "patterns/resource-index",
               "patterns/resource-detail"

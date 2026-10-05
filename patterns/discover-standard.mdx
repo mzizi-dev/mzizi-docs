@@ -18,9 +18,12 @@ Tracking: [mzizi-registry#413](https://github.com/mzizi-dev/mzizi-registry/issue
 
 <Note>
   The standard is new. The components ship in the next `@bundu/ui` release; npm serves 0.2.0
-  until the owner publishes it. The builds are Astro only: news, events and weather are
-  Next.js apps today, and adopt the standard when they move to Astro or into the super-app on
-  the web (their adoption issues say how).
+  until the owner publishes it. Every component has a pure `.astro` and a `.tsx` in the
+  registry, both held to its contract, so the Next.js apps (news, events, weather) adopt it
+  through the registry's React build (`mzizi add discover-card --target tsx`, or
+  `npx shadcn add https://api.mzizi.dev/v1/ui/discover-card`), and Astro sites through
+  `@bundu/ui` or `mzizi add --target astro`. The page for one item is the
+  [Discover detail pattern](/patterns/discover-detail).
 </Note>
 
 ## The reference
@@ -116,9 +119,11 @@ actions sit above it and stay separately focusable. `external` marks a link to a
 - **No client JavaScript, no inline styles.** The components ship neither, and their tests fail
   on a `style` attribute, so a site can run with `script-src 'none'` and `style-src 'self'`, as
   circles.mukoko.com does. JSON-LD is data, not script.
-- **"Open in Mukoko" is an https link**: a universal or app link, or a server redirect such as
-  circles.mukoko.com's `/c/{slug}/join`. It opens the app where it is installed and the web
-  otherwise. A bare `mukoko://` link does nothing without the app, so it is never the `href`.
+- **"Open in Mukoko" is one canonical https link**: `https://mukoko.com/open/<service>/<id>`
+  (`OpenInApp` 1.1.0's `service` and `id`). The apps claim it as a universal link and app link,
+  and on the web a resolver sends the reader to the service's page for the item (see
+  [the detail pattern](/patterns/discover-detail#open-in-mukoko)). An explicit `href` stays as
+  an override. A bare `mukoko://` link does nothing without the app, so it is never the `href`.
 - **SEO.** Title "&lt;page&gt; · &lt;Service&gt;" (the home page "&lt;Service&gt;: &lt;promise&gt;"),
   `en_GB`, a 1200×630 image. JSON-LD: `WebSite` with a `SearchAction` on the home page;
   `CollectionPage` → `ItemList` and a `BreadcrumbList` on lists.

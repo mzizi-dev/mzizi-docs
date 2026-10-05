@@ -34,6 +34,30 @@ That route is a read surface, not an install path. Its `crate` field names the c
 component ships in, which differs by node: `mzizi-ui` for `button`, `mzizi-brand` for
 `mzizi-alert-banner`. The rest of this page covers the React build.
 
+## The Astro build
+
+The registry is the single source of every component in every format: `.tsx`, `.rs`, `.astro`
+(and `.mz` as it lands). Where a component has an Astro implementation, it is a pure `.astro`
+file beside its `.tsx` and `.rs`, with no React, Svelte or Vue under it and no client
+JavaScript unless its contract allows one enhancement script. The Dashboard Standard
+(`app-*` and the primitives), the [Discover Standard](/patterns/discover-standard) and its
+[detail pattern](/patterns/discover-detail) (`discover-*`) and the marketing-site components
+(`site-*`) all have one.
+
+```bash
+npx @nyuchi/mzizi-cli add app-data-table --target astro
+```
+
+The installer infers `--target astro` in an Astro project, even one with React islands. It
+reads `https://api.mzizi.dev/v1/astro/<name>` and writes the component, every registry file it
+imports and any brand asset into `src/components/mzizi/`, then prints the npm dependencies to
+add. A component in the closure with no `.astro` is refused by name, never replaced by its
+`.tsx`. `GET /v1/astro` lists every name it serves.
+
+`@bundu/ui` ships the same `.astro` files as a package (`@bundu/ui/app/*`,
+`@bundu/ui/discover/*`): it is built from the registry at a pinned commit, and its CI fails if
+it drifts.
+
 ## The React build
 
 The React and TypeScript components are **the React build**. They keep working and install
