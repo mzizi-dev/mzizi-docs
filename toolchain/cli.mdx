@@ -52,6 +52,7 @@ Every command works under either name: `fundi add` and `mzizi add` are the same.
 
 ```bash
 mzizi add button --target rust     # the Rust build, explicitly
+mzizi add app-data-table --target astro  # the pure Astro build, into src/components/mzizi/
 mzizi add button                   # infer the target from the project
 mzizi add address-input --dry-run  # print the plan, write nothing
 mzizi add card --overwrite         # replace files that already exist
@@ -84,10 +85,13 @@ names each component's own crate: `mzizi add mzizi-alert-banner` records `mzizi-
 For a React project, it writes the `.tsx` files and lists the npm packages they need, as the
 shadcn CLI would.
 
-**The target** is inferred from the project, and `--target rust` or `--target tsx` overrides
-it. A project with both a `Cargo.toml` and a `package.json` is ambiguous, so `mzizi add`
-refuses and asks for `--target` rather than guess. An Astro project is refused too, with the
-reason: the registry has no `.astro` components to install.
+**The target** is inferred from the project, and `--target rust`, `--target tsx` or
+`--target astro` overrides it. A project with both a `Cargo.toml` and a `package.json` is
+ambiguous, so `mzizi add` refuses and asks for `--target` rather than guess. An Astro project
+(even one with React islands) infers `astro` (from `@nyuchi/mzizi-cli` 0.7.0): it installs a
+component's pure `.astro` from `api.mzizi.dev/v1/astro/<name>`, with every registry file it
+imports and any brand asset, into `src/components/mzizi/`, and refuses by name a component that
+has no `.astro` rather than install its `.tsx`.
 
 ## Model access
 

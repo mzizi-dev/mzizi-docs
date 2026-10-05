@@ -1,0 +1,95 @@
+---
+title: "Discover detail pattern"
+description: "The page for one item reached from a Discover page (an article, an event, a public circle, a place): five standard parts in Astro and React, and the canonical Open in Mukoko link."
+sidebarTitle: "Discover detail"
+icon: "file-text"
+---
+
+Owner decision, 4 October 2026: the page for one item, reached from a
+[Discover Standard](/patterns/discover-standard) list, is standard too. Every Mukoko service
+(news, events, circles, weather, and the super-app on the web) builds it from the same five
+server-rendered parts, with no client JavaScript. Tracking:
+[mzizi-registry#429](https://github.com/mzizi-dev/mzizi-registry/issues/429).
+
+Each part has a contract in the registry
+([`contracts/discover/`](https://github.com/mzizi-dev/mzizi-registry/tree/main/contracts/discover))
+and two builds beside it in `components/registry/n6-pages/`: a pure `.astro` and a `.tsx`,
+both held to the whole contract by the registry's tests. `@bundu/ui` ships the Astro build
+(`@bundu/ui/discover/*`, from 0.3.0).
+
+## The parts
+
+| Part                   | Registry name             | `@bundu/ui` export                            | What it is                                                                                                                                                                                         |
+| ---------------------- | ------------------------- | --------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **DetailHero**         | `discover-detail-hero`    | `@bundu/ui/discover/DetailHero.astro`         | The page's only `<h1>`, an eyebrow, a "when and where" line with `<time datetime>`, a lead, and the item's image (loaded eagerly) or a `media` slot. With media it becomes two columns from 64rem. |
+| **DiscoverBreadcrumb** | `discover-breadcrumb`     | `@bundu/ui/discover/DiscoverBreadcrumb.astro` | A named `<nav>` with an `<ol>`. The current page is plain text with `aria-current="page"`, and the same trail is emitted as BreadcrumbList JSON-LD with absolute URLs.                             |
+| **MetaList**           | `discover-meta-list`      | `@bundu/ui/discover/MetaList.astro`           | A `<dl>` of the item's facts. Each row can have an icon, a link or a `<time>`, in one to three responsive columns.                                                                                 |
+| **DetailActions**      | `discover-detail-actions` | `@bundu/ui/discover/DetailActions.astro`      | **Open in Mukoko** first, as the primary action, then secondary links and share links. Sharing uses share URLs, never a script.                                                                    |
+| **RelatedRail**        | `discover-related-rail`   | `@bundu/ui/discover/RelatedRail.astro`        | [DiscoverCards](/patterns/discover-standard) in a scroll-snap row on phones and a grid from 48rem. It disappears entirely when nothing is related.                                                 |
+
+DiscoverBreadcrumb, MetaList and RelatedRail render nothing when their list is empty; each
+contract checks that with an `empty` state.
+
+## Page order
+
+```astro
+---
+import DetailHero from "@bundu/ui/discover/DetailHero.astro";
+import DiscoverBreadcrumb from "@bundu/ui/discover/DiscoverBreadcrumb.astro";
+import MetaList from "@bundu/ui/discover/MetaList.astro";
+import DetailActions from "@bundu/ui/discover/DetailActions.astro";
+import RelatedRail from "@bundu/ui/discover/RelatedRail.astro";
+---
+
+<DetailHero title={circle.name} eyebrow="Public circle" lead={circle.summary}>
+  <DiscoverBreadcrumb
+    slot="breadcrumb"
+    crumbs={[{ label: "Circles", href: "/" }, { label: circle.name }]}
+  />
+  <DetailActions slot="actions" service="circles" id={circle.id} />
+</DetailHero>
+<MetaList items={[{ label: "Members", value: String(circle.members), icon: "users" }]} />
+<RelatedRail id="related" title="More circles like this" items={related} />
+```
+
+Inside a [DiscoverShell](/patterns/discover-standard), with
+[DiscoverMeta](/patterns/discover-standard) in the page head. Each contract lists the exact
+props and slots.
+
+## Open in Mukoko
+
+Open in Mukoko always points to one canonical **https universal link**:
+
+```text
+https://mukoko.com/open/<service>/<id>
+```
+
+`openInMukokoUrl(service, id)` builds it (`discover-open-link.ts` in the registry,
+`@bundu/ui/discover/open`). `service` is one of `news`, `events`, `weather` or `circles`, and
+the id is one encoded path segment. `discover/open-in-app` 1.1.0 and DetailActions take
+`service` and `id`. An explicit `href` is kept only as an override, for example in a
+server-filled shell that fills the whole URL.
+
+- **With the app installed**, the Mukoko apps claim `mukoko.com/open/*` through iOS universal
+  links and Android app links, so the link opens the item in the app.
+- **Everywhere else** the browser loads it, and the `/open/*` resolver in
+  `mukoko-dev/super-app-web` sends the reader to that service's own web page for the item.
+
+The link is never a bare `mukoko://` scheme, which does nothing for someone without the app.
+
+<Note>
+  The resolver and the app-links files (`apple-app-site-association`, `assetlinks.json`) are
+  being built (mukoko-dev/super-app-web). Until they ship, an explicit `href` to the service's
+  own page keeps the button useful.
+</Note>
+
+## Installing
+
+- **Astro:** `@bundu/ui` (above), or copy the source with
+  `npx @nyuchi/mzizi-cli add discover-detail-hero --target astro`, which installs the
+  component and everything it imports into `src/components/mzizi/`.
+- **React and Next.js:** `npx @nyuchi/mzizi-cli add discover-detail-hero --target tsx`, or
+  `npx shadcn@latest add https://api.mzizi.dev/v1/ui/discover-detail-hero`.
+
+Do not fork, restyle or wrap a part. If a service needs something the pattern lacks, change
+the contract and both builds in the registry, in the same change.
