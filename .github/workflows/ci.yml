@@ -2,13 +2,14 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    # staging is the live beta (nyuchi/.github#80); it gets the same checks.
+    branches: [main, staging]
   pull_request:
     # Not just main. Stacked pull requests target the branch below them in the
     # stack, and a filter of [main] silently gives every layer but the bottom one
     # zero checks — the failure looks like a green PR, which is the worst shape
     # for it to take.
-    branches: [main, "claude/**"]
+    branches: [main, staging, "claude/**"]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
