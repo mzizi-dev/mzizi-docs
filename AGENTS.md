@@ -98,6 +98,8 @@ Three specific traps:
   with the `program` file kind, `fn` bodies and the `MZ09xx` codes, but only on the language's
   `staging` branch (mzizi#80, 7 October 2026), not on `main`. Pages may say it is landing;
   document it as a command once it is released to `main` and the tracker says so.
+  In the same post-release pass, move the `blob/staging` links in `rfcs.mdx` and `status.mdx`
+  (RFC-0013 and `design/LANGUAGE-SURVEY.md`) to `blob/main`.
 - **Do not put a model name or identifier in a page.** Say "a frontier model" or "a ~7B
   open-weight model" and link the pilot write-up, which names them.
 
