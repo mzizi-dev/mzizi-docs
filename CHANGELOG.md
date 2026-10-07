@@ -21,38 +21,57 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
-### Changed — versions and features from the 7 October 2026 releases (2026-10-07)
+### Changed — versions and features from the 5–7 October releases (2026-10-07)
 
-A freshness update: the scheduled Freshness check (`node scripts/check-freshness.mjs`) reported
-14 drifts, and `@nyuchi/mzizi-cli` 0.7.0 reached npm while this was being fixed.
+A freshness update. The scheduled Freshness check (`node scripts/check-freshness.mjs`) reported
+14 drifts. While they were being fixed, `@nyuchi/mzizi-cli` 0.7.0 reached npm and the language
+released to `main` (`9a88e1d`).
 
-- **Mzizi Roots (`roots/overview`): the ten crates are at `0.3.0`, not `0.1.0`** (crates.io, 7
-  October 2026). The page says when `0.2.0` and `0.3.0` were published (registry v4.6.0 and v4.7.0;
-  v4.8.0 left them at `0.3.0`), and that `cargo add` takes the newest release, with the
-  `"0.3"` requirement the crate READMEs use for a hand-written `Cargo.toml`. The crate table
-  follows each crate's own description: `mzizi-ui` now holds alert, skeleton, status badge and a
-  safe Markdown renderer, and `mzizi-shell` names deep links and lifecycle.
-- **Added: "The Markdown renderer" on `roots/overview`.** `mzizi_ui::MarkdownRenderer` (from
-  `0.2.0`) parses Markdown into a typed tree and renders elements with no HTML string; raw HTML is
-  text, links pass an allow-list (from `0.3.0` a web address needs a host and no credentials), rich
-  text is read without a DOM, and the React, Astro and Rust builds share
-  `contracts/ui/markdown-renderer` 1.1.0.
+- **Mzizi Roots (`roots/overview`): the ten crates are at `0.3.0`, not `0.1.0`.** `0.2.0` and
+  `0.3.0` were published on 7 October 2026 by registry v4.6.0 and v4.7.0; v4.8.0 left them at
+  `0.3.0`. `cargo add` takes the newest release, and the page gives the `"0.3"` requirement the
+  crate READMEs use. The crate table follows each crate's own description: `mzizi-ui` now holds
+  alert, skeleton, status badge and a safe Markdown renderer, and `mzizi-shell` names deep links
+  and lifecycle. The MCP server's component order now reads Rust, Astro, React.
+- **Added: "The Markdown renderer" on `roots/overview`.** `MarkdownRenderer` (from `mzizi-ui`
+  `0.2.0`) parses Markdown into a typed tree and renders elements, with no HTML string. Raw HTML
+  is text and links pass an allow-list; from `0.3.0` a web address needs a host and no
+  credentials. Rich text is read without a DOM, and the React, Astro and Rust builds share
+  `contracts/ui/markdown-renderer` 1.1.0. The example, compiled against `mzizi-roots` 0.3,
+  imports `mzizi_roots::ui` and `dioxus::prelude`. A warning says that `mcp.mzizi.dev`, pinned
+  before the rebuild, still serves the old React build (an HTML string through
+  `dangerouslySetInnerHTML`), and that `api.mzizi.dev` serves the safe one.
 - **The MCP server (`toolchain/mcp`) is at `0.13.0`, not `0.11.2`**, on npm, on `mcp.mzizi.dev`
-  and in the MCP Registry. Added: `0.12.0`'s Astro build (the `astro` block in
-  `mzizi_get_component`, between `rust` and `react`; the `astro` filter, `withAstro` and
-  `astroFile`), and `0.13.0`'s `category` on `mzizi_get_skills`. The anonymous access check and
-  the tool list are re-dated to 7 October 2026.
+  and in the MCP Registry. Added: `0.12.0`'s Astro build (5 October 2026), with the `astro`
+  block in `mzizi_get_component` between `rust` and `react`, the `astro` filter, `withAstro`
+  and `astroFile`. Also added: `0.13.0`'s `category` on `mzizi_get_skills` (6 October). The
+  anonymous access check is re-dated to 7 October 2026 here, on `toolchain/overview` and in
+  `AGENTS.md`.
 - **The skills (`toolchain/skills`, `toolchain/overview`) are at `0.11.0`, not `0.8.5`: seven
-  skills in four categories.** Added: the `dev` skills `digital-hygiene` and `progress-report`,
-  the category table, and how to load the `dev` skills. The page says that npm and the MCP server
-  serve `0.11.0`, and the API and the plugin still serve `0.8.5`.
-- **The CLI (`toolchain/cli`) is at `0.7.0`, not `0.6.3`.** The version table gains `0.7.0`:
-  `--target astro`, and the seven skills through `@nyuchi/mzizi-skills` `^0.11.0`.
-- `AGENTS.md`'s list of facts moves to the same versions.
-- The language pages stay checked at `6da2170`. At language `main` `a8d5f55`,
-  `cargo test --workspace` still gives 425 tests in 18 suites and `mz contract` 29 clauses over
-  the nine primitives, but `compiler/src` is 12,645 lines while the language README still says
-  12,644, so the checked commit moves once the README does.
+  skills in four categories.** `0.9.0` (5 October) added `digital-hygiene`, `0.10.0`
+  (6 October) added `progress-report` and the categories, and `0.11.0` (6 October) is the
+  latest. Added: the category table and how to load the `dev` skills. npm and the MCP server
+  serve `0.11.0`; the API and the plugin still serve `0.8.5`.
+- **The CLI (`toolchain/cli`) is at `0.7.0`, not `0.6.3`** (7 October): `--target astro`, and
+  the seven skills through `@nyuchi/mzizi-skills` `^0.11.0`.
+- **The registry's component count is 656 on every page that states it**, from `/v1/ui` on
+  7 October 2026, where pages said 577 or 655: `registry/overview` (its type table now includes
+  `registry:item`, the two Mzizi mark files), `ecosystem`, `benchmark` and `ir`.
+  `check-freshness.mjs` now fails when one of them differs from `/v1/ui`'s `meta.total`.
+- **The language pages are re-checked at language `main` `9a88e1d`** (was `6da2170`): status,
+  the compiler page, IR, the benchmark, What still has to be built, and the pilot results.
+  `cargo test --workspace` gives 428 tests in 18 suites, 297 in the compiler crate (was 425 and
+  294). `compiler/src` is 12,706 lines (was 12,644). `compiler/tests/ir_measured.rs`, both
+  `mz contract` tallies, `mz build`'s 18 generated tests, the command set, the tracker marks and
+  the charter are unchanged.
+  - **Added: `MZ0410`** to the compiler page's codes: `match` in a view is an error that asks
+    for one `when … is x` block per variant. `syntax` notes that the RFC's `match` row is design,
+    and that the parser has none.
+  - **The React arm's pins are no longer provisional** (`benchmark`, `pilots`, `rfcs`). They
+    come from the registry's lockfile at `3afeb752`.
+  - The line count is now counted in the language's source by `check-freshness.mjs`, not read
+    from its README, which still said 12,644.
+- `AGENTS.md`'s list of facts moves to the same versions and dates.
 
 ### Added — `AGENTS.md` loads the Mzizi dev skills (2026-10-06)
 

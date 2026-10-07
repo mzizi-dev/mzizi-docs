@@ -142,11 +142,20 @@ other people, **safe by construction**: it parses the text into a typed tree of 
 inlines and renders that tree as Dioxus elements. There is no HTML string anywhere, so there is
 no `dangerous_inner_html` to get wrong.
 
-```rust
-use mzizi_ui::{MarkdownLinks, MarkdownRenderer};
+With `mzizi-roots` (its default `ui` feature re-exports `mzizi-ui` as `mzizi_roots::ui`) and
+Dioxus 0.7:
 
-rsx! { MarkdownRenderer { content: "**Hi** [docs](https://mzizi.dev)", links: MarkdownLinks::Https } }
+```rust
+use dioxus::prelude::*;
+use mzizi_roots::ui::{MarkdownLinks, MarkdownRenderer};
+
+#[component]
+fn Notes() -> Element {
+    rsx! { MarkdownRenderer { content: "**Hi** [docs](https://mzizi.dev)", links: MarkdownLinks::Https } }
+}
 ```
+
+With `cargo add mzizi-ui` instead, import from `mzizi_ui` directly.
 
 - **Raw HTML is text.** `<script>`, `<img onerror>` and `<a href>` in the source show as written.
 - **Links pass an allow-list.** By default (`MarkdownLinks::Safe`) http, https, mailto, tel and
@@ -168,8 +177,18 @@ from the registry (`mzizi add markdown-renderer --target astro`); the contract n
 `@bundu/ui/MarkdownRenderer.astro` from `@bundu/ui` 0.6.0, which is not on npm yet (`0.5.0` was
 the latest on 7 October 2026). The Rust source is at
 [`/v1/rs/markdown-renderer`](https://api.mzizi.dev/v1/rs/markdown-renderer), which names
-`mzizi-ui`. On 7 October 2026 the MCP server's registry pin was older than the renderer's Rust
-build, so `mzizi_get_component` still led with React for it; the server's pin bot moves that pin.
+`mzizi-ui`, and `api.mzizi.dev` serves the safe React and Astro builds too.
+
+<Warning>
+  **The MCP server still serves the old React `markdown-renderer`.** On 7 October 2026
+  `mcp.mzizi.dev` was pinned at registry `9f3631c` (v4.5.0), from before the rebuild. Its
+  `mzizi_get_component` answer for `markdown-renderer` leads with that React build, which builds
+  an HTML string and injects it with `dangerouslySetInnerHTML`, and has no Rust or Astro build.
+  Until the server's pin moves past registry v4.6.0, install it from `api.mzizi.dev`:
+  `mzizi add markdown-renderer`, the crate, or the shadcn command with the URL
+  `https://api.mzizi.dev/v1/ui/markdown-renderer`. The server's `catalogue.json` names its
+  pin in `source.registry`.
+</Warning>
 
 ## Reading the Rust source
 
@@ -195,7 +214,8 @@ commit, and so was the [MCP server](/toolchain/mcp). Both pins move, so read the
 the source: the API's `x-mzizi-source` header, or the MCP server's `catalogue.json`.
 
 The MCP server is Rust first too: `mzizi_get_component` leads with the component's crate,
-its `cargo add` line, its contract and its `.rs` source, and gives the React build second.
+its `cargo add` line, its contract and its `.rs` source, then gives the pure Astro build where
+there is one (from `mzizi-mcp` `0.12.0`), and the React build last.
 
 ## Where to go next
 

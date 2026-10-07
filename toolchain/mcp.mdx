@@ -158,9 +158,10 @@ refuses the React build but Rust exists, `react` is `{ build, error }` and the R
 carries `withRust` (how many of `total` have it), and `rust: true` or `rust: false` filters on
 it. From `0.12.0` the same goes for Astro: rows carry `astroFile`, the response carries
 `withAstro`, and `astro: true` or `astro: false` filters on it. On 7 October 2026, `rust: true`
-listed 59 and `astro: true` listed 89 of the registry's 655 components, at the server's registry
-pin. `mzizi_search` component hits carry `rustCrate` and `astroFile` the same way, and at an
-equal score a component with Rust ranks first; a better word match still wins.
+listed 59 components and `astro: true` listed 89, at the server's registry pin, which is older
+than the API's (see [where its data comes from](#where-its-data-comes-from)). `mzizi_search`
+component hits carry `rustCrate` and `astroFile` the same way, and at an equal score a
+component with Rust ranks first; a better word match still wins.
 
 ## Where its data comes from
 
@@ -210,9 +211,10 @@ as npm (`0.11.0` on 7 October 2026). From `0.13.0` it takes `category`: `dev`, `
 `language` or `build` returns every skill in that category in full, and `category: "dev"`
 (`digital-hygiene` and `progress-report`) is what every Mzizi repository's `AGENTS.md` asks an
 agent to load before it starts. Every answer carries each skill's `category`, and asking for a
-`name` outside the `category` you named is an error. From `0.11.1`, each skill's `source` names where it is authored,
-`mzizi-dev/agent-tools/mzizi-skills/skills/<name>`. The skills renamed or removed in `0.8.0`
-have no aliases; see [renamed and removed skills](/toolchain/skills#renamed-and-removed-skills).
+`name` outside the `category` you named is an error. From `0.11.1`, each skill's `source` names
+where it is authored, `mzizi-dev/agent-tools/mzizi-skills/skills/<name>`. The skills renamed or
+removed in `0.8.0` have no aliases; see [renamed and removed
+skills](/toolchain/skills#renamed-and-removed-skills).
 
 ### The docs tools
 

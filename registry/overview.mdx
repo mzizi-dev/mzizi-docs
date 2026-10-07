@@ -1,6 +1,6 @@
 ---
 title: "The component registry"
-description: "How the Mzizi component registry works: 577 items in files, a Rust path that leads, a React build installable with the shadcn CLI, all served over a public API with no database."
+description: "How the Mzizi component registry works: 656 items in files, a Rust path that leads, a React build installable with the shadcn CLI, all served over a public API with no database."
 sidebarTitle: "Overview"
 icon: "library"
 ---
@@ -45,17 +45,18 @@ project as a file you own. See [consuming the registry](/registry/consuming).
 
 ## What it holds
 
-Read from `GET https://api.mzizi.dev/v1/ui` on 29 September 2026:
+Read from `GET https://api.mzizi.dev/v1/ui` on 7 October 2026:
 
-| Item type        | Count   | Installs to            |
-| ---------------- | ------- | ---------------------- |
-| `registry:ui`    | 420     | `components/ui/`       |
-| `registry:block` | 105     | composed page sections |
-| `registry:lib`   | 47      | `lib/`                 |
-| `registry:hook`  | 3       | `hooks/`               |
-| `registry:base`  | 1       | the base layer         |
-| `registry:theme` | 1       | the theme              |
-| **Total**        | **577** |                        |
+| Item type        | Count   | Installs to                                     |
+| ---------------- | ------- | ----------------------------------------------- |
+| `registry:ui`    | 480     | `components/ui/`                                |
+| `registry:block` | 105     | composed page sections                          |
+| `registry:lib`   | 64      | `lib/`                                          |
+| `registry:hook`  | 3       | `hooks/`                                        |
+| `registry:item`  | 2       | `public/brand/` (the light and dark Mzizi mark) |
+| `registry:base`  | 1       | the base layer                                  |
+| `registry:theme` | 1       | the theme                                       |
+| **Total**        | **656** |                                                 |
 
 Counts move. `GET /v1/ui` is the live answer; prefer it to a number written down anywhere,
 including here.

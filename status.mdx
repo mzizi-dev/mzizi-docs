@@ -28,8 +28,8 @@ components against Dioxus. They are not its goal, and they showed no advantage. 
 The table below is the language's front end, which lives in its toolchain, the `mz`
 compiler. The compiler implements the language; it is not the language.
 
-Checked against [`mzizi-dev/mzizi`](https://github.com/mzizi-dev/mzizi) at `6da2170` on
-4 October 2026. Every row below can be checked in the repository; that is why it is a
+Checked against [`mzizi-dev/mzizi`](https://github.com/mzizi-dev/mzizi) at `9a88e1d` on
+7 October 2026. Every row below can be checked in the repository; that is why it is a
 table and not a paragraph. The language's own list of what is missing, against Python, Go,
 C++, TypeScript and Rust, is
 [`LANGUAGE-TRACKER.md`](https://github.com/mzizi-dev/mzizi/blob/main/LANGUAGE-TRACKER.md),
@@ -70,8 +70,8 @@ summarised on [What still has to be built](/tracker).
 | The harness, the core of Mzizi                       | **Designed, not built.** Only the agent protocol exists                                  | RFC-0012                                          |
 | Rendering, any target                                | **Not started.** Phase 1                                                                 | —                                                 |
 
-The compiler source is 12,644 lines across `compiler/src`. The workspace has **425 tests in
-18 suites**, 294 of them in the compiler crate and the rest in the benchmark harness, runner
+The compiler source is 12,706 lines across `compiler/src`. The workspace has **428 tests in
+18 suites**, 297 of them in the compiler crate and the rest in the benchmark harness, runner
 and probe crate. CI gates on `cargo fmt --check`, `cargo clippy --all-targets -D warnings`,
 `cargo test`, `mz check` and `mz contract` over every primitive and example, and a `lowering`
 job that builds, tests and serves the example service.
@@ -151,7 +151,7 @@ From `compiler/tests/ir_measured.rs`, over the nine primitives and the two compo
 examples. Services have no IR yet, so the example service is not in it. Eleven files is a tiny
 corpus, and the numbers should be read that way.
 
-| Property                | Measured at `6da2170`                                                                                     |
+| Property                | Measured at `9a88e1d`                                                                                     |
 | ----------------------- | --------------------------------------------------------------------------------------------------------- |
 | Structural sharing      | 242 shared nodes against 248 isolated: 6 saved across 11 files                                            |
 | `mz outline` cost       | Worst case **38% of source** (`spinner.mz`); the test fails above 75%                                     |
