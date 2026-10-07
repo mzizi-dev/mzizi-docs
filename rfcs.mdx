@@ -27,8 +27,10 @@ sections below say which.
 
 **Two more are new on 30 September.** RFC-0011 is handlers, the backend measurement slice, and
 most of it is built. RFC-0012 is the harness, the core of the language and what the agent
-reads, and it is a design. This index lists only what is merged, and takes every capability
-claim from [`LANGUAGE-TRACKER.md`](/tracker).
+reads, and it is a design. This index takes every capability claim from
+[`LANGUAGE-TRACKER.md`](/tracker). It lists what is on `main`, plus one section at the end
+for RFC-0013 and the language survey, which are
+[on `staging`, not yet on `main`](#on-staging-not-yet-on-main).
 
 **The status headers are historical.** RFC-0001 and RFC-0002 both say "nothing here is
 implemented". That was true when written. The front end now exists — see
@@ -310,11 +312,58 @@ thing from `benchmarks/harness/`, which is always called the benchmark harness.
 `mz hash`). **Design only:** the language as one machine-readable definition, the plugin host,
 and `mz harness`.
 
+**§8, prior art (extended 7 October 2026).** §8 now compares the design with outside
+systems: the Language Server Protocol and rust-analyzer, Roslyn, the TypeScript language
+service, `rustc` and `cargo` JSON output, MCP servers for languages and toolchains, Unison's
+codebase manager, and Go's `go/analysis` as a plugin host with static composition. For each it
+says what the RFC takes and where it differs. It also tests the RFC's own claim that the
+harness is part of the language, and finds that none of them specifies its machine
+interface as part of its language. So the claim is now stated as a design goal with three
+conditions: the protocol and a machine-readable language definition versioned with the
+language, one implementation serving every client, and a test that fails when the definition
+and the checker disagree. None of the three exists yet. The survey reads documents; it
+measures nothing. §9 gains a question: whether to build a language server as a client of the
+harness.
+
 **Leaves open:** the implementation language, the shape of the language definition, dynamic
 plugin discovery, whether the skills are retired or generated, protocol versioning, and the
 plugin sandbox.
 
 → [What still has to be built](/tracker)
+
+---
+
+## On `staging`, not yet on `main`
+
+RFC-0013 and the language survey are merged into the language's `staging` branch, not yet
+released to `main`. They are design: they make no capability available, and every capability
+claim still comes from the [tracker](/tracker) on `main`.
+
+<Card title="RFC-0013 — The core language (Tier 1)" icon="github" href="https://github.com/mzizi-dev/mzizi/blob/staging/design/RFC-0013-core-language.md" horizontal>
+  **Status as written:** draft for review. Its Wave 0, the foundation slice, is implemented on
+  `staging`; the rest is design. It measures nothing. Merged into `staging` by mzizi#76 and
+  amended by mzizi#81.
+</Card>
+
+One design for all of Tier 1 of the [tracker](/tracker) (C1–C10), as the owner decided on
+7 October 2026: one RFC per tier. It designs a `program` file kind with an entry point and
+printing; expressions and operators; bindings; functions; control flow in function bodies;
+`int` and `float`; the text and collection operations the language needs; methods on records;
+a result type and its propagation; how a program is run; how each construct lowers to Rust; a
+new range of diagnostic codes; and the canonical form. Generics, interfaces and traits are
+deferred past M1. Its amendments (mzizi#81) take changes from the language survey below, and
+its §20 holds 29 questions for the owner, to answer before the waves that build each part.
+
+Its Wave 0, the foundation slice (mzizi#80), is on `staging` too. These docs document it once
+it reaches `main`; see [Status](/status#landing-in-the-next-release-on-staging-not-main).
+
+**The language survey** ([`design/LANGUAGE-SURVEY.md`](https://github.com/mzizi-dev/mzizi/blob/staging/design/LANGUAGE-SURVEY.md),
+mzizi#75) is design input, not an RFC. It surveys the top 10 languages feature by feature,
+marks each of 63 features adopt, improve, already-has or reject for Mzizi, and says what
+RFC-0013 and the Tier 2 and Tier 3 RFCs must decide. Nothing in it is built, and it measures
+nothing.
+
+→ [M1: the plan](/roadmap#m1-the-plan)
 
 ---
 

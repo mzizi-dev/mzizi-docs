@@ -21,6 +21,43 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
+### Changed — progress toward M1: what is shipped, what is on `staging` and what is in progress (2026-10-07)
+
+The owner asked for the docs to say where the language is. Checked against language `main` at
+`0653903` (`v0.4.0`), `staging` at `509bc2f` (`v0.4.6`) and the open pull requests, on
+7 October 2026.
+
+- **`status`: the facts move to `0653903`.** 437 tests in 19 suites (306 in the compiler crate),
+  counted with `cargo test --workspace` on that commit, and 12,916 lines in `compiler/src`. A
+  new row: blocks nest at most 64 deep, past which one `MZ0411`. The page says each release of
+  the repository to `main` is tagged, and that the compiler is still not published.
+- **Added to `status`: "Landing in the next release"**, what is on `staging` and not on `main`:
+  RFC-0013 (a draft for review, mzizi#76) and its amendments (#81), the foundation slice (#80),
+  the language survey, release notes from the changelog (#82) and `CLAUDE.md`. The slice is
+  named, not documented: these docs document it once it is on `main`. **And "In progress toward
+  M1"**, the open pull requests #83 (floats), #85 (the performance suite) and #84 (a pre-commit
+  hook). No tracker mark changes. The page reports the timings that exist as they fell, from
+  one 4-core virtual machine and not as results: an informal `fib(40)` on mzizi#69, and one run
+  of #85's suite, in which Mzizi's lowered programs took 1.43× to 5.67× the time of Rust's
+  default build and 0.97× to 1.45× the time of Rust with the same overflow checks.
+- **Added to `roadmap`: "M1: the plan"**, from mzizi#69: the owner's decisions of 7 October 2026
+  (one RFC per tier, a program runs by compiling to Rust, methods on records now and generics
+  later, overflow checks kept in every build and removed only where the compiler proves them
+  unnecessary, a performance suite against hand-written Rust, release notes from the changelog
+  and a changelog entry in every pull request) and the four waves with their state. "What has
+  to happen next" no longer lists the React arm's pins, which are done.
+- **`rfcs`: RFC-0012 §8's prior-art survey**, and a new section, **"On `staging`, not yet on
+  `main`"**, for RFC-0013 (a draft for review) and the language survey.
+- **`compiler`: "Deep nesting is one diagnostic"** describes `MZ0411` and the robustness tests;
+  the test counts move to `0653903`.
+- **`tracker`** summarises `main` at `0653903` (no mark changed) and says which marks differ on
+  `staging`. **`benchmark`** says its arms table is checked at `0653903` and that the
+  performance suite is a separate thing, with one run's timings in its pull request only.
+  **`index`** names M1 as the next step.
+- **`AGENTS.md`**: `mz run` leaves the "designed, not built" list. It is built, with `program`,
+  `fn` bodies and the `MZ09xx` codes, but only on language `staging`, and is documented as a
+  command once it reaches `main`.
+
 ### Changed — versions and features from the 5–7 October releases (2026-10-07)
 
 A freshness update. The scheduled Freshness check (`node scripts/check-freshness.mjs`) reported
