@@ -54,9 +54,16 @@ The owner asked for the docs to say where the language is. Checked against langu
   `staging`. **`benchmark`** says its arms table is checked at `0653903` and that the
   performance suite is a separate thing, with one run's timings in its pull request only.
   **`index`** names M1 as the next step.
+- **Accuracy fixes from review.** `roadmap`'s Wave 1 row says floats and the rest of C1 (C5) are
+  an open pull request (#83), control flow (C4) and error results (C9) are being built with no
+  pull request yet, and maps and collections (C7) and records with methods (C8) have not
+  started. Its overflow quote ends in an ellipsis, because it is cut. `tracker` says which marks
+  move on `staging`: C1, C2 and C10 from ❌ to 🟡, P10 from 📝 to 🟡, and C6, C9 and P5 to 📝.
+  `status` links #75 and #77, and `rfcs` links the mzizi pull requests it names outside a card.
 - **`AGENTS.md`**: `mz run` leaves the "designed, not built" list. It is built, with `program`,
   `fn` bodies and the `MZ09xx` codes, but only on language `staging`, and is documented as a
-  command once it reaches `main`.
+  command once it reaches `main`. It also says that the `blob/staging` links in `rfcs` and
+  `status` move to `main` in the post-release docs pass.
 
 ### Changed — versions and features from the 5–7 October releases (2026-10-07)
 
