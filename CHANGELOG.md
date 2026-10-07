@@ -21,6 +21,10 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
+### Added — `CLAUDE.md` for Claude Code (2026-10-07)
+
+- **`CLAUDE.md` gives Claude Code its repository guide.** It imports `AGENTS.md` rather than repeating it, and adds the staging-to-main branch and release flow, the local changelog-gate commands, which check to run for which change, and how `docs.json`, `style.css` and the scripts depend on each other. Docs only: no page, navigation or CI changes.
+
 ### Added — `AGENTS.md` loads the Mzizi dev skills (2026-10-06)
 
 - **`AGENTS.md` gains "Dev skills, progress reports and the merge gate"**, the canonical rule block from nyuchi/.github#87, after "Track big work in GitHub issues": load the Mzizi dev skills (`digital-hygiene` and `progress-report`), clone only into a directory unique to the agent, run dev work on a 10-minute progress-report loop whose ticks never publish, release, merge or deploy without the owner's approval, and merge only through the merge gate. Docs only: no behaviour changes, and CI is unchanged.
