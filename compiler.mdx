@@ -33,9 +33,9 @@ cargo run --bin mz -- ir       ../primitives/card.mz                # nodes, has
 cargo run --bin mz -- build    ../examples/registry.mz --out out    # a service, lowered to Rust + axum
 ```
 
-Run `cargo test --workspace` from the repository root for the whole suite: 425 tests in 18
-suites at `6da2170`, 294 of them in the compiler crate and the rest in the benchmark harness,
-runner and probe crate. `compiler/src` is 12,644 lines.
+Run `cargo test --workspace` from the repository root for the whole suite: 428 tests in 18
+suites at `9a88e1d`, 297 of them in the compiler crate and the rest in the benchmark harness,
+runner and probe crate. `compiler/src` is 12,706 lines.
 
 ## The commands
 
@@ -167,15 +167,16 @@ gave a cascade instead of one error on the right line. These codes are the fixes
 [`benchmarks/READINESS.md`](https://github.com/mzizi-dev/mzizi/blob/main/benchmarks/READINESS.md).
 Each message below is quoted from `compiler/src/lex.rs` or `compiler/src/parse.rs`.
 
-| Code     | Severity | What it catches                                                                                          | Fix                                                                         |
-| -------- | -------- | -------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
-| `MZ0106` | error    | A spread, `...props` or `{...props}`. Mzizi has none: a component names each prop it reads               | `exact`: delete the spread, or its whole line when it stands alone          |
-| `MZ0312` | warning  | A prop named `as_child`, React's `asChild`. Mzizi elements are not polymorphic                           | `exact` (delete the prop) when nothing reads it; otherwise names the branch |
-| `MZ0313` | error    | A variant row whose `height` disagrees with the `h-N` or `size-N` class that renders it                  | `exact`: the rendered number                                                |
-| `MZ0406` | error    | An attribute written without its `=`, such as `class "flex"`                                             | Insert `=`: `exact` for a known attribute word, `guess` otherwise           |
-| `MZ0407` | error    | `if` in a view. The one conditional is `when`                                                            | `exact`: `when`                                                             |
-| `MZ0408` | error    | Attributes directly under `view`, which holds one element tree                                           | None                                                                        |
-| `MZ0409` | error    | Anything after an element word on its line, such as `span class="x"`. Before, the tail was silently kept | None                                                                        |
+| Code     | Severity | What it catches                                                                                                                                                                   | Fix                                                                         |
+| -------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| `MZ0106` | error    | A spread, `...props` or `{...props}`. Mzizi has none: a component names each prop it reads                                                                                        | `exact`: delete the spread, or its whole line when it stands alone          |
+| `MZ0312` | warning  | A prop named `as_child`, React's `asChild`. Mzizi elements are not polymorphic                                                                                                    | `exact` (delete the prop) when nothing reads it; otherwise names the branch |
+| `MZ0313` | error    | A variant row whose `height` disagrees with the `h-N` or `size-N` class that renders it                                                                                           | `exact`: the rendered number                                                |
+| `MZ0406` | error    | An attribute written without its `=`, such as `class "flex"`                                                                                                                      | Insert `=`: `exact` for a known attribute word, `guess` otherwise           |
+| `MZ0407` | error    | `if` in a view. The one conditional is `when`                                                                                                                                     | `exact`: `when`                                                             |
+| `MZ0408` | error    | Attributes directly under `view`, which holds one element tree                                                                                                                    | None                                                                        |
+| `MZ0409` | error    | Anything after an element word on its line, such as `span class="x"`. Before, the tail was silently kept                                                                          | None                                                                        |
+| `MZ0410` | error    | `match` in a view. Mzizi has no `match`: write one `when <subject> is x … end` block per variant, with `else` for the rest. Before, `match size` read as an element named `match` | None: one `match` becomes several `when` blocks                             |
 
 `MZ0313` quotes both numbers, so the agent needn't work out the scale itself:
 

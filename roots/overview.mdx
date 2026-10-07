@@ -1,6 +1,6 @@
 ---
 title: "Mzizi Roots"
-description: "Mzizi Roots: Mzizi's own UI and server components for the agentic web, being rebuilt in Rust. Ten crates on crates.io at 0.1.0, and a first batch of twelve brand components. The React components keep working as the React build."
+description: "Mzizi Roots: Mzizi's own UI and server components for the agentic web, being rebuilt in Rust. Ten crates on crates.io at 0.3.0, a first batch of twelve brand components, and a Markdown renderer that is safe by construction. The React components keep working as the React build."
 sidebarTitle: "Mzizi Roots"
 icon: "component"
 ---
@@ -54,21 +54,24 @@ language for each kind of task ([the benchmark](/benchmark)).
 
 The Rust half of the registry lives in `mzizi-rs/` in
 [`mzizi-dev/mzizi-registry`](https://github.com/mzizi-dev/mzizi-registry), a Cargo workspace.
-All ten of its crates are on crates.io at `0.1.0` (checked 30 September 2026): eight node
-crates, one per node that has Rust, and two umbrella crates that re-export them.
+All ten of its crates are on crates.io at `0.3.0` (checked 7 October 2026): eight node
+crates, one per node that has Rust, and two umbrella crates that re-export them. The crates
+move together. `0.1.0` was the first release (29 September 2026); `0.2.0` and `0.3.0` were
+published on 7 October 2026 by registry releases v4.6.0 and v4.7.0, and v4.8.0 left them at
+`0.3.0`.
 
-| Crate                | What it holds (from each crate's own description)                                                          |
-| -------------------- | ---------------------------------------------------------------------------------------------------------- |
-| `mzizi-roots`        | **Umbrella, UI side.** Re-exports the tokens, `mzizi-ui`, `mzizi-brand` and `mzizi-shell`                  |
-| `mzizi-roots-server` | **Umbrella, server side.** Re-exports `mzizi-assurance`, `mzizi-fundi`, `mzizi-docs` and `mzizi-discovery` |
-| `mzizi-tokens`       | N1 design tokens: the 21-family palette as Rust consts, generated from one source                          |
-| `mzizi-ui`           | N2 primitives for Dioxus: avatar, badge, button, card, chart, input, label, progress, separator            |
-| `mzizi-brand`        | N3 brand components for Dioxus: the first Roots batch, each with a checkable contract                      |
-| `mzizi-shell`        | N7 app chrome for Dioxus: bottom nav, footer, command palette, connectivity, theme, toasts                 |
-| `mzizi-assurance`    | N8 assurance: probes, telemetry and the OTLP exporter                                                      |
-| `mzizi-fundi`        | The N9 fundi rung, client side: what is worth filing, shaping the issue, which fixes worked                |
-| `mzizi-docs`         | The N10 documentation rung: AI context, docs API and routing, changelog, portal rendering                  |
-| `mzizi-discovery`    | The N11 discovery rung: page metadata and Schema.org JSON-LD                                               |
+| Crate                | What it holds (from each crate's own description)                                                                                                           |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `mzizi-roots`        | **Umbrella, UI side.** Re-exports the tokens, `mzizi-ui`, `mzizi-brand` and `mzizi-shell`                                                                   |
+| `mzizi-roots-server` | **Umbrella, server side.** Re-exports `mzizi-assurance`, `mzizi-fundi`, `mzizi-docs` and `mzizi-discovery`                                                  |
+| `mzizi-tokens`       | N1 design tokens: the 21-family palette as Rust consts, generated from one source                                                                           |
+| `mzizi-ui`           | N2 primitives for Dioxus: alert, avatar, badge, button, card, chart, input, label, a safe Markdown renderer, progress, separator, skeleton and status badge |
+| `mzizi-brand`        | N3 brand components for Dioxus: the first Roots batch, each with a checkable contract                                                                       |
+| `mzizi-shell`        | N7 app chrome for Dioxus: bottom nav, footer, command palette, connectivity, theme, toasts, deep links and lifecycle                                        |
+| `mzizi-assurance`    | N8 assurance: probes, telemetry and the OTLP exporter                                                                                                       |
+| `mzizi-fundi`        | The N9 fundi rung, client side: what is worth filing, shaping the issue, which fixes worked                                                                 |
+| `mzizi-docs`         | The N10 documentation rung: AI context, docs API and routing, changelog, portal rendering                                                                   |
+| `mzizi-discovery`    | The N11 discovery rung: page metadata and Schema.org JSON-LD                                                                                                |
 
 ## Install
 
@@ -89,6 +92,14 @@ cargo add mzizi-brand
 ```
 
 The node crates are the ones that compile each component, and they keep their names.
+
+`cargo add` takes the newest release, `0.3.0`. To write the dependency by hand, use the
+requirement the crate READMEs use:
+
+```toml
+[dependencies]
+mzizi-roots = "0.3"
+```
 
 ## The first batch: twelve brand components
 
@@ -124,6 +135,61 @@ language's own evaluator checks a `.mz` component against itself and cannot read
 The ports also fix six defects the React build still has, such as a 40px button under the
 48px touch floor and an unclamped `aria-valuenow`. Each fix has a test.
 
+## The Markdown renderer
+
+`mzizi-ui` carries `MarkdownRenderer` from `0.2.0`. It shows Markdown, including text written by
+other people, **safe by construction**: it parses the text into a typed tree of blocks and
+inlines and renders that tree as Dioxus elements. There is no HTML string anywhere, so there is
+no `dangerous_inner_html` to get wrong.
+
+With `mzizi-roots` (its default `ui` feature re-exports `mzizi-ui` as `mzizi_roots::ui`) and
+Dioxus 0.7:
+
+```rust
+use dioxus::prelude::*;
+use mzizi_roots::ui::{MarkdownLinks, MarkdownRenderer};
+
+#[component]
+fn Notes() -> Element {
+    rsx! { MarkdownRenderer { content: "**Hi** [docs](https://mzizi.dev)", links: MarkdownLinks::Https } }
+}
+```
+
+With `cargo add mzizi-ui` instead, import from `mzizi_ui` directly.
+
+- **Raw HTML is text.** `<script>`, `<img onerror>` and `<a href>` in the source show as written.
+- **Links pass an allow-list.** By default (`MarkdownLinks::Safe`) http, https, mailto, tel and
+  relative addresses are kept; `MarkdownLinks::Https` keeps https only. From `0.3.0`, an address
+  with whitespace or a control character inside is refused, and a web address needs a host and no
+  credentials, so `https://bank.example@evil.example` is refused. A refused link keeps its words
+  and loses its address. http and https links open in a new tab with `rel="noopener noreferrer"`.
+- **Rich text.** `from: MarkdownSource::Html` (or `Auto`) reads an editor's HTML into the same
+  tree with a small reader that builds plain data, never a DOM. From `0.3.0` a nested list stays
+  nested and `<ol start>` keeps its first number.
+- **`heading_base`** shifts `#` headings under a page's own headings.
+- **Hostile text stays linear.** Each inline parse has a scanning budget, and nesting is bounded.
+
+The Rust build is one of three under one contract,
+[`contracts/ui/markdown-renderer`](https://github.com/mzizi-dev/mzizi-registry/blob/main/contracts/ui/markdown-renderer.contract.json)
+(1.1.0): the React build and a pure Astro build are held to the same states, including a hostile
+one, and the TypeScript and Rust suites run the same 55 shared cases. The Astro build installs
+from the registry (`mzizi add markdown-renderer --target astro`); the contract names
+`@bundu/ui/MarkdownRenderer.astro` from `@bundu/ui` 0.6.0, which is not on npm yet (`0.5.0` was
+the latest on 7 October 2026). The Rust source is at
+[`/v1/rs/markdown-renderer`](https://api.mzizi.dev/v1/rs/markdown-renderer), which names
+`mzizi-ui`, and `api.mzizi.dev` serves the safe React and Astro builds too.
+
+<Warning>
+  **The MCP server still serves the old React `markdown-renderer`.** On 7 October 2026
+  `mcp.mzizi.dev` was pinned at registry `9f3631c` (v4.5.0), from before the rebuild. Its
+  `mzizi_get_component` answer for `markdown-renderer` leads with that React build, which builds
+  an HTML string and injects it with `dangerouslySetInnerHTML`, and has no Rust or Astro build.
+  Until the server's pin moves past registry v4.6.0, install it from `api.mzizi.dev`:
+  `mzizi add markdown-renderer`, the crate, or the shadcn command with the URL
+  `https://api.mzizi.dev/v1/ui/markdown-renderer`. The server's `catalogue.json` names its
+  pin in `source.registry`.
+</Warning>
+
 ## Reading the Rust source
 
 You can read a component's Rust source over the API:
@@ -148,7 +214,8 @@ commit, and so was the [MCP server](/toolchain/mcp). Both pins move, so read the
 the source: the API's `x-mzizi-source` header, or the MCP server's `catalogue.json`.
 
 The MCP server is Rust first too: `mzizi_get_component` leads with the component's crate,
-its `cargo add` line, its contract and its `.rs` source, and gives the React build second.
+its `cargo add` line, its contract and its `.rs` source, then gives the pure Astro build where
+there is one (from `mzizi-mcp` `0.12.0`), and the React build last.
 
 ## Where to go next
 

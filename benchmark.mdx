@@ -41,7 +41,7 @@ gateway, and every fact is checked at the HTTP boundary, so no language's syntax
 
 What Mzizi is measured against, from RFC-0009 §1, with each arm's state as
 [`benchmarks/arms/`](https://github.com/mzizi-dev/mzizi/tree/main/benchmarks/arms) holds it at
-language `main` `6da2170`. The benchmark's design, not a result: nothing has been measured
+language `main` `9a88e1d`. The benchmark's design, not a result: nothing has been measured
 against TypeScript, Python, Go, C++ or a Rust backend.
 
 | Arm        | Family  | Language and framework                              | State                                                                                                    |
@@ -49,7 +49,7 @@ against TypeScript, Python, Go, C++ or a Rust backend.
 | `mzizi`    | UI      | Mzizi                                               | Exists                                                                                                   |
 | `dioxus`   | UI      | Rust, Dioxus `=0.7.10`                              | Exists; both pilots ran it                                                                               |
 | `leptos`   | UI      | Rust, Leptos `=0.8.21`                              | Exists; never run                                                                                        |
-| `react`    | UI      | TypeScript, React, `class-variance-authority`       | Exists; never run. Its pins are provisional until taken from the registry's lockfile                     |
+| `react`    | UI      | TypeScript, React, `class-variance-authority`       | Exists; never run. Pinned from the registry's lockfile (`pnpm-lock.yaml` at `3afeb752`, 7 October 2026)  |
 | `mzizi-be` | backend | Mzizi, a `service` (RFC-0011)                       | Exists, with the probe crate `mzprobe` and task B1; never run: the runner does not score with probes yet |
 | `ts`       | backend | TypeScript, Hono on Node                            | Not added yet                                                                                            |
 | `python`   | backend | Python, FastAPI with pydantic v2, served by uvicorn | Not added yet                                                                                            |
@@ -94,7 +94,7 @@ validate the thesis, because the frontier model is the one the design helps leas
 
 Both resolved in the charter (§6, dated 2026-08-23), and widened by RFC-0009.
 
-**The UI tasks come from Mzizi's own components.** The registry's 577 components, a growing
+**The UI tasks come from Mzizi's own components.** The registry's 656 components, a growing
 number of them with Rust siblings, are the ground truth for the UI families, with their
 existing `.tsx` and `.rs` implementations as references. Explicitly **not** a port of an
 external library — not shadcn, not a generic primitive set. The nine

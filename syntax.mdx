@@ -118,6 +118,10 @@ whitespace mangling in transit cannot change meaning.
 | Events out            | `emit <event>(args)`                                               | callback-calling conventions                 |
 | Absence               | `nothing` (in views), `none` (as a value)                          | `null`/`undefined` duality                   |
 
+This table is the RFC's design. The implemented parser has no `match`: in a view, `match` is
+the error `MZ0410`, which asks for one `when <subject> is x … end` block per variant, with `else`
+for the rest ([the compiler](/compiler)). The tracker's C4 row says so.
+
 There is no statement/expression duality. Logic is statements; only `view` and `contract`
 have their own declarative sub-grammars.
 
