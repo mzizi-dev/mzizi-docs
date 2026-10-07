@@ -21,14 +21,14 @@ the Phase 0 benchmark harness in `benchmarks/harness/`, which is the scorer list
 
 ## What is in it
 
-| Tool                             | What it is                                                                                                                          | Where it comes from                    | Cost              |
-| -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- | ----------------- |
-| [`mz`, the compiler](/compiler)  | `mz check --agent`, `mz fix`, `mz contract`, `mz outline`, `mz build` (a service only), `mz hash`, `mz ir`                          | `mzizi-dev/mzizi`, built from source   | Free, open source |
-| [The benchmark](/benchmark)      | `mzbench`, the scorer, the Dioxus, Leptos, React and `mzizi-be` arms, the probe crate, the kill-criterion driver, the pilot results | `mzizi-dev/mzizi`, under `benchmarks/` | Free, open source |
-| [The MCP server](/toolchain/mcp) | `mcp.mzizi.dev/mcp`: registry, tokens, doctrine, skills and the docs                                                                | `@nyuchi/mzizi-mcp`                    | Free, no sign-in  |
-| [The CLI](/toolchain/cli)        | `mzizi add`, and `fundi explore`, `plan` and `chat`                                                                                 | `@nyuchi/mzizi-cli`                    | Free, no gate     |
-| [The skills](/toolchain/skills)  | Five agent skills: the language, Mzizi Roots, the design system, backends and discoverability                                       | `@nyuchi/mzizi-skills`                 | Free              |
-| [The API](/platform/api-gateway) | `api.mzizi.dev/v1`: the registry over plain HTTP                                                                                    | `mzizi-dev/mzizi-api-gateway`          | Free, no sign-in  |
+| Tool                             | What it is                                                                                                                              | Where it comes from                    | Cost              |
+| -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- | ----------------- |
+| [`mz`, the compiler](/compiler)  | `mz check --agent`, `mz fix`, `mz contract`, `mz outline`, `mz build` (a service only), `mz hash`, `mz ir`                              | `mzizi-dev/mzizi`, built from source   | Free, open source |
+| [The benchmark](/benchmark)      | `mzbench`, the scorer, the Dioxus, Leptos, React and `mzizi-be` arms, the probe crate, the kill-criterion driver, the pilot results     | `mzizi-dev/mzizi`, under `benchmarks/` | Free, open source |
+| [The MCP server](/toolchain/mcp) | `mcp.mzizi.dev/mcp`: registry, tokens, doctrine, skills and the docs                                                                    | `@nyuchi/mzizi-mcp`                    | Free, no sign-in  |
+| [The CLI](/toolchain/cli)        | `mzizi add`, and `fundi explore`, `plan` and `chat`                                                                                     | `@nyuchi/mzizi-cli`                    | Free, no gate     |
+| [The skills](/toolchain/skills)  | Seven agent skills: the language, Mzizi Roots, the design system, backends, discoverability, and the two `dev` skills every agent loads | `@nyuchi/mzizi-skills`                 | Free              |
+| [The API](/platform/api-gateway) | `api.mzizi.dev/v1`: the registry over plain HTTP                                                                                        | `mzizi-dev/mzizi-api-gateway`          | Free, no sign-in  |
 
 `mz` implements the language, and the benchmark measures it against the best existing
 language for each kind of task. The rest put the language, its components and its docs
