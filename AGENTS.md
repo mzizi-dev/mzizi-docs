@@ -91,10 +91,13 @@ Three specific traps:
 - **Do not quote RFC examples as working syntax.** RFC-0001's view attributes have no `=`;
   the implemented parser requires `name = value`. Prefer quoting `.mz` files from the
   repository, which CI gates.
-- **Do not document `mz refs`, `mz path`, `mz patch`, `mz diff`, `mz run`, `mz test` or
-  `mz fmt` as commands.** They are designed, not built. The binary dispatches `check`, `fix`,
+- **Do not document `mz refs`, `mz path`, `mz patch`, `mz diff`, `mz test` or `mz fmt` as
+  commands.** They are designed, not built. The binary on `main` dispatches `check`, `fix`,
   `contract`, `outline` and `build` (`mz build <service.mz> --out <dir>`, a service only), plus
-  `hash` and `ir`. All are documented on the compiler page.
+  `hash` and `ir`. All are documented on the compiler page. **Nor `mz run` yet:** it is built,
+  with the `program` file kind, `fn` bodies and the `MZ09xx` codes, but only on the language's
+  `staging` branch (mzizi#80, 7 October 2026), not on `main`. Pages may say it is landing;
+  document it as a command once it is released to `main` and the tracker says so.
 - **Do not put a model name or identifier in a page.** Say "a frontier model" or "a ~7B
   open-weight model" and link the pilot write-up, which names them.
 

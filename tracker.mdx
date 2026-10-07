@@ -17,7 +17,7 @@ the root of `mzizi-dev/mzizi`, is the one list of what Mzizi still needs before 
 called a working programming language, stacked against the languages it aims to replace. By
 the owner's decision of 30 September 2026 it is the ultimate tracker: **if a capability is not
 ✅ there, Mzizi does not have it, whatever any other page says.** These docs take every
-capability claim from it. This page summarises it at language `main` `9a88e1d`; read the
+capability claim from it. This page summarises it at language `main` `0653903`; read the
 file for the evidence behind each row.
 
 Status in the tracker is what the code on `main` does, never what an RFC designs:
@@ -37,8 +37,8 @@ What exists is the front end of a language whose first domain is UI components:
 - **Types:** `bool`, `int`, `text`, enums with data columns, records, `list(T)`, `option(T)`
   and `event(T)` ([RFC-0008](/rfcs)).
 - **Toolchain:** `mz check` (with `--agent`), `mz fix`, `mz contract`, `mz outline`, and
-  `mz build` for a service only; a recovering parser, a resolver and a content-addressed
-  IR. See [the compiler](/compiler).
+  `mz build` for a service only; a recovering parser (blocks nest at most 64 deep, past
+  which one `MZ0411`), a resolver and a content-addressed IR. See [the compiler](/compiler).
 - **Written in Mzizi:** nine [primitives](/primitives), two component examples and one
   service, `examples/registry.mz`.
 - **The backend slice** ([RFC-0011](/rfcs), language PRs #29–#33): a
@@ -155,6 +155,20 @@ Phase 0's goal cannot be tested beyond what the language can express
 
 The kill-criterion run has not happened. Nothing in the tracker is a claim that Mzizi is
 better than any language; it lists what has to exist before that can be measured.
+
+## On `staging` and in progress, not on `main`
+
+Work toward M1 is under way, tracked in
+[mzizi#69](https://github.com/mzizi-dev/mzizi/issues/69). RFC-0013, the Tier 1 design
+([#76](https://github.com/mzizi-dev/mzizi/pull/76)), its amendments
+([#81](https://github.com/mzizi-dev/mzizi/pull/81)) and a first foundation slice
+([#80](https://github.com/mzizi-dev/mzizi/pull/80)) are merged into the language's `staging`
+branch, not yet released to `main`. On `staging` the tracker marks C1, C2, C10 and P10 🟡, and C6, C9 and
+P5 📝. Wave 1 has begun with floats and the rest of C1, an open pull request
+([#83](https://github.com/mzizi-dev/mzizi/pull/83)). The marks above are `main`'s, and a row
+changes here only when the change is on `main`. See
+[Status](/status#landing-in-the-next-release-on-staging-not-main) and
+[the M1 plan](/roadmap#m1-the-plan).
 
 ## Milestones
 
