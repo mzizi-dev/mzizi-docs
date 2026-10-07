@@ -67,15 +67,17 @@ Facts that inherited prose often gets wrong:
   at build time from a pinned registry commit. Only `mzizi-console` uses Supabase.
 - **One MCP server**, at `mcp.mzizi.dev/mcp`. `mzizi.dev/mcp` is a 308 to it. It is free
   with no sign-in except the Fundi tools (`mzizi_fundi`, `mzizi_report_issue`); an anonymous
-  `tools/list` answered on 30 September 2026. Its MCP Registry name is
+  `tools/list` answered on 7 October 2026. Its MCP Registry name is
   `io.github.mzizi-dev/mzizi-mcp`.
 - **The CLI is free.** `mzizi add` is published from `@nyuchi/mzizi-cli` (0.7.0 on
   7 October 2026); 0.6.0's binaries printed nothing, so pages say "0.6.1 or later".
 - **Seven skills, in four categories.** `@nyuchi/mzizi-skills` 0.8.0 cut the bundle to five,
   `mzizi-language`, `mzizi-roots`, `mzizi-design`, `mzizi-backend` and `discoverability`, with
-  no aliases for the old names; 0.9.0 and 0.10.0 added the `dev` skills `digital-hygiene` and
-  `progress-report` (0.11.0 on 7 October 2026). The API and the plugin can lag npm. The Claude Code plugin is the public one in `mzizi-dev/mzizi-registry`
-  (`/plugin install mzizi@mzizi`); the private `mzizi-tools` marketplace is retired.
+  no aliases for the old names. 0.9.0 (5 October 2026) added the `dev` skill
+  `digital-hygiene`, 0.10.0 (6 October) added `progress-report` and categories, and 0.11.0
+  (6 October) is the latest. The API and the plugin can lag npm. The Claude Code plugin is the
+  public one in `mzizi-dev/mzizi-registry` (`/plugin install mzizi@mzizi`); the private
+  `mzizi-tools` marketplace is retired.
   `npx skills add @nyuchi/mzizi-skills` does not work.
 - **Mzizi's brand mineral is hematite**, a heritage tone, not one of the Seven African
   Minerals. It is the default `--primary` of the registry's `mzizi-tokens-globals.css`;
@@ -109,11 +111,12 @@ An owner rule, 2026-09-30: **docs.mzizi.dev must never lag the language or the c
 - Anyone changing the language or the components should expect a docs update to follow, and
   should say in their pull request that they changed it.
 - `node scripts/check-freshness.mjs` compares the facts it knows how to find (package and
-  crate versions, the language's test count, line count and checked commit, the charter's
-  version and title, every `LANGUAGE-TRACKER.md` row's mark on `tracker.mdx`, the arms in
-  `benchmarks/arms/` against `benchmark.mdx`, the version `mcp.mzizi.dev`
-  serves, the crate `/v1/rs/{name}` names for each first-batch component, the MCP Registry
-  entry) with their live sources. While every Roots crate is on crates.io, it also fails on any
+  crate versions, the language's test count, its `compiler/src` line count (counted in the
+  source, because the README can lag) and checked commit, the charter's version and title,
+  every `LANGUAGE-TRACKER.md` row's mark on `tracker.mdx`, the arms in `benchmarks/arms/`
+  against `benchmark.mdx`, the version `mcp.mzizi.dev` serves, the registry's component count
+  on every page that states it (`/v1/ui`'s `meta.total`), the crate `/v1/rs/{name}` names for
+  each first-batch component, the MCP Registry entry) with their live sources. While every Roots crate is on crates.io, it also fails on any
   page that says one is not.
 - **Registry pins are not stated as current.** The API's and the MCP server's pins each have a
   bot that moves them to registry `main` hourly once the owner adds its token. Pages say how to
