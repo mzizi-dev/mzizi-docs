@@ -21,6 +21,39 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
+### Changed — versions and features from the 7 October 2026 releases (2026-10-07)
+
+A freshness update: the scheduled Freshness check (`node scripts/check-freshness.mjs`) reported
+14 drifts, and `@nyuchi/mzizi-cli` 0.7.0 reached npm while this was being fixed.
+
+- **Mzizi Roots (`roots/overview`): the ten crates are at `0.3.0`, not `0.1.0`** (crates.io, 7
+  October 2026). The page says when `0.2.0` and `0.3.0` were published (registry v4.6.0 and v4.7.0;
+  v4.8.0 left them at `0.3.0`), and that `cargo add` takes the newest release, with the
+  `"0.3"` requirement the crate READMEs use for a hand-written `Cargo.toml`. The crate table
+  follows each crate's own description: `mzizi-ui` now holds alert, skeleton, status badge and a
+  safe Markdown renderer, and `mzizi-shell` names deep links and lifecycle.
+- **Added: "The Markdown renderer" on `roots/overview`.** `mzizi_ui::MarkdownRenderer` (from
+  `0.2.0`) parses Markdown into a typed tree and renders elements with no HTML string; raw HTML is
+  text, links pass an allow-list (from `0.3.0` a web address needs a host and no credentials), rich
+  text is read without a DOM, and the React, Astro and Rust builds share
+  `contracts/ui/markdown-renderer` 1.1.0.
+- **The MCP server (`toolchain/mcp`) is at `0.13.0`, not `0.11.2`**, on npm, on `mcp.mzizi.dev`
+  and in the MCP Registry. Added: `0.12.0`'s Astro build (the `astro` block in
+  `mzizi_get_component`, between `rust` and `react`; the `astro` filter, `withAstro` and
+  `astroFile`), and `0.13.0`'s `category` on `mzizi_get_skills`. The anonymous access check and
+  the tool list are re-dated to 7 October 2026.
+- **The skills (`toolchain/skills`, `toolchain/overview`) are at `0.11.0`, not `0.8.5`: seven
+  skills in four categories.** Added: the `dev` skills `digital-hygiene` and `progress-report`,
+  the category table, and how to load the `dev` skills. The page says that npm and the MCP server
+  serve `0.11.0`, and the API and the plugin still serve `0.8.5`.
+- **The CLI (`toolchain/cli`) is at `0.7.0`, not `0.6.3`.** The version table gains `0.7.0`:
+  `--target astro`, and the seven skills through `@nyuchi/mzizi-skills` `^0.11.0`.
+- `AGENTS.md`'s list of facts moves to the same versions.
+- The language pages stay checked at `6da2170`. At language `main` `a8d5f55`,
+  `cargo test --workspace` still gives 425 tests in 18 suites and `mz contract` 29 clauses over
+  the nine primitives, but `compiler/src` is 12,645 lines while the language README still says
+  12,644, so the checked commit moves once the README does.
+
 ### Added — `AGENTS.md` loads the Mzizi dev skills (2026-10-06)
 
 - **`AGENTS.md` gains "Dev skills, progress reports and the merge gate"**, the canonical rule block from nyuchi/.github#87, after "Track big work in GitHub issues": load the Mzizi dev skills (`digital-hygiene` and `progress-report`), clone only into a directory unique to the agent, run dev work on a 10-minute progress-report loop whose ticks never publish, release, merge or deploy without the owner's approval, and merge only through the merge gate. Docs only: no behaviour changes, and CI is unchanged.

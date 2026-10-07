@@ -1,6 +1,6 @@
 ---
 title: "The skills bundle"
-description: "@nyuchi/mzizi-skills: five agent skills for the Mzizi language, Mzizi Roots, the design system, backends and discoverability, authored in git and served from files."
+description: "@nyuchi/mzizi-skills: seven agent skills in four categories, for the Mzizi language, Mzizi Roots, the design system, backends, discoverability, and how every agent works (digital hygiene and progress reports), authored in git and served from files."
 sidebarTitle: "Skills"
 icon: "book-marked"
 ---
@@ -10,19 +10,38 @@ package of agent skills,
 [`@nyuchi/mzizi-skills`](https://www.npmjs.com/package/@nyuchi/mzizi-skills). Give an agent the
 skills so it has the doctrine to hand instead of guessing.
 
-Five skills, from the bundle's `index.json` at version `0.8.5` (the latest on npm on
-30 September 2026):
+Seven skills in four categories, from the bundle's `index.json`
+at version `0.11.0` (the latest on npm on 7 October 2026):
 
-| Skill             | What it covers                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `mzizi-language`  | Writing and checking `.mz`: `LANGUAGE-TRACKER.md` as the one list of what Mzizi can and cannot do (check it before claiming anything), the component syntax, the backend `service` syntax (routes, handlers with `when`, `header` and `respond`, and `example` and `ensure` contracts; RFC-0011), the `mz check --agent` loop and its NDJSON diagnostics, `mz fix`, `mz contract` (a component's contract, or a service run in process), `mz build` (a service lowered to a local Rust + axum package), the diagnostic codes you will meet, the harness as designed in RFC-0012 (a draft; only the agent protocol exists), and what is not built yet (expressions, bindings, callable functions, loops, error handling, modules, a standard library, component lowering, a release) |
-| `mzizi-roots`     | Mzizi's components, Rust first: `cargo add mzizi-roots` and `mzizi-roots-server`, what `mzizi_get_component` returns, the node-to-crate map, contracts, the two frontend paths (Astro with Roots, or pure Rust) and app setup, reuse before build, and contributing a component                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| `mzizi-design`    | The design system and brand: the 21-family palette and its generated stylesheets, the radius scale, type, pill buttons and the 48px touch floor, status and surface tokens, the brand constellation, the Ubuntu pillars and principles, and the wordmarks                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| `mzizi-backend`   | A Mzizi service on Cloudflare Workers: where it stands today (every live Mzizi Worker is TypeScript; the language's `service` slice runs in process under `mz contract` and lowers with `mz build` to a local Rust + axum package, with no Workers target and nothing deployed), the endpoint map, a Rust Worker as a sans-IO core plus a thin host, an MCP server over bundled data, the free-except-Fundi access rule, publishing and deploying                                                                                                                                                                                                                                                                                                                                   |
-| `discoverability` | SEO and AIO: link previews, search engines and AI agents, the hive OG-image template, build-time OG images on static Astro, and a pre-ship checklist                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| Skill             | Category   | What it covers                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| ----------------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `mzizi-language`  | `language` | Writing and checking `.mz`: `LANGUAGE-TRACKER.md` as the one list of what Mzizi can and cannot do (check it before claiming anything), the component syntax, the backend `service` syntax (routes, handlers with `when`, `header` and `respond`, and `example` and `ensure` contracts; RFC-0011), the `mz check --agent` loop and its NDJSON diagnostics, `mz fix`, `mz contract` (a component's contract, or a service run in process), `mz build` (a service lowered to a local Rust + axum package), the diagnostic codes you will meet, the harness as designed in RFC-0012 (a draft; only the agent protocol exists), and what is not built yet (expressions, bindings, callable functions, loops, error handling, modules, a standard library, component lowering, a release) |
+| `mzizi-roots`     | `build`    | Mzizi's components, Rust first: `cargo add mzizi-roots` and `mzizi-roots-server`, what `mzizi_get_component` returns, the node-to-crate map, contracts (the registry's `contracts/`: the Dashboard Standard's `app/`, the Discover Standard's `discover/`, `site/` and `ui/`), the frontend paths (pure `.astro` from the registry with `mzizi add --target astro`, Astro with Roots, or pure Rust; Next.js adopts through the registry's `.tsx`) and app setup, reuse before build, and contributing a component                                                                                                                                                                                                                                                                   |
+| `mzizi-design`    | `design`   | The design system and brand: the 21-family palette and its generated stylesheets, the radius scale, type, pill buttons and the 48px touch floor, status and surface tokens, the Dashboard and Discover Standards' brand overlays (colour and mark only), the brand constellation, the Ubuntu pillars and principles, and the wordmarks                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| `mzizi-backend`   | `build`    | A Mzizi service on Cloudflare Workers: where it stands today (every live Mzizi Worker is TypeScript; the language's `service` slice runs in process under `mz contract` and lowers with `mz build` to a local Rust + axum package, with no Workers target and nothing deployed), the endpoint map, a Rust Worker as a sans-IO core plus a thin host, an MCP server over bundled data, the free-except-Fundi access rule, publishing and deploying                                                                                                                                                                                                                                                                                                                                   |
+| `discoverability` | `build`    | SEO and AIO: link previews, search engines and AI agents, the hive OG-image template, build-time OG images on static Astro, and a pre-ship checklist                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| `digital-hygiene` | `dev`      | Disk hygiene for agents: check free disk before starting and don't fan out below 50 GB, clone only into a folder unique to the agent and never touch another agent's, share build caches, never commit build output, audit a clone before deleting it, and the periodic sweep. Ships `hygiene.sh` (`check`, `clone`, `audit`, `prune`, `close`, `sweep`; a dry run unless given `--apply`)                                                                                                                                                                                                                                                                                                                                                                                          |
+| `progress-report` | `dev`      | All dev work runs on a 10-minute progress-report loop: measured 20-cell bars, per-workstream state (open PRs, release, staging against main, CI, a live HTTP check), one "Since last report" line and "Needs you" last. Ticks are read-only. Ships `progress.sh` (`bar`, `pct`, `repo`, `lines`, `http`)                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 
-`mzizi-language` and `mzizi-roots` are new in `0.8.0`. The React (TSX) build of the
-components is the deprioritised secondary in every skill that mentions it.
+`mzizi-language` and `mzizi-roots` are new in `0.8.0`, `digital-hygiene` in `0.9.0`, and
+`progress-report` in `0.10.0`. The React (TSX) build of the components is the deprioritised
+secondary in every skill that mentions it.
+
+### Categories
+
+From `0.10.0` every `index.json` entry has a `category`, from the list in the bundle's
+`index.schema.json`:
+
+| Category   | Skills                                            | For                                        |
+| ---------- | ------------------------------------------------- | ------------------------------------------ |
+| `dev`      | `digital-hygiene`, `progress-report`              | How every agent works, in every repository |
+| `design`   | `mzizi-design`                                    | The design system and brand                |
+| `language` | `mzizi-language`                                  | Writing and checking `.mz`                 |
+| `build`    | `mzizi-roots`, `mzizi-backend`, `discoverability` | Building components, services and sites    |
+
+Load the `dev` skills before any dev work: `mzizi_get_skills` with `category: "dev"` on
+[the MCP server](/toolchain/mcp), or `@nyuchi/mzizi-skills` from npm. Every Mzizi repository's
+`AGENTS.md` asks for this. Skill folders stay at `skills/<name>/`, so install paths do not change.
 
 ## Renamed and removed skills
 
@@ -52,9 +71,11 @@ many that are not. Where each `0.7.0` skill went, from the bundle's README:
 
 ## Getting the skills
 
-Four ways, serving the same bundle once each has caught up. On 30 September 2026 all four
-(npm, the MCP server, the API and the plugin) served `0.8.5`; each says which version it
-serves. All carry the same five skills.
+Four ways, serving the same bundle once each has caught up; each says which version it
+serves. On 7 October 2026 npm and the MCP server served `0.11.0`, with all seven skills. The API
+and the plugin still served `0.8.5`, with the first five: the registry depends on
+`@nyuchi/mzizi-skills` `^0.8.1`, so they move only when that dependency is bumped (see
+[how each copy stays current](#how-each-copy-stays-current)).
 
 ### From npm
 
@@ -70,8 +91,9 @@ in `node_modules`.
 ### From the MCP server
 
 `mzizi_get_skills` on [the MCP server](/toolchain/mcp) lists the skills, or returns one in
-full. It is free, with no sign-in and nothing to install. Each skill's `source` names where it
-is authored, `mzizi-dev/agent-tools/mzizi-skills/skills/<name>`, from `mzizi-mcp` `0.11.1`.
+full. From `mzizi-mcp` `0.13.0`, `category` returns every skill in one category in full. It is
+free, with no sign-in and nothing to install. Each skill's `source` names where it is authored,
+`mzizi-dev/agent-tools/mzizi-skills/skills/<name>`, from `mzizi-mcp` `0.11.1`.
 
 ### From the API
 
@@ -81,7 +103,8 @@ version a surface is serving: its `meta` carries `version` and `count`.
 
 ### As a Claude Code plugin
 
-The public `mzizi` plugin carries the five skills and connects the Mzizi MCP server:
+The public `mzizi` plugin carries the skills and connects the Mzizi MCP server. On 7 October
+2026 it carried the five skills of `0.8.5`:
 
 ```text
 /plugin marketplace add mzizi-dev/mzizi-registry
