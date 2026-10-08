@@ -306,7 +306,8 @@ rules, diagnostic codes with their `say` text and fix kinds, and tested examples
 `mz harness definition`, the agent skills and the benchmark guides are meant to be generated
 from or checked against those entries. §1.2's **registration rule**: a pull request that adds
 or changes a feature adds or updates its entry, and a test fails when the compiler emits a code
-or builds a construct with no entry. It lives in the language repository; `mzizi-cli`,
+that has no entry and is not on the pending list, or builds a construct with no entry. It lives
+in the language repository; `mzizi-cli`,
 `mzizi-mcp` and fundi are its clients. It is a different thing from `benchmarks/harness/`,
 which is always called the benchmark harness.
 
