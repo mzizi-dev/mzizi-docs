@@ -8,7 +8,8 @@ icon: "code"
   Everything on this page is the **implemented** grammar — cross-checked against
   `compiler/src/lex.rs`, `compiler/src/parse.rs`, and the `.mz` files CI gates on every
   push. Where RFC-0001's illustrative examples differ, [Status](/status#where-the-rfcs-and-the-implementation-disagree)
-  records the divergence.
+  records the divergence. This page covers components; a `program`'s functions, expressions,
+  control flow and errors are on [Programs](/programs).
 </Info>
 
 ## The method: design against named failure modes
@@ -118,6 +119,10 @@ whitespace mangling in transit cannot change meaning.
 | Events out            | `emit <event>(args)`                                               | callback-calling conventions                 |
 | Absence               | `nothing` (in views), `none` (as a value)                          | `null`/`undefined` duality                   |
 
+This table is the RFC's design. The implemented parser has no `match`: in a view, `match` is
+the error `MZ0410`, which asks for one `when <subject> is x … end` block per variant, with `else`
+for the rest ([the compiler](/compiler)). The tracker's C4 row says so.
+
 There is no statement/expression duality. Logic is statements; only `view` and `contract`
 have their own declarative sub-grammars.
 
@@ -199,15 +204,17 @@ and is specified to error as "not yet available".
 
 ## No ownership at the surface — FM-3
 
-Mzizi is designed to lower to Rust (today only a `service` lowers), but **no borrow, lifetime or
+Mzizi is designed to lower to Rust (today a `service` and a `program` lower), but **no borrow, lifetime or
 ownership concept exists in the surface language**. Values have value semantics; the
 compiler is meant to own the `Rc`/signal plumbing in lowered code. The class of non-local-fix errors that makes Rust hard for agents is spent
 once, by the compiler authors, instead of on every generation.
 
 <Note>
-  This is a design commitment, not a demonstrated one. The only lowering today is a
-  `service` to a local Rust + axum package, where a service has no ownership in its source;
-  no component lowers ([what still has to be built](/tracker), P10). See [Status](/status).
+  This is a design commitment, not a demonstrated one. Two things lower today: a `service`, to
+  a local Rust + axum package, and a `program`, to a Rust package in which every value is owned
+  and no reference or lifetime is emitted. Neither has ownership in its source, but neither
+  has collections or records yet, and no component lowers
+  ([what still has to be built](/tracker), P10). See [Status](/status).
 </Note>
 
 ## Canonical form — FM-8, FM-4
@@ -222,8 +229,8 @@ surface rather than a formatting lottery.
 <Warning>
   RFC-0001 §3 specifies that `mz` **rewrites every file it touches** to canonical form.
   There is no formatter in the binary today; the `.mz` files in the repository follow the
-  convention by hand. `mz` dispatches `check`, `fix`, `contract`, `outline` and `build`,
-  plus `hash` and `ir`, and nothing else; `mz fmt` is designed, not built.
+  convention by hand. `mz` dispatches `check`, `fix`, `contract`, `outline`, `build` and
+  `run`, plus `hash`, `ir` and `harness`, and nothing else; `mz fmt` is designed, not built.
 </Warning>
 
 ## Still open
