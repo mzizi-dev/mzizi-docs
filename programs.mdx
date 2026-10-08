@@ -7,11 +7,13 @@ icon: "play"
 <Info>
   Everything on this page is **built and tested**: cross-checked against the language's
   `compiler/src`, `mz harness definition`, and the example programs CI runs through `mz run`
-  with their output compared, at language `main` `be88017`, the release of 8 October 2026
-  ([mzizi#91](https://github.com/mzizi-dev/mzizi/pull/91)). It is a slice of
+  with their output compared, at language `main` `dc156c5`, the second release of 8 October
+  2026 ([mzizi#96](https://github.com/mzizi-dev/mzizi/pull/96), tagged `v0.6.0`). The features
+  arrived in the first release of that day ([mzizi#91](https://github.com/mzizi-dev/mzizi/pull/91)).
+  It is a slice of
   [RFC-0013](https://github.com/mzizi-dev/mzizi/blob/main/design/RFC-0013-core-language.md),
   not all of it: the rest of the RFC is design, and [what is not built](#what-is-not-built)
-  lists it. The tracker rows these features belong to are still 🟡 in the file
+  lists it. The tracker rows these features belong to, C1–C5, C9 and C10, are ✅ in the file
   ([what still has to be built](/tracker)).
 </Info>
 
@@ -369,8 +371,9 @@ binary operators at most 64. Past the cap is one `MZ0411` per file, not a stack 
 
 ## What is not built
 
-These are designed in RFC-0013 and are not in the compiler. Each is `MZ0919`, which says the
-form is designed and not built, or another code that names it:
+These are designed in RFC-0013 and are not in the compiler. Most are `MZ0919`, which says the
+form is designed and not built; some, such as list literals and `via`, fall to generic codes
+(`MZ0104`, `MZ0917`):
 
 - Lists, maps and sets in a program, indexing, and `for each` over a list (C7).
 - Text methods (C6), records and methods (C8), options in function bodies, and a decimal type.

@@ -48,6 +48,40 @@ workspace, all passing; `compiler/src` is 26,811 lines.
   the compiler crate) and the line count. The `#mz-build-lower-a-service` anchor is now
   `#mz-build-lower-a-service-or-a-program`.
 
+### Changed — the second release of 8 October 2026 (mzizi#96, `v0.6.0`): tracker marks, the harness and the counts
+
+The language's second release of 8 October 2026 (mzizi#96, merged as `dc156c5`, tagged `v0.6.0`)
+is what these pages now check against. Checked by building `mz` at that tree: `cargo test` gives 513
+tests in the compiler crate and `cargo test --workspace` 644 in the workspace, all passing;
+`compiler/src` is 26,850 lines.
+
+- **The tracker mirrors `LANGUAGE-TRACKER.md` at `dc156c5`** (`tracker`). C1, C2, C3, C4, C5, C9 and
+  C10 are ✅; C6 is 📝; C7 and C8 are 🟡. P4 and H1 stay 🟡. The "has no expressions, bindings,
+  callable functions, loops, error handling, modules or standard library" sentence, which
+  `index`, `status` and `tracker` carried, is now "no text operations, maps or sets, methods on
+  user types, modules or standard library yet", and `check-freshness.mjs` checks the new sentence
+  and its named rows together. The earlier "rows are still 🟡" and "turn ✅ when they reach
+  `main`" wording is gone from `index`, `roadmap`, `status`, `programs` and `tracker`.
+- **The MZ09xx table on `compiler`** is regenerated from `mz harness definition` at `dc156c5`, not
+  written by hand. It has 45 codes, unchanged, and five `say` texts the release corrected (`MZ0902`,
+  `MZ0904`, `MZ0919`, `MZ0921`, `MZ0922`). The shared codes a program reuses are now 25, from 21:
+  `MZ0301`, `MZ0302`, `MZ0303` and `MZ0704` were registered in the release.
+- **The language harness** (`language-harness`): 137 entries, 70 diagnostic codes, 25 shared codes
+  and 51 pending codes (from 133, 66, 21 and 55). The entry-field table now matches the JSON:
+  `depth`, `precedence` and `diagnostic` are added; a feature entry's `codes` items carry `code`,
+  `say` and `fixes`, and `severity`, `tool`, `kinds` and `trigger` live in each diagnostic entry's
+  `diagnostic` object. The drift test is described as it is: it fails on an emitted code that has
+  no entry and is not on the pending list, here and on `rfcs` (RFC-0012 §1.2).
+- **Programs** (`programs`): the not-built list says most forms are `MZ0919`, and that some, such as
+  list literals (`MZ0104`) and `via` (`MZ0917`), fall to generic codes. Checked with `mz check`:
+  `let xs = [1, 2]` gives `MZ0104` (and `MZ0917` on the commas), `try f(1) via h` gives `MZ0917`, and
+  `1.5d` gives `MZ0917`.
+- **Status** (`status`): the checked commit is `dc156c5`, `v0.6.0`, and the first release of the day is
+  `be88017`, tagged `v0.5.0`. The harness row reads 137 entries and 70 codes, and the test counts
+  read 644 and 513. The release's section now says C1–C5, C9 and C10 are ✅ and C6–C8 are not; the
+  section it replaces said all of C1–C10 were ✅. The tracker's "have not moved" paragraph is gone.
+- **Roadmap** (`roadmap`): M1 is not reached: C6–C8 are not ✅. Wave 1 says its rows are ✅ since #96.
+
 ### Changed — the language pages, for the language's release of 8 October 2026
 
 - **"The harness" is now "the language harness"** on `index`, `rfcs`, `tracker` and
