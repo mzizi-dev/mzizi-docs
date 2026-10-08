@@ -9,8 +9,8 @@ icon: "spline"
   `entry` exist, and the entries they print are tested in CI. The plugin host, and skills and
   benchmark guides generated from the definition, are design only
   ([RFC-0012](https://github.com/mzizi-dev/mzizi/blob/main/design/RFC-0012-harness.md), a
-  draft, amended on 7 October 2026). Checked at language `main` `be88017`, released on
-  8 October 2026.
+  draft, amended on 7 October 2026). Checked at language `main` `dc156c5`, the second release
+  of 8 October 2026 (mzizi#96, tagged `v0.6.0`).
 </Info>
 
 **The language harness is the spine of the language.** RFC-0012, as amended, says every
@@ -30,22 +30,27 @@ It was called "the harness" until 7 October 2026. It is a different thing from
 
 ## What an entry holds
 
-| Field             | What it holds                                                                                                                                              |
-| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `name` and `kind` | A unique name (`int`, `is not`, `mz run`, `MZ0905`) and its kind: declaration, type, operator, statement, method, function, lexical, command or diagnostic |
-| `grammar`         | The forms an author writes, in canonical form                                                                                                              |
-| `teach`           | One paragraph for an agent: what it is, how to write it, and the mistakes from other languages it rejects                                                  |
-| `types`           | Its type rules in brief                                                                                                                                    |
-| `codes`           | The diagnostic codes it reports, each with its `say` text, severity, fix kinds and a source that triggers it                                               |
-| `examples`        | Runnable examples, which are tested: an example that stops checking, or a program that stops printing its stated output, fails CI                          |
-| `rfc`             | The sections that design it                                                                                                                                |
+| Field             | What it holds                                                                                                                                                                                                                                                                                                 |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name` and `kind` | A unique name (`int`, `is not`, `mz run`, `MZ0905`) and its kind: declaration, type, operator, statement, method, function, lexical, command or diagnostic                                                                                                                                                    |
+| `depth`           | `full` on 135 entries. `kind-only` on `component` and `service`, which name the kind but not yet their grammar or codes                                                                                                                                                                                       |
+| `rfc`             | The sections that design it                                                                                                                                                                                                                                                                                   |
+| `grammar`         | The forms an author writes, in canonical form (67 entries)                                                                                                                                                                                                                                                    |
+| `teach`           | One paragraph for an agent: what it is, how to write it, and the mistakes from other languages it rejects                                                                                                                                                                                                     |
+| `types`           | Its type rules in brief (48 entries)                                                                                                                                                                                                                                                                          |
+| `precedence`      | An operator's or method's place in the precedence order (27 entries: 16 operators and 11 methods)                                                                                                                                                                                                             |
+| `codes`           | On a feature entry (57 entries): the diagnostic codes it reports, each with its `code`, `say` text and `fixes`, the fix kinds it is recorded as raising                                                                                                                                                       |
+| `examples`        | Runnable examples (58 entries), each with its `source` and, where it runs, its `output`. They are tested: an example that stops checking, or a program that stops printing its stated output, fails CI                                                                                                        |
+| `diagnostic`      | On each of the 70 diagnostic entries, an object with the `code`, its `severity`, the `tool` that reports it (`mz check` or `mz run`), its `say` text, its `fixes`, the `kinds` that can raise it (`program`, and for 25 shared codes also `component` and `service`) and a `trigger`, a source that raises it |
 
-At `be88017` the definition holds **133 entries**: `program`, and `component` and `service` as
+At `dc156c5` the definition holds **137 entries**: `program`, and `component` and `service` as
 kind-level entries; `int`, `float`, `bool` and `text`; every operator, `try` among them; the 11
 numeric methods; every statement form, C4's control flow and C9's results among them; `print`
-and `error`; the nine `mz` commands; and **66 diagnostic codes**, the 45 `MZ09xx` codes a
-program raises and the 21 shared codes it reuses. The 55 codes of components and services are
-on a pending list that a test freezes, so it can only shrink.
+and `error`; the nine `mz` commands; and **70 diagnostic codes**, the 45 `MZ09xx` codes a
+program raises and the 25 shared codes it reuses. Four of those shared codes were registered in
+the second release of 8 October 2026: **`MZ0301`**, **`MZ0302`**, **`MZ0303`** and **`MZ0704`**,
+which a program's enums raise. The 51 codes that components and services raise are on a pending
+list that a test freezes, so it can only shrink.
 
 ## `mz harness`
 
@@ -58,10 +63,10 @@ cargo run --bin mz -- harness entry "is not"           # one entry
 cargo run --bin mz -- harness entry MZ0905
 ```
 
-At `be88017`, `mz harness version` prints:
+At `dc156c5`, `mz harness version` prints:
 
 ```json
-{"protocol":1,"language":"phase-0, RFC-0013 wave 0, wave 1 numbers, control flow and errors","definition_sha256":"ca44fa70aa98f36fed6ca0bc7824c594aca6620cc4b5195a6ecc47c73ad2b07b"}
+{"protocol":1,"language":"phase-0, RFC-0013 wave 0, wave 1 numbers, control flow and errors","definition_sha256":"225fbfe194bb1dd4c215c30eb77e62de060938f3d179e0ea8b29c96d62eed283"}
 ```
 
 No crate version changes: the crates stay at `0.0.0`, and the definition's SHA-256 pins its
@@ -78,11 +83,11 @@ that adds or changes a language feature adds or updates its harness entry in the
 request**, and a tracker row is not done until its entries are. The first slice holds it in
 three different ways, and the difference matters:
 
-| How                                | What                                                                                                                                                                                                                                                                                                                                                                                                           |
-| ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **One source**                     | `mz` dispatches on the registry's command table, and its usage line is generated from it. The program parser accepts exactly the registered type names. Each operator's spelling, precedence and operand types, and each method's signature, are read from the checker's own tables                                                                                                                            |
-| **A parallel copy, held by tests** | Each code's severity and fix kinds, and each feature's examples. `compiler/tests/harness.rs` fails on an emitted code with no entry, an entry for a code nothing emits, a trigger that stops reporting its code at its severity with a declared fix kind, an example that stops checking or running as stated, and a lexed operator with no entry. A debug build also checks every report against the registry |
-| **Written by hand, not compared**  | Each code's `say` text, and each feature's grammar and `teach` text. Only a length cap on `say` is tested. These can drift from what the checker does, and no test would notice                                                                                                                                                                                                                                |
+| How                                | What                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **One source**                     | `mz` dispatches on the registry's command table, and its usage line is generated from it. The program parser accepts exactly the registered type names. Each operator's spelling, precedence and operand types, and each method's signature, are read from the checker's own tables                                                                                                                                                        |
+| **A parallel copy, held by tests** | Each code's severity and fix kinds, and each feature's examples. `compiler/tests/harness.rs` fails on an emitted code with no entry and not on the pending list, an entry for a code nothing emits, a trigger that stops reporting its code at its severity with a declared fix kind, an example that stops checking or running as stated, and a lexed operator with no entry. A debug build also checks every report against the registry |
+| **Written by hand, not compared**  | Each code's `say` text, and each feature's grammar and `teach` text. Only a length cap on `say` is tested. These can drift from what the checker does, and no test would notice                                                                                                                                                                                                                                                            |
 
 Fix kinds are recorded as raised, so an agent can receive a `guess` on a code whose entry lists
 only `exact`: when two `exact` fixes overlap, `mz check` demotes one.
