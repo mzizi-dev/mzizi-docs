@@ -232,8 +232,8 @@ await check("mzizi-dev/mzizi charter, tracker and arms", async () => {
     const missing = [...marks.keys()].filter((id) => !ours.some((m) => m[1] === id));
     if (missing.length > 0) drift.push(`tracker.mdx: rows missing from the page: ${missing.join(", ")}`);
     // The sentence every capability page carries, while the rows it names are not done.
-    const sentence = "no expressions, bindings, callable functions, loops, error handling, modules or standard library yet";
-    const named = { C1: "expressions", C2: "bindings", C3: "callable functions", C4: "loops", C9: "error handling", P1: "modules", P2: "standard library" };
+    const sentence = "no text operations, maps or sets, methods on user types, modules or standard library yet";
+    const named = { C6: "text operations", C7: "maps or sets", C8: "methods on user types", P1: "modules", P2: "standard library" };
     const done = Object.entries(named).filter(([id]) => marks.get(id) === "✅").map(([, what]) => what);
     for (const path of ["index.mdx", "status.mdx", "tracker.mdx"]) {
       const says = page(path).replace(/\s+/g, " ").replace(/\*\*/g, "").includes(sentence);

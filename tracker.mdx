@@ -1,17 +1,18 @@
 ---
 title: "What still has to be built"
-description: "A summary of LANGUAGE-TRACKER.md, the language's one tracker of what Mzizi still needs before it is a working programming language, against Python, Go, C++, TypeScript and Rust. Mzizi has no expressions, bindings, callable functions, loops, error handling, modules or standard library yet."
+description: "A summary of LANGUAGE-TRACKER.md, the language's one tracker of what Mzizi still needs before it is a working programming language, against Python, Go, C++, TypeScript and Rust. Mzizi has no text operations, maps or sets, methods on user types, modules or standard library yet."
 sidebarTitle: "What still has to be built"
 icon: "list-checks"
 ---
 
 <Warning>
   **Mzizi is not yet a working programming language.** By the tracker's ✅ marks it has no
-  expressions, bindings, callable functions, loops, error handling, modules or standard
-  library yet. A [`program`](/programs) has the first five in a narrow form, on `main` since
-  8 October 2026, and their rows are still 🟡 in the file. A `service` lowers to a local
-  Rust + axum package and a program to a dependency-free Rust package; no component lowers,
-  and there is no Workers, Containers or WebAssembly target.
+  text operations, maps or sets, methods on user types, modules or standard library yet. A
+  [`program`](/programs) has expressions, bindings, functions, control flow, numbers and
+  results in a narrow form, and C1–C5, C9 and C10 are ✅ in the file as of the second release
+  of 8 October 2026 (`v0.6.0`). A `service` lowers to a local Rust + axum package and a program
+  to a dependency-free Rust package; no component lowers, and there is no Workers, Containers
+  or WebAssembly target.
 </Warning>
 
 [`LANGUAGE-TRACKER.md`](https://github.com/mzizi-dev/mzizi/blob/main/LANGUAGE-TRACKER.md), at
@@ -19,7 +20,7 @@ the root of `mzizi-dev/mzizi`, is the one list of what Mzizi still needs before 
 called a working programming language, stacked against the languages it aims to replace. By
 the owner's decision of 30 September 2026 it is the ultimate tracker: **if a capability is not
 ✅ there, Mzizi does not have it, whatever any other page says.** These docs take every
-capability claim from it. This page summarises it at language `main` `be88017`; read the
+capability claim from it. This page summarises it at language `main` `dc156c5` (`v0.6.0`); read the
 file for the evidence behind each row.
 
 Status in the tracker is what the code on `main` does, never what an RFC designs:
@@ -57,9 +58,9 @@ What exists is the front end of a language whose first domain is UI components:
 and runs it, and CI runs five example programs against their committed output. See
 [Programs](/programs).
 
-The tracker's own prose about these still says they are on `staging` or in open pull requests,
-and their rows say each turns ✅ when it reaches `main`. They have reached `main`; the file has
-not yet marked them ✅, so this page has not either.
+The tracker marks C1–C5, C9 and C10 ✅ as of the second release, and C6–C8 are not ✅ (C6 is
+designed, C7 and C8 are partly built). P4 and H1 stay 🟡: a general program cannot be written
+yet, and the plugin host and the generated skills are not built.
 
 What does not exist yet: text operations, collections and records in a program, modules, a
 standard library, lowering for a component, and most of Tier 2 and Tier 3.
@@ -69,25 +70,25 @@ standard library, lowering for a component, and most of Tier 2 and Tier 3.
 Mzizi's column from the tracker, condensed. The tracker also gives each incumbent's answer
 (Python, Go, C++, TypeScript and Rust have every one of the first rows).
 
-| Area                                     | Mzizi today                                                                                                                                   |
-| ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| Expressions, variables, functions, loops | 🟡 in a `program`: expressions, `let` / `var`, functions and recursion, `when`, loops (the file says "no loops", which C4 has since built)    |
-| Numbers                                  | 🟡 `int` only, in the file's area table (C5's row says `int` and `float`)                                                                     |
-| Text operations                          | ❌ `text` is a type only                                                                                                                      |
-| Collections                              | 🟡 `list`, `option`; no map, set or tuple                                                                                                     |
-| User types                               | 🟡 enums with data, records; no methods, traits or generics                                                                                   |
-| Error handling                           | ❌ in the file's area table (C9's row is 🟡: `result`, `error` and `try` in a program)                                                        |
-| Modules and imports                      | ❌ one component per file                                                                                                                     |
-| Standard library                         | ❌                                                                                                                                            |
-| Concurrency                              | ❌                                                                                                                                            |
-| Compiles to something that runs          | 🟡 a `service` → a local Rust + axum package; a `program` → a dependency-free Rust package that `mz run` builds and runs; no component lowers |
-| Uses the host ecosystem                  | ❌ no Rust crate interop                                                                                                                      |
-| Package manager                          | ❌                                                                                                                                            |
-| Formatter, editor support                | ❌ canonical form designed in RFC-0001                                                                                                        |
-| Tests                                    | 🟡 `mz contract` for contracts; no `mz test`                                                                                                  |
-| Diagnostics built for agents             | ✅ `mz check --agent`, `mz fix`                                                                                                               |
-| Contracts on everything                  | ✅ components; 🟡 services, run in process by `mz contract`, `ensure` tested over generated requests, not proven                              |
-| Spec and stability                       | ❌ the RFCs are design, not a reference                                                                                                       |
+| Area                                     | Mzizi today                                                                                                                                               |
+| ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Expressions, variables, functions, loops | 🟡 in a `program`: expressions, `let` / `var`, functions and recursion, `when`, `match`, `for each` over a range and `while`; no collections to loop over |
+| Numbers                                  | 🟡 `int` and `float` in a `program`; no decimal                                                                                                           |
+| Text operations                          | ❌ (`text` type only)                                                                                                                                     |
+| Collections                              | 🟡 `list`, `option`; no map, set or tuple                                                                                                                 |
+| User types                               | 🟡 enums with data, records; no methods, traits or generics                                                                                               |
+| Error handling                           | 🟡 in a `program`: `result(T, E)`, `return error(e)`, `try`, `match` on a result; contracts check behaviour, they are not error handling                  |
+| Modules and imports                      | ❌ (one component per file)                                                                                                                               |
+| Standard library                         | ❌                                                                                                                                                        |
+| Concurrency                              | ❌                                                                                                                                                        |
+| Compiles to something that runs          | 🟡 a `service` → a local Rust + axum package; a `program` → a dependency-free Rust package that `mz run` builds and runs; no component lowers             |
+| Uses the host ecosystem                  | ❌ (no Rust crate interop)                                                                                                                                |
+| Package manager                          | ❌                                                                                                                                                        |
+| Formatter, editor support                | ❌ (canonical form designed in RFC-0001)                                                                                                                  |
+| Tests                                    | 🟡 `mz contract` for contracts; no `mz test`                                                                                                              |
+| Diagnostics built for agents             | ✅ `mz check --agent`, `mz fix`                                                                                                                           |
+| Contracts on everything                  | ✅ components; 🟡 services, run in process by `mz contract`, `ensure` tested over generated requests, not proven                                          |
+| Spec and stability                       | ❌ (the RFCs are design, not a reference)                                                                                                                 |
 
 The two ✅ rows are where Mzizi is different on purpose. Every other row is work.
 
@@ -101,16 +102,16 @@ on `main` and green.
 
 | ID  | Capability                                            | Status |
 | --- | ----------------------------------------------------- | ------ |
-| C1  | Expressions and operators                             | 🟡     |
-| C2  | Bindings: named values, scope, shadowing              | 🟡     |
-| C3  | Functions: parameters, return types, calls, recursion | 🟡     |
-| C4  | Control flow as expressions, loops, early return      | 🟡     |
-| C5  | Numbers: floats or decimals, overflow and division    | 🟡     |
+| C1  | Expressions and operators                             | ✅     |
+| C2  | Bindings: named values, scope, shadowing              | ✅     |
+| C3  | Functions: parameters, return types, calls, recursion | ✅     |
+| C4  | Control flow as expressions, loops, early return      | ✅     |
+| C5  | Numbers: floats or decimals, overflow and division    | ✅     |
 | C6  | Text operations                                       | 📝     |
 | C7  | Collections: maps, sets, tuples and their operations  | 🟡     |
 | C8  | User types: methods, interfaces or traits, generics   | 🟡     |
-| C9  | Error handling: a result type and propagation         | 🟡     |
-| C10 | A program entry point that runs (`mz run hello.mz`)   | 🟡     |
+| C9  | Error handling: a result type and propagation         | ✅     |
+| C10 | A program entry point that runs (`mz run hello.mz`)   | ✅     |
 
   </Accordion>
   <Accordion title="Tier 2: real programs (build, run and ship software)">
@@ -176,7 +177,8 @@ better than any language; it lists what has to exist before that can be measured
 
 Work toward M1 is tracked in [mzizi#69](https://github.com/mzizi-dev/mzizi/issues/69). Its
 design, RFC-0013, and its Wave 0 and part of Wave 1 (C1, C4, C5, C9, with C2, C3 and C10 from
-Wave 0) were released to `main` on 8 October 2026; no pull request toward M1 is open. Still to
+Wave 0) were released to `main` on 8 October 2026 (mzizi#91, tagged `v0.5.0`). The second
+release of that day (mzizi#96, tagged `v0.6.0`) moved their rows to ✅ in the file. Still to
 build: text operations (C6), collections (C7) and records with methods (C8), and follow-ups
 the RFC lists. See [Status](/status#released-to-main-on-8-october-2026) and
 [the M1 plan](/roadmap#m1-the-plan).
