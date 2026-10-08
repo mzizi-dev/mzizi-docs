@@ -231,15 +231,22 @@ await check("mzizi-dev/mzizi charter, tracker and arms", async () => {
     for (const [, id, mark] of ours) compare(`tracker row ${id} (tracker.mdx)`, mark, marks.get(id) ?? "missing");
     const missing = [...marks.keys()].filter((id) => !ours.some((m) => m[1] === id));
     if (missing.length > 0) drift.push(`tracker.mdx: rows missing from the page: ${missing.join(", ")}`);
-    // The sentence every capability page carries, while the rows it names are not done.
-    const sentence = "no text operations, maps or sets, methods on user types, modules or standard library yet";
-    const named = { C6: "text operations", C7: "maps or sets", C8: "methods on user types", P1: "modules", P2: "standard library" };
-    const done = Object.entries(named).filter(([id]) => marks.get(id) === "✅").map(([, what]) => what);
+    // The sentence every capability page carries, read off the tracker's marks. Modules and the
+    // standard library are not built while P1 and P2 are ❌, and text operations are partial while
+    // C6 is 🟡. Maps, sets and records are not named as absent: C7 and C8 are ✅ on main, so a page
+    // that still says so is stale.
+    const sentence = "Mzizi has no modules or standard library yet, and its text operations are partial";
+    const want = { P1: "❌", P2: "❌", C6: "🟡" };
+    const off = Object.entries(want)
+      .filter(([id, mark]) => marks.get(id) !== mark)
+      .map(([id, mark]) => `${id} is ${marks.get(id) ?? "missing"}, not ${mark}`);
+    const stale = /no text operations, maps or sets|methods on user types, modules/;
     for (const path of ["index.mdx", "status.mdx", "tracker.mdx"]) {
-      const says = page(path).replace(/\s+/g, " ").replace(/\*\*/g, "").includes(sentence);
-      if (!says) drift.push(`${path}: does not say Mzizi has ${sentence}`);
-      else if (done.length > 0) drift.push(`${path}: says Mzizi has none of these, but the tracker marks ${done.join(", ")} ✅`);
-      else console.log(`ok     ${path} says what Mzizi does not have yet, as the tracker does`);
+      const text = page(path).replace(/\s+/g, " ").replace(/\*\*/g, "");
+      if (stale.test(text)) drift.push(`${path}: says Mzizi has none of text operations, maps or sets, methods on user types`);
+      if (!text.includes(sentence)) drift.push(`${path}: does not say "${sentence}"`);
+      else if (off.length > 0) drift.push(`${path}: says what the tracker leaves unbuilt, but ${off.join(", ")}`);
+      else console.log(`ok     ${path} says what the tracker leaves unbuilt, as the tracker marks it`);
     }
 
     // The arms: benchmark.mdx says "Exists" for exactly the directories in benchmarks/arms/.

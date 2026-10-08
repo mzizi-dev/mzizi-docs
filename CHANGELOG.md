@@ -21,38 +21,47 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
-### Added — text methods and collections on the language's `staging`, not yet in a release
+### Changed — the language's third release of 8 October 2026: collections, records and text methods are on `main`
 
-The language's `staging` branch (`6e67658`) carries C6 (text methods) and C7 (collections), which
-`main` (`dc156c5`, `v0.6.0`) does not yet. The pages now document them in sections headed **On
-staging**, and say what each branch has. Checked by building the `staging` commit: `cargo test` in
-`compiler/` gives 562 tests, all passing, and `examples/text.mz` and `examples/collections.mz` run
-through `mz run` with the output their `.expected` files hold.
+The language released `staging` to `main` (mzizi#104, merged as `4d0cdc3`). It carries C6 (text
+methods, mzizi#98), C7 (collections, mzizi#99), C8 (records and methods, mzizi#101 and mzizi#102)
+and the language harness's prefix `not` level (mzizi#100). The pages no longer describe any of
+it as staging-only, and the "On staging" sections are gone. No tag names that release when these
+pages were checked. Read at `4d0cdc3`: `cargo test --workspace` 744 tests in 27 suites (613 in the
+compiler crate), all passing; `mz harness definition` 191 entries, 80 diagnostic codes and 49
+pending codes; `compiler/src` 33,138 lines.
 
-- **Programs** (Language tab): two new sections. **On staging: text methods (C6)** documents
-  `length`, `contains`, `starts_with`, `ends_with`, `trim`, `to_upper`, `to_lower`,
-  `replace(old, by = new)` and `repeat(n)`, with the methods that return an option or a list still
-  `MZ0919`, and quotes `examples/text.mz` verbatim with its output. **On staging: collections (C7)**
-  documents `list(T)`, `map(K, V)` and `set(K)`, bracket literals, indexing that returns an option
-  read with `otherwise`, indexed assignment, `in`, `for each` over a list, `range(a, to = b)` as a
-  list, the list, map and set methods and the eight named folds, and quotes
-  `examples/collections.mz` verbatim with its output. The page's description, its scope note and
-  its "What is not built" list now say what each branch lacks.
-- **Compiler**: a table of the codes `staging` adds and changes, generated from `mz harness
-definition` at `6e67658`. **`MZ0960`**, **`MZ0961`**, **`MZ0963`** and **`MZ0964`** are new, and ten
-  `MZ09xx` codes have a `say` text or fix kinds that differ from `main`; `MZ0991` is reported by
-  `mz run`. The page gives the staging test count and the compiler source's line count (31,267, from
-  26,850 on `main`).
-- **Language harness** and **Status**: on `staging`, the definition holds 181 entries and 75
-  diagnostic codes, with 50 pending; `main` holds 137, 70 and 51. Status gains a section on what is
-  on `staging` and not in a release.
-- **What still has to be built** (tracker): the table keeps `main`'s marks, which the freshness
-  check reads. A paragraph gives `staging`'s: C6 and C7 are 🟡, C8 is records and methods, and
-  generics and interfaces are a new row, P12, deferred past M1.
+- **Programs** (Language tab): the sections **Text methods (C6)**, **Collections (C7)** and
+  **Records and methods (C8)** document the released features. `examples/text.mz`,
+  `examples/collections.mz` and `examples/records.mz` are quoted verbatim with the output in their
+  `.expected` files; `mz check` accepts each, and `mz run` prints each output. The precedence table
+  lists the ten levels the checker reads, with `otherwise` at 6, comparisons and `in` at 7, prefix
+  `not` at 8, `and` at 9 and `or` at 10. The "What is not built" list drops the records and the
+  staging items, and keeps `option(T)` as a type, the text methods that return an option or a list,
+  `fn … changes self`, generics and interfaces (P12).
+- **Compiler** (Toolchain tab): the test counts and the line count are re-read. The `MZ09xx` table is
+  regenerated from `mz harness definition` at `4d0cdc3`: 53 codes, of which `MZ0960`, `MZ0961`,
+  `MZ0963` and `MZ0964` are new. The table of staging codes is removed. The program codes reuse 27
+  shared codes, now including `MZ0710` and `MZ0808`.
+- **Language harness** and **Status**: the definition's counts at `4d0cdc3` (191 entries, 80 codes,
+  49 pending, and the entry counts by field), the `mz harness version` output, and the status table
+  rows for text methods (C6, partial) and for collections and records (C7 and C8, built). The
+  "On staging" section of Status becomes **The third release** under the release section.
+- **What still has to be built** (tracker): C6 is 🟡, C7 and C8 are ✅, and the table has the row P12
+  (generics and interfaces, ❌) that the file added with C8's split in the third release. The summary paragraphs
+  and the Warning no longer say that maps, sets or records are missing.
+- **Index, Roadmap, Benchmark and this repository's `AGENTS.md`**: the sentence "no text operations,
+  maps or sets, methods on user types" is replaced with the tracker's marks: no modules or standard
+  library (P1 and P2 are ❌), partial text operations (C6 is 🟡), and maps, sets, lists and records
+  with methods in a program. The roadmap's Wave 1 and Wave 2 states follow the file, and the public
+  suites are still blocked, now on the standard library and the text operations.
+- **Freshness check** (`scripts/check-freshness.mjs`): the sentence it requires on the three pages is
+  the one above, and it reads the marks of P1, P2 and C6 rather than C6–C8. Its run at `4d0cdc3`
+  passes.
 
-These are tested by the language's suite and its example programs. No benchmark has run on them,
-and nothing here says a model writes text or collection code better in Mzizi than in another
-language. Phase 0 is not complete: the kill-criterion run has not happened.
+These pages describe what is tested, and no benchmark has run on these features: nothing here says a
+model writes Mzizi code better than another language. Phase 0 is not complete: the kill-criterion run
+has not happened.
 
 ### Added — programs, `mz run` and the language harness, after the language's release of 8 October 2026
 
