@@ -21,6 +21,48 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
+### Changed — the language's third release of 8 October 2026: collections, records and text methods are on `main`
+
+The language released `staging` to `main` (mzizi#104, merged as `4d0cdc3`). It carries C6 (text
+methods, mzizi#98), C7 (collections, mzizi#99), C8 (records and methods, mzizi#101 and mzizi#102)
+and the language harness's prefix `not` level (mzizi#100). The pages no longer describe any of
+it as staging-only, and the "On staging" sections are gone. The release is tagged `v0.7.0`, which is
+`4d0cdc3`. Read at `4d0cdc3`: `cargo test --workspace` 744 tests in 27 suites (613 in the
+compiler crate), all passing; `mz harness definition` 191 entries, 80 diagnostic codes and 49
+pending codes; `compiler/src` 33,138 lines.
+
+- **Programs** (Language tab): the sections **Text methods (C6)**, **Collections (C7)** and
+  **Records and methods (C8)** document the released features. `examples/text.mz`,
+  `examples/collections.mz` and `examples/records.mz` are quoted verbatim with the output in their
+  `.expected` files; `mz check` accepts each, and `mz run` prints each output. The precedence table
+  lists the ten levels the checker reads, with `otherwise` at 6, comparisons and `in` at 7, prefix
+  `not` at 8, `and` at 9 and `or` at 10. The "What is not built" list drops the records and the
+  staging items, and keeps `option(T)` as a type, the text methods that return an option or a list,
+  `fn … changes self`, generics and interfaces (P12).
+- **Compiler** (Toolchain tab): the test counts and the line count are re-read. The `MZ09xx` table is
+  regenerated from `mz harness definition` at `4d0cdc3`: 53 codes, of which `MZ0960`, `MZ0961`,
+  `MZ0963` and `MZ0964` are new. The table of staging codes is removed. The program codes reuse 27
+  shared codes, now including `MZ0710` and `MZ0808`.
+- **Language harness** and **Status**: the definition's counts at `4d0cdc3` (191 entries, 80 codes,
+  49 pending, and the entry counts by field), the `mz harness version` output, and the status table
+  rows for text methods (C6, partial) and for collections and records (C7 and C8, built). The
+  "On staging" section of Status becomes **The third release** under the release section.
+- **What still has to be built** (tracker): C6 is 🟡, C7 and C8 are ✅, and the table has the row P12
+  (generics and interfaces, ❌) that the file added with C8's split in the third release. The summary paragraphs
+  and the Warning no longer say that maps, sets or records are missing.
+- **Index, Roadmap, Benchmark and this repository's `AGENTS.md`**: the sentence "no text operations,
+  maps or sets, methods on user types" is replaced with the tracker's marks: no modules or standard
+  library (P1 and P2 are ❌), partial text operations (C6 is 🟡), and maps, sets, lists and records
+  with methods in a program. The roadmap's Wave 1 and Wave 2 states follow the file, and the public
+  suites are still blocked, now on the standard library and the text operations.
+- **Freshness check** (`scripts/check-freshness.mjs`): the sentence it requires on the three pages is
+  the one above, and it reads the marks of P1, P2 and C6 rather than C6–C8. Its run at `4d0cdc3`
+  passes.
+
+These pages describe what is tested, and no benchmark has run on these features: nothing here says a
+model writes Mzizi code better than another language. Phase 0 is not complete: the kill-criterion run
+has not happened.
+
 ### Added — programs, `mz run` and the language harness, after the language's release of 8 October 2026
 
 The language released `staging` to `main` (mzizi#91, merged as `be88017`, whose tree is
