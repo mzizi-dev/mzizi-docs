@@ -29,12 +29,14 @@
 
 ## The rule that overrides everything else
 
-The Mzizi language is a **Phase 0 prototype front end**. `mz contract` evaluates a
-component's contract against the component itself, and runs a `service` in process. Only a
-`service` lowers to Rust (`mz build`, to a local Rust + axum package); no component lowers,
-there is no Workers, Containers or WebAssembly target, and nothing renders. Mzizi has no
-expressions, bindings, callable functions, loops, error handling, modules or standard library
-yet.
+The Mzizi language is a **Phase 0 prototype**. `mz contract` evaluates a component's contract
+against the component itself, and runs a `service` in process. A `service` lowers to Rust
+(`mz build`, to a local Rust + axum package), and so does a `program` in RFC-0013's first
+waves (`mz build` and `mz run`, to a dependency-free Rust package; on language `main` since
+8 October 2026). No component lowers, there is no Workers, Containers or WebAssembly target,
+and nothing renders. By the tracker's ✅ marks, Mzizi has no expressions, bindings, callable
+functions, loops, error handling, modules or standard library yet: a program has the first
+five in a narrow form, and those rows are 🟡 until the tracker marks them ✅.
 **Two small pilots ran on 2026-09-27 and neither showed an advantage.** The run that tests
 the kill criterion (now: Mzizi against the best existing language for each kind of task)
 has not happened.
@@ -67,31 +69,42 @@ Facts that inherited prose often gets wrong:
   at build time from a pinned registry commit. Only `mzizi-console` uses Supabase.
 - **One MCP server**, at `mcp.mzizi.dev/mcp`. `mzizi.dev/mcp` is a 308 to it. It is free
   with no sign-in except the Fundi tools (`mzizi_fundi`, `mzizi_report_issue`); an anonymous
-  `tools/list` answered on 30 September 2026. Its MCP Registry name is
+  `tools/list` answered on 7 October 2026. Its MCP Registry name is
   `io.github.mzizi-dev/mzizi-mcp`.
-- **The CLI is free.** `mzizi add` is published from `@nyuchi/mzizi-cli` (0.6.3 on
-  30 September 2026); 0.6.0's binaries printed nothing, so pages say "0.6.1 or later".
-- **Five skills, not nine.** `@nyuchi/mzizi-skills` 0.8.0 cut the bundle to `mzizi-language`,
-  `mzizi-roots`, `mzizi-design`, `mzizi-backend` and `discoverability`, with no aliases for
-  the old names. The Claude Code plugin is the public one in `mzizi-dev/mzizi-registry`
-  (`/plugin install mzizi@mzizi`); the private `mzizi-tools` marketplace is retired.
+- **The CLI is free.** `mzizi add` is published from `@nyuchi/mzizi-cli` (0.7.0 on
+  7 October 2026); 0.6.0's binaries printed nothing, so pages say "0.6.1 or later".
+- **Seven skills, in four categories.** `@nyuchi/mzizi-skills` 0.8.0 cut the bundle to five,
+  `mzizi-language`, `mzizi-roots`, `mzizi-design`, `mzizi-backend` and `discoverability`, with
+  no aliases for the old names. 0.9.0 (5 October 2026) added the `dev` skill
+  `digital-hygiene`, 0.10.0 (6 October) added `progress-report` and categories, and 0.11.0
+  (6 October) is the latest. The API and the plugin can lag npm. The Claude Code plugin is the
+  public one in `mzizi-dev/mzizi-registry` (`/plugin install mzizi@mzizi`); the private
+  `mzizi-tools` marketplace is retired.
   `npx skills add @nyuchi/mzizi-skills` does not work.
 - **Mzizi's brand mineral is hematite**, a heritage tone, not one of the Seven African
   Minerals. It is the default `--primary` of the registry's `mzizi-tokens-globals.css`;
   `/v1/brand`'s semantic `--primary` is still tanzanite.
-- **The Roots crates are on crates.io**: ten crates at 0.1.0, installed with
+- **The Roots crates are on crates.io**: ten crates at 0.3.0 (7 October 2026), installed with
   `cargo add mzizi-roots`.
 - **`nyuchi-*` components are `mzizi-*`**, and the old names 308 to the new ones.
 
-Three specific traps:
+Five specific traps:
 
 - **Do not quote RFC examples as working syntax.** RFC-0001's view attributes have no `=`;
   the implemented parser requires `name = value`. Prefer quoting `.mz` files from the
   repository, which CI gates.
-- **Do not document `mz refs`, `mz path`, `mz patch`, `mz diff`, `mz run`, `mz test` or
-  `mz fmt` as commands.** They are designed, not built. The binary dispatches `check`, `fix`,
-  `contract`, `outline` and `build` (`mz build <service.mz> --out <dir>`, a service only), plus
-  `hash` and `ir`. All are documented on the compiler page.
+- **Do not document `mz refs`, `mz path`, `mz patch`, `mz diff`, `mz test` or `mz fmt` as
+  commands, nor `mz run --agent` or `mz harness plugins`.** They are designed, not built. The
+  binary on `main` dispatches `check`, `fix`, `contract`, `outline`, `build` (a service or a
+  program) and `run` (a program), plus `hash`, `ir` and `harness` (`version`, `definition`,
+  `entry`). All are documented on the compiler page; programs on `programs.mdx`, the language
+  harness on `language-harness.mdx`. Released to `main` on 8 October 2026 (mzizi#91).
+- **Generate the `MZ09xx` table, do not hand-edit it.** The table on `compiler.mdx` is
+  `mz harness definition` at the commit it names. When the language adds or changes a program
+  code, regenerate it from the definition and move the commit.
+- **"The language harness", not "the harness".** RFC-0012 was renamed on 7 October 2026.
+  `benchmarks/harness/` is always "the benchmark harness". `charter.mdx` follows the charter's
+  own wording, which still says "the harness".
 - **Do not put a model name or identifier in a page.** Say "a frontier model" or "a ~7B
   open-weight model" and link the pilot write-up, which names them.
 
@@ -108,11 +121,12 @@ An owner rule, 2026-09-30: **docs.mzizi.dev must never lag the language or the c
 - Anyone changing the language or the components should expect a docs update to follow, and
   should say in their pull request that they changed it.
 - `node scripts/check-freshness.mjs` compares the facts it knows how to find (package and
-  crate versions, the language's test count, line count and checked commit, the charter's
-  version and title, every `LANGUAGE-TRACKER.md` row's mark on `tracker.mdx`, the arms in
-  `benchmarks/arms/` against `benchmark.mdx`, the version `mcp.mzizi.dev`
-  serves, the crate `/v1/rs/{name}` names for each first-batch component, the MCP Registry
-  entry) with their live sources. While every Roots crate is on crates.io, it also fails on any
+  crate versions, the language's test count, its `compiler/src` line count (counted in the
+  source, because the README can lag) and checked commit, the charter's version and title,
+  every `LANGUAGE-TRACKER.md` row's mark on `tracker.mdx`, the arms in `benchmarks/arms/`
+  against `benchmark.mdx`, the version `mcp.mzizi.dev` serves, the registry's component count
+  on every page that states it (`/v1/ui`'s `meta.total`), the crate `/v1/rs/{name}` names for
+  each first-batch component, the MCP Registry entry) with their live sources. While every Roots crate is on crates.io, it also fails on any
   page that says one is not.
 - **Registry pins are not stated as current.** The API's and the MCP server's pins each have a
   bot that moves them to registry `main` hourly once the owner adds its token. Pages say how to
@@ -246,6 +260,15 @@ Any substantial build, migration, investigation or multi-step task gets a GitHub
 - Post progress, decisions and a hand-off note (what's done, what's left, branch names) as issue comments — at each merge and before a session or agent finishes.
 - Work spanning repos gets a tracking issue that links the per-repo issues.
 - Never put secrets, credential status or exploitable detail in issues on public repos.
+
+## Dev skills, progress reports and the merge gate
+
+Load the Mzizi **dev skills** before starting work: `mzizi_get_skills category=dev` on the Mzizi MCP (`mcp.mzizi.dev`), or `@nyuchi/mzizi-skills` from npm. They are `digital-hygiene` and `progress-report`.
+
+- **Digital hygiene.** Check free disk before starting, clone only under `$TMPDIR`, share build caches, and audit, then delete, your clones once the work merges (`digital-hygiene` skill).
+- **Clone isolation.** Clone only into a directory unique to you; never touch another agent's.
+- **Progress reports.** All dev work runs on a 10-minute progress-report loop (`progress-report` skill): measured bars, what changed, and a final "Needs you:" line. Report ticks never publish, release, merge or deploy without the owner's approval.
+- **Merge gate.** Merge only when the work is complete, CI is green, it's verified at runtime, and `/code-review` has run with findings resolved.
 
 ## Upstream first (hard rule)
 

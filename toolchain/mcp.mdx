@@ -9,7 +9,7 @@ The Mzizi MCP server gives agents the registry, the brand tokens, the architectu
 the doctrine, the agent skills and these docs over the
 [Model Context Protocol](https://modelcontextprotocol.io). It is the `mzizi-mcp` Cloudflare
 Worker, published as [`@nyuchi/mzizi-mcp`](https://www.npmjs.com/package/@nyuchi/mzizi-mcp)
-(`0.11.2`, read from npm on 30 September 2026; the hosted server answered `initialize` with
+(`0.13.0`, read from npm on 7 October 2026; the hosted server answered `initialize` with
 the same version, and the MCP Registry lists it). In the
 [MCP Registry](https://registry.modelcontextprotocol.io) it is
 `io.github.mzizi-dev/mzizi-mcp`, listing both the hosted endpoint and the npm package. The
@@ -51,9 +51,10 @@ ship inside the package.
 ## Who can use it
 
 The MCP server is free, with no gate, as the owner decided on 29 September 2026. Every tool
-except the Fundi tools is served without sign-in. On 30 September 2026 an anonymous
-`initialize` and `tools/list` on `https://mcp.mzizi.dev/mcp` returned all fourteen tools, and
-an anonymous call to `mzizi_search` returned results.
+except the Fundi tools is served without sign-in. On 7 October 2026 an anonymous
+`initialize` and `tools/list` on `https://mcp.mzizi.dev/mcp` returned all fourteen tools,
+anonymous calls to `mzizi_get_component` and `mzizi_get_skills` returned results, and an
+anonymous `mzizi_report_issue` answered with how to sign in.
 
 | Tools                                          | Sign-in                                        |
 | ---------------------------------------------- | ---------------------------------------------- |
@@ -84,25 +85,25 @@ fresh as its last edit.
 - The `mzizi_mcp_describe` tool, and the `mzizi://tools` resource, describe the tools and
   the data sources.
 
-On 30 September 2026, `catalogue.json` and an anonymous `tools/list` both listed fourteen
+On 7 October 2026, `catalogue.json` and an anonymous `tools/list` both listed fourteen
 tools:
 
-| Tool                               | What it answers                                                            |
-| ---------------------------------- | -------------------------------------------------------------------------- |
-| `mzizi_search`                     | Word search over components, conventions, AI instruction sets and releases |
-| `mzizi_get_component`              | One component in full, Rust first; optional docs and version history       |
-| `mzizi_list_components`            | The paged index, filterable by node, owner, collection, type and `rust`    |
-| `mzizi_get_tokens`                 | The brand system, including all 21 colour families                         |
-| `mzizi_get_architecture`           | The DNA helix, or one node or rung                                         |
-| `mzizi_get_doctrine`               | Ubuntu pillars and principles, conventions, AI instruction sets            |
-| `mzizi_get_skills`                 | The five agent skills, listed or one in full                               |
-| `mzizi_check_accessibility`        | Contrast against the Mzizi floor, computed locally                         |
-| `mzizi_report_issue`               | Files into the Fundi issue desk. **Gated**                                 |
-| `mzizi_fundi`                      | Delegates a run to Fundi. **Gated**                                        |
-| `mzizi_mcp_describe`               | This server's tools, what each replaces, and its data sources              |
-| `docs_search_mzizi`                | Search these docs (federated)                                              |
-| `docs_query_docs_filesystem_mzizi` | Read-only `rg`, `cat` and `tree` over these docs' pages (federated)        |
-| `docs_submit_feedback`             | Report a problem with these docs (federated)                               |
+| Tool                               | What it answers                                                                              |
+| ---------------------------------- | -------------------------------------------------------------------------------------------- |
+| `mzizi_search`                     | Word search over components, conventions, AI instruction sets and releases                   |
+| `mzizi_get_component`              | One component in full, Rust first, then Astro, then React; optional docs and version history |
+| `mzizi_list_components`            | The paged index, filterable by node, owner, collection, type, `rust` and `astro`             |
+| `mzizi_get_tokens`                 | The brand system, including all 21 colour families                                           |
+| `mzizi_get_architecture`           | The DNA helix, or one node or rung                                                           |
+| `mzizi_get_doctrine`               | Ubuntu pillars and principles, conventions, AI instruction sets                              |
+| `mzizi_get_skills`                 | The seven agent skills: listed, one in full, or one category in full                         |
+| `mzizi_check_accessibility`        | Contrast against the Mzizi floor, computed locally                                           |
+| `mzizi_report_issue`               | Files into the Fundi issue desk. **Gated**                                                   |
+| `mzizi_fundi`                      | Delegates a run to Fundi. **Gated**                                                          |
+| `mzizi_mcp_describe`               | This server's tools, what each replaces, and its data sources                                |
+| `docs_search_mzizi`                | Search these docs (federated)                                                                |
+| `docs_query_docs_filesystem_mzizi` | Read-only `rg`, `cat` and `tree` over these docs' pages (federated)                          |
+| `docs_submit_feedback`             | Report a problem with these docs (federated)                                                 |
 
 Start with `mzizi_search` when you do not know the name of the thing you want, and
 `mzizi_get_component` when you do.
@@ -110,8 +111,9 @@ Start with `mzizi_search` when you do not know the name of the thing you want, a
 ## Components, Rust first
 
 From `0.11.0` the component tools lead with [Mzizi Roots](/roots/overview), the Rust
-implementation, wherever one exists. The React (TSX) components are the React build: they
-keep working, but they are deprioritised and come second.
+implementation, wherever one exists. From `0.12.0` the pure Astro build comes next, where there
+is one. The React (TSX) components are the React build: they keep working, but they are
+deprioritised and come last.
 
 `mzizi_get_component` takes `name` (a former `nyuchi-*` name resolves to its `mzizi-*`
 successor) and an optional `include` of `"docs"`, `"versions"` or both. It answers with these
@@ -124,6 +126,7 @@ fields, in this order:
 | `lead`        | `"rust"` when the component has a Rust implementation, otherwise `"react"`                                                |
 | `note`        | Which build to use, in words                                                                                              |
 | `rust`        | The Roots implementation, or `null` when there is none                                                                    |
+| `astro`       | From `0.12.0`: the pure Astro build, or `null` when there is none                                                         |
 | `react`       | The React build: `build: "react"`, `status: "deprioritised"`, an `install` line, then the registry's `/v1/ui/{name}` body |
 | `docs`        | With `include: ["docs"]`: use cases, variants and accessibility                                                           |
 | `versions`    | With `include: ["versions"]`: version history, from the registry's changelog                                              |
@@ -138,6 +141,11 @@ fields, in this order:
 - `contract`: the component's `contract … end` block, or `null` when its source declares none;
 - `files`: the `.rs` source, inline.
 
+`astro` is `build: "astro"`, `install` (`npx @nyuchi/mzizi-cli add <name> --target astro`),
+`api` (`https://api.mzizi.dev/v1/astro/<name>`), `installsTo` (`src/components/mzizi/`), the
+`files` it installs, and their `dependencies` and `registryDependencies`. See
+[the CLI](/toolchain/cli) for the Astro target.
+
 `react.install` is `npx shadcn@latest add https://api.mzizi.dev/v1/ui/<name>`. If the registry
 refuses the React build but Rust exists, `react` is `{ build, error }` and the Rust still leads.
 
@@ -148,8 +156,11 @@ refuses the React build but Rust exists, `react` is `{ build, error }` and the R
 
 `mzizi_list_components` rows carry `rustCrate` when the component has Rust, the response
 carries `withRust` (how many of `total` have it), and `rust: true` or `rust: false` filters on
-it. On 30 September 2026, `rust: true` listed 55 of the registry's 577 components.
-`mzizi_search` component hits carry `rustCrate` the same way, and at an equal score a
+it. From `0.12.0` the same goes for Astro: rows carry `astroFile`, the response carries
+`withAstro`, and `astro: true` or `astro: false` filters on it. On 7 October 2026, `rust: true`
+listed 59 components and `astro: true` listed 89, at the server's registry pin, which is older
+than the API's (see [where its data comes from](#where-its-data-comes-from)). `mzizi_search`
+component hits carry `rustCrate` and `astroFile` the same way, and at an equal score a
 component with Rust ranks first; a better word match still wins.
 
 ## Where its data comes from
@@ -194,11 +205,16 @@ The server holds no database credential. Former `nyuchi-*` component names resol
 
 ### The skills
 
-`mzizi_get_skills` serves the five skills of [`@nyuchi/mzizi-skills`](/toolchain/skills),
+`mzizi_get_skills` serves the seven skills of [`@nyuchi/mzizi-skills`](/toolchain/skills),
 bundled from the skills' source when the server is built, so it answers with the same version
-as npm. From `0.11.1`, each skill's `source` names where it is authored,
-`mzizi-dev/agent-tools/mzizi-skills/skills/<name>`. The skills renamed or removed in `0.8.0`
-have no aliases; see [renamed and removed skills](/toolchain/skills#renamed-and-removed-skills).
+as npm (`0.11.0` on 7 October 2026). From `0.13.0` it takes `category`: `dev`, `design`,
+`language` or `build` returns every skill in that category in full, and `category: "dev"`
+(`digital-hygiene` and `progress-report`) is what every Mzizi repository's `AGENTS.md` asks an
+agent to load before it starts. Every answer carries each skill's `category`, and asking for a
+`name` outside the `category` you named is an error. From `0.11.1`, each skill's `source` names
+where it is authored, `mzizi-dev/agent-tools/mzizi-skills/skills/<name>`. The skills renamed or
+removed in `0.8.0` have no aliases; see [renamed and removed
+skills](/toolchain/skills#renamed-and-removed-skills).
 
 ### The docs tools
 

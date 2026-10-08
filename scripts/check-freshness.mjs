@@ -2,7 +2,8 @@
  * Freshness check: do the facts these docs state still match their live sources?
  *
  * The owner's rule (2026-09-30) is that docs.mzizi.dev never lags the language or the
- * components. This script reads the version numbers, test counts and pins the pages state,
+ * components. This script reads the version numbers, test and component counts and pins the
+ * pages state,
  * asks each upstream source for the current value, and reports every disagreement.
  *
  *   node scripts/check-freshness.mjs
@@ -120,6 +121,24 @@ await check("api.mzizi.dev /v1/rs", async () => {
   }
 });
 
+// api.mzizi.dev /v1/ui: the registry's component count. Every page that states it states the
+// one number the API serves, so a page cannot keep an old count after the registry grows.
+await check("api.mzizi.dev /v1/ui", async () => {
+  const { body } = await get("https://api.mzizi.dev/v1/ui");
+  const live = String(body.meta?.total ?? body.items?.length ?? "");
+  if (!/^\d+$/.test(live)) throw new Error("/v1/ui no longer states meta.total");
+  for (const [path, re] of [
+    ["registry/overview.mdx", /\| \*\*Total\*\*\s*\| \*\*(\d+)\*\*/],
+    ["registry/overview.mdx", /(\d+) items in files/],
+    ["ecosystem.mdx", /DNA-helix architecture\.\*\* (\d+) components/],
+    ["benchmark.mdx", /The registry's (\d+) components/],
+    ["ir.mdx", /the (\d+)-component registry/],
+  ]) {
+    const [docs] = stated(path, re, "the registry's component count") ?? [];
+    compare(`registry component count (${path})`, docs, live);
+  }
+});
+
 // The language: test counts and the commit the status page was checked at.
 await check("mzizi-dev/mzizi", async () => {
   const { body: readme } = await get(
@@ -135,15 +154,6 @@ await check("mzizi-dev/mzizi", async () => {
     if (!got) continue;
     compare(`language tests (${path})`, got[0], liveTests);
     compare(`language suites (${path})`, got[1], liveSuites);
-  }
-  const lines = readme.match(/`compiler\/src` is ([\d,]+) lines/)?.[1];
-  if (!lines) throw new Error("the language README no longer states compiler/src's line count");
-  for (const [path, re] of [
-    ["status.mdx", /The compiler source is ([\d,]+) lines/],
-    ["compiler.mdx", /`compiler\/src` is ([\d,]+) lines/],
-  ]) {
-    const [docs] = stated(path, re, "the compiler's line count") ?? [];
-    compare(`compiler/src lines (${path})`, docs, lines);
   }
   const [checkedAt] = stated("status.mdx", /mzizi-dev\/mzizi\) at `([0-9a-f]{7,40})`/, "the checked commit") ?? [];
   const sha = execFileSync("git", ["ls-remote", "https://github.com/mzizi-dev/mzizi", "refs/heads/main"], {
@@ -173,6 +183,24 @@ await check("mzizi-dev/mzizi charter, tracker and arms", async () => {
         "https://github.com/mzizi-dev/mzizi", dir],
       { encoding: "utf8" },
     );
+
+    // compiler/src's line count, counted in the source rather than read from the README: the
+    // README can lag its code (it said 12,644 at 9a88e1d, where the code is 12,706), and when
+    // they disagree, the code is right. Counted as `git grep -c ''` counts lines.
+    git("checkout", "--quiet", "HEAD", "--", "compiler/src");
+    const files = git("ls-files", "compiler/src").split("\n").filter(Boolean);
+    const total = files.reduce((n, f) => {
+      const text = readFileSync(join(dir, f), "utf8");
+      return n + (text === "" ? 0 : text.split("\n").length - (text.endsWith("\n") ? 1 : 0));
+    }, 0);
+    const lines = total.toLocaleString("en-GB");
+    for (const [path, re] of [
+      ["status.mdx", /The compiler source is ([\d,]+) lines/],
+      ["compiler.mdx", /`compiler\/src` is ([\d,]+) lines/],
+    ]) {
+      const [docs] = stated(path, re, "the compiler's line count") ?? [];
+      compare(`compiler/src lines (${path})`, docs, lines);
+    }
     const show = (path) => git("show", `HEAD:${path}`);
 
     // The charter: charter.mdx names its version and title, and no page names another version.

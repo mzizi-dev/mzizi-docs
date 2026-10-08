@@ -9,26 +9,27 @@ icon: "wrench"
 system, semantics and contracts. The toolchain is built to support it: to implement it,
 check it, measure it, and put what Mzizi knows in front of the agents that write it.
 
-**The harness is the core of Mzizi, and the toolchain attaches to it natively.** The harness
-is the layer an agent reads and works through: the language as an agent sees it (grammar,
-types, contracts, canonical form), the agent protocol (`mz check --agent`, its diagnostics
-and fixes; RFC-0001 §4), and the plugin host that `mz`, the CLI, the MCP server and plugins
-attach to. Part of it exists today, in this toolchain, as `mz check --agent`'s output. The
-harness as a whole is designed, not built, and the language is writing its RFC. It lives in
-the language repository, `mzizi-dev/mzizi`, and the CLI, the MCP server and `fundi` are its
-clients. It is not
-the Phase 0 benchmark harness in `benchmarks/harness/`, which is the scorer listed below.
+**The language harness is the spine of the language, and the toolchain is meant to attach to
+it.** It is the layer an agent reads and works through: every feature registered once, as an
+entry inside the compiler (`mz harness definition`), the agent protocol (`mz check --agent`,
+its diagnostics and fixes; RFC-0001 §4), and a plugin host that `mz`, the CLI, the MCP server
+and plugins are to attach to. A first slice exists: `mz` dispatches on its command table, and
+`mz harness` serves the entries. The plugin host is design only
+([RFC-0012](/rfcs), a draft). It lives in the language repository, `mzizi-dev/mzizi`, and the
+CLI, the MCP server and `fundi` are its clients. It is not the Phase 0 benchmark harness in
+`benchmarks/harness/`, which is the scorer listed below. See
+[the language harness](/language-harness).
 
 ## What is in it
 
-| Tool                             | What it is                                                                                                                          | Where it comes from                    | Cost              |
-| -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- | ----------------- |
-| [`mz`, the compiler](/compiler)  | `mz check --agent`, `mz fix`, `mz contract`, `mz outline`, `mz build` (a service only), `mz hash`, `mz ir`                          | `mzizi-dev/mzizi`, built from source   | Free, open source |
-| [The benchmark](/benchmark)      | `mzbench`, the scorer, the Dioxus, Leptos, React and `mzizi-be` arms, the probe crate, the kill-criterion driver, the pilot results | `mzizi-dev/mzizi`, under `benchmarks/` | Free, open source |
-| [The MCP server](/toolchain/mcp) | `mcp.mzizi.dev/mcp`: registry, tokens, doctrine, skills and the docs                                                                | `@nyuchi/mzizi-mcp`                    | Free, no sign-in  |
-| [The CLI](/toolchain/cli)        | `mzizi add`, and `fundi explore`, `plan` and `chat`                                                                                 | `@nyuchi/mzizi-cli`                    | Free, no gate     |
-| [The skills](/toolchain/skills)  | Five agent skills: the language, Mzizi Roots, the design system, backends and discoverability                                       | `@nyuchi/mzizi-skills`                 | Free              |
-| [The API](/platform/api-gateway) | `api.mzizi.dev/v1`: the registry over plain HTTP                                                                                    | `mzizi-dev/mzizi-api-gateway`          | Free, no sign-in  |
+| Tool                             | What it is                                                                                                                              | Where it comes from                    | Cost              |
+| -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- | ----------------- |
+| [`mz`, the compiler](/compiler)  | `mz check --agent`, `mz fix`, `mz contract`, `mz outline`, `mz build`, `mz run`, `mz harness`, `mz hash`, `mz ir`                       | `mzizi-dev/mzizi`, built from source   | Free, open source |
+| [The benchmark](/benchmark)      | `mzbench`, the scorer, the Dioxus, Leptos, React and `mzizi-be` arms, the probe crate, the kill-criterion driver, the pilot results     | `mzizi-dev/mzizi`, under `benchmarks/` | Free, open source |
+| [The MCP server](/toolchain/mcp) | `mcp.mzizi.dev/mcp`: registry, tokens, doctrine, skills and the docs                                                                    | `@nyuchi/mzizi-mcp`                    | Free, no sign-in  |
+| [The CLI](/toolchain/cli)        | `mzizi add`, and `fundi explore`, `plan` and `chat`                                                                                     | `@nyuchi/mzizi-cli`                    | Free, no gate     |
+| [The skills](/toolchain/skills)  | Seven agent skills: the language, Mzizi Roots, the design system, backends, discoverability, and the two `dev` skills every agent loads | `@nyuchi/mzizi-skills`                 | Free              |
+| [The API](/platform/api-gateway) | `api.mzizi.dev/v1`: the registry over plain HTTP                                                                                        | `mzizi-dev/mzizi-api-gateway`          | Free, no sign-in  |
 
 `mz` implements the language, and the benchmark measures it against the best existing
 language for each kind of task. The rest put the language, its components and its docs
@@ -43,7 +44,7 @@ gate.** Gating starts at **Fundi**, which ties into the console at `app.mzizi.de
 tools (`mzizi_fundi`, and `mzizi_report_issue`, which files into the Fundi issue desk) need a
 signed-in console user. Everything else is served without auth.
 
-That is live: on 30 September 2026 an anonymous `tools/list` on `mcp.mzizi.dev/mcp` returned
+That is live: on 7 October 2026 an anonymous `tools/list` on `mcp.mzizi.dev/mcp` returned
 all fourteen tools, and calling a Fundi tool without sign-in answered with how to sign in.
 See [the MCP server](/toolchain/mcp).
 

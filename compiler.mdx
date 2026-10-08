@@ -1,14 +1,16 @@
 ---
 title: "The mz compiler"
-description: "The commands (check, fix, contract, outline and build, plus hash and ir), an exit-status contract, an exact-fix pass, contract evaluation, the lowering of a service to Rust and axum, and an NDJSON diagnostic protocol written for a reader holding zero file context."
+description: "The commands (check, fix, contract, outline, build and run, plus hash, ir and harness), an exit-status contract, an exact-fix pass, contract evaluation, the lowering of a service and a program to Rust, and an NDJSON diagnostic protocol written for a reader holding zero file context."
 icon: "terminal"
 ---
 
 `mz` is the compiler that implements the Mzizi language: toolchain, not the language itself.
 Today it is the Phase 0 front end: lex → parse → resolve → lower → IR, plus a contract
-evaluator ("lower" here means into the IR for a component). One thing lowers to Rust: a
-`service`, which [`mz build`](#mz-build-lower-a-service) turns into a local Rust + axum
-package. No component lowers to Rust yet. It is the centre of the
+evaluator ("lower" here means into the IR for a component). Two things lower to Rust: a
+`service`, which [`mz build`](#mz-build-lower-a-service-or-a-program) turns into a local
+Rust + axum package, and a [`program`](/programs), which `mz build` and
+[`mz run`](#mz-run-run-a-program) turn into a Rust package with no dependencies. No component
+lowers to Rust yet. It is the centre of the
 [toolchain](/toolchain/overview). It is a single Rust binary with
 **no dependencies at all**, which is a deliberate house convention rather than an oversight
 — a compiler whose check loop must stay sub-second on a modest laptop should not start life
@@ -31,24 +33,30 @@ cargo run --bin mz -- check --agent ../examples/connectivity_bar.mz # NDJSON for
 cargo run --bin mz -- outline  ../primitives/alert.mz               # the interface, as valid Mzizi
 cargo run --bin mz -- ir       ../primitives/card.mz                # nodes, hashes, structural paths
 cargo run --bin mz -- build    ../examples/registry.mz --out out    # a service, lowered to Rust + axum
+cargo run --bin mz -- run      ../examples/fib.mz                   # a program: lower, build, run
+cargo run --bin mz -- harness  definition                           # the language as an agent reads it
 ```
 
-Run `cargo test --workspace` from the repository root for the whole suite: 425 tests in 18
-suites at `6da2170`, 294 of them in the compiler crate and the rest in the benchmark harness,
-runner and probe crate. `compiler/src` is 12,644 lines.
+Run `cargo test --workspace` from the repository root for the whole suite: 643 tests in 24
+suites at `be88017`, 512 of them in the compiler crate and the rest in the benchmark harness,
+runner and probe crate. `compiler/src` is 26,811 lines.
 
 ## The commands
 
-| Command                          | What it does                                                                            |
-| -------------------------------- | --------------------------------------------------------------------------------------- |
-| `mz check <file.mz>`             | Human-readable diagnostics, one per line, plus a summary                                |
-| `mz check --agent <file.mz>`     | The same diagnostics as NDJSON, plus a summary object                                   |
-| `mz fix <file.mz>`               | Applies every `exact` fix in place, in one pass, then checks again                      |
-| `mz contract <file.mz>`          | Evaluates the `contract` block; `--agent` gives NDJSON with a tally                     |
-| `mz outline <file.mz>`           | The component's interface only, emitted as valid Mzizi                                  |
-| `mz hash <file.mz>`              | The root hash and the stored node count                                                 |
-| `mz ir <file.mz>`                | Every node with its hash and structural path                                            |
-| `mz build <file.mz> --out <dir>` | A service only: writes a local Rust + axum package ([below](#mz-build-lower-a-service)) |
+| Command                           | What it does                                                                                                                                           |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `mz check <file.mz>`              | Human-readable diagnostics, one per line, plus a summary                                                                                               |
+| `mz check --agent <file.mz>`      | The same diagnostics as NDJSON, plus a summary object                                                                                                  |
+| `mz fix <file.mz>`                | Applies every `exact` fix in place, in one pass, then checks again                                                                                     |
+| `mz contract <file.mz>`           | Evaluates the `contract` block; `--agent` gives NDJSON with a tally                                                                                    |
+| `mz outline <file.mz>`            | The component's interface only, emitted as valid Mzizi                                                                                                 |
+| `mz hash <file.mz>`               | The root hash and the stored node count                                                                                                                |
+| `mz ir <file.mz>`                 | Every node with its hash and structural path                                                                                                           |
+| `mz build <file.mz> --out <dir>`  | Writes a service as a local Rust + axum package, or a program as a Rust package with no dependencies ([below](#mz-build-lower-a-service-or-a-program)) |
+| `mz run [--release] <file.mz>`    | A program only: checks it, lowers it, builds it with Cargo and runs it ([below](#mz-run-run-a-program))                                                |
+| `mz harness version`              | The protocol version, the language version and the SHA-256 of the definition                                                                           |
+| `mz harness definition [--agent]` | Every [language harness](/language-harness) entry, as JSON; `--agent` prints it on one line                                                            |
+| `mz harness entry <name>`         | One entry, by name (`mz harness entry MZ0905`, `mz harness entry "is not"`)                                                                            |
 
 With no command given, the first positional argument is treated as a file and `check` is
 assumed.
@@ -56,11 +64,13 @@ assumed.
 <Note>
   **Documented elsewhere, not implemented here.** RFC-0003 §5 lists `mz refs`, `mz path`,
   `mz patch` and `mz diff` under *"designed here, next in implementation order"*. They are
-  not built, and neither are `mz run`, `mz test` or `mz fmt` ([what still has to be
-  built](/tracker)). The binary dispatches exactly the commands in the table above: `check`,
-  `fix`, `contract`, `outline` and `build`, plus `hash` and `ir` for the IR. Asking for anything
-  else prints the usage line and exits 2. `mz outline`, `mz hash` and `mz ir` refuse a service
-  with exit status 2, because services have no IR yet.
+  not built, and neither are `mz test`, `mz fmt`, `mz run --agent` or `mz harness plugins`
+  ([what still has to be built](/tracker)). The binary dispatches exactly the commands in the
+  table above: `check`, `fix`, `contract`, `outline`, `build` and `run`, plus `hash` and `ir`
+  for the IR and `harness`. It dispatches on the language harness's command table, and its
+  usage line is generated from it. Asking for anything else prints the usage line and exits 2.
+  `mz outline`, `mz hash` and `mz ir` refuse a service or a program with exit status 2,
+  because neither has an IR yet.
 </Note>
 
 ### Exit status is a contract
@@ -72,6 +82,9 @@ So the loop can branch on status without parsing output:
 | `0`    | No errors. Warnings do not fail.                                        |
 | `1`    | Errors present, a contract clause failed, or an IR command had no tree. |
 | `2`    | Usage or I/O problem.                                                   |
+
+`mz run` is the exception, because `1` belongs to the program it runs: it exits with the
+program's own status. See [its table](#mz-run-run-a-program).
 
 ## `mz check --agent`: the protocol
 
@@ -128,15 +141,16 @@ The human-readable mode ends with the same information as prose:
 
 Codes are grouped by phase, and the ranges are stable:
 
-| Range    | Phase                                                                                |
-| -------- | ------------------------------------------------------------------------------------ |
-| `MZ01xx` | Lexical                                                                              |
-| `MZ02xx` | The component header, `use`, and block closing — including every `end` echo mismatch |
-| `MZ03xx` | Enum variants and `prop` declarations                                                |
-| `MZ04xx` | Lines that cannot start where they appear, and the view grammar                      |
-| `MZ05xx` | The contract block's presence and shape                                              |
-| `MZ06xx` | Contract clauses, from `mz contract` (RFC-0006)                                      |
-| `MZ07xx` | Names and types, from the resolver (RFC-0008)                                        |
+| Range    | Phase                                                                                        |
+| -------- | -------------------------------------------------------------------------------------------- |
+| `MZ01xx` | Lexical                                                                                      |
+| `MZ02xx` | The component header, `use`, and block closing — including every `end` echo mismatch         |
+| `MZ03xx` | Enum variants and `prop` declarations                                                        |
+| `MZ04xx` | Lines that cannot start where they appear, and the view grammar                              |
+| `MZ05xx` | The contract block's presence and shape                                                      |
+| `MZ06xx` | Contract clauses, from `mz contract` (RFC-0006)                                              |
+| `MZ07xx` | Names and types, from the resolver (RFC-0008)                                                |
+| `MZ09xx` | Programs (RFC-0013), from `mz check` and `mz run`: [every code below](#program-codes-mz09xx) |
 
 Two are worth quoting because they show what the messages are trying to be. `MZ0402`, when
 something that cannot start a view line does:
@@ -167,21 +181,99 @@ gave a cascade instead of one error on the right line. These codes are the fixes
 [`benchmarks/READINESS.md`](https://github.com/mzizi-dev/mzizi/blob/main/benchmarks/READINESS.md).
 Each message below is quoted from `compiler/src/lex.rs` or `compiler/src/parse.rs`.
 
-| Code     | Severity | What it catches                                                                                          | Fix                                                                         |
-| -------- | -------- | -------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
-| `MZ0106` | error    | A spread, `...props` or `{...props}`. Mzizi has none: a component names each prop it reads               | `exact`: delete the spread, or its whole line when it stands alone          |
-| `MZ0312` | warning  | A prop named `as_child`, React's `asChild`. Mzizi elements are not polymorphic                           | `exact` (delete the prop) when nothing reads it; otherwise names the branch |
-| `MZ0313` | error    | A variant row whose `height` disagrees with the `h-N` or `size-N` class that renders it                  | `exact`: the rendered number                                                |
-| `MZ0406` | error    | An attribute written without its `=`, such as `class "flex"`                                             | Insert `=`: `exact` for a known attribute word, `guess` otherwise           |
-| `MZ0407` | error    | `if` in a view. The one conditional is `when`                                                            | `exact`: `when`                                                             |
-| `MZ0408` | error    | Attributes directly under `view`, which holds one element tree                                           | None                                                                        |
-| `MZ0409` | error    | Anything after an element word on its line, such as `span class="x"`. Before, the tail was silently kept | None                                                                        |
+| Code     | Severity | What it catches                                                                                                                                                                                     | Fix                                                                         |
+| -------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| `MZ0106` | error    | A spread, `...props` or `{...props}`. Mzizi has none: a component names each prop it reads                                                                                                          | `exact`: delete the spread, or its whole line when it stands alone          |
+| `MZ0312` | warning  | A prop named `as_child`, React's `asChild`. Mzizi elements are not polymorphic                                                                                                                      | `exact` (delete the prop) when nothing reads it; otherwise names the branch |
+| `MZ0313` | error    | A variant row whose `height` disagrees with the `h-N` or `size-N` class that renders it                                                                                                             | `exact`: the rendered number                                                |
+| `MZ0406` | error    | An attribute written without its `=`, such as `class "flex"`                                                                                                                                        | Insert `=`: `exact` for a known attribute word, `guess` otherwise           |
+| `MZ0407` | error    | `if` in a view. The one conditional is `when`                                                                                                                                                       | `exact`: `when`                                                             |
+| `MZ0408` | error    | Attributes directly under `view`, which holds one element tree                                                                                                                                      | None                                                                        |
+| `MZ0409` | error    | Anything after an element word on its line, such as `span class="x"`. Before, the tail was silently kept                                                                                            | None                                                                        |
+| `MZ0410` | error    | `match` in a view. A view has no `match` (a program does): write one `when <subject> is x … end` block per variant, with `else` for the rest. Before, `match size` read as an element named `match` | None: one `match` becomes several `when` blocks                             |
 
 `MZ0313` quotes both numbers, so the agent needn't work out the scale itself:
 
 ```text
 `icon` declares `height 48` but its class `size-14` renders 56px (N × 4) — write `height 56`, or drop the column and let the class say it once
 ```
+
+### Program codes (MZ09xx)
+
+A [program](/programs) is checked with the codes RFC-0013 §16 reserves, `MZ09xx`, and reuses
+21 shared codes (`MZ0101`–`MZ0106`, `MZ0204`–`MZ0208`, `MZ0306`, `MZ0310`, `MZ0407`,
+`MZ0411`, `MZ0701`, `MZ0707`, `MZ0708`, `MZ0711`, `MZ0712` and `MZ0714`). No component or
+service diagnostic changed when programs landed.
+
+**This table is generated from the [language harness](/language-harness), not written by
+hand:** it is `mz harness definition` at language `main` `be88017`, each `MZ09xx` entry's severity,
+the tool that reports it, its `say` text and the fix kinds it is recorded as raising. "Or none"
+means some reports of that code carry no fix. The `say` text is the entry's own, which the
+harness writes by hand and does not compare with the checker; `mz harness entry <code>` prints
+an entry with the source that triggers it. `MZ0990`–`MZ0992` come from `mz run`, and `MZ0991`
+and `MZ0992` are printed by the running program on standard error.
+
+| Code     | Severity | From       | What it reports (`say`)                                                                                                                                                                                                                                                       | Fix kinds                 |
+| -------- | -------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
+| `MZ0901` | error    | `mz check` | a `program` line without a name, statements outside every `fn`, a block a program cannot hold (`view`, `prop`, `route`, …), or anything after `end program`                                                                                                                   | None                      |
+| `MZ0902` | error    | `mz check` | no `fn main`, a second one, or `main` with parameters or a return type                                                                                                                                                                                                        | None                      |
+| `MZ0903` | error    | `mz check` | a malformed signature: `def` / `function` / `func` (exact `fn`), `->` (exact `:`), `()` on no parameters (exact delete), `: none` / `: void` (exact delete), an untyped parameter, a default value, a keyword as a name                                                       | `exact`, or none          |
+| `MZ0904` | error    | `mz check` | two `fn`s with one name, a `fn` named like a built-in function, or a parameter named twice                                                                                                                                                                                    | None                      |
+| `MZ0905` | error    | `mz check` | a call with the wrong number of arguments or an argument of the wrong type, or a named argument; the say quotes the signature. A `float` exponent to `pow` gets a guess (`2.0` to `2`, `0.5` to `x.sqrt()`)                                                                   | `guess`, or none          |
+| `MZ0906` | error    | `mz check` | a path through a function with a return type that reaches `end fn` without `return`; exact fix when the last line is a value of that type                                                                                                                                     | `exact`, or none          |
+| `MZ0907` | error    | `mz check` | a statement after a `return`, `break` or `continue` that every path takes, which can never run; the exact fix deletes it                                                                                                                                                      | `exact`                   |
+| `MZ0908` | error    | `mz check` | a `return` that does not fit its function: a value where none is returned, none where one is, or the wrong type                                                                                                                                                               | None                      |
+| `MZ0909` | error    | `mz check` | a `fn` used as a value; exact fix `()` when it takes no parameters                                                                                                                                                                                                            | `exact`, or none          |
+| `MZ0910` | error    | `mz check` | an operator spelt from another language: `==` `===` `!=` `!==` `&&` `\|\|` `!` (exact), `not a is b` without parentheses (exact), a contract predicate in an expression (exact), or `**` (guess `x.pow(n)`; no fix when an operand could not be read)                         | `exact`, `guess`, or none |
+| `MZ0911` | error    | `mz check` | a comment Mzizi lacks: a line starting with `//` or `#` (exact `##`; a guess when code follows the marker with no space), `/* … */`, or a comment after code (guess: move it to its own line above); `/* … */` on a line of its own, or an unclosed `/*`, has no fix          | `exact`, `guess`, or none |
+| `MZ0912` | error    | `mz check` | operands of the wrong type: `int` with `float` (exact on an `int` literal), `+` on text (fix to interpolation), arithmetic on a non-number, unlike types compared, `not` or `-` on the wrong type                                                                             | `exact`, `guess`, or none |
+| `MZ0913` | error    | `mz check` | `and` mixed with `or` without parentheses (the exact fix writes the parentheses the precedence implies), or a chained comparison `a < b < c` (guess: split it with `and`)                                                                                                     | `exact`, `guess`          |
+| `MZ0914` | error    | `mz check` | a malformed number: `1.` or `.5` (exact: add the `0`), `1_000` (exact `1000`), `0x10`, `1e3`, or a float literal too large for a `float`                                                                                                                                      | `exact`, or none          |
+| `MZ0915` | error    | `mz check` | a fault visible in constants: division or remainder by a literal `0`, a literal negative `int` exponent, or a constant computation (including `pow` and `abs`) that overflows an `int`                                                                                        | None                      |
+| `MZ0916` | error    | `mz check` | an expression statement whose value nothing reads                                                                                                                                                                                                                             | None                      |
+| `MZ0917` | error    | `mz check` | a line a function body cannot read: a value expected and something else found, a missing `)`, an unknown escape, a second `else`, a Rust macro, or tokens left over                                                                                                           | None                      |
+| `MZ0918` | error    | `mz check` | `+=`, `-=`, `*=`, `/=`, `++` or `--`; the exact fix writes `x = x + 1`                                                                                                                                                                                                        | `exact`                   |
+| `MZ0919` | error    | `mz check` | a form RFC-0013 designs that this compiler does not build yet (collections and options, `range` off a `for each` line, an enum variant with columns, methods on `text`, a program's `contract`, …), named and reported once                                                   | None                      |
+| `MZ0920` | error    | `mz check` | a name used before its binding, or after its block ended; the guess declares a `var` before the block                                                                                                                                                                         | `guess`, or none          |
+| `MZ0921` | error    | `mz check` | a name a program reserves: a word of the language, a built-in or function name, a name starting with `mz_`, or a name already bound in the function (no shadowing)                                                                                                            | `guess`, or none          |
+| `MZ0922` | error    | `mz check` | assignment to a `let` (exact fix `var`) or to a parameter                                                                                                                                                                                                                     | `exact`, or none          |
+| `MZ0923` | error    | `mz check` | assignment to an unbound name; the fix inserts `let` or `var`                                                                                                                                                                                                                 | `exact`, `guess`          |
+| `MZ0924` | warning  | `mz check` | a warning: a `var` never assigned again; the exact fix writes `let`                                                                                                                                                                                                           | `exact`                   |
+| `MZ0925` | error    | `mz check` | a binding form from another language: `const` `val` `auto` (exact `let`), `let mut` `mut` (exact `var`), `x := e`, or a type on an assignment                                                                                                                                 | `exact`                   |
+| `MZ0926` | error    | `mz check` | a binding with no value                                                                                                                                                                                                                                                       | None                      |
+| `MZ0927` | error    | `mz check` | a call's label written another way: `range(a, to: b)`, whose exact fix writes `to = b` (§6.5's other labels are not built)                                                                                                                                                    | `exact`                   |
+| `MZ0930` | error    | `mz check` | a `match` that misses a case: the enum variants it misses, named, or `else` on an `int` or a `text`                                                                                                                                                                           | None                      |
+| `MZ0931` | error    | `mz check` | a case that can never run: a value listed twice, a case after `else`, or an `else` when every value has a case; the exact fix deletes it                                                                                                                                      | `exact`                   |
+| `MZ0932` | error    | `mz check` | a `when` or `match` used as a value where it cannot be (inside a larger expression or an argument), without `else` or a case for every value, with a branch that is not one value line, or with branches of different types                                                   | None                      |
+| `MZ0933` | error    | `mz check` | a conditional spelt from another language: `elif`, `else if` (exact `else when`), `switch` (exact `match`), `default:`, `case _`, `_ =>` (exact `else`)                                                                                                                       | `exact`                   |
+| `MZ0934` | error    | `mz check` | a loop spelt from another language: `for x in xs`, `for (const x of xs)`, `loop`, `range(n)` (exact), TypeScript's `for (… in …)` (a guess: it iterates keys), a C-style `for` and `do … while` (no fix)                                                                      | `exact`, `guess`, or none |
+| `MZ0935` | error    | `mz check` | `break` or `continue` outside a loop                                                                                                                                                                                                                                          | None                      |
+| `MZ0936` | error    | `mz check` | an `else when` chain whose every condition is `<name> is <variant>` of one enum, as statements or as a value: a `match`, which checks every variant has a case; the guess rewrites it as one                                                                                  | `guess`                   |
+| `MZ0937` | error    | `mz check` | a trailing `:` on a block line; the exact fix deletes it                                                                                                                                                                                                                      | `exact`                   |
+| `MZ0950` | error    | `mz check` | a result nothing matches or propagates: discarded, used as its success value, printed, compared, passed, assigned, held by a `var`, returned where the type differs, a parameter, or inside a result; the guess inserts `try`, and `try f(x).y` gets the exact `(try f(x)).y` | `exact`, `guess`, or none |
+| `MZ0951` | error    | `mz check` | a `try` that cannot propagate: on a value that is not a result, in a function that does not return a result, or with another error type                                                                                                                                       | None                      |
+| `MZ0952` | error    | `mz check` | an error idiom from another language: `Ok(v)` (exact `v`), `Err(e)` (exact `error(e)`), postfix `?` (exact prefix `try`), `throw e` or `raise e` (`return error(e)`, exact when `e` visibly has the error type); a `try` block, `.unwrap()` and `.expect()` have no fix       | `exact`, `guess`, or none |
+| `MZ0953` | error    | `mz check` | `error(e)` outside a function that returns a result, or with an `e` of another type; a bare `ok` or `error` variant in a function that returns a result (exact: name its enum)                                                                                                | `exact`, or none          |
+| `MZ0954` | error    | `mz check` | `return try r` with `r` of the function's own result type, which unwraps only to wrap again; the exact fix deletes `try`                                                                                                                                                      | `exact`                   |
+| `MZ0962` | error    | `mz check` | an operation spelt another way: `str(x)` or `x.to_string()` (exact `"{x}"`), a free numeric function such as `abs(x)` (exact `x.abs()`; a guess for `round` and `pow`, which differ), or a method without parentheses, `f.round` (exact `()` when it takes no arguments)      | `exact`, `guess`, or none |
+| `MZ0980` | error    | `mz check` | a print spelt from another language: `print(a, b)` (exact, to one interpolated text), `console.log`, `println!`, `fmt.Println`, `puts`, `print x`                                                                                                                             | `exact`, or none          |
+| `MZ0990` | error    | `mz run`   | the Rust lowered from a program did not compile: a bug in mz, not in the program. It names the program and quotes rustc's first message; exit 3                                                                                                                               | None                      |
+| `MZ0991` | error    | `mz run`   | a trap while the program ran: integer overflow (including `pow` and `abs`), `int` division or remainder by zero, a negative `int` exponent, or `to_int()` on a float out of range. The line names the `.mz` position and the expression; exit 101                             | None                      |
+| `MZ0992` | error    | `mz run`   | `fn main` returned an error: the program writes `mz: error MZ0992: main returned an error: <its text form>` to standard error and exits 1                                                                                                                                     | None                      |
+
+### Deep nesting is one diagnostic
+
+Blocks nest at most 64 deep. The first block past that depth is the error `MZ0411`, reported
+once per file, and the compiler skips every such block without recursing into it. Before the
+cap, 5,000 nested view elements or handler blocks made `mz` abort with a stack overflow.
+`compiler/tests/robustness.rs` runs `check`, `contract`, `fix`, `outline`, the IR and service
+lowering over seeded random edits, random tokens, random bytes, nesting up to 10,000 deep and
+1 MiB lines, and fails on a panic or a hang. The deepest `.mz` file in the repository nests 9
+levels.
+
+A [program](/programs) has a tighter budget: its blocks and expressions nest at most 32 deep
+together, and an expression's tree of binary operators at most 64, because a level of a
+program cost 12 to 16 KiB of stack in a debug build. Past that is the same single `MZ0411`.
 
 ## `mz fix`: apply every exact fix
 
@@ -247,11 +339,11 @@ the one the benchmark harness scores with, and both test suites check it on the 
 examples. Tokens with a prefix or an arbitrary value, such as `md:h-10` or `h-[56px]`, are not
 read. See [the pilot results](/pilots).
 
-## `mz build`: lower a service
+## `mz build`: lower a service or a program
 
-`mz build <file.mz> --out <dir>` lowers a `service` to Rust ([RFC-0011](/rfcs) §8). It is
-the first thing in Mzizi that lowers to Rust, and the only one: it takes a service, and refuses
-a component or a file with errors.
+`mz build <file.mz> --out <dir>` lowers a `service` to Rust ([RFC-0011](/rfcs) §8), or a
+`program` to a Rust package with no dependencies (RFC-0013 §14), the package `mz run` builds.
+It refuses a component (exit 2) and a file with errors (exit 1).
 
 ```text
 $ mz build examples/registry.mz --out out/registry
@@ -263,9 +355,40 @@ the generated route table and handlers, and one `#[tokio::test]` per `example`. 
 `axum =0.8.9` and `tokio =1.53.1`. CI's `lowering` job builds the example service, runs its 18
 generated tests, starts the server and sends a request over a socket.
 
-What it is **not**: there is no Workers, Containers or WebAssembly target, no `mz run`, and no
-component lowering. A generated package runs locally as a native server. See
+What it is **not**: there is no Workers, Containers or WebAssembly target, and no component
+lowering. A generated service package runs locally as a native server. See
 [what still has to be built](/tracker).
+
+## `mz run`: run a program
+
+`mz run [--release] <file.mz>` checks a [program](/programs), lowers it to a Cargo package with
+no dependencies in a per-user cache directory, builds it with `cargo build --offline --quiet`,
+and runs it with the terminal's standard input, output and error. Standard output belongs to
+the program; everything `mz run` writes of its own goes to standard error.
+
+```text
+$ mz run examples/fib.mz
+fib(9) is 34
+fib(20) is 6765
+fib(10) + fib(11) is 144, and that is fib(12): true
+6765 is odd, or not positive
+```
+
+It exits with the program's own status, so `1` does not mean "errors" here:
+
+| Status  | Meaning                                                                                         |
+| ------- | ----------------------------------------------------------------------------------------------- |
+| `0`     | The program ran and `main` ended                                                                |
+| `1`     | The program ran and `main` returned an error (`MZ0992`)                                         |
+| `2`     | A usage, environment or I/O problem, such as no `cargo` or no cache directory                   |
+| `3`     | The program did not compile: `mz check` errors, or `rustc` rejected the lowered code (`MZ0990`) |
+| `101`   | The program trapped: integer overflow, division by zero, or a `to_int` out of range (`MZ0991`)  |
+| `141`   | The program's standard output was closed                                                        |
+| `128+n` | A signal `n` killed the program                                                                 |
+
+CI's `lowering` job runs every example program, `examples/hello.mz`, `fib.mz`, `numbers.mz`,
+`control.mz` and `errors.mz`, through `mz run` and compares its output with the committed
+`.expected` file. `mz run --agent` is not built and exits 2. See [Programs](/programs#mz-run).
 
 ## `mz outline`: the representation for dependencies
 

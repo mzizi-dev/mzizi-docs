@@ -1,0 +1,386 @@
+---
+title: "Programs"
+description: "A program file: fn, let and var, when and match, for each and while, int, float, bool and text, enums with columns, result and try, and print. mz run lowers it to a dependency-free Rust package, builds it and runs it. RFC-0013's foundation slice, its numbers, its control flow and its errors, on the language's main branch since 8 October 2026."
+icon: "play"
+---
+
+<Info>
+  Everything on this page is **built and tested**: cross-checked against the language's
+  `compiler/src`, `mz harness definition`, and the example programs CI runs through `mz run`
+  with their output compared, at language `main` `be88017`, the release of 8 October 2026
+  ([mzizi#91](https://github.com/mzizi-dev/mzizi/pull/91)). It is a slice of
+  [RFC-0013](https://github.com/mzizi-dev/mzizi/blob/main/design/RFC-0013-core-language.md),
+  not all of it: the rest of the RFC is design, and [what is not built](#what-is-not-built)
+  lists it. The tracker rows these features belong to are still 🟡 in the file
+  ([what still has to be built](/tracker)).
+</Info>
+
+A **program** is a Mzizi file that runs. Its first line is `program <name>` and its last is
+`end program <name>`. It holds `fn`s and, since control flow landed, `enum`s; every statement
+lives inside a `fn`. Exactly one `fn main`, with no parameters, is the entry point, and a
+program's output is what it prints. One program per file.
+
+`mz run` checks a program, lowers it to a Rust package with no dependencies, builds it with
+Cargo and runs it. `mz build` writes the same package. A program is the second thing in Mzizi
+that lowers to Rust, after a `service`; no component lowers.
+
+## The smallest program
+
+`examples/hello.mz`, verbatim:
+
+```mz examples/hello.mz
+## The smallest program: one line of output (RFC-0013 §1, tracker row C10).
+## `mz run examples/hello.mz` prints `hello, world`; CI compares it with hello.expected.
+program hello
+
+  fn main
+    print("hello, world")
+  end fn main
+
+end program hello
+```
+
+```text
+$ mz run examples/hello.mz
+hello, world
+```
+
+## Functions, bindings and `when`
+
+`examples/fib.mz`, verbatim. It recurses, binds with `let` and `var`, assigns, branches with
+`when` and `else`, and interpolates.
+
+```mz examples/fib.mz
+## Fibonacci numbers by recursion, in RFC-0013's foundation slice (§18.1): functions,
+## calls, `let`, `var`, `when`, integer arithmetic and `print`, and no loops yet.
+## `mz run examples/fib.mz` prints what fib.expected holds; CI compares the two.
+program fib
+
+  fn main
+    print("fib(9) is {fib(9)}")
+    let n = 20
+    let f = fib(n)
+    print("fib({n}) is {f}")
+    var total = 0
+    total = total + fib(10)
+    total = total + fib(11)
+    print("fib(10) + fib(11) is {total}, and that is fib(12): {total is fib(12)}")
+    print(parity(f))
+  end fn main
+
+  fn fib(n: int): int
+    when n < 2
+      return n
+    end
+    return fib(n - 1) + fib(n - 2)
+  end fn fib
+
+  fn parity(n: int): text
+    when n % 2 is 0 and n > 0
+      return "{n} is even"
+    else
+      return "{n} is odd, or not positive"
+    end
+  end fn parity
+
+end program fib
+```
+
+```text examples/fib.expected
+fib(9) is 34
+fib(20) is 6765
+fib(10) + fib(11) is 144, and that is fib(12): true
+6765 is odd, or not positive
+```
+
+- **`fn name(a: int, b: text): int`** … **`end fn name`**: typed parameters, a return type
+  or none, calls and recursion. Every path of a function with a return type returns
+  (`MZ0906`); a wrong call is `MZ0905`, quoting the signature.
+- **`let`** binds a value once; **`var`** binds one you assign with `=`. Scope is the block.
+  There is no shadowing (`MZ0921`), a name is readable from the line after its binding to
+  the end of its block (`MZ0920`), and assigning to a `let` is `MZ0922`. Python's bare first
+  assignment, Go's `:=` and Rust's `let mut` each get a fix.
+- **`when` / `else when` / `else`**, closed by `end`. A condition is a `bool` and nothing
+  else: Mzizi has no truthiness (`MZ0712`).
+- **`return`** ends a function early. **`print(value)`** writes one value's text form and a
+  newline; to print several, interpolate them into one text.
+- **Comments** are lines starting with `##`. `//` and `#` are `MZ0911`, with `##` as the
+  `exact` fix.
+
+## Values: `int`, `float`, `bool` and `text`
+
+| Type    | What it is                                                                                                                                                                                                   |
+| ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `int`   | A signed 64-bit integer. Overflow and division or remainder by zero **trap** at run time (exit 101); a constant one is `MZ0915` at check time. Division truncates toward zero; `%` takes the dividend's sign |
+| `float` | IEEE 754 binary64, written with a digit on both sides of the point. It never traps: `1.0 / 0.0` is `inf`, `0.0 / 0.0` is `nan`, and `nan is nan` is `false`                                                  |
+| `bool`  | `true` or `false`                                                                                                                                                                                            |
+| `text`  | UTF-8 text in double quotes on one line, built by interpolation (`"{a} and {b}"`), never by `+`. The escapes are `\n`, `\t`, `\"`, `\\`, `\{` and `\}`                                                       |
+
+**`int` and `float` never mix.** `1 + 1.5` is `MZ0912`, with the `exact` fix `1.0` on an
+`int` literal and the `guess` `x.to_float()` on anything else. A float prints in the shortest
+form that reads back exactly: `1.0`, `0.30000000000000004`, `1.0e21`, `inf`, `nan`.
+
+**The numeric methods** are postfix, so `-2.pow(2)` is `-(2.pow(2))`:
+
+| Method                         | On             | Notes                                                                      |
+| ------------------------------ | -------------- | -------------------------------------------------------------------------- |
+| `to_float()`                   | `int`          | Exact up to 2^53                                                           |
+| `to_int()`                     | `float`        | Truncates toward zero; traps on `nan`, an infinity or a value out of range |
+| `round()`, `floor()`, `ceil()` | `float`        | `round` takes halves away from zero: `2.5.round()` is `3.0`                |
+| `sqrt()`, `is_nan()`           | `float`        | `is_nan` is the only way to ask, since `nan is nan` is `false`             |
+| `abs()`                        | `int`, `float` | Traps on `int`'s minimum                                                   |
+| `min(x)`, `max(x)`             | `int`, `float` | Two values of one type; on floats, Rust's `f64::min` and `f64::max`        |
+| `pow(n)`                       | `int`, `float` | `n` is an `int`. On `int` it traps on overflow and on a negative `n`       |
+
+## Expressions and operators
+
+Highest precedence first, as RFC-0013 §3.5 orders the operators that are built:
+
+| Level | Operators                                                   |
+| ----- | ----------------------------------------------------------- |
+| 1     | literals, names, `( … )`, calls `f(…)`                      |
+| 2     | postfix `.method(…)` and `.column`                          |
+| 3     | prefix `-`, prefix `try`                                    |
+| 4     | `*`, `/`, `%`                                               |
+| 5     | `+`, `-`                                                    |
+| 6     | `is`, `is not`, `<`, `<=`, `>`, `>=`, which do not chain    |
+| 7     | prefix `not`                                                |
+| 8     | `and`                                                       |
+| 9     | `or`, never mixed with `and` without parentheses (`MZ0913`) |
+
+Equality is `is` and `is not`. `==`, `!=`, `&&`, `||` and `!` are `MZ0910`, each with an
+`exact` fix to the Mzizi word. `+=` and `++` are `MZ0918`; `str(x)` and `x.to_string()` are
+`MZ0962`, with the `exact` fix `"{x}"`. `examples/numbers.mz` prints its arithmetic, and
+[`numbers.expected`](https://github.com/mzizi-dev/mzizi/blob/main/examples/numbers.expected)
+holds what it prints.
+
+## Control flow
+
+From `examples/control.mz` (an excerpt; the file is in the repository, and CI compares its
+output with `examples/control.expected`):
+
+```mz examples/control.mz (excerpt)
+  enum shape
+    circle
+    square
+    triangle
+  end
+
+  fn fizzbuzz(n: int): text
+    when n % 15 is 0
+      return "FizzBuzz"
+    else when n % 3 is 0
+      return "Fizz"
+    else when n % 5 is 0
+      return "Buzz"
+    end
+    return "{n}"
+  end fn fizzbuzz
+
+  fn corners(s: shape): int
+    match s
+      case circle
+        return 0
+      case square
+        return 4
+      case triangle
+        return 3
+    end
+  end fn corners
+
+  fn odd_sum(limit: int): int
+    var total = 0
+    for each i in range(0, to = 100)
+      when i >= limit
+        break
+      end
+      when i % 2 is 0
+        continue
+      end
+      total = total + i
+    end
+    return total
+  end fn odd_sum
+
+  fn collatz(start: int): int
+    var n = start
+    var steps = 0
+    while n is not 1
+      n = match n % 2
+        case 0
+          n / 2
+        else
+          3 * n + 1
+      end
+      steps = steps + 1
+    end
+    return steps
+  end fn collatz
+```
+
+- **`match <value>`** takes `case` lines, each listing one or more values (`case 6 7`), then
+  an optional `else`, over an enum, an `int`, a `text` or a `bool`. It is checked for
+  exhaustiveness: a missing case is `MZ0930`, naming the missing variants, and a case that can
+  never run is `MZ0931`, whose `exact` fix deletes it. A `match` over a `float` is `MZ0711`:
+  compare a float with `when`.
+- **`for each i in range(a, to = b)`** counts from `a` up to but not including `b`. `range`
+  is read only on a `for each` line; `for each` over a list waits for lists.
+- **`while <condition>`** is the one conditional loop; `while true` with a `break` is the loop
+  that ends from inside. **`break`** and **`continue`** act on the innermost loop, and are
+  `MZ0935` outside one.
+- **`when` and `match` as values.** Either may be the whole value of a `let`, a `var`, an
+  assignment or a `return`, each branch one expression line; nowhere else, and there is no
+  ternary (`MZ0932`).
+- **Other languages' spellings are fixed.** `elif`, `else if`, `switch`, `default:`, `case _`
+  and `_ =>` are `MZ0933`; `for x in xs`, `for (const x of xs)`, `loop` and `range(n)` are
+  `MZ0934`, each with an `exact` fix. An `else when` chain over one enum's variants is
+  `MZ0936`, with a `guess` fix rewriting it as a `match`.
+
+**Enums.** A program declares an `enum`, one variant per line, closed by a bare `end`. A
+variant is written bare where the expected type settles its enum, and `<enum>.<variant>`
+where two enums share it. Variants compare with `is`, order by declaration and print as their
+names. A variant may carry **columns**, a name and a literal each, read with a dot
+(`problem.say`), as in `examples/errors.mz` below.
+
+## Errors: `result`, `error` and `try`
+
+`examples/errors.mz`, verbatim:
+
+```mz examples/errors.mz
+## Checks ages: one function fails with an error, its callers handle it with `match` or
+## propagate it with `try`, and `main` itself returns a result (RFC-0013 §12).
+program errors
+
+  enum age_problem
+    negative say "is below zero"
+    too_old  say "is above 150"
+  end
+
+  fn main: result(none, age_problem)
+    print(describe(42))
+    print(describe(-3))
+    print(describe(200))
+    let total = try total_age(20, 22)
+    print("20 and 22 make {total}")
+    match total_age(20, 151)
+      case ok sum
+        print("20 and 151 make {sum}")
+      case error problem
+        print("20 and 151 were rejected: {problem} {problem.say}")
+    end
+  end fn main
+
+  fn check_age(n: int): result(int, age_problem)
+    when n < 0
+      return error(negative)
+    end
+    when n > 150
+      return error(too_old)
+    end
+    return n
+  end fn check_age
+
+  fn describe(n: int): text
+    match check_age(n)
+      case ok age
+        return "age {age} is fine"
+      case error problem
+        return "{n} is rejected: {problem} {problem.say}"
+    end
+  end fn describe
+
+  fn total_age(a: int, b: int): result(int, age_problem)
+    return try check_age(a) + try check_age(b)
+  end fn total_age
+
+end program errors
+```
+
+```text examples/errors.expected
+age 42 is fine
+-3 is rejected: negative is below zero
+200 is rejected: too_old is above 150
+20 and 22 make 42
+20 and 151 were rejected: too_old is above 150
+```
+
+- A function that can fail returns **`result(T, E)`**, or `result(none, E)`. `return v`
+  returns success, **`return error(e)`** returns failure, and `return r` passes a result of
+  the function's own type through.
+- A caller **matches** the result, with exactly two cases, `case ok <name>` and
+  `case error <name>`, or **propagates** its error with a prefix **`try`**, in a function
+  that returns a result with the same error type.
+- **Any other use of a result is `MZ0950`**: discarding it, printing it, comparing it,
+  passing it or holding it in a `var`. A result is never a parameter, nor inside another
+  result.
+- **`fn main` may return `result(none, E)`.** When it returns an error, the program writes
+  `mz: error MZ0992: main returned an error: <the error's text form>` to standard error and
+  exits 1.
+- **Other languages' idioms are `MZ0952`:** `Ok(v)` (`exact` `v`), `Err(e)` (`exact`
+  `error(e)`), Rust's postfix `?` (`exact` prefix `try`), `throw e` and `raise e`
+  (`return error(e)`), and `.unwrap()` and `.expect(…)`, which have no fix: an error is never
+  turned into a crash.
+
+## `mz run`
+
+```text
+mz run [--release] <file.mz>     check, lower, build with cargo, run
+mz build <file.mz> --out <dir>   write the same Rust package
+```
+
+1. **Check.** On any error it prints the diagnostics, exits 3, and does not build.
+2. **Lower.** It writes a Cargo package with **no dependencies** into
+   `<name>-<path hash>` under `$MZ_CACHE_DIR`, or `mzizi/mz-run/` under `$XDG_CACHE_HOME` or
+   `~/.cache`. With none of the three set it exits 2 and names them; it never falls back to
+   the system's temporary directory.
+3. **Build.** `cargo build --offline --quiet`, with `--release` when asked. No dependencies
+   means no network.
+4. **Run.** The binary runs with the terminal's standard input, output and error. Standard
+   output belongs to the program; everything `mz run` writes of its own goes to standard
+   error.
+
+**Every exit status means one thing.** `mz run` departs from the other commands, where 1 means
+errors, because 1 belongs to the program it runs:
+
+| Status  | Means                                                                                                            |
+| ------- | ---------------------------------------------------------------------------------------------------------------- |
+| `0`     | The program ran and `main` ended                                                                                 |
+| `1`     | The program ran and `main` returned an error (`MZ0992`)                                                          |
+| `2`     | A usage, environment or I/O problem: bad arguments, an unreadable file, no `cargo`, no cache directory           |
+| `3`     | The program did not compile: `mz check` errors, or the lowered Rust failed to compile (`MZ0990`). It did not run |
+| `101`   | The program ran and **trapped**: one line on standard error, `mz: trap MZ0991 at <file>:<line>:<column>: …`      |
+| `141`   | The program ran and its standard output was closed                                                               |
+| `128+n` | A signal `n` killed the program                                                                                  |
+
+RFC-0013 §13 also designs exit 70 and `MZ0993` for a runtime failure, and `mz run --agent`
+for NDJSON on standard error. Neither is built: `mz run --agent` exits 2.
+
+**The lowering.** Every value is owned and no reference or lifetime is emitted: a `text` read
+is a `.clone()`. `result(T, E)` is Rust's `Result<T, E>` and `try e` is `e?`; an enum is a
+Rust `enum`; a `match` on an enum or a `bool` has no `_` arm unless it has an `else`, so
+`rustc` checks exhaustiveness again; `for each i in range(a, to = b)` is `for i in a..b`. The
+generated code holds no `unwrap`, `expect`, `panic!` or `unsafe`, which a test checks.
+
+## Nesting is capped
+
+A program's blocks and expressions nest at most 32 deep together, and an expression's tree of
+binary operators at most 64. Past the cap is one `MZ0411` per file, not a stack overflow.
+`compiler/tests/robustness.rs` holds every case to a 1 MiB stack.
+
+## What is not built
+
+These are designed in RFC-0013 and are not in the compiler. Each is `MZ0919`, which says the
+form is designed and not built, or another code that names it:
+
+- Lists, maps and sets in a program, indexing, and `for each` over a list (C7).
+- Text methods (C6), records and methods (C8), options in function bodies, and a decimal type.
+- Named arguments beyond `range`'s `to`, `try … via f` (`MZ0955`), and a `match` stub as the
+  fix for `MZ0950`.
+- A program's `contract` block, `mz test`, `mz run --agent`, and `mz outline`, `mz ir` and
+  `mz hash` on a program, which exit 2.
+- Modules: one program per file, and nothing is imported.
+
+The benchmark's prompts do not describe programs yet, so no benchmark arm knows about them, and
+nothing has been measured. Whether an agent writes these forms well is for the benchmark to
+find out. See [Status](/status) and [the compiler](/compiler#program-codes-mz09xx) for every
+`MZ09xx` code.
