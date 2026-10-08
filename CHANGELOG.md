@@ -21,6 +21,50 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
+### Changed — the language's fourth release of 8 October 2026: every Tier 1 row is ✅, so M1 is met
+
+The language released `staging` to `main` (mzizi#109, merged as `1d5e578`, tagged `v0.8.0`). It
+carries the rest of the text operations (C6, mzizi#106). Every number below was read at `1d5e578`,
+not typed. Nothing here is measured against the charter's kill criterion, and no benchmark ran.
+
+- **M1 is met on `main`.** `LANGUAGE-TRACKER.md` marks C6 ✅, so C1–C10 are all ✅ and M1 ("all of
+  Tier 1 ✅", mzizi#69) holds. `tracker.mdx` mirrors every row's mark, and the one that moved is C6.
+  The public suites stay blocked, by the standard library (P2) alone. `index.mdx`, `status.mdx`,
+  `roadmap.mdx`, `tracker.mdx` and `AGENTS.md` say so, and `status.mdx` has a section on the release.
+- **Text methods.** `programs.mdx` (Text methods, C6) documents `s[i]` and `s.slice(a, to = b)`
+  (`option(text)`), `s.find(t)` (`option(int)`), `s.split(sep)` and `s.chars()` (`list(text)`), and
+  `s.parse_int()` and `s.parse_float()` (`option(int)` and `option(float)`), with the `none` cases
+  checked on the binary. Its `examples/text.mz` and output are quoted verbatim from `1d5e578`, and
+  `mz run` reproduces `text.expected`. The "not built" lists no longer name these methods. Regular
+  expressions, padding and number formatting are P2's.
+- **Counts.** The workspace has 760 tests (was 744), 629 in the compiler crate (was 613), all
+  passing, and 27 suites as the language README states. `compiler/src` is 33,438 lines (was
+  33,138). These moved on `status.mdx`, `compiler.mdx` and `language-harness.mdx`.
+- **The language harness.** `mz harness definition` has 197 entries (was 191), with 80 diagnostic
+  codes (53 `MZ09xx`, 27 shared) and 49 pending codes, both unchanged. The per-entry counts on
+  `language-harness.mdx` (depth, grammar, types, precedence, codes, examples) moved by the six new
+  text methods, and `mz harness version` now reports definition SHA-256 `4e65c15d…`.
+- **The MZ09xx table.** `compiler.mdx`'s table is regenerated from `mz harness definition` at
+  `1d5e578`, and the commit it names moves. No code is added. `MZ0915` also reports a literal empty
+  `split` separator, `MZ0919` no longer lists the text methods, and `MZ0962` reports `int(s)` and
+  `float(s)` on text, with a guess to `parse_int` and `parse_float`.
+- **RFC-0013 (`rfcs.mdx`).** Collections, records with methods and text operations are listed as
+  built, and the design-only list names what is still not built. §20 Q20 is recorded as decided on
+  8 October 2026: built-in methods with tests meet C6.
+- **Honesty.** `AGENTS.md`'s "rule that overrides everything else" said text operations, maps, sets
+  and methods on user types were missing. Those were C6 to C8, all ✅ now, so the sentence now says
+  what is missing (modules, the standard library, concurrency). The rule is unchanged. The two
+  pilots still showed no advantage, and only a `service` and a `program` lower.
+- **Freshness check.** `scripts/check-freshness.mjs` expects "Mzizi has no modules, standard library
+  or concurrency yet" on the three pages that carry it, with P1, P2 and P9 ❌, and no longer expects
+  C6 🟡. It also flags a page that says text operations are partial.
+
+### Fixed — the performance suite is on `main`, not in an open pull request
+
+- `benchmark.mdx` said the performance suite (`benchmarks/perf/`) was built in an open pull request,
+  mzizi#85. #85 merged on 7 October 2026, so the page now says it is on `main`. Its timings are still
+  not committed, and they are not a result.
+
 ### Changed — the language's third release of 8 October 2026: collections, records and text methods are on `main`
 
 The language released `staging` to `main` (mzizi#104, merged as `4d0cdc3`). It carries C6 (text

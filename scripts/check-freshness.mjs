@@ -231,16 +231,16 @@ await check("mzizi-dev/mzizi charter, tracker and arms", async () => {
     for (const [, id, mark] of ours) compare(`tracker row ${id} (tracker.mdx)`, mark, marks.get(id) ?? "missing");
     const missing = [...marks.keys()].filter((id) => !ours.some((m) => m[1] === id));
     if (missing.length > 0) drift.push(`tracker.mdx: rows missing from the page: ${missing.join(", ")}`);
-    // The sentence every capability page carries, read off the tracker's marks. Modules and the
-    // standard library are not built while P1 and P2 are ❌, and text operations are partial while
-    // C6 is 🟡. Maps, sets and records are not named as absent: C7 and C8 are ✅ on main, so a page
-    // that still says so is stale.
-    const sentence = "Mzizi has no modules or standard library yet, and its text operations are partial";
-    const want = { P1: "❌", P2: "❌", C6: "🟡" };
+    // The sentence every capability page carries, read off the tracker's marks. Modules, the
+    // standard library and concurrency are not built while P1, P2 and P9 are ❌. Text operations
+    // are not named as partial: C6 is ✅ on main (the fourth release, v0.8.0), so a page that still
+    // says so is stale. Maps, sets and records are not named as absent either: C7 and C8 are ✅.
+    const sentence = "Mzizi has no modules, standard library or concurrency yet";
+    const want = { P1: "❌", P2: "❌", P9: "❌" };
     const off = Object.entries(want)
       .filter(([id, mark]) => marks.get(id) !== mark)
       .map(([id, mark]) => `${id} is ${marks.get(id) ?? "missing"}, not ${mark}`);
-    const stale = /no text operations, maps or sets|methods on user types, modules/;
+    const stale = /no text operations, maps or sets|methods on user types, modules|text operations are partial/;
     for (const path of ["index.mdx", "status.mdx", "tracker.mdx"]) {
       const text = page(path).replace(/\s+/g, " ").replace(/\*\*/g, "");
       if (stale.test(text)) drift.push(`${path}: says Mzizi has none of text operations, maps or sets, methods on user types`);
