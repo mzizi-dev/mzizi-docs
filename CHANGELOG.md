@@ -26,8 +26,8 @@ entries move under it. Mintlify does not publish this file.
 The language released `staging` to `main` (mzizi#104, merged as `4d0cdc3`). It carries C6 (text
 methods, mzizi#98), C7 (collections, mzizi#99), C8 (records and methods, mzizi#101 and mzizi#102)
 and the language harness's prefix `not` level (mzizi#100). The pages no longer describe any of
-it as staging-only, and the "On staging" sections are gone. No tag names that release when these
-pages were checked. Read at `4d0cdc3`: `cargo test --workspace` 744 tests in 27 suites (613 in the
+it as staging-only, and the "On staging" sections are gone. The release is tagged `v0.7.0`, which is
+`4d0cdc3`. Read at `4d0cdc3`: `cargo test --workspace` 744 tests in 27 suites (613 in the
 compiler crate), all passing; `mz harness definition` 191 entries, 80 diagnostic codes and 49
 pending codes; `compiler/src` 33,138 lines.
 
