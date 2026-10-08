@@ -21,6 +21,39 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
+### Added — text methods and collections on the language's `staging`, not yet in a release
+
+The language's `staging` branch (`6e67658`) carries C6 (text methods) and C7 (collections), which
+`main` (`dc156c5`, `v0.6.0`) does not yet. The pages now document them in sections headed **On
+staging**, and say what each branch has. Checked by building the `staging` commit: `cargo test` in
+`compiler/` gives 562 tests, all passing, and `examples/text.mz` and `examples/collections.mz` run
+through `mz run` with the output their `.expected` files hold.
+
+- **Programs** (Language tab): two new sections. **On staging: text methods (C6)** documents
+  `length`, `contains`, `starts_with`, `ends_with`, `trim`, `to_upper`, `to_lower`,
+  `replace(old, by = new)` and `repeat(n)`, with the methods that return an option or a list still
+  `MZ0919`, and quotes `examples/text.mz` verbatim with its output. **On staging: collections (C7)**
+  documents `list(T)`, `map(K, V)` and `set(K)`, bracket literals, indexing that returns an option
+  read with `otherwise`, indexed assignment, `in`, `for each` over a list, `range(a, to = b)` as a
+  list, the list, map and set methods and the eight named folds, and quotes
+  `examples/collections.mz` verbatim with its output. The page's description, its scope note and
+  its "What is not built" list now say what each branch lacks.
+- **Compiler**: a table of the codes `staging` adds and changes, generated from `mz harness
+definition` at `6e67658`. **`MZ0960`**, **`MZ0961`**, **`MZ0963`** and **`MZ0964`** are new, and ten
+  `MZ09xx` codes have a `say` text or fix kinds that differ from `main`; `MZ0991` is reported by
+  `mz run`. The page gives the staging test count and the compiler source's line count (31,267, from
+  26,850 on `main`).
+- **Language harness** and **Status**: on `staging`, the definition holds 181 entries and 75
+  diagnostic codes, with 50 pending; `main` holds 137, 70 and 51. Status gains a section on what is
+  on `staging` and not in a release.
+- **What still has to be built** (tracker): the table keeps `main`'s marks, which the freshness
+  check reads. A paragraph gives `staging`'s: C6 and C7 are 🟡, C8 is records and methods, and
+  generics and interfaces are a new row, P12, deferred past M1.
+
+These are tested by the language's suite and its example programs. No benchmark has run on them,
+and nothing here says a model writes text or collection code better in Mzizi than in another
+language. Phase 0 is not complete: the kill-criterion run has not happened.
+
 ### Added — programs, `mz run` and the language harness, after the language's release of 8 October 2026
 
 The language released `staging` to `main` (mzizi#91, merged as `be88017`, whose tree is
