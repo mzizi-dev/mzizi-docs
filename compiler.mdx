@@ -41,6 +41,9 @@ Run `cargo test --workspace` from the repository root for the whole suite: 644 t
 suites at `dc156c5`, 513 of them in the compiler crate and the rest in the benchmark harness,
 runner and probe crate. `compiler/src` is 26,850 lines.
 
+On `staging`, at `6e67658`, `cargo test` in `compiler/` runs 562 tests, all passing, and
+`compiler/src` holds 31,267 lines.
+
 ## The commands
 
 | Command                           | What it does                                                                                                                                           |
@@ -262,6 +265,33 @@ and `MZ0992` are printed by the running program on standard error.
 | `MZ0990` | error    | `mz run`   | the Rust lowered from a program did not compile: a bug in mz, not in the program. It names the program and quotes rustc's first message; exit 3                                                                                                                                     | None                      |
 | `MZ0991` | error    | `mz run`   | a trap while the program ran: integer overflow (including `pow` and `abs`), `int` division or remainder by zero, a negative `int` exponent, or `to_int()` on a float out of range. The line names the `.mz` position and the expression; exit 101                                   | None                      |
 | `MZ0992` | error    | `mz run`   | `fn main` returned an error: the program writes `mz: error MZ0992: main returned an error: <its text form>` to standard error and exits 1                                                                                                                                           | None                      |
+
+#### On staging: codes added and changed
+
+<Note>
+  **On `staging`, not yet in a release** (`6e67658`). This table is generated from
+  `mz harness definition` at that commit, not written by hand, in the same way as the table above.
+  Four codes are new (`MZ0960`, `MZ0961`, `MZ0963` and `MZ0964`), and ten have a `say` text or
+  fix kinds that differ from `main`. `MZ0710`, a shared code, also left the pending list, since
+  an option used as its value is one of a program's diagnostics.
+</Note>
+
+| Code     | Status  | Severity | From     | What it reports (`say`)                                                                                                                                                                                                                                                                                            | Fix kinds          |
+| -------- | ------- | -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------ |
+| `MZ0905` | changed | error    | mz check | a call or method with the wrong number of arguments or an argument of the wrong type, or a named argument; the say quotes the signature. A `float` exponent to `pow` gets a guess (`2.0` to `2`, `0.5` to `x.sqrt()`)                                                                                              | none, guess        |
+| `MZ0909` | changed | error    | mz check | a `fn` used as a value outside `map`, `filter` and the folds (exact fix `()` when it takes no parameters), a function argument that is not a named `fn` or whose signature does not fit (the say quotes both), or a lambda                                                                                         | none, exact        |
+| `MZ0910` | changed | error    | mz check | an operator spelt from another language: `==` `===` `!=` `!==` `&&` `\|\|` `!` (exact), `not a is b` without parentheses (exact), Python's `x not in xs` (exact `not x in xs`), a contract predicate in an expression (exact), or `**` (guess `x.pow(n)`; no fix when an operand could not be read)                | none, exact, guess |
+| `MZ0912` | changed | error    | mz check | operands of the wrong type: `int` with `float` (exact on an `int` literal), `+` on text (fix to interpolation), unlike types compared, `not` or `-` on the wrong type, `in` on another type than the collection holds, `otherwise` on a non-option, `is none` on a non-collection                                  | none, exact, guess |
+| `MZ0915` | changed | error    | mz check | a fault visible in constants: division or remainder by a literal `0`, a literal negative `int` exponent or `repeat` count, a constant computation (including `pow` and `abs`) that overflows an `int`, or a literal negative index (guess `xs[xs.length() - 1]`)                                                   | none, guess        |
+| `MZ0918` | changed | error    | mz check | `+=`, `-=`, `*=`, `/=`, `++` or `--`; the exact fix writes `x = x + 1`. On `xs[i]`, an option, the fix is a guess, `xs[i] = (xs[i] otherwise 0) + 1`, and there is none when no default can be guessed                                                                                                             | none, exact, guess |
+| `MZ0919` | changed | error    | mz check | designed in RFC-0013, not built yet, reported once: `option(T)` written as a type, `none` as a value and narrowing an option; indexing text and text's `slice`, `find`, `parse_int`, `parse_float`, `split`, `chars`; a `record`; a `use` line; a `test` block; a `contract` block in a program or on a `fn`       | none               |
+| `MZ0927` | changed | error    | mz check | a call's label written another way: `range(a, to: b)` (exact `to = b`), or `s.replace(a, b)`, `s.replace(a, by: b)` or `s.replace(a, with = b)` (exact `by = b`); §6.5's other labels are not built                                                                                                                | exact              |
+| `MZ0960` | new     | error    | mz check | a mutation (`push`, `insert`, `remove`, `xs[i] = v`) of something that is not a `var`: a `let` (exact fix `var`), a parameter, a loop binding, or a value no name holds                                                                                                                                            | none, exact        |
+| `MZ0961` | new     | error    | mz check | a bracket literal that cannot be typed: `[]` with nothing to say what it holds, elements of different types, `key: value` entries mixed with elements, or a map key written twice                                                                                                                                  | none               |
+| `MZ0962` | changed | error    | mz check | an operation spelt another way: `str(x)`, `abs(x)`, `len(x)`, `s.strip()`, `is_empty()`, a method without `()`; on a list `.size()`, `.append`, `.contains`, `.get(i)`, `is []`, `find`, `some`, `every`, `sorted`, `.reduce`; `t in s` on text; a guess where meanings differ                                     | none, exact, guess |
+| `MZ0963` | new     | error    | mz check | a tuple, `(a, b)`: Mzizi has none, and two values that travel together are a record with named fields, which only the author can name                                                                                                                                                                              | none               |
+| `MZ0964` | new     | error    | mz check | a map key, set element or `sort_by` / `group_by` key whose type has no order: a `float`, a collection, an option                                                                                                                                                                                                   | none               |
+| `MZ0991` | changed | error    | mz run   | a trap while the program ran: integer overflow (including `pow` and `abs`), `int` division or remainder by zero, a negative `int` exponent or `repeat` count, a `repeat` or a `range` list too long to hold, or `to_int()` on a float out of range. The line names the `.mz` position and the expression; exit 101 | none               |
 
 ### Deep nesting is one diagnostic
 

@@ -52,6 +52,16 @@ the second release of 8 October 2026: **`MZ0301`**, **`MZ0302`**, **`MZ0303`** a
 which a program's enums raise. The 51 codes that components and services raise are on a pending
 list that a test freezes, so it can only shrink.
 
+On `staging`, at `6e67658` and not yet in a release, the definition holds **181 entries**: 75
+diagnostic codes, 39 method entries (the 11 numeric methods, the nine text methods and 19
+collection methods and folds), 20 operators, 16 statement forms, 8 types, 6 declarations, 5
+lexical entries, 3 functions and the nine `mz` commands. The new entries are the list, map, set
+and option types, `in`, `otherwise`, indexing, `none`, the bracket literal and indexed
+assignment, `range` as a list, and the new codes **`MZ0960`**, **`MZ0961`**, **`MZ0963`** and
+**`MZ0964`**. `MZ0710` leaves the pending list. The 50 codes that remain pending are the ones
+components and services raise, which the harness has not registered yet. Each of these counts is
+read from `mz harness definition` at `6e67658`.
+
 ## `mz harness`
 
 ```bash

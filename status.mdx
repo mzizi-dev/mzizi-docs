@@ -96,6 +96,31 @@ repository to `main` is tagged (`v0.4.0` is `0653903`, `v0.5.0` is `be88017` and
 published compiler: there is no `cargo install mz` and no published crate. You build it from
 the repository or you do not have it.
 
+## On `staging`, not yet in a release
+
+The language's `staging` branch, at `6e67658`, carries two parts of M1 that `main` does not
+have yet: text methods and collections in a program (C6 and C7, RFC-0013 §10 and §9). They
+were merged to `staging` as `1fa00a8` (text, [mzizi#98](https://github.com/mzizi-dev/mzizi/pull/98))
+and `6e67658` (collections, [mzizi#99](https://github.com/mzizi-dev/mzizi/pull/99)). On `staging`,
+the tracker marks C6 and C7 🟡, and `main` marks them 📝 and 🟡. The language's `main` is still
+the second release of 8 October 2026 (`v0.6.0`), and the tables on this page describe `main`.
+
+- **Text methods (C6).** `length`, `contains`, `starts_with`, `ends_with`, `trim`, `to_upper`,
+  `to_lower`, `replace(old, by = new)` and `repeat(n)`, with the methods that return an option
+  or a list still not built. [Programs: text methods](/programs#on-staging-text-methods-c6).
+- **Collections (C7).** `list(T)`, `map(K, V)` and `set(K)` in a program, with bracket literals,
+  indexing that gives an option, `otherwise`, indexed assignment, `in`, `for each` over a list,
+  `range` as a list, the methods, `map`, `filter` and the eight named folds.
+  [Programs: collections](/programs#on-staging-collections-c7).
+- **The language harness** has 181 entries and 75 diagnostic codes on `staging`, from 137 and 70
+  on `main`; 50 codes stay pending, from 51.
+- **The tracker.** C8 is "records and methods" on `staging`, and generics and interfaces are a
+  new row, P12, deferred past M1 (RFC-0013 §20 Q21).
+
+Checked by building the `staging` commit: `cargo test` in `compiler/` runs 562 tests, all
+passing, and `examples/text.mz` and `examples/collections.mz` run through `mz run` against their
+`.expected` files. Nothing here is measured, and no benchmark has run on these features.
+
 ## Released to `main` on 8 October 2026
 
 The first release of 8 October 2026 ([mzizi#91](https://github.com/mzizi-dev/mzizi/pull/91),
