@@ -41,7 +41,7 @@ gateway, and every fact is checked at the HTTP boundary, so no language's syntax
 
 What Mzizi is measured against, from RFC-0009 §1, with each arm's state as
 [`benchmarks/arms/`](https://github.com/mzizi-dev/mzizi/tree/main/benchmarks/arms) holds it at
-language `main` `0653903`. The benchmark's design, not a result: nothing has been measured
+language `main` `be88017`. The benchmark's design, not a result: nothing has been measured
 against TypeScript, Python, Go, C++ or a Rust backend.
 
 | Arm        | Family  | Language and framework                              | State                                                                                                    |
@@ -59,7 +59,11 @@ against TypeScript, Python, Go, C++ or a Rust backend.
 
 Task B1's reference implementations, one in Mzizi and one in plain axum, both hold all 59 of
 its facts; a reference is not an arm. The public suites (MultiPL-E, EvalPlus, Aider polyglot,
-BaxBench) are blocked: Mzizi has no functions yet ([what still has to be built](/tracker)).
+BaxBench) are blocked: functions, loops and results now run in a [`program`](/programs), but
+collections and text operations do not exist yet ([what still has to be built](/tracker)). The
+performance suite in `benchmarks/perf/` is not an arm and not a result: CI checks only that its
+programs' outputs agree with hand-written Rust, and no timing is committed
+([Status](/status#the-performance-suite-is-not-a-result)).
 
 ## What it measures
 
