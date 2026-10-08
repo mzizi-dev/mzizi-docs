@@ -34,9 +34,10 @@ against the component itself, and runs a `service` in process. A `service` lower
 (`mz build`, to a local Rust + axum package), and so does a `program` in RFC-0013's first
 waves (`mz build` and `mz run`, to a dependency-free Rust package; on language `main` since
 8 October 2026). No component lowers, there is no Workers, Containers or WebAssembly target,
-and nothing renders. By the tracker's ✅ marks, Mzizi has no expressions, bindings, callable
-functions, loops, error handling, modules or standard library yet: a program has the first
-five in a narrow form, and those rows are 🟡 until the tracker marks them ✅.
+and nothing renders. By the tracker's ✅ marks, Mzizi has no text operations, maps or sets,
+methods on user types, modules or standard library yet: a program has expressions, bindings,
+functions, control flow, numbers and results in a narrow form, and those rows (C1–C5, C9, C10)
+are ✅ since the second release of 8 October 2026.
 **Two small pilots ran on 2026-09-27 and neither showed an advantage.** The run that tests
 the kill criterion (now: Mzizi against the best existing language for each kind of task)
 has not happened.

@@ -11,9 +11,10 @@ icon: "gauge"
   kill criterion has not happened. A `service` lowers to a local Rust + axum package, and a
   [`program`](/programs) in RFC-0013's first slice lowers to a Rust package that `mz run`
   builds and runs; no component lowers, and nothing renders. By the tracker's ✅ marks, the
-  bar these docs use, Mzizi has no expressions, bindings, callable functions, loops, error
-  handling, modules or standard library yet: a program has the first five in a narrow form,
-  and their rows are still 🟡 in the file. See [what still has to be built](/tracker).
+  bar these docs use, Mzizi has no text operations, maps or sets, methods on user types,
+  modules or standard library yet. A program has expressions, bindings, functions, control
+  flow, numbers and results in a narrow form, and those rows are ✅ in the file. See
+  [what still has to be built](/tracker).
 </Warning>
 
 ## Phase 0's goal
@@ -30,9 +31,10 @@ components against Dioxus. They are not its goal, and they showed no advantage. 
 The table below is the language's front end, which lives in its toolchain, the `mz`
 compiler. The compiler implements the language; it is not the language.
 
-Checked against [`mzizi-dev/mzizi`](https://github.com/mzizi-dev/mzizi) at `be88017` on
-8 October 2026, the merge of [mzizi#91](https://github.com/mzizi-dev/mzizi/pull/91), which
-released `staging` to `main`. Every row below can be checked in the repository; that is why it is a
+Checked against [`mzizi-dev/mzizi`](https://github.com/mzizi-dev/mzizi) at `dc156c5` on
+8 October 2026, the merge of [mzizi#96](https://github.com/mzizi-dev/mzizi/pull/96), which
+released `staging` to `main` (tagged `v0.6.0`). It is the second release of that day; the
+first, [mzizi#91](https://github.com/mzizi-dev/mzizi/pull/91), is `be88017`, tagged `v0.5.0`. Every row below can be checked in the repository; that is why it is a
 table and not a paragraph. The language's own list of what is missing, against Python, Go,
 C++, TypeScript and Rust, is
 [`LANGUAGE-TRACKER.md`](https://github.com/mzizi-dev/mzizi/blob/main/LANGUAGE-TRACKER.md),
@@ -62,7 +64,7 @@ summarised on [What still has to be built](/tracker).
 | `match`, `else when`, `for each`, `while`, enums     | Exist, tested in a program (RFC-0013 §7, C4)                                             | `compiler/src/program/control.rs`, `examples/control.mz` |
 | `result(T, E)`, `error`, `try`, enum columns         | Exist, tested in a program (RFC-0013 §12, C9)                                            | `compiler/src/program/errors.rs`, `examples/errors.mz`   |
 | `mz run`: a program lowered to Rust, built and run   | Exists, tested. A dependency-free package; CI runs every example program                 | `compiler/src/run.rs`                                    |
-| The language harness: `mz harness`                   | **First slice exists.** 133 entries, 66 codes; plugin host not built                     | `compiler/src/harness.rs`, RFC-0012                      |
+| The language harness: `mz harness`                   | **First slice exists.** 137 entries, 70 codes; plugin host not built                     | `compiler/src/harness.rs`, RFC-0012                      |
 | Benchmark runner and scorer                          | Exist, tested, used for two pilots                                                       | `benchmarks/runner`, `benchmarks/harness`                |
 | Benchmark arms                                       | `mzizi`, `dioxus`, `leptos`, `react`, `mzizi-be`; React, Leptos and `mzizi-be` never run | `benchmarks/arms/`                                       |
 | Backend probe crate and task B1                      | Exist, tested; the runner does not score with probes yet                                 | `benchmarks/probe`, `benchmarks/tasks/b1-routing`        |
@@ -80,24 +82,25 @@ summarised on [What still has to be built](/tracker).
 | Workers, Containers or WebAssembly targets           | **Not started**                                                                          | `LANGUAGE-TRACKER.md` P11                                |
 | Rendering, any target                                | **Not started.** Phase 1                                                                 | —                                                        |
 
-The compiler source is 26,811 lines across `compiler/src`. The workspace has **643 tests in
-24 suites**, 512 of them in the compiler crate and the rest in the benchmark harness, runner
-and probe crate (re-run for these docs at `be88017`: 512 and 643, all passing). CI gates on
+The compiler source is 26,850 lines across `compiler/src`. The workspace has **644 tests in
+24 suites**, 513 of them in the compiler crate and the rest in the benchmark harness, runner
+and probe crate (re-run for these docs at `dc156c5`: 513 and 644, all passing). CI gates on
 `cargo fmt --check`, `cargo clippy --all-targets -D warnings`, `cargo test`, `mz check` and
 `mz contract` over every primitive and example, and a `lowering` job that builds, tests and
 serves the example service, runs every example program through `mz run` against its
 `.expected` output, and builds the performance suite and checks that its outputs agree.
 
 The compiler crate is `version = "0.0.0"` with `publish = false`. Each release of the
-repository to `main` is tagged (`v0.4.0` is `0653903`, and the release after it is tagged from `be88017`), but that tags the repository, not a
+repository to `main` is tagged (`v0.4.0` is `0653903`, `v0.5.0` is `be88017` and `v0.6.0` is
+`dc156c5`, both of 8 October 2026), but that tags the repository, not a
 published compiler: there is no `cargo install mz` and no published crate. You build it from
 the repository or you do not have it.
 
 ## Released to `main` on 8 October 2026
 
-The language's release after `v0.4.0` ([mzizi#91](https://github.com/mzizi-dev/mzizi/pull/91),
-`staging` to `main`, merged as `be88017`) carries the first work toward **M1, a language that computes**: every
-Tier 1 row of the tracker (C1–C10) ✅ on `main`. Issue
+The first release of 8 October 2026 ([mzizi#91](https://github.com/mzizi-dev/mzizi/pull/91),
+`staging` to `main`, merged as `be88017`, tagged `v0.5.0`) carries the first work toward
+**M1, a language that computes**. Issue
 [mzizi#69](https://github.com/mzizi-dev/mzizi/issues/69) tracks it, and the
 [roadmap](/roadmap#m1-the-plan) gives the plan. No pull request toward M1 is open on the
 language today.
@@ -114,10 +117,23 @@ language today.
 | [`design/LANGUAGE-SURVEY.md`](https://github.com/mzizi-dev/mzizi/blob/main/design/LANGUAGE-SURVEY.md) ([#75](https://github.com/mzizi-dev/mzizi/pull/75))         | A survey of the top 10 languages, feature by feature: 63 features, each marked adopt, improve, already-has or reject. **Design input only:** nothing in it is built or measured |
 | Process ([#82](https://github.com/mzizi-dev/mzizi/pull/82), [#86](https://github.com/mzizi-dev/mzizi/pull/86), [#77](https://github.com/mzizi-dev/mzizi/pull/77)) | Release notes from `CHANGELOG.md` and a changelog entry in every pull request, a pre-commit hook for the same rule, and `CLAUDE.md`. No language change                         |
 
-**The tracker's marks have not moved with the release.** Each of C1–C5, C9 and C10 says its
-"done when" test is met and that it turns ✅ when it reaches `main`, but `LANGUAGE-TRACKER.md`
-as released still marks them 🟡. These docs mirror the file as it is, so they are 🟡 here too,
-and [what still has to be built](/tracker) changes when the file does.
+### The second release, the same day (mzizi#96)
+
+The second release of 8 October 2026 ([mzizi#96](https://github.com/mzizi-dev/mzizi/pull/96),
+`staging` to `main`, merged as `dc156c5`, tagged `v0.6.0`) moved the tracker's marks. In
+`LANGUAGE-TRACKER.md`, **C1, C2, C3, C4, C5, C9 and C10 are ✅**, each with its "done when"
+checked on `main`. **C6 (text operations) is 📝, and C7 (collections) and C8 (user types) are
+🟡**, so M1 is not reached. **P4 and H1 stay 🟡**: a general program cannot be written yet, and
+the plugin host is not built. The same release also:
+
+- registers the four shared codes that a program's enums raise and that were still pending,
+  **`MZ0301`**, **`MZ0302`**, **`MZ0303`** and **`MZ0704`**. The definition is now 137 entries
+  and 70 codes, with 51 pending;
+- corrects `say` texts that described C4 and C9 wrongly (`MZ0919`, `MZ0902`, `MZ0921` and
+  others), and adds a test that holds `MZ0919`'s list of unbuilt forms to the checker;
+- takes the workspace to 644 tests, 513 of them in the compiler crate.
+
+[What still has to be built](/tracker) has the marks as the file now gives them.
 
 ### The performance suite is not a result
 
