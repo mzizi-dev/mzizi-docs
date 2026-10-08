@@ -29,12 +29,14 @@
 
 ## The rule that overrides everything else
 
-The Mzizi language is a **Phase 0 prototype front end**. `mz contract` evaluates a
-component's contract against the component itself, and runs a `service` in process. Only a
-`service` lowers to Rust (`mz build`, to a local Rust + axum package); no component lowers,
-there is no Workers, Containers or WebAssembly target, and nothing renders. Mzizi has no
-expressions, bindings, callable functions, loops, error handling, modules or standard library
-yet.
+The Mzizi language is a **Phase 0 prototype**. `mz contract` evaluates a component's contract
+against the component itself, and runs a `service` in process. A `service` lowers to Rust
+(`mz build`, to a local Rust + axum package), and so does a `program` in RFC-0013's first
+waves (`mz build` and `mz run`, to a dependency-free Rust package; on language `main` since
+8 October 2026). No component lowers, there is no Workers, Containers or WebAssembly target,
+and nothing renders. By the tracker's ✅ marks, Mzizi has no expressions, bindings, callable
+functions, loops, error handling, modules or standard library yet: a program has the first
+five in a narrow form, and those rows are 🟡 until the tracker marks them ✅.
 **Two small pilots ran on 2026-09-27 and neither showed an advantage.** The run that tests
 the kill criterion (now: Mzizi against the best existing language for each kind of task)
 has not happened.
@@ -86,20 +88,23 @@ Facts that inherited prose often gets wrong:
   `cargo add mzizi-roots`.
 - **`nyuchi-*` components are `mzizi-*`**, and the old names 308 to the new ones.
 
-Three specific traps:
+Five specific traps:
 
 - **Do not quote RFC examples as working syntax.** RFC-0001's view attributes have no `=`;
   the implemented parser requires `name = value`. Prefer quoting `.mz` files from the
   repository, which CI gates.
 - **Do not document `mz refs`, `mz path`, `mz patch`, `mz diff`, `mz test` or `mz fmt` as
-  commands.** They are designed, not built. The binary on `main` dispatches `check`, `fix`,
-  `contract`, `outline` and `build` (`mz build <service.mz> --out <dir>`, a service only), plus
-  `hash` and `ir`. All are documented on the compiler page. **Nor `mz run` yet:** it is built,
-  with the `program` file kind, `fn` bodies and the `MZ09xx` codes, but only on the language's
-  `staging` branch (mzizi#80, 7 October 2026), not on `main`. Pages may say it is landing;
-  document it as a command once it is released to `main` and the tracker says so.
-  In the same post-release pass, move the `blob/staging` links in `rfcs.mdx` and `status.mdx`
-  (RFC-0013 and `design/LANGUAGE-SURVEY.md`) to `blob/main`.
+  commands, nor `mz run --agent` or `mz harness plugins`.** They are designed, not built. The
+  binary on `main` dispatches `check`, `fix`, `contract`, `outline`, `build` (a service or a
+  program) and `run` (a program), plus `hash`, `ir` and `harness` (`version`, `definition`,
+  `entry`). All are documented on the compiler page; programs on `programs.mdx`, the language
+  harness on `language-harness.mdx`. Released to `main` on 8 October 2026 (mzizi#91).
+- **Generate the `MZ09xx` table, do not hand-edit it.** The table on `compiler.mdx` is
+  `mz harness definition` at the commit it names. When the language adds or changes a program
+  code, regenerate it from the definition and move the commit.
+- **"The language harness", not "the harness".** RFC-0012 was renamed on 7 October 2026.
+  `benchmarks/harness/` is always "the benchmark harness". `charter.mdx` follows the charter's
+  own wording, which still says "the harness".
 - **Do not put a model name or identifier in a page.** Say "a frontier model" or "a ~7B
   open-weight model" and link the pilot write-up, which names them.
 

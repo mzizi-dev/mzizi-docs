@@ -1,6 +1,6 @@
 ---
 title: "Mzizi: a general-purpose programming language"
-description: "Built to make Rust better, the way TypeScript makes JavaScript better: no borrows, lifetimes or ownership in the language you write, with the harness at the core, the layer an agent reads. That is the goal Phase 0 measures, not a result. Its goal is to be used instead of TypeScript, Python and C++. It is a Phase 0 prototype, and the first two pilots showed no advantage."
+description: "Built to make Rust better, the way TypeScript makes JavaScript better: no borrows, lifetimes or ownership in the language you write, with the language harness as its spine, the layer an agent reads. That is the goal Phase 0 measures, not a result. Its goal is to be used instead of TypeScript, Python and C++. It is a Phase 0 prototype, and the first two pilots showed no advantage."
 sidebarTitle: "Overview"
 icon: "sprout"
 mode: "wide"
@@ -11,16 +11,19 @@ mode: "wide"
   goal, not a result. The language's front end exists in its toolchain and is tested: a lexer, a recovering parser, a name and type resolver, an
   agent diagnostic protocol, contract evaluation, a content-addressed IR and nine primitives
   written in Mzizi. A first backend slice is in: a `service` with HTTP routes and handlers,
-  which `mz build` lowers to a local Rust + axum package. No component lowers yet, and nothing
-  renders. **Mzizi has no expressions, bindings, callable functions, loops, error handling,
-  modules or standard library yet** ([what still has to be built](/tracker)). Two small pilots
+  which `mz build` lowers to a local Rust + axum package. A first [`program`](/programs) slice
+  is in too: functions, bindings, numbers, `match`, loops and results, which `mz run` lowers to
+  Rust, builds and runs. No component lowers yet, and nothing renders. **By the tracker's ✅
+  marks, Mzizi has no expressions, bindings, callable functions, loops, error handling, modules
+  or standard library yet**: a program has the first five in a narrow form, and their rows are
+  still 🟡 ([what still has to be built](/tracker)). Two small pilots
   of the benchmark ran on 2026-09-27, and **neither showed an advantage** ([results](/pilots)).
   The run that tests the kill criterion has not happened.
 </Note>
 
 **Built to make Rust better, the way TypeScript makes JavaScript better.** How: no borrows,
-lifetimes or ownership in the language you write ([RFC-0001](/rfcs) §1.8), with the harness
-at the core, the layer an agent reads. "Makes Rust better" is the goal Phase 0 measures, not
+lifetimes or ownership in the language you write ([RFC-0001](/rfcs) §1.8), with the
+[language harness](/language-harness) as its spine, the layer an agent reads. "Makes Rust better" is the goal Phase 0 measures, not
 a result.
 
 _Mzizi_ means **root**. **Mzizi is a programming language**, and these docs lead with it.
@@ -29,26 +32,28 @@ Its goal is to be the language people choose instead of TypeScript, Python and C
 **Rust is to Mzizi what JavaScript is to TypeScript: its platform.** Mzizi is designed to
 lower to Rust ([RFC-0001](/rfcs) §5), and Mzizi Roots is its component model, the way React
 is JavaScript's. The aim is that Mzizi does Rust better: you write Mzizi instead of
-TypeScript, Python or C++, and get Rust underneath. Today only a `service` lowers, to a
-local Rust + axum package, so that is the goal Phase 0 is measured on, not something Mzizi
+TypeScript, Python or C++, and get Rust underneath. Today a `service` lowers, to a local
+Rust + axum package, and a `program` in RFC-0013's first slice, to a dependency-free Rust
+package; no component does. So that is the goal Phase 0 is measured on, not something Mzizi
 does today.
 
 **What is which:**
 
 - **The language** is its syntax, type system, semantics, and contracts as a language
   feature.
-- **The harness** is the core of Mzizi: the layer an agent reads and works through. It covers
-  the language as an agent sees it (grammar, types, contracts, canonical form), the agent
-  protocol (`mz check --agent`, its diagnostics and fixes; RFC-0001 §4), and the plugin
-  host that the toolchain, the CLI, the MCP server and plugins attach to natively. Part of
-  it exists today, in the toolchain, as `mz check --agent`'s output. The harness as a whole
-  is designed, not built: its design is [RFC-0012](/rfcs), a draft. It lives in the language
+- **[The language harness](/language-harness)** is the spine of the language: every feature
+  registered once, as an entry inside the compiler, and what an agent reads. It covers the
+  language as an agent sees it (`mz harness definition`), the agent protocol
+  (`mz check --agent`, its diagnostics and fixes; RFC-0001 §4), and a plugin host that the
+  toolchain, the CLI, the MCP server and plugins are meant to attach to. A first slice exists:
+  entries for every program feature and its codes, served by `mz harness`. The plugin host and
+  the generated skills are design only ([RFC-0012](/rfcs), a draft). It lives in the language
   repository, `mzizi-dev/mzizi`, and the agent-tools packages (the CLI, the MCP server,
   `fundi`) are its clients.
 - **The toolchain** is built to support it: the `mz` compiler that implements it (with its
   IR, its diagnostic protocol, `mz fix` and `mz contract`), the CLI, the MCP server, the
-  skills and the Phase 0 benchmark harness (`benchmarks/harness/`, not the harness above).
-  They are meant to attach to the harness. The compiler is not the language.
+  skills and the Phase 0 benchmark harness (`benchmarks/harness/`, not the language harness).
+  They are meant to attach to the language harness. The compiler is not the language.
 - **The components** are built to support it too: Mzizi Roots and the registry, the
   language's UI layer and where its output is meant to land.
 
@@ -115,9 +120,9 @@ goal. See [the benchmark](/benchmark) for every arm and its state.
   React arms for UI components and the `mzizi-be` arm for the backend; only the Dioxus arm has
   ever run, and the other-language backend arms are not added yet.
 - **Next: M1, a language that computes.** Every Tier 1 row of the tracker, built in waves
-  under [mzizi#69](https://github.com/mzizi-dev/mzizi/issues/69). The design (RFC-0013) and a
-  first slice are on the language's `staging` branch, not yet on `main`; see
-  [M1: the plan](/roadmap#m1-the-plan).
+  under [mzizi#69](https://github.com/mzizi-dev/mzizi/issues/69). The design (RFC-0013) and
+  its first waves are on `main` since 8 October 2026 ([Programs](/programs)); text operations,
+  collections and records are still to build. See [M1: the plan](/roadmap#m1-the-plan).
 - **A higher bar.** The kill criterion is now Mzizi against the best existing language for
   each kind of task, aiming to rank with the top languages. It has not been measured.
 - **Every result published.** Every benchmark run lands in
@@ -141,13 +146,21 @@ goal. See [the benchmark](/benchmark) for every arm and its state.
     Nine named failure modes an agent hits writing Rust UI code, and the syntax decision
     that answers each one.
   </Card>
+  <Card title="Programs" icon="play" href="/programs">
+    A `program` file with functions, numbers, `match`, loops and results, which `mz run`
+    lowers to Rust, builds and runs.
+  </Card>
+  <Card title="The language harness" icon="spline" href="/language-harness">
+    Every feature registered once and served to agents by `mz harness`: what is enforced,
+    and what is written by hand.
+  </Card>
   <Card title="The nine primitives" icon="layers" href="/primitives">
     Real `.mz` source with real contracts, gated in CI, and why primitives are copied files
     and not crates.
   </Card>
   <Card title="The compiler" icon="terminal" href="/compiler">
     The toolchain's compiler, which implements the language: `mz check --agent`, `mz fix`,
-    `mz contract`, `mz outline` and `mz build` (a service only), and the NDJSON protocol
+    `mz contract`, `mz outline`, `mz build`, `mz run` and `mz harness`, and the NDJSON protocol
     written for a reader holding zero file context.
   </Card>
   <Card title="The IR" icon="git-branch" href="/ir">
