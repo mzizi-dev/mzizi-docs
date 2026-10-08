@@ -37,9 +37,9 @@ cargo run --bin mz -- run      ../examples/fib.mz                   # a program:
 cargo run --bin mz -- harness  definition                           # the language as an agent reads it
 ```
 
-Run `cargo test --workspace` from the repository root for the whole suite: 744 tests in 27
-suites at `4d0cdc3`, 613 of them in the compiler crate and the rest in the benchmark harness,
-runner and probe crate. `compiler/src` is 33,138 lines. All 744 pass there, and the eight
+Run `cargo test --workspace` from the repository root for the whole suite: 760 tests in 27
+suites at `1d5e578`, 629 of them in the compiler crate and the rest in the benchmark harness,
+runner and probe crate. `compiler/src` is 33,438 lines. All 760 pass there, and the eight
 example programs run through `mz run` against their `.expected` files.
 
 ## The commands
@@ -208,10 +208,12 @@ and reuses 27 shared codes (`MZ0101`–`MZ0106`, `MZ0204`–`MZ0208`, `MZ0301`�
 language harness in the second release of 8 October 2026 (mzizi#96), which moved them off the
 pending list. `MZ0960`, `MZ0961`, `MZ0963` and `MZ0964` are new in the third release of
 8 October 2026 (mzizi#99, collections). No component or service diagnostic changed when programs
-landed.
+landed. The fourth release, tagged `v0.8.0`, adds no code: `MZ0915` also reports a literal empty
+`split` separator, `MZ0919` no longer lists text's methods, which are built, and `MZ0962` reports
+`int(s)` and `float(s)` on text with a guess to `parse_int` and `parse_float`.
 
 **This table is generated from the [language harness](/language-harness), not written by
-hand:** it is `mz harness definition` at language `main` `4d0cdc3` (tagged `v0.7.0`), each `MZ09xx` entry's severity,
+hand:** it is `mz harness definition` at language `main` `1d5e578` (tagged `v0.8.0`), each `MZ09xx` entry's severity,
 the tool that reports it, its `say` text and the fix kinds it is recorded as raising. "Or none"
 means some reports of that code carry no fix. The `say` text is the entry's own, which the
 harness writes by hand and does not compare with the checker; `mz harness entry <code>` prints
@@ -234,11 +236,11 @@ and `MZ0992` are printed by the running program on standard error.
 | `MZ0912` | error    | `mz check` | operands of the wrong type: `int` with `float` (exact on an `int` literal), `+` on text (fix to interpolation), unlike types compared, `not` or `-` on the wrong type, `in` on another type than the collection holds, `otherwise` on a non-option, `is none` on a non-collection                                  | `exact`, `guess`, or none |
 | `MZ0913` | error    | `mz check` | `and` mixed with `or` without parentheses (the exact fix writes the parentheses the precedence implies), or a chained comparison `a < b < c` (guess: split it with `and`)                                                                                                                                          | `exact`, `guess`          |
 | `MZ0914` | error    | `mz check` | a malformed number: `1.` or `.5` (exact: add the `0`), `1_000` (exact `1000`), `0x10`, `1e3`, or a float literal too large for a `float`                                                                                                                                                                           | `exact`, or none          |
-| `MZ0915` | error    | `mz check` | a fault visible in constants: division or remainder by a literal `0`, a literal negative `int` exponent or `repeat` count, a constant computation (including `pow` and `abs`) that overflows an `int`, or a literal negative index (guess `xs[xs.length() - 1]`)                                                   | `guess`, or none          |
+| `MZ0915` | error    | `mz check` | a fault visible in constants: division by a literal `0`, a literal negative `int` exponent or `repeat` count, a constant `int` overflow, a literal negative index (guess `xs[xs.length() - 1]`), or a literal empty `split` separator (guess `s.chars()`)                                                          | `guess`, or none          |
 | `MZ0916` | error    | `mz check` | an expression statement whose value nothing reads                                                                                                                                                                                                                                                                  | None                      |
 | `MZ0917` | error    | `mz check` | a line a function body cannot read: a value expected and something else found, a missing `)`, an unknown escape, a second `else`, a Rust macro, or tokens left over                                                                                                                                                | None                      |
 | `MZ0918` | error    | `mz check` | `+=`, `-=`, `*=`, `/=`, `++` or `--`; the exact fix writes `x = x + 1`. On `xs[i]`, an option, the fix is a guess, `xs[i] = (xs[i] otherwise 0) + 1`, and there is none when no default can be guessed                                                                                                             | `exact`, `guess`, or none |
-| `MZ0919` | error    | `mz check` | not built yet (RFC-0013), reported once: `option(T)` as a type, `none` as a value, narrowing an option; indexing text and text's `slice`, `find`, `parse_int`, `parse_float`, `split`, `chars`; a method that changes `self`; a record that holds itself; a `use` line; a `test` block; a `contract` block         | None                      |
+| `MZ0919` | error    | `mz check` | not built yet (RFC-0013), reported once: `option(T)` as a type, `none` as a value, narrowing an option; a method that changes `self`; a record that holds itself; a `use` line; a `test` block; a `contract` block                                                                                                 | None                      |
 | `MZ0920` | error    | `mz check` | a name used before its binding, or after its block ended; the guess declares a `var` before the block                                                                                                                                                                                                              | `guess`, or none          |
 | `MZ0921` | error    | `mz check` | a name a program reserves: a word of the language, a built-in name, a name starting with `mz_`, a binding named like a function, an enum or a variant, a `fn` named like a variant, or a name already bound in the function (no shadowing)                                                                         | `guess`, or none          |
 | `MZ0922` | error    | `mz check` | assignment to a `let` (exact fix `var`), to a parameter, to a method's `self` (a method cannot reassign its receiver: it returns `self with (…)`), or to a `for each` binding                                                                                                                                      | `exact`, or none          |
@@ -262,7 +264,7 @@ and `MZ0992` are printed by the running program on standard error.
 | `MZ0954` | error    | `mz check` | `return try r` with `r` of the function's own result type, which unwraps only to wrap again; the exact fix deletes `try`                                                                                                                                                                                           | `exact`                   |
 | `MZ0960` | error    | `mz check` | a mutation (`push`, `insert`, `remove`, `xs[i] = v`) of something that is not a `var`: a `let` (exact fix `var`), a parameter, a loop binding, or a value no name holds                                                                                                                                            | `exact`, or none          |
 | `MZ0961` | error    | `mz check` | a bracket literal that cannot be typed: `[]` with nothing to say what it holds, elements of different types, `key: value` entries mixed with elements, or a map key written twice                                                                                                                                  | None                      |
-| `MZ0962` | error    | `mz check` | an operation spelt another way: `str(x)`, `abs(x)`, `len(x)`, `s.strip()`, `is_empty()`, a method without `()`; on a list `.size()`, `.append`, `.contains`, `.get(i)`, `is []`, `find`, `some`, `every`, `sorted`, `.reduce`; `t in s` on text; a guess where meanings differ                                     | `exact`, `guess`, or none |
+| `MZ0962` | error    | `mz check` | an operation spelt another way: `str(x)`, `len(x)`, `s.strip()`, a method without `()`; `int(s)` and `float(s)` on text (guess `s.parse_int()`); on a list `.size()`, `.append`, `.get(i)`, `is []`, `find`, `sorted`; `t in s` on text (`exact` `s.contains(t)`); a guess where meanings differ                   | `exact`, `guess`, or none |
 | `MZ0963` | error    | `mz check` | a tuple, `(a, b)`: Mzizi has none, and two values that travel together are a record with named fields, which only the author can name                                                                                                                                                                              | None                      |
 | `MZ0964` | error    | `mz check` | a map key, set element or `sort_by` / `group_by` key whose type has no order: a `float`, a collection, an option                                                                                                                                                                                                   | None                      |
 | `MZ0970` | error    | `mz check` | `self` where it is not a method's receiver: as a parameter (`fn norm(self)`, delete it), or read outside a method. A method's receiver is written `self` and never declared, and a method's name cannot be a field's                                                                                               | None                      |

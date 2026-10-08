@@ -49,14 +49,14 @@ designs the backend slice, and most of it is built. See [the RFC index](/rfcs).
 
 The language's own list is
 [`LANGUAGE-TRACKER.md`](https://github.com/mzizi-dev/mzizi/blob/main/LANGUAGE-TRACKER.md),
-summarised on [What still has to be built](/tracker). Mzizi has no modules or standard library
-yet, and its text operations are partial. A [program](/programs) has expressions, bindings,
-functions, control flow, numbers, results, lists, maps, sets and records with methods, in a narrow
-form, and those rows are ✅ (C7 and C8 since the third release of 8 October 2026).
+summarised on [What still has to be built](/tracker). Mzizi has no modules, standard library or
+concurrency yet. A [program](/programs) has expressions, bindings, functions, control flow,
+numbers, results, text, lists, maps, sets and records with methods, in a narrow form, and every
+Tier 1 row is ✅ (C6 since the fourth release of 8 October 2026, C7 and C8 since the third).
 Its milestones are
 **M1, a language that computes** (all of Tier 1) and **M2, a working programming language**
 (Tier 1 plus modules, a standard library, lowering all code to Rust, a runnable build, errors
-mapped back to `.mz` and Rust crate interop). Neither is reached.
+mapped back to `.mz` and Rust crate interop). M1 is met on `main`; M2 is not reached.
 
 ## M1: the plan
 
@@ -64,8 +64,9 @@ Issue [mzizi#69](https://github.com/mzizi-dev/mzizi/issues/69) tracks M1: every 
 (C1–C10) ✅ on `main`, tested in CI. The owner approved the plan on 7 October 2026. Its first
 waves were released to `main` on 8 October 2026 ([mzizi#91](https://github.com/mzizi-dev/mzizi/pull/91),
 and [mzizi#96](https://github.com/mzizi-dev/mzizi/pull/96)), and the third on 8 October 2026
-([mzizi#104](https://github.com/mzizi-dev/mzizi/pull/104)). C1–C5 and C7–C10 are ✅ in the
-tracker; C6 is 🟡, so M1 is not reached.
+([mzizi#104](https://github.com/mzizi-dev/mzizi/pull/104)), and the fourth on 8 October 2026
+([mzizi#109](https://github.com/mzizi-dev/mzizi/pull/109), tagged `v0.8.0`). Every row C1–C10 is ✅
+in the tracker, so M1 is met on `main`.
 [Status](/status#released-to-main-on-8-october-2026) lists what the release carried.
 
 ### The owner's decisions, 7 October 2026
@@ -102,7 +103,7 @@ Agents never merge; the owner reviews and merges.
 | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 0 (serial)    | RFC-0013, the design. Then a foundation slice: a `program` file kind with functions, bindings, `int` and `bool` arithmetic and comparison, calls, recursion, printing, lowering to Rust and a command that runs the program                     | **On `main`.** RFC-0013 ([#76](https://github.com/mzizi-dev/mzizi/pull/76)), the slice ([#80](https://github.com/mzizi-dev/mzizi/pull/80)) and RFC-0013's amendments ([#81](https://github.com/mzizi-dev/mzizi/pull/81)), released on 8 October 2026                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | 1 (parallel)  | Floats, numeric semantics and text interpolation (C1, C5); `when` and `match` as expressions, exhaustive `match`, loops and early return (C4); a result type and propagation (C9); maps and collection operations (C7); methods on records (C8) | **On `main`.** Floats and the rest of C1 and C5 ([#83](https://github.com/mzizi-dev/mzizi/pull/83)), control flow, C4 ([#89](https://github.com/mzizi-dev/mzizi/pull/89)), and error results, C9 ([#87](https://github.com/mzizi-dev/mzizi/pull/87)), released on 8 October 2026; their tracker rows are ✅ since [#96](https://github.com/mzizi-dev/mzizi/pull/96). Maps, sets and lists (C7, [#99](https://github.com/mzizi-dev/mzizi/pull/99)) and records with methods (C8, [#101](https://github.com/mzizi-dev/mzizi/pull/101) and [#102](https://github.com/mzizi-dev/mzizi/pull/102)) are on `main` since [#104](https://github.com/mzizi-dev/mzizi/pull/104), with their rows ✅ |
-| 2             | Text operations (C6), `mz test` (T4), and whatever Tier 1 has left                                                                                                                                                                              | **Partly on `main`.** The text methods (C6, [#98](https://github.com/mzizi-dev/mzizi/pull/98)) are in; the methods that return an option or a list, and `mz test` (T4), are not started. C6 waits on P2 and RFC-0013 §20 Q20                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| 2             | Text operations (C6), `mz test` (T4), and whatever Tier 1 has left                                                                                                                                                                              | **On `main`.** The text methods (C6, [#98](https://github.com/mzizi-dev/mzizi/pull/98)) came in the third release and the rest of C6 ([#106](https://github.com/mzizi-dev/mzizi/pull/106)) in the fourth, tagged `v0.8.0`, so C6 is ✅. The owner decided RFC-0013 §20 Q20 on 8 October 2026: built-in methods with tests meet C6. `mz test` (T4) is not started                                                                                                                                                                                                                                                                                                                         |
 | 3 (toward M2) | Modules (P1), the start of a standard library (P2), errors mapped back to `.mz` (P5), and Rust crate interop (P6)                                                                                                                               | Not started                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 
 Every pull request in a wave meets its tracker row's "done when" test, updates that row, adds a

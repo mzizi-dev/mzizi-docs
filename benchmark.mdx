@@ -41,7 +41,7 @@ gateway, and every fact is checked at the HTTP boundary, so no language's syntax
 
 What Mzizi is measured against, from RFC-0009 §1, with each arm's state as
 [`benchmarks/arms/`](https://github.com/mzizi-dev/mzizi/tree/main/benchmarks/arms) holds it at
-language `main` `4d0cdc3`. The benchmark's design, not a result: nothing has been measured
+language `main` `1d5e578`. The benchmark's design, not a result: nothing has been measured
 against TypeScript, Python, Go, C++ or a Rust backend.
 
 | Arm        | Family  | Language and framework                              | State                                                                                                    |
@@ -59,9 +59,8 @@ against TypeScript, Python, Go, C++ or a Rust backend.
 
 Task B1's reference implementations, one in Mzizi and one in plain axum, both hold all 59 of
 its facts; a reference is not an arm. The public suites (MultiPL-E, EvalPlus, Aider polyglot,
-BaxBench) are blocked: functions, loops, results, collections and records run in a
-[`program`](/programs), but the text operations are partial (C6) and the standard library (P2) is
-not built ([what still has to be built](/tracker)). The
+BaxBench) are blocked: functions, loops, results, collections, records and text run in a
+[`program`](/programs), but the standard library (P2) is not built ([what still has to be built](/tracker)). The
 performance suite in `benchmarks/perf/` is not an arm and not a result: CI checks only that its
 programs' outputs agree with hand-written Rust, and no timing is committed
 ([Status](/status#the-performance-suite-is-not-a-result)).
@@ -150,10 +149,9 @@ does not exist yet (see below), so every run so far has used public tasks.
   scores backend episodes with probes, the `backend` family cannot run.
 </Note>
 
-A separate **performance suite** is in progress: Mzizi programs timed against hand-written
+A separate **performance suite** is on `main`: Mzizi programs timed against hand-written
 Rust (owner decision, 7 October 2026, [mzizi#69](https://github.com/mzizi-dev/mzizi/issues/69)),
-built in an open pull request, [mzizi#85](https://github.com/mzizi-dev/mzizi/pull/85). It is not
-this benchmark and it does not test the kill criterion. One run's timings, on one machine, are
+merged as [mzizi#85](https://github.com/mzizi-dev/mzizi/pull/85). It is not this benchmark and it does not test the kill criterion. One run's timings, on one machine, are
 in that pull request's description, not in the repository. See
 [M1: the plan](/roadmap#m1-the-plan).
 
