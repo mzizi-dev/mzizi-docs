@@ -10,7 +10,7 @@ icon: "list-checks"
   library yet, and its text operations are partial. A [`program`](/programs) has expressions,
   bindings, functions, control flow, numbers, results, lists, maps, sets and records with
   methods, in a narrow form. C1–C5 and C7–C10 are ✅ in the file as of the third release of
-  8 October 2026 (`4d0cdc3`, no tag yet when checked); C6 is 🟡. A `service` lowers to a local
+  8 October 2026 (`4d0cdc3`, tagged `v0.7.0`); C6 is 🟡. A `service` lowers to a local
   Rust + axum package and a program to a dependency-free Rust package; no component lowers, and
   there is no Workers, Containers or WebAssembly target.
 </Warning>
@@ -20,7 +20,7 @@ the root of `mzizi-dev/mzizi`, is the one list of what Mzizi still needs before 
 called a working programming language, stacked against the languages it aims to replace. By
 the owner's decision of 30 September 2026 it is the ultimate tracker: **if a capability is not
 ✅ there, Mzizi does not have it, whatever any other page says.** These docs take every
-capability claim from it. This page summarises it at language `main` `4d0cdc3` (the third release of 8 October 2026);
+capability claim from it. This page summarises it at language `main` `4d0cdc3` (the third release of 8 October 2026, tagged `v0.7.0`);
 read the file for the evidence behind each row.
 
 Status in the tracker is what the code on `main` does, never what an RFC designs:
@@ -183,7 +183,7 @@ Work toward M1 is tracked in [mzizi#69](https://github.com/mzizi-dev/mzizi/issue
 design, RFC-0013, and its Wave 0 and part of Wave 1 (C1, C4, C5, C9, with C2, C3 and C10 from
 Wave 0) were released to `main` on 8 October 2026 (mzizi#91, tagged `v0.5.0`). The second
 release of that day (mzizi#96, tagged `v0.6.0`) moved their rows to ✅ in the file. The third
-release (mzizi#104) carried collections (C7, mzizi#99), records with methods (C8, mzizi#101 and
+release (mzizi#104, tagged `v0.7.0`) carried collections (C7, mzizi#99), records with methods (C8, mzizi#101 and
 mzizi#102) and text methods (C6, mzizi#98), and made C7 and C8 ✅. C6 stays 🟡, so M1 is not
 reached. Still to build: the text methods that return an option or a list, which C7's options
 now make possible, the standard library (P2) that C6 waits on, and the follow-ups the RFC lists.
