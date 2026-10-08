@@ -1,16 +1,16 @@
 ---
 title: "What still has to be built"
-description: "A summary of LANGUAGE-TRACKER.md, the language's one tracker of what Mzizi still needs before it is a working programming language, against Python, Go, C++, TypeScript and Rust. Mzizi has no modules or standard library yet, and its text operations are partial."
+description: "A summary of LANGUAGE-TRACKER.md, the language's one tracker of what Mzizi still needs before it is a working programming language, against Python, Go, C++, TypeScript and Rust. Mzizi has no modules, standard library or concurrency yet, and every Tier 1 row is ✅."
 sidebarTitle: "What still has to be built"
 icon: "list-checks"
 ---
 
 <Warning>
-  **Mzizi is not yet a working programming language.** Mzizi has no modules or standard
-  library yet, and its text operations are partial. A [`program`](/programs) has expressions,
-  bindings, functions, control flow, numbers, results, lists, maps, sets and records with
-  methods, in a narrow form. C1–C5 and C7–C10 are ✅ in the file as of the third release of
-  8 October 2026 (`4d0cdc3`, tagged `v0.7.0`); C6 is 🟡. A `service` lowers to a local
+  **Mzizi is not yet a working programming language.** Mzizi has no modules, standard library
+  or concurrency yet. A [`program`](/programs) has expressions, bindings, functions, control
+  flow, numbers, results, text, lists, maps, sets and records with methods, in a narrow form.
+  C1–C10 are ✅ in the file as of the fourth release of 8 October 2026 (`1d5e578`, tagged
+  `v0.8.0`), so M1 is met; M2 is not reached. A `service` lowers to a local
   Rust + axum package and a program to a dependency-free Rust package; no component lowers, and
   there is no Workers, Containers or WebAssembly target.
 </Warning>
@@ -20,7 +20,7 @@ the root of `mzizi-dev/mzizi`, is the one list of what Mzizi still needs before 
 called a working programming language, stacked against the languages it aims to replace. By
 the owner's decision of 30 September 2026 it is the ultimate tracker: **if a capability is not
 ✅ there, Mzizi does not have it, whatever any other page says.** These docs take every
-capability claim from it. This page summarises it at language `main` `4d0cdc3` (the third release of 8 October 2026, tagged `v0.7.0`);
+capability claim from it. This page summarises it at language `main` `1d5e578` (the fourth release of 8 October 2026, tagged `v0.8.0`);
 read the file for the evidence behind each row.
 
 Status in the tracker is what the code on `main` does, never what an RFC designs:
@@ -59,14 +59,14 @@ invariants, `result(T, E)` with `error` and `try`, and `print`. `mz run` lowers 
 dependency-free Rust package, builds it and runs it, and CI runs eight example programs against
 their committed output. See [Programs](/programs).
 
-The tracker marks C1–C5 and C7–C10 ✅ as of the third release, and C6 is 🟡: its methods are on
-`main`, but the ones that return an option or a list are not built, and the row waits on the
-standard library (P2). P4 and H1 stay 🟡: a general program cannot be written yet, and the
-plugin host and the generated skills are not built.
+The tracker marks every Tier 1 row, C1–C10, ✅ as of the fourth release. C6 came last: its
+methods that return an option or a list reached `main` with that release. P4 and H1 stay 🟡: a
+general program cannot be written yet, and the plugin host and the generated skills are not
+built.
 
-What does not exist yet: the text methods that return an option or a list, `option(T)` written
-as a type, methods that change their record, generics, modules, a standard library, lowering for
-a component, and most of Tier 2 and Tier 3.
+What does not exist yet: `option(T)` written as a type and narrowing it, methods that change
+their record (`changes self`), records that hold themselves, generics, modules, a standard
+library, concurrency, lowering for a component, and most of Tier 2 and Tier 3.
 
 ## Against the languages Mzizi aims to replace
 
@@ -77,7 +77,7 @@ Mzizi's column from the tracker, condensed. The tracker also gives each incumben
 | ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Expressions, variables, functions, loops | 🟡 in a `program`: expressions, `let` / `var`, functions and recursion, `when`, `match`, `for each` over a list or a range, and `while`; no tuples |
 | Numbers                                  | 🟡 `int` and `float` in a `program`; no decimal                                                                                                    |
-| Text operations                          | 🟡 in a `program`: length, search, `trim`, case, `replace`, `repeat`; no slicing, splitting or parsing                                             |
+| Text operations                          | ✅ in a `program` (C6): length, slicing, search, split, parsing, trim, case, `replace`, `repeat`; no regular expressions or padding (P2)           |
 | Collections                              | ✅ in a `program` (C7): `list`, `option`, `map` and `set`, with their methods and folds; no tuples                                                 |
 | User types                               | 🟡 enums with data, records with methods and `always` invariants; no methods that change their record, payload enums, traits or generics           |
 | Error handling                           | 🟡 in a `program`: `result(T, E)`, `return error(e)`, `try`, `match` on a result; contracts check behaviour, they are not error handling           |
@@ -110,7 +110,7 @@ on `main` and green.
 | C3  | Functions: parameters, return types, calls, recursion                       | ✅     |
 | C4  | Control flow: `when`/`else` and `match` as expressions, loops, early return | ✅     |
 | C5  | Numbers: floats or decimals, overflow and division semantics                | ✅     |
-| C6  | Text operations: length, slicing, search, split, format                     | 🟡     |
+| C6  | Text operations: length, slicing, search, split, format                     | ✅     |
 | C7  | Collections: maps, sets, tuples; operations (map, filter, fold, index)      | ✅     |
 | C8  | User types: records and methods                                             | ✅     |
 | C9  | Error handling: a result type and propagation                               | ✅     |
@@ -166,13 +166,13 @@ prints them. The plugin host and the generated skills are design only
 Phase 0's goal cannot be tested beyond what the language can express
 ([the benchmark](/benchmark)):
 
-| Task family                                                                | Needs                 | Status                                                                                                                                                                                |
-| -------------------------------------------------------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| UI components against Dioxus, Leptos and React                             | What exists today     | Runnable now. Two pilots on 2026-09-27, against Dioxus only, showed no advantage                                                                                                      |
-| Backend handlers (B1 routing) against TypeScript, Python, Go, C++ and Rust | A `service`           | Not yet runnable: the runner does not score an episode with probes, and B2–B5 and the other-language arms do not exist. Nothing measured                                              |
-| Public suites (MultiPL-E, EvalPlus)                                        | C1–C10 and part of P2 | **Blocked: functions, floats, loops, `match`, results, collections and records run in a `program`; the text operations are partial (C6), and the standard library (P2) is not built** |
-| Aider polyglot, BaxBench                                                   | Tier 1, P1, P2, P8    | Blocked                                                                                                                                                                               |
-| Runtime performance against hand-written Rust (`benchmarks/perf/`)         | A `program` (C10, P4) | **Runnable; CI gates output agreement only.** Timings are per machine, not committed, and never a claim                                                                               |
+| Task family                                                                | Needs                 | Status                                                                                                                                                                                                            |
+| -------------------------------------------------------------------------- | --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| UI components against Dioxus, Leptos and React                             | What exists today     | Runnable now. Two pilots on 2026-09-27, against Dioxus only, showed no advantage                                                                                                                                  |
+| Backend handlers (B1 routing) against TypeScript, Python, Go, C++ and Rust | A `service`           | Not yet runnable: the runner does not score an episode with probes, and B2–B5 and the other-language arms do not exist. Nothing measured                                                                          |
+| Public suites (MultiPL-E, EvalPlus)                                        | C1–C10 and part of P2 | **Blocked: a standard library (P2) does not exist yet.** Functions, floats, loops, `match`, results, collections (C7), records (C8) and text (C6, slicing, search, split and parsing included) run in a `program` |
+| Aider polyglot, BaxBench                                                   | Tier 1, P1, P2, P8    | Blocked                                                                                                                                                                                                           |
+| Runtime performance against hand-written Rust (`benchmarks/perf/`)         | A `program` (C10, P4) | **Runnable; CI gates output agreement only.** Timings are per machine, not committed, and never a claim                                                                                                           |
 
 The kill-criterion run has not happened. Nothing in the tracker is a claim that Mzizi is
 better than any language; it lists what has to exist before that can be measured.
@@ -183,17 +183,20 @@ Work toward M1 is tracked in [mzizi#69](https://github.com/mzizi-dev/mzizi/issue
 design, RFC-0013, and its Wave 0 and part of Wave 1 (C1, C4, C5, C9, with C2, C3 and C10 from
 Wave 0) were released to `main` on 8 October 2026 (mzizi#91, tagged `v0.5.0`). The second
 release of that day (mzizi#96, tagged `v0.6.0`) moved their rows to ✅ in the file. The third
-release (mzizi#104, tagged `v0.7.0`) carried collections (C7, mzizi#99), records with methods (C8, mzizi#101 and
-mzizi#102) and text methods (C6, mzizi#98), and made C7 and C8 ✅. C6 stays 🟡, so M1 is not
-reached. Still to build: the text methods that return an option or a list, which C7's options
-now make possible, the standard library (P2) that C6 waits on, and the follow-ups the RFC lists.
+release (mzizi#104, tagged `v0.7.0`) carried collections (C7, mzizi#99), records with methods (C8,
+mzizi#101 and mzizi#102) and the first text methods (C6, mzizi#98), and made C7 and C8 ✅. The
+fourth release (mzizi#109, tagged `v0.8.0`) carried the rest of the text operations (C6,
+mzizi#106) and made C6 ✅, so every Tier 1 row is ✅ on `main` and M1 is met. Still to build:
+modules (P1) and the standard library (P2), which the public suites wait on, and the follow-ups
+the RFC lists.
 See [Status](/status#released-to-main-on-8-october-2026) and [the M1 plan](/roadmap#m1-the-plan).
 
 ## Milestones
 
 <Steps>
   <Step title="M1, a language that computes">
-    All of Tier 1 ✅. This unblocks the public suites. Not reached.
+    All of Tier 1 ✅, met on `main` by the fourth release of 8 October 2026 (every row C1–C10).
+    The public suites also wait on the standard library (P2).
   </Step>
   <Step title="M2, a working programming language">
     Tier 1 plus P1–P6 ✅: you can write a general program in several files, use a Rust crate,
