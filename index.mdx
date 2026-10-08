@@ -13,9 +13,9 @@ mode: "wide"
   written in Mzizi. A first backend slice is in: a `service` with HTTP routes and handlers,
   which `mz build` lowers to a local Rust + axum package. A [`program`](/programs) slice is in
   too: functions, bindings, numbers, `match`, loops, results, collections, records with methods
-  and text methods, which `mz run` lowers to Rust, builds and runs. No component lowers yet, and nothing renders. **Mzizi has no modules
-  or standard library yet, and its text operations are partial**: a program has expressions,
-  bindings, functions, control flow, numbers, results, lists, maps, sets and records with methods,
+  and text methods, which `mz run` lowers to Rust, builds and runs. No component lowers yet, and nothing renders. **Mzizi has no modules,
+  standard library or concurrency yet**: a program has expressions,
+  bindings, functions, control flow, numbers, results, text, lists, maps, sets and records with methods,
   in a narrow form, and those rows are ✅ ([what still has to be built](/tracker)). Two small pilots
   of the benchmark ran on 2026-09-27, and **neither showed an advantage** ([results](/pilots)).
   The run that tests the kill criterion has not happened.
@@ -119,10 +119,12 @@ goal. See [the benchmark](/benchmark) for every arm and its state.
   TypeScript, Python, Go, C++ and Rust on backend tasks. Today it has Dioxus, Leptos and
   React arms for UI components and the `mzizi-be` arm for the backend; only the Dioxus arm has
   ever run, and the other-language backend arms are not added yet.
-- **Next: M1, a language that computes.** Every Tier 1 row of the tracker, built in waves
-  under [mzizi#69](https://github.com/mzizi-dev/mzizi/issues/69). The design (RFC-0013) and
-  its first waves are on `main` since 8 October 2026 ([Programs](/programs)). Collections and
-  records are built; text operations are partial, and the standard library is not started. See [M1: the plan](/roadmap#m1-the-plan).
+- **M1, a language that computes, is met on `main`.** Every Tier 1 row of the tracker is ✅ since
+  the fourth release of 8 October 2026, built in waves under
+  [mzizi#69](https://github.com/mzizi-dev/mzizi/issues/69). The design (RFC-0013) and its waves
+  are on `main` since 8 October 2026 ([Programs](/programs)). Collections, records and text
+  operations are built. Modules and the standard library are not started, and they come next,
+  toward M2. See [M1: the plan](/roadmap#m1-the-plan).
 - **A higher bar.** The kill criterion is now Mzizi against the best existing language for
   each kind of task, aiming to rank with the top languages. It has not been measured.
 - **Every result published.** Every benchmark run lands in

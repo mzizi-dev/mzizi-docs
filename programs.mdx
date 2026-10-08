@@ -1,25 +1,27 @@
 ---
 title: "Programs"
-description: "A program file: fn, let and var, when and match, for each and while, int, float, bool and text, enums with columns, result and try, lists, maps and sets, records with methods, text methods, and print. mz run lowers it to a dependency-free Rust package, builds it and runs it. RFC-0013's slice on the language's main branch since 8 October 2026: numbers, control flow, errors, collections, records and most text methods."
+description: "A program file: fn, let and var, when and match, for each and while, int, float, bool and text, enums with columns, result and try, lists, maps and sets, records with methods, text methods, and print. mz run lowers it to a dependency-free Rust package, builds it and runs it. RFC-0013's slice on the language's main branch since 8 October 2026: numbers, control flow, errors, collections, records and text methods."
 icon: "play"
 ---
 
 <Info>
   Everything on this page is **built and tested**: cross-checked against the language's
   `compiler/src`, `mz harness definition`, and the example programs CI runs through `mz run`
-  with their output compared, at language `main` `4d0cdc3`, the third release of 8 October 2026,
-  tagged `v0.7.0`
-  ([mzizi#104](https://github.com/mzizi-dev/mzizi/pull/104), which carries collections and
-  records from [mzizi#99](https://github.com/mzizi-dev/mzizi/pull/99),
+  with their output compared, at language `main` `1d5e578`, the fourth release of 8 October 2026,
+  tagged `v0.8.0` ([mzizi#109](https://github.com/mzizi-dev/mzizi/pull/109), which carries the
+  rest of the text operations from [mzizi#106](https://github.com/mzizi-dev/mzizi/pull/106)).
+  The third release of that day ([mzizi#104](https://github.com/mzizi-dev/mzizi/pull/104), tagged
+  `v0.7.0`) carried collections and records from
+  [mzizi#99](https://github.com/mzizi-dev/mzizi/pull/99),
   [mzizi#101](https://github.com/mzizi-dev/mzizi/pull/101) and
-  [mzizi#102](https://github.com/mzizi-dev/mzizi/pull/102), and text methods from
-  [mzizi#98](https://github.com/mzizi-dev/mzizi/pull/98)). The first release of that day ([mzizi#91](https://github.com/mzizi-dev/mzizi/pull/91))
-  brought the functions, numbers, control flow and errors. It is a slice of
+  [mzizi#102](https://github.com/mzizi-dev/mzizi/pull/102), and the first text methods from
+  [mzizi#98](https://github.com/mzizi-dev/mzizi/pull/98). The first release of that day
+  ([mzizi#91](https://github.com/mzizi-dev/mzizi/pull/91)) brought the functions, numbers,
+  control flow and errors. It is a slice of
   [RFC-0013](https://github.com/mzizi-dev/mzizi/blob/main/design/RFC-0013-core-language.md),
   not all of it: the rest of the RFC is design, and [what is not built](#what-is-not-built)
-  lists it. The tracker rows these features belong to are C1–C5 and C7–C10, ✅ in the file. C6
-  (text operations) is 🟡: it stays so until the standard library (P2) and the owner's decision on
-  RFC-0013 §20 Q20 ([what still has to be built](/tracker)).
+  lists it. The tracker rows these features belong to are C1–C10, every one ✅ in the file, so
+  M1 is met on `main` ([what still has to be built](/tracker)).
 </Info>
 
 A **program** is a Mzizi file that runs. Its first line is `program <name>` and its last is
@@ -386,16 +388,28 @@ binary operators at most 64. Past the cap is one `MZ0411` per file, not a stack 
 
 Text values have methods, written after the value as the numeric ones are. No method changes
 the text it is called on: each returns a new value, so `city.trim()` leaves `city` as it was.
+Lengths, indices and slices count Unicode scalar values, so an index never lands inside a
+character, and there is no `char` type: one character is a `text` of length 1. A method that
+may find nothing returns an `option`, read with `otherwise` as the collections are.
 
-| Method                               | Returns | What it does                                                                         |
-| ------------------------------------ | ------- | ------------------------------------------------------------------------------------ |
-| `s.length()`                         | `int`   | Counts Unicode scalar values, not bytes: `"日本語".length()` is `3`                  |
-| `s.contains(t)`                      | `bool`  | Whether `t` occurs in `s`                                                            |
-| `s.starts_with(t)`, `s.ends_with(t)` | `bool`  | Whether `s` begins or ends with `t`                                                  |
-| `s.trim()`                           | `text`  | Removes Unicode whitespace from both ends                                            |
-| `s.to_upper()`, `s.to_lower()`       | `text`  | Full Unicode case mappings, so `"straße".to_upper()` is `"STRASSE"`                  |
-| `s.replace(old, by = new)`           | `text`  | Replaces every `old`. The `by` label is required: without it the call is `MZ0927`    |
-| `s.repeat(n)`                        | `text`  | `n` copies. A negative `n`, or a result too long to hold, traps (`MZ0991`, exit 101) |
+| Method                               | Returns         | What it does                                                                                                                     |
+| ------------------------------------ | --------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `s.length()`                         | `int`           | Counts Unicode scalar values, not bytes: `"日本語".length()` is `3`                                                              |
+| `s.contains(t)`                      | `bool`          | Whether `t` occurs in `s`                                                                                                        |
+| `s.starts_with(t)`, `s.ends_with(t)` | `bool`          | Whether `s` begins or ends with `t`                                                                                              |
+| `s.trim()`                           | `text`          | Removes Unicode whitespace from both ends                                                                                        |
+| `s.to_upper()`, `s.to_lower()`       | `text`          | Full Unicode case mappings, so `"straße".to_upper()` is `"STRASSE"`                                                              |
+| `s.replace(old, by = new)`           | `text`          | Replaces every `old`. The `by` label is required: without it the call is `MZ0927`                                                |
+| `s.repeat(n)`                        | `text`          | `n` copies. A negative `n`, or a result too long to hold, traps (`MZ0991`, exit 101)                                             |
+| `s[i]`                               | `option(text)`  | The one character at scalar-value index `i`; `none` when `i` is out of range or below 0                                          |
+| `s.slice(a, to = b)`                 | `option(text)`  | The scalar values from `a` up to, not including, `b`; `none` when an end is outside the text or `a` is past `b`                  |
+| `s.find(t)`                          | `option(int)`   | The scalar-value index of the first `t`, or `none`; `0` for `""`                                                                 |
+| `s.split(sep)`                       | `list(text)`    | The pieces between each `sep`. `sep` must not be empty: `s.split("")` is `MZ0915`, and an empty one at run time traps (`MZ0991`) |
+| `s.chars()`                          | `list(text)`    | One text per scalar value                                                                                                        |
+| `s.parse_int()`                      | `option(int)`   | An optional `-`, then ASCII digits that fit an `int`. `"0x10"`, `"1e2"`, `" 7 "` and `"1.5"` are `none`                          |
+| `s.parse_float()`                    | `option(float)` | An optional `-`, then digits, then a `.` only when a digit follows it. `"1."` and `".5"` are `none`; no exponent, `inf` or `nan` |
+
+`parse_int` uses RFC-0011 §4.2's rule on purpose, so a query parameter and a parsed string agree.
 
 `examples/text.mz`, verbatim, with the output it prints:
 
@@ -424,7 +438,32 @@ program text
     print(describe(""))
     print(describe(name))
     print("-".repeat(12))
+    let sentence = "héllo, 日本語"
+    print(sentence[1] otherwise "?")
+    print(sentence[9] otherwise "?")
+    print(sentence.slice(0, to = 5) otherwise "?")
+    print(sentence.find("日") otherwise -1)
+    print(first_word(sentence))
+    print(first_word("one two"))
+    for each c in sentence.chars()
+      print("[{c}]")
+    end
+    print(split_count("a,,b", ","))
+    print(split_count("", ","))
+    print("42".parse_int() otherwise 0)
+    print("-0x10".parse_int() otherwise 0)
+    print("1.5".parse_float() otherwise 0.0)
+    print("1.".parse_float() otherwise 0.0)
   end fn main
+
+  fn first_word(s: text): text
+    let stop = s.find(" ") otherwise s.length()
+    return s.slice(0, to = stop) otherwise s
+  end fn first_word
+
+  fn split_count(s: text, sep: text): int
+    return s.split(sep).length()
+  end fn split_count
 
   fn banner(word: text, width: int): text
     let edge = "=".repeat(width)
@@ -455,6 +494,28 @@ straße in upper case is STRASSE
 empty
 6 characters, ZÜRICH when shouted
 ------------
+é
+語
+héllo
+7
+héllo,
+one
+[h]
+[é]
+[l]
+[l]
+[o]
+[,]
+[ ]
+[日]
+[本]
+[語]
+3
+1
+42
+0
+1.5
+0.0
 ```
 
 - **Other languages' spellings are `MZ0962`, with fixes.** `len(s)` gets the `exact` fix
@@ -462,13 +523,17 @@ empty
   `s.length` get `s.length()` as a `guess`, because Rust's `len` counts bytes and JavaScript's
   `length` counts UTF-16 units. `strip()` gets `trim()` as a `guess`, because Python's `strip`
   also removes U+001C to U+001F. `upper()`, `toUpperCase()`, `startswith` and `replaceAll(a, b)`
-  get their Mzizi names as `exact` fixes.
+  get their Mzizi names as `exact` fixes. `int(s)`, `float(s)`, `parseInt(s)` and `parseFloat(s)`
+  on text get `s.parse_int()` and `s.parse_float()` as `guess`es, `indexOf` gets `find` and
+  `substring` gets `slice`, and `toCharArray()` gets `chars`.
+- **`t in s` is `MZ0962`, with an `exact` fix.** On text, `in` asks about a collection, so the
+  fix is `s.contains(t)`, as RFC-0013 §3.3 says.
 - **Emptiness is `s is ""`.** `s.is_empty()`, `s.length() is 0` and their relatives are one
   `MZ0962`, whose `exact` fix is `s is ""` or `s is not ""`.
-- **Not built.** The methods that return an option or a list, `s[i]`, `slice`, `find`,
-  `parse_int`, `parse_float`, `split` and `chars`, are `MZ0919`, each naming what it returns. `t in s` is `MZ0962`, whose `exact` fix is `s.contains(t)`. Whether the built-in
-  methods meet the tracker's "Done when" is the owner's decision (RFC-0013 §20 Q20), so C6 stays
-  🟡 until it is made.
+- **Not built.** Regular expressions, padding and number formatting. They are the standard
+  library's (P2), which is not started, and formatting is interpolation until then. The owner
+  decided on 8 October 2026 (RFC-0013 §20 Q20) that built-in methods with tests meet C6's "Done
+  when"; P2's `text` module documents the same operations once modules (P1) exist.
 
 ## Collections (C7)
 
@@ -620,7 +685,6 @@ function of two, and `group_by` returns a `map(K, list(T))`.
 
 - `option(T)` written as a type, `none` as a value, and narrowing an option with
   `when x is not none`: the "C4 options" follow-up (RFC-0013 §18.2).
-- Indexing text, `s[i]` (`MZ0919`), and the text methods that return an option or a list.
 - Tuples, which RFC-0013 §2 decided against.
 - Labels on these calls other than `range`'s `to`, `slice`'s `to` and `fold`'s `step`.
 
@@ -724,8 +788,6 @@ says the form is designed and not built; some, such as `via`, fall to generic co
 - Generics and interfaces, a separate row, P12, deferred past M1.
 - `option(T)` written as a type, `none` as a value, and narrowing an option with
   `when x is not none` (the "C4 options" follow-up, RFC-0013 §18.2).
-- The text methods that return an option or a list, `s[i]`, `slice`, `find`, `parse_int`,
-  `parse_float`, `split` and `chars`, and indexing text. Each is `MZ0919`.
 - A method that changes its record, `fn … changes self`, and a record that holds itself
   (`MZ0919`), and payload enums (RFC-0013 §11.5).
 - A decimal type.
