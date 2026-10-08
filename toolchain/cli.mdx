@@ -21,7 +21,7 @@ pnpm add -D @nyuchi/mzizi-cli
 
 The package is [`@nyuchi/mzizi-cli`](https://www.npmjs.com/package/@nyuchi/mzizi-cli). It
 installs two names for the same program, `mzizi` and `fundi`. The latest published version
-is `0.6.3`, read from npm on 30 September 2026. It needs Node 20 or later.
+is `0.7.0`, read from npm on 7 October 2026. It needs Node 20 or later.
 
 <Warning>
   **Use `0.6.1` or later, not `0.6.0`.** In `0.6.0` both binaries printed nothing and exited
@@ -31,10 +31,11 @@ is `0.6.3`, read from npm on 30 September 2026. It needs Node 20 or later.
 
 What changed since `0.6.1`:
 
-| Version | Change                                                                                                                                                                   |
-| ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `0.6.2` | The request the CLI makes to crates.io names the project's support address, `support@bundu.org`, in its `User-Agent`. Earlier versions sent a person's own address there |
-| `0.6.3` | Depends on `@nyuchi/mzizi-skills` `^0.8.0`, so the CLI bundles [the five current skills](/toolchain/skills) rather than the `0.7.x` set                                  |
+| Version | Change                                                                                                                                                                                                                |
+| ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `0.6.2` | The request the CLI makes to crates.io names the project's support address, `support@bundu.org`, in its `User-Agent`. Earlier versions sent a person's own address there                                              |
+| `0.6.3` | Depends on `@nyuchi/mzizi-skills` `^0.8.0`, so the CLI bundles [the five `0.8.x` skills](/toolchain/skills) rather than the `0.7.x` set                                                                               |
+| `0.7.0` | Adds `--target astro`, and infers it in an Astro project (see [the target](#mzizi-add-the-registry-installer)). Depends on `@nyuchi/mzizi-skills` `^0.11.0`, so the CLI bundles [all seven skills](/toolchain/skills) |
 
 ## Commands
 

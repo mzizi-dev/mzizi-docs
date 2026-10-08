@@ -118,7 +118,7 @@ flatter Mzizi.
 Pilot 2 lists the fixes to make before a run that tests the kill criterion.
 [`benchmarks/READINESS.md`](https://github.com/mzizi-dev/mzizi/blob/main/benchmarks/READINESS.md)
 audits every one of them: each item was checked by running it on `main` at `a9c928d`, then
-fixed where the fix was code. Those fixes are on `main` (checked at `6da2170`, 4 October
+fixed where the fix was code. Those fixes are on `main` (checked at `9a88e1d`, 7 October
 2026). The tables below follow its audit. Read `READINESS.md` itself for the commands and file paths.
 
 ### Pilot 2's list, in its order
@@ -168,11 +168,12 @@ the run possible; they are not a result. The gating task families are `ui-spec` 
 `backend` ([RFC-0009](https://github.com/mzizi-dev/mzizi/blob/main/design/RFC-0009-comparison-benchmark.md)
 §2), and Phase 0 passes only if both pass. What remains, in `READINESS.md`'s order:
 
-1. **The runner and its input. Built, except the React pins.** Every arm is read from
-   `arm.toml`, `ui-spec` hands the author a language-neutral `spec.md`, a `react` arm exists
+1. **The runner and its input. Built; the React pins followed on 7 October 2026.** Every
+   arm is read from `arm.toml`, `ui-spec` hands the author a language-neutral `spec.md`, a `react` arm exists
    (a strict `tsc` check in an offline sandbox), and the four UI guides are rebalanced to
-   within 5% of one token budget. Open: the React arm's pins are provisional until taken from
-   the registry's lockfile. Neither the React arm nor the Leptos arm has run end to end.
+   within 5% of one token budget. The React arm's pins now match the registry's lockfile
+   (`pnpm-lock.yaml` at `3afeb752`), version and integrity hash. Neither the React arm nor the
+   Leptos arm has run end to end.
 2. **Held-out tasks** for each gating family, in a private repository that does not exist
    yet. Who writes them is open: maintainers by hand, or another vendor's model with a
    person reviewing each task, and not drafted by the model family that wrote the RFCs. The

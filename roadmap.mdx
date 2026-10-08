@@ -23,7 +23,8 @@ icon: "compass"
   handlers, specified in RFC-0010. Today, contracts exist for components and services:
   `mz contract` evaluates a component's `contract` block against its own declarations
   (RFC-0006), and runs a service in process, testing each `ensure` over generated requests
-  (RFC-0011). Contracts for functions do not exist, because functions do not.
+  (RFC-0011). Contracts for functions do not exist: a [program](/programs)'s functions exist,
+  and its `contract` block is designed in RFC-0013, not built.
 - **A new kill criterion.** Mzizi against the best existing language for each kind of
   task, aiming to rank with the top languages, specified in RFC-0009 §6. Not measured yet.
 - **Results are always published**, whichever way they fall, in
@@ -48,11 +49,62 @@ designs the backend slice, and most of it is built. See [the RFC index](/rfcs).
 
 The language's own list is
 [`LANGUAGE-TRACKER.md`](https://github.com/mzizi-dev/mzizi/blob/main/LANGUAGE-TRACKER.md),
-summarised on [What still has to be built](/tracker). Mzizi has no expressions, bindings,
-callable functions, loops, error handling, modules or standard library yet. Its milestones are
+summarised on [What still has to be built](/tracker). By its ✅ marks, Mzizi has no
+expressions, bindings, callable functions, loops, error handling, modules or standard library
+yet; a [program](/programs) has the first five in a narrow form, and their rows are still 🟡.
+Its milestones are
 **M1, a language that computes** (all of Tier 1) and **M2, a working programming language**
 (Tier 1 plus modules, a standard library, lowering all code to Rust, a runnable build, errors
 mapped back to `.mz` and Rust crate interop). Neither is reached.
+
+## M1: the plan
+
+Issue [mzizi#69](https://github.com/mzizi-dev/mzizi/issues/69) tracks M1: every Tier 1 row
+(C1–C10) ✅ on `main`, tested in CI. The owner approved the plan on 7 October 2026. Its first
+waves were released to `main` on 8 October 2026 ([mzizi#91](https://github.com/mzizi-dev/mzizi/pull/91));
+no Tier 1 row is ✅ in the tracker yet, and M1 is not reached.
+[Status](/status#released-to-main-on-8-october-2026) lists what the release carried.
+
+### The owner's decisions, 7 October 2026
+
+Quoted from the issue: _"Tiers by rfc, compile to rust, methods for now, go ahead."_
+
+- **One RFC per tier.** Tier 1 is RFC-0013 ([mzizi#76](https://github.com/mzizi-dev/mzizi/pull/76),
+  a draft for review, on `main`). Tier 2 and Tier 3 each get their own RFC later.
+- **A program runs by compiling to Rust.** The lowered Rust is the source of truth.
+- **Methods on records now, generics later.** Generics are deferred past M1.
+- **Integer overflow stays checked in every build.** _"Keep the overflow checks and remove them
+  where the compiler can prove they are unnecessary …"_ A compiler pass is to remove a check only
+  where it proves the operation cannot overflow, visibly in the lowered Rust and tested. Not
+  built.
+- **A performance suite against hand-written Rust.** It is to live in the language repository,
+  with Mzizi programs and Rust references; CI is to gate correctness only, and timing runs and
+  their history are to live in the private `mzizi-benchmarks` repository, which consumes the
+  public one and never the reverse. The suite is on `main`
+  ([mzizi#85](https://github.com/mzizi-dev/mzizi/pull/85)): CI gates output agreement only, and
+  no timing is committed. No pass removes an overflow check yet. One run's timings, on one
+  machine, are in its description; see [Status](/status#the-performance-suite-is-not-a-result).
+- **Release notes from the changelog, and a changelog entry in every pull request.** Done
+  (mzizi#82, on `main`): each release to `main` publishes its `CHANGELOG.md` entries as release
+  notes, and a pre-commit hook applies the rule when you commit
+  ([mzizi#86](https://github.com/mzizi-dev/mzizi/pull/86)).
+  These docs have their own changelog rule (their `AGENTS.md`).
+
+### The waves
+
+Agents build the plan in waves, each pull request on its own branch, one per tracker row.
+Agents never merge; the owner reviews and merges.
+
+| Wave          | What it builds                                                                                                                                                                                                                                  | State                                                                                                                                                                                                                                                                                                                                                                                              |
+| ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 0 (serial)    | RFC-0013, the design. Then a foundation slice: a `program` file kind with functions, bindings, `int` and `bool` arithmetic and comparison, calls, recursion, printing, lowering to Rust and a command that runs the program                     | **On `main`.** RFC-0013 ([#76](https://github.com/mzizi-dev/mzizi/pull/76)), the slice ([#80](https://github.com/mzizi-dev/mzizi/pull/80)) and RFC-0013's amendments ([#81](https://github.com/mzizi-dev/mzizi/pull/81)), released on 8 October 2026                                                                                                                                               |
+| 1 (parallel)  | Floats, numeric semantics and text interpolation (C1, C5); `when` and `match` as expressions, exhaustive `match`, loops and early return (C4); a result type and propagation (C9); maps and collection operations (C7); methods on records (C8) | **Partly on `main`.** Floats and the rest of C1 and C5 ([#83](https://github.com/mzizi-dev/mzizi/pull/83)), control flow, C4 ([#89](https://github.com/mzizi-dev/mzizi/pull/89)), and error results, C9 ([#87](https://github.com/mzizi-dev/mzizi/pull/87)), released on 8 October 2026; their tracker rows are still 🟡. Maps and collections (C7) and records with methods (C8) have not started |
+| 2             | Text operations (C6), `mz test` (T4), and whatever Tier 1 has left                                                                                                                                                                              | Not started                                                                                                                                                                                                                                                                                                                                                                                        |
+| 3 (toward M2) | Modules (P1), the start of a standard library (P2), errors mapped back to `.mz` (P5), and Rust crate interop (P6)                                                                                                                               | Not started                                                                                                                                                                                                                                                                                                                                                                                        |
+
+Every pull request in a wave meets its tracker row's "done when" test, updates that row, adds a
+changelog entry and an `examples/*.mz` program, gives each new construct diagnostic codes, and
+claims no measured result.
 
 ## How that fits the charter
 
@@ -79,10 +131,10 @@ The second pilot listed the fixes to make before a run that tests the kill crite
 `benchmarks/READINESS.md` audits them, and most are now made: relative paths in the check
 output, diagnostics for React idioms, a height derived from its class, `mz fix`, and a
 larger public task set. The runner now reads `arm.toml` and a language-neutral `spec.md`,
-and has a React arm. Phase 0 is still not complete. The run waits on: the React arm's pins
-from the registry's lockfile, held-out tasks in a private repository, a pre-registered
-`PLAN.md`, first Leptos and React runs, and for the backend family, probe scoring in the
-runner, tasks B2–B5 and the other-language arms. See
+and has a React arm. The React arm's pins now come from the registry's lockfile. Phase 0 is
+still not complete. The run waits on: held-out tasks in a private repository, a
+pre-registered `PLAN.md`, first Leptos and React runs, and for the backend family, probe
+scoring in the runner, tasks B2–B5 and the other-language arms. See
 [what remains](/pilots#what-remains-before-the-run-counts).
 
 [RFC-0007](https://github.com/mzizi-dev/mzizi/blob/main/design/RFC-0007-gap-register.md) is

@@ -21,6 +21,161 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
+### Added — programs, `mz run` and the language harness, after the language's release of 8 October 2026
+
+The language released `staging` to `main` (mzizi#91, merged as `be88017`, whose tree is
+`staging` `6a96e41`). These pages now document what it carries as available on `main`. Checked
+by building `mz` at that tree: `cargo test` gives 512 tests in the compiler crate and 643 in the
+workspace, all passing; `compiler/src` is 26,811 lines.
+
+- **New page, `programs`** (Language tab): a `program` file with `fn`, `let` / `var` and
+  assignment, `when` / `else when`, `return` and `print`; `int`, `float`, `bool` and `text`
+  with the 11 numeric methods; `match`, `for each` over `range`, `while`, `break`, `continue`,
+  `when` and `match` as values, and enums with columns; `result(T, E)`, `error`, `try`, a
+  `match` on a result and `main` returning a result; and `mz run` with its exit statuses (0, 1,
+  2, 3, 101, 141 and 128 plus a signal). The example programs are quoted verbatim from the
+  language repository, with their `.expected` output. What RFC-0013 designs and the compiler does
+  not build is listed.
+- **New page, `language-harness`** (Language tab): RFC-0012 as amended, the spine of the
+  language; what an entry holds; `mz harness version`, `definition [--agent]` and `entry`; which
+  facts have one source, which are parallel copies held by tests, and which (`say` and teaching
+  text) are written by hand and not compared with the checker; and that its effect on the
+  benchmark is a hypothesis, not a result.
+- **`compiler`**: `mz run` and `mz harness` in the command table, with `mz run`'s exit-status
+  table; `mz build` lowers a program as well as a service; the `MZ09xx` range, with a table of
+  all 45 codes (severity, tool, `say` text, fix kinds) **generated from `mz harness definition`**,
+  not written by hand; a program's nesting cap of 32; the test counts (643 in 24 suites, 512 in
+  the compiler crate) and the line count. The `#mz-build-lower-a-service` anchor is now
+  `#mz-build-lower-a-service-or-a-program`.
+
+### Changed — the language pages, for the language's release of 8 October 2026
+
+- **"The harness" is now "the language harness"** on `index`, `rfcs`, `tracker` and
+  `toolchain/overview`, as RFC-0012 renamed it. `charter` keeps the charter's own wording.
+- **`status`**: checked at language `main` `be88017`; new rows for programs, numbers, control
+  flow, errors, `mz run`, the language harness and the performance suite. "Landing in the next
+  release" and "In progress toward M1" are replaced by "Released to `main` on 8 October 2026",
+  which lists what the release carried and says no pull request toward M1 is open. The
+  performance suite is stated as what it is: CI gates output agreement only, no timing is
+  committed, and the one recorded run is not a result.
+- **`tracker`** mirrors `LANGUAGE-TRACKER.md` as released at `be88017`: C1, C2, C9 and C10 move
+  from ❌ to 🟡, C6 and P5 to 📝, P10 to 🟡, and H1 and H2 use the new name. The file has not yet
+  marked C1–C5, C9 or C10 ✅, although each row says it turns ✅ on reaching `main`, so the page
+  keeps them 🟡 and says so. The benchmark table gains the performance-suite row.
+- **`rfcs`**: RFC-0013 gets its own section, and the "On `staging`" section is gone. The
+  RFC-0013 and `design/LANGUAGE-SURVEY.md` links move from `blob/staging` to `blob/main`.
+  RFC-0012's section describes the amendment and the first slice.
+- **`index`, `roadmap`, `syntax`, `benchmark`, `roots/overview`, `toolchain/overview`**: a
+  program lowers to Rust as well as a service; the M1 waves that landed are marked on `main`;
+  the honest status is unchanged: the kill criterion has not been run, and nothing here is a
+  measured result.
+- **`AGENTS.md`**: the `mz run` trap is retired now that it is on `main`, and two rules are
+  added: regenerate the `MZ09xx` table from the definition, and say "the language harness".
+
+### Changed — progress toward M1: what is shipped, what is on `staging` and what is in progress (2026-10-07)
+
+The owner asked for the docs to say where the language is. Checked against language `main` at
+`0653903` (`v0.4.0`), `staging` at `509bc2f` (`v0.4.6`) and the open pull requests, on
+7 October 2026.
+
+- **`status`: the facts move to `0653903`.** 437 tests in 19 suites (306 in the compiler crate),
+  counted with `cargo test --workspace` on that commit, and 12,916 lines in `compiler/src`. A
+  new row: blocks nest at most 64 deep, past which one `MZ0411`. The page says each release of
+  the repository to `main` is tagged, and that the compiler is still not published.
+- **Added to `status`: "Landing in the next release"**, what is on `staging` and not on `main`:
+  RFC-0013 (a draft for review, mzizi#76) and its amendments (#81), the foundation slice (#80),
+  the language survey, release notes from the changelog (#82) and `CLAUDE.md`. The slice is
+  named, not documented: these docs document it once it is on `main`. **And "In progress toward
+  M1"**, the open pull requests #83 (floats), #85 (the performance suite) and #84 (a pre-commit
+  hook). No tracker mark changes. The page reports the timings that exist as they fell, from
+  one 4-core virtual machine and not as results: an informal `fib(40)` on mzizi#69, and one run
+  of #85's suite, in which Mzizi's lowered programs took 1.43× to 5.67× the time of Rust's
+  default build and 0.97× to 1.45× the time of Rust with the same overflow checks.
+- **Added to `roadmap`: "M1: the plan"**, from mzizi#69: the owner's decisions of 7 October 2026
+  (one RFC per tier, a program runs by compiling to Rust, methods on records now and generics
+  later, overflow checks kept in every build and removed only where the compiler proves them
+  unnecessary, a performance suite against hand-written Rust, release notes from the changelog
+  and a changelog entry in every pull request) and the four waves with their state. "What has
+  to happen next" no longer lists the React arm's pins, which are done.
+- **`rfcs`: RFC-0012 §8's prior-art survey**, and a new section, **"On `staging`, not yet on
+  `main`"**, for RFC-0013 (a draft for review) and the language survey.
+- **`compiler`: "Deep nesting is one diagnostic"** describes `MZ0411` and the robustness tests;
+  the test counts move to `0653903`.
+- **`tracker`** summarises `main` at `0653903` (no mark changed) and says which marks differ on
+  `staging`. **`benchmark`** says its arms table is checked at `0653903` and that the
+  performance suite is a separate thing, with one run's timings in its pull request only.
+  **`index`** names M1 as the next step.
+- **Accuracy fixes from review.** `roadmap`'s Wave 1 row says floats and the rest of C1 (C5) are
+  an open pull request (#83), control flow (C4) and error results (C9) are being built with no
+  pull request yet, and maps and collections (C7) and records with methods (C8) have not
+  started. Its overflow quote ends in an ellipsis, because it is cut. `tracker` says which marks
+  move on `staging`: C1, C2 and C10 from ❌ to 🟡, P10 from 📝 to 🟡, and C6, C9 and P5 to 📝.
+  `status` links #75 and #77, and `rfcs` links the mzizi pull requests it names outside a card.
+- **`AGENTS.md`**: `mz run` leaves the "designed, not built" list. It is built, with `program`,
+  `fn` bodies and the `MZ09xx` codes, but only on language `staging`, and is documented as a
+  command once it reaches `main`. It also says that the `blob/staging` links in `rfcs` and
+  `status` move to `main` in the post-release docs pass.
+
+### Changed — versions and features from the 5–7 October releases (2026-10-07)
+
+A freshness update. The scheduled Freshness check (`node scripts/check-freshness.mjs`) reported
+14 drifts. While they were being fixed, `@nyuchi/mzizi-cli` 0.7.0 reached npm and the language
+released to `main` (`9a88e1d`).
+
+- **Mzizi Roots (`roots/overview`): the ten crates are at `0.3.0`, not `0.1.0`.** `0.2.0` and
+  `0.3.0` were published on 7 October 2026 by registry v4.6.0 and v4.7.0; v4.8.0 left them at
+  `0.3.0`. `cargo add` takes the newest release, and the page gives the `"0.3"` requirement the
+  crate READMEs use. The crate table follows each crate's own description: `mzizi-ui` now holds
+  alert, skeleton, status badge and a safe Markdown renderer, and `mzizi-shell` names deep links
+  and lifecycle. The MCP server's component order now reads Rust, Astro, React.
+- **Added: "The Markdown renderer" on `roots/overview`.** `MarkdownRenderer` (from `mzizi-ui`
+  `0.2.0`) parses Markdown into a typed tree and renders elements, with no HTML string. Raw HTML
+  is text and links pass an allow-list; from `0.3.0` a web address needs a host and no
+  credentials. Rich text is read without a DOM, and the React, Astro and Rust builds share
+  `contracts/ui/markdown-renderer` 1.1.0. The example, compiled against `mzizi-roots` 0.3,
+  imports `mzizi_roots::ui` and `dioxus::prelude`. A warning says that `mcp.mzizi.dev`, pinned
+  before the rebuild, still serves the old React build (an HTML string through
+  `dangerouslySetInnerHTML`), and that `api.mzizi.dev` serves the safe one.
+- **The MCP server (`toolchain/mcp`) is at `0.13.0`, not `0.11.2`**, on npm, on `mcp.mzizi.dev`
+  and in the MCP Registry. Added: `0.12.0`'s Astro build (5 October 2026), with the `astro`
+  block in `mzizi_get_component` between `rust` and `react`, the `astro` filter, `withAstro`
+  and `astroFile`. Also added: `0.13.0`'s `category` on `mzizi_get_skills` (6 October). The
+  anonymous access check is re-dated to 7 October 2026 here, on `toolchain/overview` and in
+  `AGENTS.md`.
+- **The skills (`toolchain/skills`, `toolchain/overview`) are at `0.11.0`, not `0.8.5`: seven
+  skills in four categories.** `0.9.0` (5 October) added `digital-hygiene`, `0.10.0`
+  (6 October) added `progress-report` and the categories, and `0.11.0` (6 October) is the
+  latest. Added: the category table and how to load the `dev` skills. npm and the MCP server
+  serve `0.11.0`; the API and the plugin still serve `0.8.5`.
+- **The CLI (`toolchain/cli`) is at `0.7.0`, not `0.6.3`** (7 October): `--target astro`, and
+  the seven skills through `@nyuchi/mzizi-skills` `^0.11.0`.
+- **The registry's component count is 656 on every page that states it**, from `/v1/ui` on
+  7 October 2026, where pages said 577 or 655: `registry/overview` (its type table now includes
+  `registry:item`, the two Mzizi mark files), `ecosystem`, `benchmark` and `ir`.
+  `check-freshness.mjs` now fails when one of them differs from `/v1/ui`'s `meta.total`.
+- **The language pages are re-checked at language `main` `9a88e1d`** (was `6da2170`): status,
+  the compiler page, IR, the benchmark, What still has to be built, and the pilot results.
+  `cargo test --workspace` gives 428 tests in 18 suites, 297 in the compiler crate (was 425 and
+  294). `compiler/src` is 12,706 lines (was 12,644). `compiler/tests/ir_measured.rs`, both
+  `mz contract` tallies, `mz build`'s 18 generated tests, the command set, the tracker marks and
+  the charter are unchanged.
+  - **Added: `MZ0410`** to the compiler page's codes: `match` in a view is an error that asks
+    for one `when … is x` block per variant. `syntax` notes that the RFC's `match` row is design,
+    and that the parser has none.
+  - **The React arm's pins are no longer provisional** (`benchmark`, `pilots`, `rfcs`). They
+    come from the registry's lockfile at `3afeb752`.
+  - The line count is now counted in the language's source by `check-freshness.mjs`, not read
+    from its README, which still said 12,644.
+- `AGENTS.md`'s list of facts moves to the same versions and dates.
+
+### Added — `CLAUDE.md` for Claude Code (2026-10-07)
+
+- **`CLAUDE.md` gives Claude Code its repository guide.** It imports `AGENTS.md` rather than repeating it, and adds the staging-to-main branch and release flow, the local changelog-gate commands, which check to run for which change, and how `docs.json`, `style.css` and the scripts depend on each other. Docs only: no page, navigation or CI changes.
+
+### Added — `AGENTS.md` loads the Mzizi dev skills (2026-10-06)
+
+- **`AGENTS.md` gains "Dev skills, progress reports and the merge gate"**, the canonical rule block from nyuchi/.github#87, after "Track big work in GitHub issues": load the Mzizi dev skills (`digital-hygiene` and `progress-report`), clone only into a directory unique to the agent, run dev work on a 10-minute progress-report loop whose ticks never publish, release, merge or deploy without the owner's approval, and merge only through the merge gate. Docs only: no behaviour changes, and CI is unchanged.
+
 ### Added — the Discover detail pattern, the Astro target and Open in Mukoko (2026-10-05)
 
 - **Added: `patterns/discover-detail`.** The page for one item reached from a Discover page uses five parts (DetailHero, DiscoverBreadcrumb, MetaList, DetailActions, RelatedRail), each with a contract, an `.astro` and a `.tsx` (mzizi-registry#429). The page also covers the canonical Open in Mukoko link, `https://mukoko.com/open/<service>/<id>`.
