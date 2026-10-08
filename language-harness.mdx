@@ -9,8 +9,9 @@ icon: "spline"
   `entry` exist, and the entries they print are tested in CI. The plugin host, and skills and
   benchmark guides generated from the definition, are design only
   ([RFC-0012](https://github.com/mzizi-dev/mzizi/blob/main/design/RFC-0012-harness.md), a
-  draft, amended on 7 October 2026). Checked at language `main` `dc156c5`, the second release
-  of 8 October 2026 (mzizi#96, tagged `v0.6.0`).
+  draft, amended on 7 October 2026). Checked at language `main` `4d0cdc3`, tagged `v0.7.0`, the third release
+  of 8 October 2026 (mzizi#104, which carries the collections and records of mzizi#99, #101
+  and #102).
 </Info>
 
 **The language harness is the spine of the language.** RFC-0012, as amended, says every
@@ -30,27 +31,27 @@ It was called "the harness" until 7 October 2026. It is a different thing from
 
 ## What an entry holds
 
-| Field             | What it holds                                                                                                                                                                                                                                                                                                 |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `name` and `kind` | A unique name (`int`, `is not`, `mz run`, `MZ0905`) and its kind: declaration, type, operator, statement, method, function, lexical, command or diagnostic                                                                                                                                                    |
-| `depth`           | `full` on 135 entries. `kind-only` on `component` and `service`, which name the kind but not yet their grammar or codes                                                                                                                                                                                       |
-| `rfc`             | The sections that design it                                                                                                                                                                                                                                                                                   |
-| `grammar`         | The forms an author writes, in canonical form (67 entries)                                                                                                                                                                                                                                                    |
-| `teach`           | One paragraph for an agent: what it is, how to write it, and the mistakes from other languages it rejects                                                                                                                                                                                                     |
-| `types`           | Its type rules in brief (48 entries)                                                                                                                                                                                                                                                                          |
-| `precedence`      | An operator's or method's place in the precedence order (27 entries: 16 operators and 11 methods)                                                                                                                                                                                                             |
-| `codes`           | On a feature entry (57 entries): the diagnostic codes it reports, each with its `code`, `say` text and `fixes`, the fix kinds it is recorded as raising                                                                                                                                                       |
-| `examples`        | Runnable examples (58 entries), each with its `source` and, where it runs, its `output`. They are tested: an example that stops checking, or a program that stops printing its stated output, fails CI                                                                                                        |
-| `diagnostic`      | On each of the 70 diagnostic entries, an object with the `code`, its `severity`, the `tool` that reports it (`mz check` or `mz run`), its `say` text, its `fixes`, the `kinds` that can raise it (`program`, and for 25 shared codes also `component` and `service`) and a `trigger`, a source that raises it |
+| Field             | What it holds                                                                                                                                                                                                                                                                                                          |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name` and `kind` | A unique name (`int`, `is not`, `mz run`, `MZ0905`) and its kind: declaration, type, operator, statement, method, function, lexical, command or diagnostic                                                                                                                                                             |
+| `depth`           | `full` on 189 entries. `kind-only` on `component` and `service`, which name the kind but not yet their grammar or codes                                                                                                                                                                                                |
+| `rfc`             | The sections that design it                                                                                                                                                                                                                                                                                            |
+| `grammar`         | The forms an author writes, in canonical form (111 entries)                                                                                                                                                                                                                                                            |
+| `teach`           | One paragraph for an agent: what it is, how to write it, and the mistakes from other languages it rejects                                                                                                                                                                                                              |
+| `types`           | Its type rules in brief (90 entries)                                                                                                                                                                                                                                                                                   |
+| `precedence`      | An operator's or method's place in the precedence order (57 entries: 18 operators and 39 methods)                                                                                                                                                                                                                      |
+| `codes`           | On a feature entry (101 entries): the diagnostic codes it reports, each with its `code`, `say` text and `fixes`, the fix kinds it is recorded as raising                                                                                                                                                               |
+| `examples`        | Runnable examples (102 entries), each with its `source` and, where it runs, its `output`. They are tested: an example that stops checking, or a program that stops printing its stated output, fails CI                                                                                                                |
+| `diagnostic`      | On each of the 80 diagnostic entries, an object with the `code`, its `severity`, the `tool` that reports it (`mz check` or `mz run`), its `say` text, its `fixes`, the `kinds` that can raise it (`program`; 27 shared codes also `service`, and 26 of them also `component`) and a `trigger`, a source that raises it |
 
-At `dc156c5` the definition holds **137 entries**: `program`, and `component` and `service` as
+At `4d0cdc3` the definition holds **191 entries**: `program`, and `component` and `service` as
 kind-level entries; `int`, `float`, `bool` and `text`; every operator, `try` among them; the 11
-numeric methods; every statement form, C4's control flow and C9's results among them; `print`
-and `error`; the nine `mz` commands; and **70 diagnostic codes**, the 45 `MZ09xx` codes a
-program raises and the 25 shared codes it reuses. Four of those shared codes were registered in
-the second release of 8 October 2026: **`MZ0301`**, **`MZ0302`**, **`MZ0303`** and **`MZ0704`**,
-which a program's enums raise. The 51 codes that components and services raise are on a pending
-list that a test freezes, so it can only shrink.
+numeric methods, the 9 text methods and the 19 collection methods and folds; every statement
+form, C4's control flow, C9's results and C8's records among them; `print` and `error`; the nine
+`mz` commands; and **80 diagnostic codes**: the 53 `MZ09xx` codes a program raises and the 27
+shared codes it reuses. The 49 codes that components and services raise are on a pending list
+that a test freezes, so it can only shrink. Each of these counts is read from `mz harness
+definition` at `4d0cdc3`.
 
 ## `mz harness`
 
@@ -63,10 +64,10 @@ cargo run --bin mz -- harness entry "is not"           # one entry
 cargo run --bin mz -- harness entry MZ0905
 ```
 
-At `dc156c5`, `mz harness version` prints:
+At `4d0cdc3`, `mz harness version` prints:
 
 ```json
-{"protocol":1,"language":"phase-0, RFC-0013 wave 0, wave 1 numbers, control flow and errors","definition_sha256":"225fbfe194bb1dd4c215c30eb77e62de060938f3d179e0ea8b29c96d62eed283"}
+{"protocol":1,"language":"phase-0, RFC-0013 wave 0, wave 1 numbers, control flow, errors, collections and records, wave 2 text (part)","definition_sha256":"5c06ce6e8c92424f9221945272f79f1cdfc23eb399f7c8c5e08b33865fe79d94"}
 ```
 
 No crate version changes: the crates stay at `0.0.0`, and the definition's SHA-256 pins its

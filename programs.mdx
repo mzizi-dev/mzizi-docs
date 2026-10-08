@@ -1,20 +1,25 @@
 ---
 title: "Programs"
-description: "A program file: fn, let and var, when and match, for each and while, int, float, bool and text, enums with columns, result and try, and print. mz run lowers it to a dependency-free Rust package, builds it and runs it. RFC-0013's foundation slice, its numbers, its control flow and its errors, on the language's main branch since 8 October 2026."
+description: "A program file: fn, let and var, when and match, for each and while, int, float, bool and text, enums with columns, result and try, lists, maps and sets, records with methods, text methods, and print. mz run lowers it to a dependency-free Rust package, builds it and runs it. RFC-0013's slice on the language's main branch since 8 October 2026: numbers, control flow, errors, collections, records and most text methods."
 icon: "play"
 ---
 
 <Info>
   Everything on this page is **built and tested**: cross-checked against the language's
   `compiler/src`, `mz harness definition`, and the example programs CI runs through `mz run`
-  with their output compared, at language `main` `dc156c5`, the second release of 8 October
-  2026 ([mzizi#96](https://github.com/mzizi-dev/mzizi/pull/96), tagged `v0.6.0`). The features
-  arrived in the first release of that day ([mzizi#91](https://github.com/mzizi-dev/mzizi/pull/91)).
-  It is a slice of
+  with their output compared, at language `main` `4d0cdc3`, the third release of 8 October 2026,
+  tagged `v0.7.0`
+  ([mzizi#104](https://github.com/mzizi-dev/mzizi/pull/104), which carries collections and
+  records from [mzizi#99](https://github.com/mzizi-dev/mzizi/pull/99),
+  [mzizi#101](https://github.com/mzizi-dev/mzizi/pull/101) and
+  [mzizi#102](https://github.com/mzizi-dev/mzizi/pull/102), and text methods from
+  [mzizi#98](https://github.com/mzizi-dev/mzizi/pull/98)). The first release of that day ([mzizi#91](https://github.com/mzizi-dev/mzizi/pull/91))
+  brought the functions, numbers, control flow and errors. It is a slice of
   [RFC-0013](https://github.com/mzizi-dev/mzizi/blob/main/design/RFC-0013-core-language.md),
   not all of it: the rest of the RFC is design, and [what is not built](#what-is-not-built)
-  lists it. The tracker rows these features belong to, C1–C5, C9 and C10, are ✅ in the file
-  ([what still has to be built](/tracker)).
+  lists it. The tracker rows these features belong to are C1–C5 and C7–C10, ✅ in the file. C6
+  (text operations) is 🟡: it stays so until the standard library (P2) and the owner's decision on
+  RFC-0013 §20 Q20 ([what still has to be built](/tracker)).
 </Info>
 
 A **program** is a Mzizi file that runs. Its first line is `program <name>` and its last is
@@ -136,19 +141,26 @@ form that reads back exactly: `1.0`, `0.30000000000000004`, `1.0e21`, `inf`, `na
 
 ## Expressions and operators
 
-Highest precedence first, as RFC-0013 §3.5 orders the operators that are built:
+Highest precedence first, as RFC-0013 §3.5 orders the operators that are built. Lower levels
+bind tighter. The level of each operator is the one the checker, the parser and the
+[language harness](/language-harness) all read:
 
-| Level | Operators                                                   |
-| ----- | ----------------------------------------------------------- |
-| 1     | literals, names, `( … )`, calls `f(…)`                      |
-| 2     | postfix `.method(…)` and `.column`                          |
-| 3     | prefix `-`, prefix `try`                                    |
-| 4     | `*`, `/`, `%`                                               |
-| 5     | `+`, `-`                                                    |
-| 6     | `is`, `is not`, `<`, `<=`, `>`, `>=`, which do not chain    |
-| 7     | prefix `not`                                                |
-| 8     | `and`                                                       |
-| 9     | `or`, never mixed with `and` without parentheses (`MZ0913`) |
+| Level | Operators                                                                                             |
+| ----- | ----------------------------------------------------------------------------------------------------- |
+| 1     | literals, names, `( … )`, calls `f(…)`                                                                |
+| 2     | postfix `.method(…)`, `.column`, indexing `xs[i]`, and `x with (…)`                                   |
+| 3     | prefix `-`, prefix `try`                                                                              |
+| 4     | `*`, `/`, `%`                                                                                         |
+| 5     | `+`, `-`                                                                                              |
+| 6     | `otherwise`, which is right-associative: `a otherwise b otherwise c` is `a otherwise (b otherwise c)` |
+| 7     | `is`, `is not`, `<`, `<=`, `>`, `>=`, `in`, which do not chain (`MZ0913`)                             |
+| 8     | prefix `not`                                                                                          |
+| 9     | `and`                                                                                                 |
+| 10    | `or`, never mixed with `and` without parentheses (`MZ0913`)                                           |
+
+Prefix `not` binds looser than comparison, so `not (a is b)` is the form to write.
+`not a is b` without the parentheses is `MZ0910`, whose `exact` fix is `a is not b`. Postfix
+binds tighter than prefix `-`, so `-2.pow(2)` is `-4`, and `1 + 2 * 3` is `7`.
 
 Equality is `is` and `is not`. `==`, `!=`, `&&`, `||` and `!` are `MZ0910`, each with an
 `exact` fix to the Mzizi word. `+=` and `++` are `MZ0918`; `str(x)` and `x.to_string()` are
@@ -225,8 +237,9 @@ output with `examples/control.expected`):
   exhaustiveness: a missing case is `MZ0930`, naming the missing variants, and a case that can
   never run is `MZ0931`, whose `exact` fix deletes it. A `match` over a `float` is `MZ0711`:
   compare a float with `when`.
-- **`for each i in range(a, to = b)`** counts from `a` up to but not including `b`. `range`
-  is read only on a `for each` line; `for each` over a list waits for lists.
+- **`for each i in range(a, to = b)`** counts from `a` up to but not including `b`. `for each`
+  also runs over a list, and `range(a, to = b)` is a list anywhere; see
+  [collections](#collections-c7).
 - **`while <condition>`** is the one conditional loop; `while true` with a `break` is the loop
   that ends from inside. **`break`** and **`continue`** act on the innermost loop, and are
   `MZ0935` outside one.
@@ -369,16 +382,355 @@ A program's blocks and expressions nest at most 32 deep together, and an express
 binary operators at most 64. Past the cap is one `MZ0411` per file, not a stack overflow.
 `compiler/tests/robustness.rs` holds every case to a 1 MiB stack.
 
+## Text methods (C6)
+
+Text values have methods, written after the value as the numeric ones are. No method changes
+the text it is called on: each returns a new value, so `city.trim()` leaves `city` as it was.
+
+| Method                               | Returns | What it does                                                                         |
+| ------------------------------------ | ------- | ------------------------------------------------------------------------------------ |
+| `s.length()`                         | `int`   | Counts Unicode scalar values, not bytes: `"日本語".length()` is `3`                  |
+| `s.contains(t)`                      | `bool`  | Whether `t` occurs in `s`                                                            |
+| `s.starts_with(t)`, `s.ends_with(t)` | `bool`  | Whether `s` begins or ends with `t`                                                  |
+| `s.trim()`                           | `text`  | Removes Unicode whitespace from both ends                                            |
+| `s.to_upper()`, `s.to_lower()`       | `text`  | Full Unicode case mappings, so `"straße".to_upper()` is `"STRASSE"`                  |
+| `s.replace(old, by = new)`           | `text`  | Replaces every `old`. The `by` label is required: without it the call is `MZ0927`    |
+| `s.repeat(n)`                        | `text`  | `n` copies. A negative `n`, or a result too long to hold, traps (`MZ0991`, exit 101) |
+
+`examples/text.mz`, verbatim, with the output it prints:
+
+```mz examples/text.mz
+## Text, RFC-0013 §10: lengths count Unicode scalar values, not bytes, and every method is
+## safe on non-ASCII text. Emptiness is `s is ""`, and text is built by interpolation.
+## `mz run examples/text.mz` prints what text.expected holds; CI compares the two.
+program text
+
+  fn main
+    let city = "  Zürich  "
+    let name = city.trim()
+    print("[{name}] has {name.length()} characters; with its spaces, {city.length()}")
+    print("upper {name.to_upper()}, lower {name.to_lower()}")
+    let greeting = "habari, dunia"
+    let polite = greeting.starts_with("habari")
+    print("{greeting} starts with habari: {polite}")
+    print(greeting.ends_with("dunia"))
+    print(greeting.contains("ri, d"))
+    print(greeting.replace("dunia", by = "Mzizi"))
+    let kanji = "日本語"
+    print("{kanji} is {kanji.length()} characters long")
+    let street = "straße"
+    print("{street} in upper case is {street.to_upper()}")
+    print(banner("ok", 3))
+    print(describe(""))
+    print(describe(name))
+    print("-".repeat(12))
+  end fn main
+
+  fn banner(word: text, width: int): text
+    let edge = "=".repeat(width)
+    return "{edge} {word} {edge}"
+  end fn banner
+
+  fn describe(s: text): text
+    when s is ""
+      return "empty"
+    end
+    let shout = s.to_upper()
+    return "{s.length()} characters, {shout} when shouted"
+  end fn describe
+
+end program text
+```
+
+```text examples/text.expected
+[Zürich] has 6 characters; with its spaces, 10
+upper ZÜRICH, lower zürich
+habari, dunia starts with habari: true
+true
+true
+habari, Mzizi
+日本語 is 3 characters long
+straße in upper case is STRASSE
+=== ok ===
+empty
+6 characters, ZÜRICH when shouted
+------------
+```
+
+- **Other languages' spellings are `MZ0962`, with fixes.** `len(s)` gets the `exact` fix
+  `s.length()`, since Python also counts scalar values. `s.len()`, `s.size()`, `s.count()` and
+  `s.length` get `s.length()` as a `guess`, because Rust's `len` counts bytes and JavaScript's
+  `length` counts UTF-16 units. `strip()` gets `trim()` as a `guess`, because Python's `strip`
+  also removes U+001C to U+001F. `upper()`, `toUpperCase()`, `startswith` and `replaceAll(a, b)`
+  get their Mzizi names as `exact` fixes.
+- **Emptiness is `s is ""`.** `s.is_empty()`, `s.length() is 0` and their relatives are one
+  `MZ0962`, whose `exact` fix is `s is ""` or `s is not ""`.
+- **Not built.** The methods that return an option or a list, `s[i]`, `slice`, `find`,
+  `parse_int`, `parse_float`, `split` and `chars`, are `MZ0919`, each naming what it returns. `t in s` is `MZ0962`, whose `exact` fix is `s.contains(t)`. Whether the built-in
+  methods meet the tracker's "Done when" is the owner's decision (RFC-0013 §20 Q20), so C6 stays
+  🟡 until it is made.
+
+## Collections (C7)
+
+A program has three collection types: `list(T)`, `map(K, V)` and `set(K)`. A bracket literal
+takes its type from the place it stands, so `[3, 1, 3]` is a list where a list is expected and
+a `set(int)` where a set is. A literal that cannot be typed, such as `[1, "two"]`, is `MZ0961`.
+
+`examples/collections.mz`, verbatim, builds a list, a map and a set and transforms them in
+functions. Its output is below it.
+
+```mz examples/collections.mz
+## Collections, RFC-0013 §9 (C7): a list, a map and a set built with bracket literals and
+## transformed in functions, indexing that gives an option read with `otherwise`, `in`, the
+## methods of §9.2 and the named folds of §9.4.
+## `mz run examples/collections.mz` prints what collections.expected holds; CI compares the two.
+program collections
+
+  enum suit
+    hearts
+    spades
+  end
+
+  fn main
+    let primes = [2, 3, 5, 7, 11]
+    print(primes)
+    print("{primes.length()} primes: the first is {primes[0] otherwise 0}, the tenth {primes[9] otherwise -1}")
+    print(sum_of_even_squares(range(1, to = 11)))
+    print(primes.map(square))
+    print(primes.filter(is_odd).sum())
+    print(primes.fold(0, step = add))
+    print("{primes.count(is_odd)} odd, any even: {primes.any(is_even)}, all odd: {primes.all(is_odd)}")
+    print(primes.first(is_even) otherwise 0)
+    print(primes.slice(1, to = 3) otherwise [])
+    print(primes.slice(4, to = 9) otherwise [])
+    print([5, 3, 9, 1].sort_by(negate))
+    print(primes.group_by(is_odd))
+    var ages: map(text, int) = ["ada": 36, "alan": 41]
+    ages["grace"] = 85
+    ages["ada"] = 37
+    ages.remove("alan")
+    print(ages)
+    let grace = ages["grace"] otherwise 0
+    let linus = ages["linus"] otherwise 0
+    print("grace {grace}, linus {linus}, {ages.length()} people, {ages.values().sum()} years")
+    print(ages.keys())
+    var seen: set(int) = [3, 1, 3, 2]
+    seen.insert(10)
+    seen.remove(1)
+    print("{seen} holds 3: {3 in seen}, {seen.to_list().length()} values")
+    var hands: list(suit) = []
+    print(hands is none)
+    for each p in primes
+      when p % 2 is 0
+        hands.push(hearts)
+      else
+        hands.push(spades)
+      end
+    end
+    hands[1] = hearts
+    print(hands)
+    print(hands is not none and spades in hands)
+    let tags = ["a \"b\"", "c"]
+    print(tags)
+    print(tags.join(" + "))
+  end fn main
+
+  fn sum_of_even_squares(xs: list(int)): int
+    return xs.filter(is_even).map(square).fold(0, step = add)
+  end fn sum_of_even_squares
+
+  fn square(n: int): int
+    return n * n
+  end fn square
+
+  fn is_even(n: int): bool
+    return n % 2 is 0
+  end fn is_even
+
+  fn is_odd(n: int): bool
+    return n % 2 is 1
+  end fn is_odd
+
+  fn add(a: int, b: int): int
+    return a + b
+  end fn add
+
+  fn negate(n: int): int
+    return -n
+  end fn negate
+
+end program collections
+```
+
+```text examples/collections.expected
+[2, 3, 5, 7, 11]
+5 primes: the first is 2, the tenth -1
+220
+[4, 9, 25, 49, 121]
+26
+28
+4 odd, any even: true, all odd: false
+2
+[3, 5]
+[]
+[9, 5, 3, 1]
+[false: [2], true: [3, 5, 7, 11]]
+["ada": 37, "grace": 85]
+grace 85, linus 0, 2 people, 122 years
+["ada", "grace"]
+[2, 3, 10] holds 3: true, 3 values
+true
+[hearts, hearts, spades, spades, spades]
+true
+["a \"b\"", "c"]
+a "b" + c
+```
+
+- **Indexing returns an option.** `xs[i]` and `m[k]` are `none` when `i` is outside the list or
+  `k` is not a key. `x otherwise d` gives `x`, or `d` when `x` is `none`. It binds below
+  arithmetic and above comparison (RFC-0013 §3.5, level 6), and is right-associative. Using an
+  option as its value without `otherwise` is `MZ0710`.
+- **Changing a collection needs a `var`.** `xs[i] = v` and `m[k] = v` set an element or a key,
+  and `m[k] = v` adds the key when it is missing. `xs[i] = v` traps when `i` is outside the list
+  (`MZ0991`, exit 101). `push`, `insert`, `remove` and indexed assignment on a `let` are
+  `MZ0960`, whose `exact` fix is `var`.
+- **Membership.** `x in xs` asks about an element, `k in m` about a key, and `x in s` about an
+  element of a set. `in` on text is `MZ0962`, with `s.contains(t)` as the fix.
+- **Keys have an order.** A map key or set element that is a `float`, a collection or an option
+  is `MZ0964`. Maps and sets iterate and print in key order. Mzizi has no tuples: `(a, b)` is
+  `MZ0963`.
+- **`for each` over a list** iterates the list as it was when the loop began. A map or a set
+  is `MZ0711`, with `keys()` or `to_list()` in its fix.
+- **Functions passed to a method** are named `fn`s of the program. A lambda, `x => …`, is
+  `MZ0909`, with no fix.
+- **A collection is a value.** `let b = a` copies it, and a function does not change the list
+  its caller holds.
+
+| Type                 | Methods                                                                                                                                                                                          |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `list(T)`            | `length()`, `slice(a, to = b)` (an option), `map(f)`, `filter(f)`, `join(sep)` on `list(text)`, `push(v)` on a `var`                                                                             |
+| `list(T)`, the folds | `count(f)`, `sum()` on `list(int)` or `list(float)`, `any(f)`, `all(f)`, `first(f)` (an option), `fold(init, step = f)`, `sort_by(f)` (a key of `int`, `text`, `bool` or an enum), `group_by(f)` |
+| `map(K, V)`          | `length()`, `keys()`, `values()`, `remove(k)` on a `var`                                                                                                                                         |
+| `set(K)`             | `length()`, `to_list()`, `insert(v)` on a `var`, `remove(v)` on a `var`                                                                                                                          |
+
+`map` and `filter` take a function of one element, `fold` takes its start value and a `step`
+function of two, and `group_by` returns a `map(K, list(T))`.
+
+**Not built:**
+
+- `option(T)` written as a type, `none` as a value, and narrowing an option with
+  `when x is not none`: the "C4 options" follow-up (RFC-0013 §18.2).
+- Indexing text, `s[i]` (`MZ0919`), and the text methods that return an option or a list.
+- Tuples, which RFC-0013 §2 decided against.
+- Labels on these calls other than `range`'s `to`, `slice`'s `to` and `fold`'s `step`.
+
+The codes these constructs report, with their `say` text and fix kinds, are in
+[the compiler's table of the MZ09xx codes](/compiler#program-codes-mz09xx).
+
+## Records and methods (C8)
+
+A `record` groups named fields, and its `fn`s are methods that read the value through `self`.
+A record may carry a `contract` of `always` clauses that every value must keep.
+
+`examples/records.mz`, verbatim, with the output it prints:
+
+```mz examples/records.mz
+## Records, RFC-0013 §11 (C8): a record built by field name, copied with `with`, read by
+## field, given methods that read `self`, a field of a `var` assigned, and an `always`
+## clause that every value holds.
+## `mz run examples/records.mz` prints what records.expected holds; CI compares the two.
+program records
+
+  record point
+    field x: float
+    field y: float
+
+    fn norm: float
+      return (self.x * self.x + self.y * self.y).sqrt()
+    end fn norm
+
+    fn scaled(k: float): point
+      return point(x = self.x * k, y = self.y * k)
+    end fn scaled
+  end
+
+  record span
+    field low: int
+    field high: int
+
+    contract
+      always low <= high
+    end
+  end
+
+  fn width(s: span): int
+    return s.high - s.low
+  end fn width
+
+  fn main
+    let p = point(x = 3.0, y = 4.0)
+    print(p)
+    print(p.norm())
+    print(p.scaled(2.0))
+    print(p with (y = 0.0))
+    print(p is point(x = 3.0, y = 4.0))
+    var q = point(x = 1.0, y = 1.0)
+    q.x = 5.0
+    print(q)
+    let s = span(low = 2, high = 9)
+    print(width(s))
+    print("{s} is {width(s)} wide")
+  end fn main
+
+end program records
+```
+
+```text examples/records.expected
+point(x = 3.0, y = 4.0)
+5.0
+point(x = 6.0, y = 8.0)
+point(x = 3.0, y = 0.0)
+true
+point(x = 5.0, y = 1.0)
+7
+span(low = 2, high = 9) is 7 wide
+```
+
+- **Built by field name.** `point(x = 3.0, y = 4.0)` is a value; built from positional values
+  it is `MZ0808`, with no fix. A field the record lacks, or one given twice, is `MZ0808` too.
+- **Copied with `with`.** `p with (y = 0.0)` is a new value with one field changed, and `p` is
+  unchanged. A `with` that names a field the record does not have is `MZ0974`.
+- **Fields and `var`s.** A field is read with a dot. `q.x = 5.0` changes a field of a `var`;
+  changing a field of a `let`, or of a value no name holds, is `MZ0960`, whose `exact` fix is
+  `var`.
+- **Equality and text.** `is` compares two records, and a record prints as its name and its
+  fields, as in `point(x = 3.0, y = 4.0)`.
+- **Methods.** A method's receiver is `self`, which is read and never assigned. `self` outside a
+  method is `MZ0970`, and assigning to `self` or one of its fields inside one is `MZ0971`. A
+  method that needs a changed record returns `self with (…)`.
+- **`always` clauses.** Each clause is checked when a value is built, when a `with` copies it,
+  and after a field is assigned. A broken clause traps at run time (`MZ0991`, exit 101). A record
+  literal that breaks one is `MZ0975` at check time.
+
+**Not built:** `fn … changes self` and a record that holds itself (both `MZ0919`); payload enums
+(RFC-0013 §11.5); a fix for a positional construction; and `to_json`. Generics and interfaces are a
+separate row, P12, deferred past M1.
+
 ## What is not built
 
-These are designed in RFC-0013 and are not in the compiler. Most are `MZ0919`, which says the
-form is designed and not built; some, such as list literals and `via`, fall to generic codes
-(`MZ0104`, `MZ0917`):
+These are designed in RFC-0013 and are not in the compiler on `main`. Most are `MZ0919`, which
+says the form is designed and not built; some, such as `via`, fall to generic codes (`MZ0917`):
 
-- Lists, maps and sets in a program, indexing, and `for each` over a list (C7).
-- Text methods (C6), records and methods (C8), options in function bodies, and a decimal type.
-- Named arguments beyond `range`'s `to`, `try … via f` (`MZ0955`), and a `match` stub as the
-  fix for `MZ0950`.
+- Generics and interfaces, a separate row, P12, deferred past M1.
+- `option(T)` written as a type, `none` as a value, and narrowing an option with
+  `when x is not none` (the "C4 options" follow-up, RFC-0013 §18.2).
+- The text methods that return an option or a list, `s[i]`, `slice`, `find`, `parse_int`,
+  `parse_float`, `split` and `chars`, and indexing text. Each is `MZ0919`.
+- A method that changes its record, `fn … changes self`, and a record that holds itself
+  (`MZ0919`), and payload enums (RFC-0013 §11.5).
+- A decimal type.
+- Named arguments beyond `range`'s `to`, `slice`'s `to` and `fold`'s `step`, `try … via f`
+  (`MZ0955`), and a `match` stub as the fix for `MZ0950`.
 - A program's `contract` block, `mz test`, `mz run --agent`, and `mz outline`, `mz ir` and
   `mz hash` on a program, which exit 2.
 - Modules: one program per file, and nothing is imported.
