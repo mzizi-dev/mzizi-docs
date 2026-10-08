@@ -45,7 +45,13 @@
           },
           {
             "group": "The language",
-            "pages": ["syntax", "primitives", "ir"]
+            "pages": [
+              "syntax",
+              "programs",
+              "language-harness",
+              "primitives",
+              "ir"
+            ]
           },
           {
             "group": "The research programme",

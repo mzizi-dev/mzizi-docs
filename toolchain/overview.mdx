@@ -9,21 +9,22 @@ icon: "wrench"
 system, semantics and contracts. The toolchain is built to support it: to implement it,
 check it, measure it, and put what Mzizi knows in front of the agents that write it.
 
-**The harness is the core of Mzizi, and the toolchain attaches to it natively.** The harness
-is the layer an agent reads and works through: the language as an agent sees it (grammar,
-types, contracts, canonical form), the agent protocol (`mz check --agent`, its diagnostics
-and fixes; RFC-0001 §4), and the plugin host that `mz`, the CLI, the MCP server and plugins
-attach to. Part of it exists today, in this toolchain, as `mz check --agent`'s output. The
-harness as a whole is designed, not built, and the language is writing its RFC. It lives in
-the language repository, `mzizi-dev/mzizi`, and the CLI, the MCP server and `fundi` are its
-clients. It is not
-the Phase 0 benchmark harness in `benchmarks/harness/`, which is the scorer listed below.
+**The language harness is the spine of the language, and the toolchain is meant to attach to
+it.** It is the layer an agent reads and works through: every feature registered once, as an
+entry inside the compiler (`mz harness definition`), the agent protocol (`mz check --agent`,
+its diagnostics and fixes; RFC-0001 §4), and a plugin host that `mz`, the CLI, the MCP server
+and plugins are to attach to. A first slice exists: `mz` dispatches on its command table, and
+`mz harness` serves the entries. The plugin host is design only
+([RFC-0012](/rfcs), a draft). It lives in the language repository, `mzizi-dev/mzizi`, and the
+CLI, the MCP server and `fundi` are its clients. It is not the Phase 0 benchmark harness in
+`benchmarks/harness/`, which is the scorer listed below. See
+[the language harness](/language-harness).
 
 ## What is in it
 
 | Tool                             | What it is                                                                                                                              | Where it comes from                    | Cost              |
 | -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- | ----------------- |
-| [`mz`, the compiler](/compiler)  | `mz check --agent`, `mz fix`, `mz contract`, `mz outline`, `mz build` (a service only), `mz hash`, `mz ir`                              | `mzizi-dev/mzizi`, built from source   | Free, open source |
+| [`mz`, the compiler](/compiler)  | `mz check --agent`, `mz fix`, `mz contract`, `mz outline`, `mz build`, `mz run`, `mz harness`, `mz hash`, `mz ir`                       | `mzizi-dev/mzizi`, built from source   | Free, open source |
 | [The benchmark](/benchmark)      | `mzbench`, the scorer, the Dioxus, Leptos, React and `mzizi-be` arms, the probe crate, the kill-criterion driver, the pilot results     | `mzizi-dev/mzizi`, under `benchmarks/` | Free, open source |
 | [The MCP server](/toolchain/mcp) | `mcp.mzizi.dev/mcp`: registry, tokens, doctrine, skills and the docs                                                                    | `@nyuchi/mzizi-mcp`                    | Free, no sign-in  |
 | [The CLI](/toolchain/cli)        | `mzizi add`, and `fundi explore`, `plan` and `chat`                                                                                     | `@nyuchi/mzizi-cli`                    | Free, no gate     |

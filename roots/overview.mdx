@@ -34,7 +34,8 @@ contract. See [the roadmap](/roadmap).
 ## How Roots relates to the language
 
 Roots components are written in Rust today, not in Mzizi. The language cannot produce them
-yet: no component lowers to Rust (only a `service` does, to a local axum package), and Phase 1
+yet: no component lowers to Rust (a `service` does, to a local axum package, and a `program`, to a
+dependency-free Rust package), and Phase 1
 waits on the benchmark ([Status](/status)).
 
 Roots is built to support the language: it is meant to be the language's component model,

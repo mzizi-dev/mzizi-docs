@@ -21,6 +21,57 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
+### Added — programs, `mz run` and the language harness, after the language's release of 8 October 2026
+
+The language released `staging` to `main` (mzizi#91, merged as `be88017`, whose tree is
+`staging` `6a96e41`). These pages now document what it carries as available on `main`. Checked
+by building `mz` at that tree: `cargo test` gives 512 tests in the compiler crate and 643 in the
+workspace, all passing; `compiler/src` is 26,811 lines.
+
+- **New page, `programs`** (Language tab): a `program` file with `fn`, `let` / `var` and
+  assignment, `when` / `else when`, `return` and `print`; `int`, `float`, `bool` and `text`
+  with the 11 numeric methods; `match`, `for each` over `range`, `while`, `break`, `continue`,
+  `when` and `match` as values, and enums with columns; `result(T, E)`, `error`, `try`, a
+  `match` on a result and `main` returning a result; and `mz run` with its exit statuses (0, 1,
+  2, 3, 101, 141 and 128 plus a signal). The example programs are quoted verbatim from the
+  language repository, with their `.expected` output. What RFC-0013 designs and the compiler does
+  not build is listed.
+- **New page, `language-harness`** (Language tab): RFC-0012 as amended, the spine of the
+  language; what an entry holds; `mz harness version`, `definition [--agent]` and `entry`; which
+  facts have one source, which are parallel copies held by tests, and which (`say` and teaching
+  text) are written by hand and not compared with the checker; and that its effect on the
+  benchmark is a hypothesis, not a result.
+- **`compiler`**: `mz run` and `mz harness` in the command table, with `mz run`'s exit-status
+  table; `mz build` lowers a program as well as a service; the `MZ09xx` range, with a table of
+  all 45 codes (severity, tool, `say` text, fix kinds) **generated from `mz harness definition`**,
+  not written by hand; a program's nesting cap of 32; the test counts (643 in 24 suites, 512 in
+  the compiler crate) and the line count. The `#mz-build-lower-a-service` anchor is now
+  `#mz-build-lower-a-service-or-a-program`.
+
+### Changed — the language pages, for the language's release of 8 October 2026
+
+- **"The harness" is now "the language harness"** on `index`, `rfcs`, `tracker` and
+  `toolchain/overview`, as RFC-0012 renamed it. `charter` keeps the charter's own wording.
+- **`status`**: checked at language `main` `be88017`; new rows for programs, numbers, control
+  flow, errors, `mz run`, the language harness and the performance suite. "Landing in the next
+  release" and "In progress toward M1" are replaced by "Released to `main` on 8 October 2026",
+  which lists what the release carried and says no pull request toward M1 is open. The
+  performance suite is stated as what it is: CI gates output agreement only, no timing is
+  committed, and the one recorded run is not a result.
+- **`tracker`** mirrors `LANGUAGE-TRACKER.md` as released at `be88017`: C1, C2, C9 and C10 move
+  from ❌ to 🟡, C6 and P5 to 📝, P10 to 🟡, and H1 and H2 use the new name. The file has not yet
+  marked C1–C5, C9 or C10 ✅, although each row says it turns ✅ on reaching `main`, so the page
+  keeps them 🟡 and says so. The benchmark table gains the performance-suite row.
+- **`rfcs`**: RFC-0013 gets its own section, and the "On `staging`" section is gone. The
+  RFC-0013 and `design/LANGUAGE-SURVEY.md` links move from `blob/staging` to `blob/main`.
+  RFC-0012's section describes the amendment and the first slice.
+- **`index`, `roadmap`, `syntax`, `benchmark`, `roots/overview`, `toolchain/overview`**: a
+  program lowers to Rust as well as a service; the M1 waves that landed are marked on `main`;
+  the honest status is unchanged: the kill criterion has not been run, and nothing here is a
+  measured result.
+- **`AGENTS.md`**: the `mz run` trap is retired now that it is on `main`, and two rules are
+  added: regenerate the `MZ09xx` table from the definition, and say "the language harness".
+
 ### Changed — progress toward M1: what is shipped, what is on `staging` and what is in progress (2026-10-07)
 
 The owner asked for the docs to say where the language is. Checked against language `main` at
