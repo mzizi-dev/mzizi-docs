@@ -10,10 +10,10 @@ icon: "gauge"
   showed an advantage** for Mzizi ([results](/pilots)). The run that tests the charter's
   kill criterion has not happened. A `service` lowers to a local Rust + axum package, and a
   [`program`](/programs) in RFC-0013's first slice lowers to a Rust package that `mz run`
-  builds and runs; no component lowers, and nothing renders. Mzizi has no modules or standard
-  library yet, and its text operations are partial. By the tracker's marks, the bar these docs
-  use, a program has expressions, bindings, functions, control flow, numbers, results, lists,
-  maps, sets and records with methods, in a narrow form. See
+  builds and runs; no component lowers, and nothing renders. Mzizi has no modules, standard
+  library or concurrency yet. By the tracker's marks, the bar these docs use, a program has
+  expressions, bindings, functions, control flow, numbers, results, text, lists, maps, sets and
+  records with methods, in a narrow form. See
   [what still has to be built](/tracker).
 </Warning>
 
@@ -31,11 +31,12 @@ components against Dioxus. They are not its goal, and they showed no advantage. 
 The table below is the language's front end, which lives in its toolchain, the `mz`
 compiler. The compiler implements the language; it is not the language.
 
-Checked against [`mzizi-dev/mzizi`](https://github.com/mzizi-dev/mzizi) at `4d0cdc3` on
-8 October 2026, the merge of [mzizi#104](https://github.com/mzizi-dev/mzizi/pull/104), which
-released `staging` to `main`. It is the third release of that day, tagged `v0.7.0`. The first,
+Checked against [`mzizi-dev/mzizi`](https://github.com/mzizi-dev/mzizi) at `1d5e578` on
+8 October 2026, the merge of [mzizi#109](https://github.com/mzizi-dev/mzizi/pull/109), which
+released `staging` to `main`. It is the fourth release of that day, tagged `v0.8.0`. The first,
 [mzizi#91](https://github.com/mzizi-dev/mzizi/pull/91), is `be88017`, tagged `v0.5.0`; the
-second, [mzizi#96](https://github.com/mzizi-dev/mzizi/pull/96), is `dc156c5`, tagged `v0.6.0`. Every row below can be checked
+second, [mzizi#96](https://github.com/mzizi-dev/mzizi/pull/96), is `dc156c5`, tagged `v0.6.0`; the
+third, [mzizi#104](https://github.com/mzizi-dev/mzizi/pull/104), is `4d0cdc3`, tagged `v0.7.0`. Every row below can be checked
 in the repository; that is why it is a table and not a paragraph. The language's own list of what is missing, against Python, Go,
 C++, TypeScript and Rust, is
 [`LANGUAGE-TRACKER.md`](https://github.com/mzizi-dev/mzizi/blob/main/LANGUAGE-TRACKER.md),
@@ -43,50 +44,50 @@ summarised on [What still has to be built](/tracker).
 
 ## What exists
 
-| Piece                                                | State                                                                                                                          | Where                                                    |
-| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------- |
-| Lexer                                                | Exists, tested                                                                                                                 | `compiler/src/lex.rs`                                    |
-| Recovering parser                                    | Exists, tested                                                                                                                 | `compiler/src/parse.rs`                                  |
-| Name and type resolver                               | Exists, tested (RFC-0008)                                                                                                      | `compiler/src/resolve.rs`                                |
-| `list(T)`, `option(T)`, `record`, `for each`, `else` | Exist, tested (RFC-0008)                                                                                                       | `compiler/src/parse.rs`, `resolve.rs`                    |
-| Agent diagnostic protocol (NDJSON)                   | Exists, tested                                                                                                                 | `compiler/src/diagnostic.rs`                             |
-| `mz fix`: every `exact` fix in one pass              | Exists, tested                                                                                                                 | `compiler/src/main.rs`, `compiler/src/lib.rs`            |
-| Contract evaluation, `mz contract`                   | Exists, tested (RFC-0006). Checks a component against itself                                                                   | `compiler/src/contract.rs`                               |
-| Content-addressed IR and SHA-256 store               | Exists, tested, measured                                                                                                       | `compiler/src/ir.rs`, `compiler/src/hash.rs`             |
-| `mz outline`                                         | Exists, tested                                                                                                                 | `compiler/src/outline.rs`                                |
-| A nesting cap: past 64 blocks, one `MZ0411`          | Exists, tested. Deep input gives a diagnostic, not a stack overflow; 32 in a program                                           | `compiler/src/parse.rs`, `compiler/tests/robustness.rs`  |
-| Nine primitives written in Mzizi                     | Pass `mz check` and `mz contract` in CI; 29 contract clauses                                                                   | `primitives/*.mz`                                        |
-| Two ported registry components                       | Pass `mz check` and `mz contract` in CI                                                                                        | `examples/*.mz`                                          |
-| A `service` with HTTP routes and handlers            | Exists, tested (RFC-0011). Checked by `mz check`                                                                               | `compiler/src/service.rs`, `examples/registry.mz`        |
-| `mz contract` on a service                           | Exists, tested. Runs it in process; `ensure` tested, not proven                                                                | `compiler/src/serve.rs`                                  |
-| `mz build`: a service lowered to Rust + axum         | Exists, tested. A local package CI compiles, tests and serves                                                                  | `compiler/src/lower.rs`                                  |
-| A `program`: `fn`, `let` / `var`, `when`, `print`    | Exists, tested (RFC-0013 Wave 0). [Programs](/programs)                                                                        | `compiler/src/program.rs`, `examples/hello.mz`, `fib.mz` |
-| `int`, `float`, `bool`, `text`, numeric methods      | Exist, tested (RFC-0013 §3–§4, C1, C5). Integer overflow traps with exit 101                                                   | `compiler/src/numbers.rs`, `examples/numbers.mz`         |
-| `match`, `else when`, `for each`, `while`, enums     | Exist, tested in a program (RFC-0013 §7, C4)                                                                                   | `compiler/src/program/control.rs`, `examples/control.mz` |
-| `result(T, E)`, `error`, `try`, enum columns         | Exist, tested in a program (RFC-0013 §12, C9)                                                                                  | `compiler/src/program/errors.rs`, `examples/errors.mz`   |
-| `mz run`: a program lowered to Rust, built and run   | Exists, tested. A dependency-free package; CI runs every example program                                                       | `compiler/src/run.rs`                                    |
-| The language harness: `mz harness`                   | **First slice exists.** 191 entries, 80 diagnostic codes, 49 pending; plugin host not built                                    | `compiler/src/harness.rs`, RFC-0012                      |
-| Benchmark runner and scorer                          | Exist, tested, used for two pilots                                                                                             | `benchmarks/runner`, `benchmarks/harness`                |
-| Benchmark arms                                       | `mzizi`, `dioxus`, `leptos`, `react`, `mzizi-be`; React, Leptos and `mzizi-be` never run                                       | `benchmarks/arms/`                                       |
-| Backend probe crate and task B1                      | Exist, tested; the runner does not score with probes yet                                                                       | `benchmarks/probe`, `benchmarks/tasks/b1-routing`        |
-| Kill-criterion driver and task checker               | Exist, never run for real; refuse to start without `PLAN.md`                                                                   | `benchmarks/kill-criterion/`                             |
-| Phase 0 pilot results                                | **Two pilots, no advantage shown**                                                                                             | `benchmarks/results/`                                    |
-| Readiness audit of pilot 2's fixes                   | **Mostly fixed; the run still waits on the items listed there**                                                                | `benchmarks/READINESS.md`                                |
-| Performance suite against hand-written Rust          | Exists. CI checks only that outputs agree; **no timing is committed, none is a result**                                        | `benchmarks/perf/`                                       |
-| Kill-criterion benchmark run                         | **Has not happened**                                                                                                           | —                                                        |
-| Held-out task set                                    | **Not created**; who writes it is for the owner to confirm                                                                     | —                                                        |
-| `mz refs`, `mz path`, `mz patch`, `mz diff`          | **Designed, not built**                                                                                                        | RFC-0003 §5                                              |
-| Text methods in a program (C6)                       | **Partial** (🟡): length, search, `trim`, case, `replace`, `repeat`. The methods that return an option or a list are not built | `compiler/src/program/text.rs`, `examples/text.mz`       |
-| `list`, `map`, `set`, records and methods (C7, C8)   | **Exist, tested** in a program; C7 and C8 are ✅                                                                               | `compiler/src/program/collections.rs`, `records.rs`      |
-| Modules, a standard library                          | **Not built**                                                                                                                  | `LANGUAGE-TRACKER.md` P1, P2                             |
-| Local state (`state x: int = 0`)                     | **Unresolved design question**                                                                                                 | RFC-0001 §7, RFC-0002 §6, RFC-0003 §8                    |
-| Lowering a component to Rust or Dioxus               | **Not started.** A service and a program lower                                                                                 | `LANGUAGE-TRACKER.md` P3                                 |
-| Workers, Containers or WebAssembly targets           | **Not started**                                                                                                                | `LANGUAGE-TRACKER.md` P11                                |
-| Rendering, any target                                | **Not started.** Phase 1                                                                                                       | —                                                        |
+| Piece                                                | State                                                                                                                                      | Where                                                                          |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ |
+| Lexer                                                | Exists, tested                                                                                                                             | `compiler/src/lex.rs`                                                          |
+| Recovering parser                                    | Exists, tested                                                                                                                             | `compiler/src/parse.rs`                                                        |
+| Name and type resolver                               | Exists, tested (RFC-0008)                                                                                                                  | `compiler/src/resolve.rs`                                                      |
+| `list(T)`, `option(T)`, `record`, `for each`, `else` | Exist, tested (RFC-0008)                                                                                                                   | `compiler/src/parse.rs`, `resolve.rs`                                          |
+| Agent diagnostic protocol (NDJSON)                   | Exists, tested                                                                                                                             | `compiler/src/diagnostic.rs`                                                   |
+| `mz fix`: every `exact` fix in one pass              | Exists, tested                                                                                                                             | `compiler/src/main.rs`, `compiler/src/lib.rs`                                  |
+| Contract evaluation, `mz contract`                   | Exists, tested (RFC-0006). Checks a component against itself                                                                               | `compiler/src/contract.rs`                                                     |
+| Content-addressed IR and SHA-256 store               | Exists, tested, measured                                                                                                                   | `compiler/src/ir.rs`, `compiler/src/hash.rs`                                   |
+| `mz outline`                                         | Exists, tested                                                                                                                             | `compiler/src/outline.rs`                                                      |
+| A nesting cap: past 64 blocks, one `MZ0411`          | Exists, tested. Deep input gives a diagnostic, not a stack overflow; 32 in a program                                                       | `compiler/src/parse.rs`, `compiler/tests/robustness.rs`                        |
+| Nine primitives written in Mzizi                     | Pass `mz check` and `mz contract` in CI; 29 contract clauses                                                                               | `primitives/*.mz`                                                              |
+| Two ported registry components                       | Pass `mz check` and `mz contract` in CI                                                                                                    | `examples/*.mz`                                                                |
+| A `service` with HTTP routes and handlers            | Exists, tested (RFC-0011). Checked by `mz check`                                                                                           | `compiler/src/service.rs`, `examples/registry.mz`                              |
+| `mz contract` on a service                           | Exists, tested. Runs it in process; `ensure` tested, not proven                                                                            | `compiler/src/serve.rs`                                                        |
+| `mz build`: a service lowered to Rust + axum         | Exists, tested. A local package CI compiles, tests and serves                                                                              | `compiler/src/lower.rs`                                                        |
+| A `program`: `fn`, `let` / `var`, `when`, `print`    | Exists, tested (RFC-0013 Wave 0). [Programs](/programs)                                                                                    | `compiler/src/program.rs`, `examples/hello.mz`, `fib.mz`                       |
+| `int`, `float`, `bool`, `text`, numeric methods      | Exist, tested (RFC-0013 §3–§4, C1, C5). Integer overflow traps with exit 101                                                               | `compiler/src/numbers.rs`, `examples/numbers.mz`                               |
+| `match`, `else when`, `for each`, `while`, enums     | Exist, tested in a program (RFC-0013 §7, C4)                                                                                               | `compiler/src/program/control.rs`, `examples/control.mz`                       |
+| `result(T, E)`, `error`, `try`, enum columns         | Exist, tested in a program (RFC-0013 §12, C9)                                                                                              | `compiler/src/program/errors.rs`, `examples/errors.mz`                         |
+| `mz run`: a program lowered to Rust, built and run   | Exists, tested. A dependency-free package; CI runs every example program                                                                   | `compiler/src/run.rs`                                                          |
+| The language harness: `mz harness`                   | **First slice exists.** 197 entries, 80 diagnostic codes, 49 pending; plugin host not built                                                | `compiler/src/harness.rs`, RFC-0012                                            |
+| Benchmark runner and scorer                          | Exist, tested, used for two pilots                                                                                                         | `benchmarks/runner`, `benchmarks/harness`                                      |
+| Benchmark arms                                       | `mzizi`, `dioxus`, `leptos`, `react`, `mzizi-be`; React, Leptos and `mzizi-be` never run                                                   | `benchmarks/arms/`                                                             |
+| Backend probe crate and task B1                      | Exist, tested; the runner does not score with probes yet                                                                                   | `benchmarks/probe`, `benchmarks/tasks/b1-routing`                              |
+| Kill-criterion driver and task checker               | Exist, never run for real; refuse to start without `PLAN.md`                                                                               | `benchmarks/kill-criterion/`                                                   |
+| Phase 0 pilot results                                | **Two pilots, no advantage shown**                                                                                                         | `benchmarks/results/`                                                          |
+| Readiness audit of pilot 2's fixes                   | **Mostly fixed; the run still waits on the items listed there**                                                                            | `benchmarks/READINESS.md`                                                      |
+| Performance suite against hand-written Rust          | Exists. CI checks only that outputs agree; **no timing is committed, none is a result**                                                    | `benchmarks/perf/`                                                             |
+| Kill-criterion benchmark run                         | **Has not happened**                                                                                                                       | —                                                                              |
+| Held-out task set                                    | **Not created**; who writes it is for the owner to confirm                                                                                 | —                                                                              |
+| `mz refs`, `mz path`, `mz patch`, `mz diff`          | **Designed, not built**                                                                                                                    | RFC-0003 §5                                                                    |
+| Text methods in a program (C6)                       | **Exist, tested** in a program; C6 is ✅: length, search, `trim`, case, `replace`, `repeat`, slicing, `split`, `chars`, `find` and parsing | `compiler/src/program/text.rs`, `compiler/src/text/ops.rs`, `examples/text.mz` |
+| `list`, `map`, `set`, records and methods (C7, C8)   | **Exist, tested** in a program; C7 and C8 are ✅                                                                                           | `compiler/src/program/collections.rs`, `records.rs`                            |
+| Modules, a standard library                          | **Not built**                                                                                                                              | `LANGUAGE-TRACKER.md` P1, P2                                                   |
+| Local state (`state x: int = 0`)                     | **Unresolved design question**                                                                                                             | RFC-0001 §7, RFC-0002 §6, RFC-0003 §8                                          |
+| Lowering a component to Rust or Dioxus               | **Not started.** A service and a program lower                                                                                             | `LANGUAGE-TRACKER.md` P3                                                       |
+| Workers, Containers or WebAssembly targets           | **Not started**                                                                                                                            | `LANGUAGE-TRACKER.md` P11                                                      |
+| Rendering, any target                                | **Not started.** Phase 1                                                                                                                   | —                                                                              |
 
-The compiler source is 33,138 lines across `compiler/src`. The workspace has **744 tests in 27 suites**,
-613 of them in the compiler crate and the rest in the benchmark harness, runner and probe crate
-(re-run for these docs at `4d0cdc3`: 613 and 744, all passing). CI gates on
+The compiler source is 33,438 lines across `compiler/src`. The workspace has **760 tests in 27 suites**,
+629 of them in the compiler crate and the rest in the benchmark harness, runner and probe crate
+(re-run for these docs at `1d5e578`: 629 and 760, all passing). CI gates on
 `cargo fmt --check`, `cargo clippy --all-targets -D warnings`, `cargo test`, `mz check` and
 `mz contract` over every primitive and example, and a `lowering` job that builds, tests and
 serves the example service, runs every example program through `mz run` against its
@@ -94,7 +95,7 @@ serves the example service, runs every example program through `mz run` against 
 
 The compiler crate is `version = "0.0.0"` with `publish = false`. Each release of the
 repository to `main` is tagged (`v0.4.0` is `0653903`, `v0.5.0` is `be88017` and `v0.6.0` is
-`dc156c5`, both of 8 October 2026, and `v0.7.0` is `4d0cdc3`, the third release of that day), but that tags the repository, not a
+`dc156c5`, both of 8 October 2026, `v0.7.0` is `4d0cdc3`, the third release of that day, and `v0.8.0` is `1d5e578`, the fourth), but that tags the repository, not a
 published compiler: there is no `cargo install mz` and no published crate. You build it from
 the repository or you do not have it.
 
@@ -145,8 +146,8 @@ the text methods:
 
 - **Text methods (C6, [mzizi#98](https://github.com/mzizi-dev/mzizi/pull/98)).** `length`,
   `contains`, `starts_with`, `ends_with`, `trim`, `to_upper`, `to_lower`, `replace(old, by = new)`
-  and `repeat(n)`. C6 stays 🟡: the methods that return an option or a list are not built, and
-  the owner has not answered RFC-0013 §20 Q20. [Programs: text methods](/programs#text-methods-c6).
+  and `repeat(n)`. C6 stayed 🟡 until the fourth release: the methods that return an option or a
+  list came with it. [Programs: text methods](/programs#text-methods-c6).
 - **Collections (C7, [mzizi#99](https://github.com/mzizi-dev/mzizi/pull/99)).** `list(T)`,
   `map(K, V)` and `set(K)` in a program, with bracket literals, indexing that gives an option,
   `otherwise`, indexed assignment, `in`, `for each` over a list, `range` as a list, the methods,
@@ -160,8 +161,30 @@ the text methods:
   holds 191 entries, 80 diagnostic codes and 49 pending codes.
 - **Tests.** 744 in the workspace, 613 of them in the compiler crate, all passing.
 
-M1 is not reached while C6 is 🟡. Nothing here is measured, and no benchmark has run on these
-features.
+M1 was not reached after this release, while C6 was 🟡. Nothing here is measured, and no benchmark
+has run on these features.
+
+### The fourth release, the same day (mzizi#109)
+
+The fourth release of 8 October 2026 ([mzizi#109](https://github.com/mzizi-dev/mzizi/pull/109),
+`staging` to `main`, merged as `1d5e578` and tagged `v0.8.0`) carries the rest of the text
+operations ([mzizi#106](https://github.com/mzizi-dev/mzizi/pull/106)). With it, every Tier 1 row is
+✅ on `main`:
+
+- **Text operations (C6, mzizi#106).** `s[i]` and `s.slice(a, to = b)` return `option(text)`,
+  `s.find(t)` returns `option(int)`, `s.split(sep)` and `s.chars()` return `list(text)`, and
+  `s.parse_int()` and `s.parse_float()` return `option(int)` and `option(float)`. On 8 October
+  2026 the owner decided RFC-0013 §20 Q20: built-in methods with tests meet C6's "Done when". C6 is
+  ✅, and [Programs: text methods](/programs#text-methods-c6) documents each method.
+- **Diagnostics.** `s.split("")` is `MZ0915`, and an empty separator at run time traps (`MZ0991`,
+  exit 101). `t in s` stays `MZ0962`, with the `exact` fix `s.contains(t)`. No code is added.
+- **M1 is met on `main`.** Every Tier 1 row, C1–C10, is ✅ in the tracker, so M1 ("all of Tier 1
+  ✅", [mzizi#69](https://github.com/mzizi-dev/mzizi/issues/69)) is met. The public suites stay
+  blocked, by the standard library (P2) alone. Generics and interfaces (P12) come after M1.
+- **Tests.** 760 in the workspace, 629 of them in the compiler crate, all passing. The language
+  harness holds 197 entries, with the same 80 diagnostic codes and 49 pending codes.
+
+Nothing here is measured, and no benchmark has run on these features.
 
 ### The performance suite is not a result
 

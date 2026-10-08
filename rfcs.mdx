@@ -350,15 +350,20 @@ printing; expressions and operators; bindings; functions; control flow in functi
 a result type and its propagation; how a program is run; how each construct lowers to Rust; a
 new range of diagnostic codes, `MZ09xx`; and the canonical form. Generics, interfaces and
 traits are deferred past M1. Its amendments ([mzizi#81](https://github.com/mzizi-dev/mzizi/pull/81))
-take changes from the language survey below, and its §20 holds 29 questions for the owner.
+take changes from the language survey below, and its §20 holds 29 questions for the owner. Q20
+(the text operations' "Done when") was decided on 8 October 2026.
 
 **Built** (released to `main` on 8 October 2026): Wave 0 ([mzizi#80](https://github.com/mzizi-dev/mzizi/pull/80)),
 `float` and the numeric methods ([#83](https://github.com/mzizi-dev/mzizi/pull/83)), control
-flow ([#89](https://github.com/mzizi-dev/mzizi/pull/89)) and errors
-([#87](https://github.com/mzizi-dev/mzizi/pull/87)). [Programs](/programs) documents them.
-**Design only:** text operations, collections, records and methods, named arguments beyond
-`range`, `try … via`, options in function bodies, a program's `contract` block, `mz test` and
-`mz run --agent`.
+flow ([#89](https://github.com/mzizi-dev/mzizi/pull/89)), errors
+([#87](https://github.com/mzizi-dev/mzizi/pull/87)), collections and records with methods
+([#99](https://github.com/mzizi-dev/mzizi/pull/99), [#101](https://github.com/mzizi-dev/mzizi/pull/101),
+[#102](https://github.com/mzizi-dev/mzizi/pull/102)) in the third release, and the text operations
+([#98](https://github.com/mzizi-dev/mzizi/pull/98) and [#106](https://github.com/mzizi-dev/mzizi/pull/106))
+in the third and fourth. [Programs](/programs) documents them.
+**Design only:** options in function bodies (`option(T)` as a type, and narrowing it), named
+arguments beyond `range`'s `to`, `slice`'s `to` and `fold`'s `step`, `try … via`, a program's
+`contract` block, `mz test`, `mz run --agent` and `fn … changes self`.
 
 **The language survey** ([`design/LANGUAGE-SURVEY.md`](https://github.com/mzizi-dev/mzizi/blob/main/design/LANGUAGE-SURVEY.md),
 [mzizi#75](https://github.com/mzizi-dev/mzizi/pull/75)) is design input, not an RFC. It surveys the
