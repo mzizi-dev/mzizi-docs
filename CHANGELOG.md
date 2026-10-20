@@ -21,19 +21,25 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
-### Changed — `console.mdx` names the repository its doctrine and its palette guard live in
+### Changed — `console.mdx` and `foundations/tokens.mdx` name the registry files they rely on
 
-- **"The framework doctrine" and "the framework repository" on `console.mdx` now name
-  [`mzizi-dev/mzizi-registry`](https://github.com/mzizi-dev/mzizi-registry).** With the earlier
-  app's framework no longer named, "the framework" had no referent. The stack doctrine is the
-  registry's `content/doctrine/documentation-architecture-framework/astro-vite-plus.mdx`, and the
-  guard against the retired "Five African Minerals" name is its
-  `__tests__/tokens-seven-fold.test.ts`. Both are linked or named in place. No claim changed.
+- **Both pages now name `mzizi-dev/mzizi-registry` where they said "the framework doctrine" or
+  "the framework repository".** With the earlier app's framework no longer named, "the
+  framework" had no referent.
+- `console.mdx` names the `documentation-architecture-framework` doctrine, whose framework is
+  "Astro + Vite+ (Capacitor shell)". It links the doctrine's file, `astro-vite-plus.mdx`, at
+  registry commit `f10d802`, and quotes its three rules as they read there. The one long
+  sentence that held all of this is now three.
+- Both pages link `__tests__/tokens-seven-fold.test.ts` at the same commit. They say it guards
+  the retired name "Five African Minerals" in the registry's own tracked files. `tokens.mdx`
+  said the "five-mineral phrasing" was guarded against, but the test checks only that exact
+  name.
+- No claim about the console or the palette changed.
 
 ### Changed — the earlier console app is named without a framework
 
-- **`console.mdx` and `registry/consuming.mdx` no longer name the UI framework the owner removed
-  from every repository** (owner decision, 2026-10-20, mzizi-dev/mzizi-registry#503).
+- **`console.mdx` and `registry/consuming.mdx` no longer name the framework the owner decided to
+  remove from every repository** (owner decision, 2026-10-20, mzizi-dev/mzizi-registry#503).
 - `console.mdx`: the earlier app is now "an earlier mini-app", "the earlier manifest" and "the
   earlier client", and the comparison table's first column is "Earlier app" (same rows).
 - `registry/consuming.mdx`: an Astro component sits beside its `.tsx` and `.rs` "with no React
