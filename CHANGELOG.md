@@ -21,6 +21,14 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
+## [2026-10-20]
+
+The release of `staging` to `main` on 20 October 2026. The newest entry merged that day. The entries below it reached docs.mzizi.dev with earlier releases of `staging` to `main` (the last on 8 October 2026), when `[Unreleased]` was not cut.
+
+### Changed — the earlier console app is named without a framework (2026-10-20)
+
+- **`console.mdx` and `registry/consuming.mdx` no longer name a UI framework they replaced or contrast with.** The owner's decision, 2026-10-20 (mzizi-dev/mzizi-registry#503), is that one framework is removed from every repository. The console page now calls the earlier app "an earlier mini-app", "an earlier manifest", and "the earlier client", and its comparison table's first column is "Earlier app" (same rows). The registry page's list of what a `.astro` file sits beside is now "no React or Vue under it". No URL, version, count or fact moved.
+
 ### Changed — the language's fourth release of 8 October 2026: every Tier 1 row is ✅, so M1 is met
 
 The language released `staging` to `main` (mzizi#109, merged as `1d5e578`, tagged `v0.8.0`). It
