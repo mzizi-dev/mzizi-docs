@@ -154,6 +154,16 @@ first, smallest, most measurable slice of that claim, not the whole of it.
 | **Compiled artifact**                          | WASM, and native for desktop and compatible-renderer mobile. A real native-per-platform artifact belongs to the later native-mobile track.                                                                                                |
 | **Post-quantum cryptography**                  | **Explicitly deferred.** A future research thread, named so it does not dilute Phase 0.                                                                                                                                                   |
 
+<Note>
+  **Decided 2026-10-20, not yet in this charter.** The owner decided that Mzizi builds to three
+  targets: Cloudflare Workers (wasm32), containers (any OCI host, such as Fly machines), and bare
+  metal (a native Linux binary). Every backend sits behind a trait with an adapter per side, so a
+  Cloudflare-hosted store and a Fly-hosted store are reachable from either. The table above and
+  the Phase 1 text below are quoted as the charter has them, including containers "reached from a
+  Worker through the Container binding". They will be amended by RFC. What builds today: a native
+  axum service and a native program. There is no container image and no Workers target yet.
+</Note>
+
 ## The phasing
 
 <Steps>

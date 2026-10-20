@@ -31,12 +31,12 @@ where Mzizi's docs live.
 Four tabs, in this order, because the language is the main subject and everything else
 supports it:
 
-| Tab            | What it covers                                                                                                                        | Source of truth                                                                                            |
-| -------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| **Language**   | Status, the pilot results, direction, syntax, primitives, the IR, the charter, the benchmark, the RFCs                                | [`mzizi-dev/mzizi`](https://github.com/mzizi-dev/mzizi)                                                    |
-| **Toolchain**  | `mz`, the MCP server, the CLI, the skills bundle                                                                                      | `mzizi-dev/mzizi`, and the published `@nyuchi/mzizi-*` npm packages                                        |
-| **Components** | Mzizi Roots (Rust-first, in progress), the registry, the DNA-helix architecture, foundations, patterns, blocks, charts, content style | [`mzizi-dev/mzizi-registry`](https://github.com/mzizi-dev/mzizi-registry) and `api.mzizi.dev/v1`           |
-| **Platform**   | The API gateway, where data lives, the console                                                                                        | [`mzizi-dev/mzizi-api-gateway`](https://github.com/mzizi-dev/mzizi-api-gateway), `mzizi-dev/mzizi-console` |
+| Tab            | What it covers                                                                                                                        | Source of truth                                                                                                           |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| **Language**   | Status, the pilot results, direction, syntax, primitives, the IR, the charter, the benchmark, the RFCs                                | [`mzizi-dev/mzizi`](https://github.com/mzizi-dev/mzizi)                                                                   |
+| **Toolchain**  | `mz`, the MCP server, the CLI, the skills bundle                                                                                      | `mzizi-dev/mzizi`, and the published `@nyuchi/mzizi-*` npm packages                                                       |
+| **Components** | Mzizi Roots (Rust-first, in progress), the registry, the DNA-helix architecture, foundations, patterns, blocks, charts, content style | [`mzizi-dev/mzizi-registry`](https://github.com/mzizi-dev/mzizi-registry) and `api.mzizi.dev/v1`                          |
+| **Platform**   | The API gateway, where data lives, the console                                                                                        | [`mzizi-dev/mzizi-api`](https://github.com/mzizi-dev/mzizi-api) (formerly `mzizi-api-gateway`), `mzizi-dev/mzizi-console` |
 
 ## The one editorial rule
 
@@ -70,9 +70,9 @@ the Mzizi Roots crates on crates.io, and the `@nyuchi/mzizi-*` npm packages from
 Checked 2026-09-29. Most inherited prose gets at least one of these wrong.
 
 - **No database outside the console.** The registry is files (`registry.json`, component
-  source, `content/doctrine/**`). `api.mzizi.dev` is `mzizi-api-gateway`, a Hono Worker
+  source, `content/doctrine/**`). `api.mzizi.dev` is `mzizi-api` (formerly `mzizi-api-gateway`), a Hono Worker
   that bundles those files from a pinned registry commit; `mcp.mzizi.dev` does the same.
-  Only `mzizi-console` uses Supabase.
+  Only `mzizi-console` uses a database, and today that is Supabase; its decided store is Cloudflare D1.
 - **The install form is `https://api.mzizi.dev/v1/ui/<name>`.** `mzizi.dev/api/v1/*`
   redirects there.
 - **The palette is 21 colour families**: 7 minerals, 7 heritage, 7 experimental.

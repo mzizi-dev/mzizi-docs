@@ -63,6 +63,15 @@ published on 7 October 2026 by registry releases v4.6.0 and v4.7.0, v4.8.0 left 
 **breaking** for code that builds or matches `Inline::Link` (links now carry a `title`) or
 `ListItem::children` (now `Vec<ListChild>`).
 
+**The render path.** The components are Mzizi's own, not borrowed from another framework. Their
+render path is moving to Mzizi's own `render(props) -> String`: registry
+[#506](https://github.com/mzizi-dev/mzizi-registry/pull/506) and
+[#510](https://github.com/mzizi-dev/mzizi-registry/pull/510) are merged, with a skeleton and six
+static primitives. Dioxus is still a dependency of `mzizi-ui`, `mzizi-brand`, `mzizi-shell`,
+`mzizi-docs` and `mzizi-roots` until that migration finishes (registry `RFC-roots-renderer`). The
+crates on crates.io at `0.3.0` render through Dioxus, and the table and examples below describe
+them as published.
+
 | Crate                | What it holds (from each crate's own description)                                                                                                           |
 | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `mzizi-roots`        | **Umbrella, UI side.** Re-exports the tokens, `mzizi-ui`, `mzizi-brand` and `mzizi-shell`                                                                   |

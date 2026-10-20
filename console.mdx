@@ -1,6 +1,6 @@
 ---
 title: "The Mzizi console"
-description: "app.mzizi.dev — Astro chrome with Rust islands over the registry API. What it is, what it replaced, and why it was ported by contract rather than translated."
+description: "app.mzizi.dev — Astro, with Dioxus islands over the registry API today; the rebuild is decided, not built. What it is, what it replaced, and why it was ported by contract rather than translated."
 sidebarTitle: "The console"
 icon: "layout-dashboard"
 ---
@@ -12,25 +12,38 @@ icon: "layout-dashboard"
 </Note>
 
 [`mzizi-dev/mzizi-console`](https://github.com/mzizi-dev/mzizi-console) is the Mzizi console,
-live at [`app.mzizi.dev`](https://app.mzizi.dev). **Astro in front, Rust behind.** It reads
-the registry at `https://api.mzizi.dev/v1`.
+live at [`app.mzizi.dev`](https://app.mzizi.dev). It is a standalone repository, and its scope is
+the registry, the components, the tokens, the architecture and developer tooling. Today it is
+Astro in front, with Dioxus islands behind for the data. It reads the registry at
+`https://api.mzizi.dev/v1`.
 
 It is also the one part of Mzizi with a database. Accounts, component version history,
-usage telemetry and the Fundi issue desk live there, in Supabase, and nowhere else. See
-[where data lives](/platform/data). The console is where the gated [Fundi tools](/toolchain/mcp#the-fundi-tools)
+usage telemetry and the Fundi issue desk live there. Today that store is Supabase, and nowhere
+else. See [where data lives](/platform/data). The console is where the gated [Fundi tools](/toolchain/mcp#the-fundi-tools)
 get their signed-in user.
 
 ## The split
 
 Astro renders the **chrome** — navigation, headings, prose, the page shell — as static HTML at
-build time. Rust and Dioxus **islands** render the **data**, fetched from the registry API at
-runtime.
+build time. Today, Dioxus **islands** render the **data**, fetched from the registry API at
+runtime. Mzizi's own components are Rust, and their render path is Mzizi's own `render()`; the rebuild described below replaces them.
 
 Both halves are deliberate. The chrome is static because a console's navigation has no reason
 to cost a 900 KiB WebAssembly download before it can show a heading; the overview page mounts
 no island at all and ships no WASM. The data is live because a component list baked in at build
 time goes stale the moment a component ships, and a stale copy that still looks authoritative
 is the defect class this ecosystem keeps removing.
+
+## Where it is going
+
+Decided, not built ([`mzizi-console#34`](https://github.com/mzizi-dev/mzizi-console/issues/34)):
+
+- **One Rust Worker** serves Astro's output. There is no second service for the chrome.
+- **Sign-in moves to the server**, through WorkOS, with a session cookie.
+- **The data store is Cloudflare D1**, not Supabase.
+- **It depends on the published Roots crates** rather than on a framework's islands.
+
+Until that work lands, the page above describes what runs today.
 
 ## Status
 
