@@ -21,9 +21,12 @@ curl https://api.mzizi.dev/v1/brand
 
 <Warning>
   **Seven, not five.** A great deal of inherited documentation says "the Five African
-  Minerals". Sodalite and copper were added, and the five-mineral phrasing was removed from
-  the framework repository and guarded against there. If you find it in a client, a manifest
-  or a page, it is out of date.
+  Minerals". Sodalite and copper were added. `mzizi-dev/mzizi-registry` removed the retired name
+  "Five African Minerals". Its
+  [`__tests__/tokens-seven-fold.test.ts`](https://github.com/mzizi-dev/mzizi-registry/blob/f10d8024f2989a50732db3fa9c6e1c5205a7002a/__tests__/tokens-seven-fold.test.ts)
+  fails if that exact name appears in the registry's tracked files outside its changelog, release
+  records and tests. It reads only the registry. If you find the name or a five-mineral count in
+  a client, a manifest or a page, it is out of date.
 </Warning>
 
 | Mineral    | CSS variable         | Light     | Dark      | Origin                             | Used for                          |

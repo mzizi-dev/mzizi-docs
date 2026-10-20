@@ -23,11 +23,34 @@ entries move under it. Mintlify does not publish this file.
 
 ## [2026-10-20]
 
-The release of `staging` to `main` on 20 October 2026. The newest entry merged that day. The entries below it reached docs.mzizi.dev with earlier releases of `staging` to `main` (the last on 8 October 2026), when `[Unreleased]` was not cut.
+### Changed — `console.mdx` and `foundations/tokens.mdx` name the registry files they rely on
 
-### Changed — the earlier console app is named without a framework (2026-10-20)
+- **Both pages now name `mzizi-dev/mzizi-registry` where they said "the framework doctrine" or
+  "the framework repository".** With the earlier app's framework no longer named, "the
+  framework" had no referent.
+- `console.mdx` names the `documentation-architecture-framework` doctrine, whose framework is
+  "Astro + Vite+ (Capacitor shell)". It links the doctrine's file, `astro-vite-plus.mdx`, at
+  registry commit `f10d802`, and quotes its three rules as they read there. The one long
+  sentence that held all of this is now three.
+- Both pages link `__tests__/tokens-seven-fold.test.ts` at the same commit. They say it guards
+  the retired name "Five African Minerals" in the registry's own tracked files. `tokens.mdx`
+  said the "five-mineral phrasing" was guarded against, but the test checks only that exact
+  name.
+- No claim about the console or the palette changed.
 
-- **`console.mdx` and `registry/consuming.mdx` no longer name a UI framework they replaced or contrast with.** The owner's decision, 2026-10-20 (mzizi-dev/mzizi-registry#503), is that one framework is removed from every repository. The console page now calls the earlier app "an earlier mini-app", "an earlier manifest", and "the earlier client", and its comparison table's first column is "Earlier app" (same rows). The registry page's list of what a `.astro` file sits beside is now "no React or Vue under it". No URL, version, count or fact moved.
+### Changed — the earlier console app is named without a framework
+
+- **`console.mdx` and `registry/consuming.mdx` no longer name the framework the owner decided to
+  remove from every repository** (owner decision, 2026-10-20, mzizi-dev/mzizi-registry#503).
+- `console.mdx`: the earlier app is now "an earlier mini-app", "the earlier manifest" and "the
+  earlier client", and the comparison table's first column is "Earlier app" (same rows).
+- `registry/consuming.mdx`: an Astro component sits beside its `.tsx` and `.rs` "with no React
+  or Vue under it". React and Vue are still named there.
+- Removed: that framework's name, five times (four on `console.mdx`, one on
+  `registry/consuming.mdx`), and its major version, 5, once ("a … 5 mini-app"). That change
+  (#59) touched nothing else on either page.
+
+## [2026-10-08]
 
 ### Changed — the language's fourth release of 8 October 2026: every Tier 1 row is ✅, so M1 is met
 
@@ -200,7 +223,7 @@ tests in the compiler crate and `cargo test --workspace` 644 in the workspace, a
 - **`AGENTS.md`**: the `mz run` trap is retired now that it is on `main`, and two rules are
   added: regenerate the `MZ09xx` table from the definition, and say "the language harness".
 
-### Changed — progress toward M1: what is shipped, what is on `staging` and what is in progress (2026-10-07)
+### Changed — progress toward M1: what is shipped, what is on `staging` and what is in progress
 
 The owner asked for the docs to say where the language is. Checked against language `main` at
 `0653903` (`v0.4.0`), `staging` at `509bc2f` (`v0.4.6`) and the open pull requests, on
@@ -244,7 +267,7 @@ The owner asked for the docs to say where the language is. Checked against langu
   command once it reaches `main`. It also says that the `blob/staging` links in `rfcs` and
   `status` move to `main` in the post-release docs pass.
 
-### Changed — versions and features from the 5–7 October releases (2026-10-07)
+### Changed — versions and features from the 5–7 October releases
 
 A freshness update. The scheduled Freshness check (`node scripts/check-freshness.mjs`) reported
 14 drifts. While they were being fixed, `@nyuchi/mzizi-cli` 0.7.0 reached npm and the language
@@ -296,15 +319,17 @@ released to `main` (`9a88e1d`).
     from its README, which still said 12,644.
 - `AGENTS.md`'s list of facts moves to the same versions and dates.
 
-### Added — `CLAUDE.md` for Claude Code (2026-10-07)
+### Added — `CLAUDE.md` for Claude Code
 
 - **`CLAUDE.md` gives Claude Code its repository guide.** It imports `AGENTS.md` rather than repeating it, and adds the staging-to-main branch and release flow, the local changelog-gate commands, which check to run for which change, and how `docs.json`, `style.css` and the scripts depend on each other. Docs only: no page, navigation or CI changes.
 
-### Added — `AGENTS.md` loads the Mzizi dev skills (2026-10-06)
+### Added — `AGENTS.md` loads the Mzizi dev skills
 
 - **`AGENTS.md` gains "Dev skills, progress reports and the merge gate"**, the canonical rule block from nyuchi/.github#87, after "Track big work in GitHub issues": load the Mzizi dev skills (`digital-hygiene` and `progress-report`), clone only into a directory unique to the agent, run dev work on a 10-minute progress-report loop whose ticks never publish, release, merge or deploy without the owner's approval, and merge only through the merge gate. Docs only: no behaviour changes, and CI is unchanged.
 
-### Added — the Discover detail pattern, the Astro target and Open in Mukoko (2026-10-05)
+## [2026-10-05]
+
+### Added — the Discover detail pattern, the Astro target and Open in Mukoko
 
 - **Added: `patterns/discover-detail`.** The page for one item reached from a Discover page uses five parts (DetailHero, DiscoverBreadcrumb, MetaList, DetailActions, RelatedRail), each with a contract, an `.astro` and a `.tsx` (mzizi-registry#429). The page also covers the canonical Open in Mukoko link, `https://mukoko.com/open/<service>/<id>`.
 - **Changed: `toolchain/cli`**: `--target astro`, inferred in Astro projects.
@@ -312,7 +337,9 @@ released to `main` (`9a88e1d`).
 - **Changed: `registry/contracts`.** Every format is tested in the registry (the Astro and React runners), every contract has an `.astro` and a `.tsx`, and `identity` gains `contract`.
 - **Changed: `patterns/discover-standard`.** The Next.js apps adopt the standard through the registry's React build. "Open in Mukoko" is the canonical link (`OpenInApp` 1.1.0).
 
-### Changed — the language pages are re-checked at language main `6da2170` (2026-10-04)
+## [2026-10-04]
+
+### Changed — the language pages are re-checked at language main `6da2170`
 
 A freshness update (#38). The language's six commits since `62a0f32` (`dd9bc85`,
 `d8e65e8`, `03975c6`, `8e9d317`, `57b4b50`, `6da2170`) change its docs, its CI
@@ -344,7 +371,7 @@ and its security contact. None touches `compiler/`, the tests, `primitives/`,
   list, and its README and `AGENTS.md` link the published design system) state
   nothing these pages say differently.
 
-### Added — the published design system is linked (2026-10-04)
+### Added — the published design system is linked
 
 - **Foundations links the Design System artifact.** `foundations/overview.mdx`
   says the design system is also published on claude.ai as the
@@ -353,7 +380,7 @@ and its security contact. None touches `compiler/`, the tests, `primitives/`,
   (arriving with mzizi-registry#418), which is the copy to change. `AGENTS.md`
   says the same for contributors.
 
-### Changed — `@bundu/ui` 0.3.0 carries the Dashboard Standard (2026-10-04)
+### Changed — `@bundu/ui` 0.3.0 carries the Dashboard Standard
 
 - **Dashboard Standard: `@bundu/ui` 0.3.0, not 0.4.x.** Owner decision,
   2026-10-04: unpublished versions are reset to the org versioning policy, so
@@ -361,39 +388,41 @@ and its security contact. None touches `compiler/`, the tests, `primitives/`,
   carries the standard, including AppShell's `accent`. The page now says 0.3.0
   where it said 0.4.0, 0.4.1 or 0.4.x.
 
-### Added — the Mzizi Discover Standard (2026-10-04)
+### Added — the Mzizi Discover Standard
 
 - **`patterns/discover-standard`**: one design for every public discover and browse page in the Mukoko family (circles, news, events, weather, the super-app on the web). The anatomy, the one `DiscoverCard` with its four variants, shared behaviour (URLs, cursor paging, no client JavaScript or inline styles, "Open in Mukoko" as an https link, SEO), server-filled shells, density, brand and accessibility, the eleven contracts, how to adopt, and the upstream-first rule. Screenshots from circles.mukoko.com. Tracking: mzizi-dev/mzizi-registry#413.
 - **`registry/contracts`** names the second contract family, `discover/`.
 
-### Changed — Mukoko Events replaces nhimbe (2026-10-04)
+### Changed — Mukoko Events replaces nhimbe
 
 - The owner's decision of 4 October 2026 retires the _nhimbe_ brand. The events platform is Mukoko Events at events.mukoko.com, and its mineral stays malachite. Canon's ecosystem row is now `events`, and `nhimbe` is kept as a deprecated alias (mukoko-dev/nhimbe#155).
 - **`patterns/dashboard-standard`**: the overlay table names `brand-events.css` and says that `brand-nhimbe.css` is a deprecated alias of it. The lingo, bushtrade, campfire and events overlays are no longer marked "proposed", because they shipped in packages-npm#24.
 - **`foundations/tokens`**: the brand-mineral table's `nhimbe` row is now `events`, with a note on the alias. **`foundations/typography`** drops Nhimbe from the wordmark examples.
 
-### Added — component contracts, the reference (2026-10-04)
+### Added — component contracts, the reference
 
 - **New page, `registry/contracts`** (Components → The registry → Contracts): the machine-readable, versioned contracts that the Dashboard Standard's 31 `@bundu/ui` app components carry in `mzizi-dev/mzizi-registry` `contracts/` (mzizi-registry#406). It links the schema, `index.json`, the README and every `app/` contract by node, and walks through each field with part of the Button contract as an example. It covers the versioning rule (major, minor, patch), the clause subset and the rule that an unevaluable clause fails, how the block relates to the Roots crates' `CONTRACT` and to `mz contract`, and the no-JS, density and theming requirements. It also says how each implementation is checked, which primitives have React and Rust siblings, the four recorded gaps, and how to add or change a contract.
 - **`patterns/dashboard-standard`** (Contracts) and **`registry/overview`** link to the new page.
 
-### Added — the Mzizi Dashboard Standard (2026-10-04)
+### Added — the Mzizi Dashboard Standard
 
 - **New page, `patterns/dashboard-standard`** (Components → Patterns → Dashboard Standard): the owner's decision of 4 October 2026 that the Nyuchi console shell is the one dashboard design for the whole Bundu ecosystem, with each brand's mineral as an overlay. It covers the anatomy (sidebar groups, top bar, page header, toolbar, stat tiles, content cards, empty states, footer) mapped to the 31 `@bundu/ui` app components, density for fine and coarse pointers, the brand overlay rules and the ecosystem minerals, the accessibility baseline, the no-JavaScript behaviour, the component contracts (format, how each implementation is tested, and which have no React or Rust build), and how to adopt it. Five console screenshots are the reference, in `images/dashboard-standard/`. Tracking: mzizi-dev/mzizi-registry#404.
 
-### Changed — the MCP server carries the registry API handlers it runs (2026-10-03)
+## [2026-10-02]
+
+### Changed — the MCP server carries the registry API handlers it runs
 
 - **`toolchain/mcp.mdx`, "Where its data comes from":** `mzizi-mcp` still generates its data by running the registry's API handlers at build time, but the registry no longer has them (it removed its Next.js app, `app/api/v1/**` included, on 2026-10-02). The page now says `mzizi-mcp` keeps the eleven handlers it calls in `mzizi-mcp/scripts/registry-handlers/`, ported unchanged from registry `270af9f` (agent-tools #172). They are build-time only, they read the pinned registry checkout through its own `lib/` modules, and any npm import they make throws if used, so a handler that reaches for a database fails the build. The pin paragraph no longer says the bot waits for its token: it runs on `RELEASE_BUMP_TOKEN` and opened agent-tools #169 on 2026-10-02.
 - **`scripts/check-freshness.mjs`:** its warning for a gateway pin behind registry `main` no longer says the bot waits for a `PIN_BUMP_TOKEN`.
 
-### Changed — one security contact: `security@nyuchi.com` (2026-10-03)
+### Changed — one security contact: `security@nyuchi.com`
 
 - **Security reports for everything Mzizi go to `security@nyuchi.com`** (owner, 3 October
   2026). The "Reporting a security problem" table on `/ecosystem` becomes one sentence, the
   footer's security link and the `/.well-known/security.txt` contact on
   `/platform/api-gateway` name it, and `security@bundu.org` is no longer used.
 
-### Changed — the registry has no app any more (2026-10-02)
+### Changed — the registry has no app any more
 
 mzizi-registry removed its Next.js app, its `/api/*` handlers and its OpenNext deployment on 2026-10-02 (mzizi-registry #389 and #391). These pages stop describing them.
 
@@ -405,9 +434,11 @@ mzizi-registry removed its Next.js app, its `/api/*` handlers and its OpenNext d
 - **`platform/api-gateway.mdx`, "How the pin moves":** the pin bot reads `RELEASE_BUMP_TOKEN` (renamed from `PIN_BUMP_TOKEN` on 2026-09-30) and is live: it opened mzizi-api-gateway#29 and agent-tools#169 on 2026-10-02. It merges its own pull request only when the token also has Checks and Commit statuses read access; otherwise the pull request waits for a person. The page used to say the bot did nothing until a `PIN_BUMP_TOKEN` was added.
 - **`patterns/architecture.mdx`, `patterns/lazy-loading.mdx`:** the design portal's live demos went with the registry's app, and no live demo replaces them.
 
-### Changed — lint runs once, from the org-required workflow (2026-10-03)
+### Changed — lint runs once, from the org-required workflow
 
 - **Removed `.github/workflows/lint.yml`.** The `mzizi-dev` org ruleset now runs the shared lint on every pull request through `mzizi-dev/.github`'s `org-lint.yml`, publishing the same five `lint / …` checks, so the repo's own caller only ran lint a second time.
+
+## [2026-09-30]
 
 ### Changed — the skills page describes `@nyuchi/mzizi-skills` 0.8.5
 
@@ -552,6 +583,10 @@ of these is stated as a goal or a design, never a result.
   non-exempt file without adding to this file. `scripts/changelog-gate.test.sh`
   tests the gate, and the check runs it first.
 
+- A scheduled, non-required freshness check (`scripts/check-freshness.mjs`)
+  that compares stated versions, test counts and pins with their live sources,
+  and the owner's freshness rule in AGENTS.md and the README. (#14, #15, #16)
+
 ### Changed
 
 - **The hematite accent now cites canon's `--heritage-hematite-text`** (mzizi-registry #385)
@@ -607,10 +642,6 @@ of these is stated as a goal or a design, never a result.
 - **`AGENTS.md`** lists the five skills, the public plugin, Mzizi's hematite and CLI 0.6.3
   among the facts that inherited prose gets wrong.
 
-## [2026-09-30]
-
-### Changed
-
 - **`platform/api-gateway`** no longer quotes a registry pin as current. It says
   how to read the pin from the `X-Mzizi-Source` header, gives `9b86e034ffd8` as
   a dated example, and describes the pin-bump bot (hourly `bot/registry-pin`
@@ -637,12 +668,6 @@ of these is stated as a goal or a design, never a result.
   brand components is described. The toolchain pages give mzizi-cli 0.6.1
   with `mzizi add`, mzizi-mcp 0.10.1 as `io.github.mzizi-dev/mzizi-mcp`,
   mzizi-skills 0.7.0, and the MCP free tier as live. (#14)
-
-### Added
-
-- A scheduled, non-required freshness check (`scripts/check-freshness.mjs`)
-  that compares stated versions, test counts and pins with their live sources,
-  and the owner's freshness rule in AGENTS.md and the README. (#14, #15, #16)
 
 ## [2026-09-29]
 
