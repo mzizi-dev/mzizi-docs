@@ -42,10 +42,12 @@ host answers 200). Report a security problem in the console to `security@nyuchi.
 `@nyuchi/mzizi-console-app` — an earlier mini-app, last at `0.2.0-beta.1`, which the Nyuchi
 Console mounted under `/apps/mzizi/*`. It was never published to npm and shipped manually.
 
-The rewrite makes it a standalone surface at its own domain, and makes it Rust: the framework
-doctrine is that the UI is Astro and underneath is Rust first, TypeScript second, with no third
-UI framework. That also separates the two owners cleanly — Mzizi serves `mzizi.dev` and
-`api.mzizi.dev`; the console serves `app.mzizi.dev`.
+The rewrite makes it a standalone surface at its own domain, and makes it Rust: the stack
+doctrine in [`mzizi-dev/mzizi-registry`](https://github.com/mzizi-dev/mzizi-registry)
+(`content/doctrine/documentation-architecture-framework/astro-vite-plus.mdx`) is that the UI is
+Astro and underneath is Rust first, TypeScript second, with no third UI framework. That also
+separates the two owners cleanly — Mzizi serves `mzizi.dev` and `api.mzizi.dev`; the console
+serves `app.mzizi.dev`.
 
 ## Ported by contract, not translated
 
@@ -59,9 +61,10 @@ listed separately rather than as nodes with an empty backbone, because belonging
 backbone is the fact the model turns on. See [the helix](/architecture/overview).
 
 **Tokens** was described in the earlier manifest as the "Five African Minerals" palette. There
-are **seven** minerals, in a palette of 21 colour families. That naming was removed from the framework repository and guarded against
-there; the guard does not reach a separate repository, which is how the wrong count survived
-in a client.
+are **seven** minerals, in a palette of 21 colour families. That naming was removed from
+[`mzizi-dev/mzizi-registry`](https://github.com/mzizi-dev/mzizi-registry) and is guarded against
+there (`__tests__/tokens-seven-fold.test.ts`); the guard does not reach a separate repository,
+which is how the wrong count survived in a client.
 
 |                  | Earlier app            | The port                                      |
 | ---------------- | ---------------------- | --------------------------------------------- |
