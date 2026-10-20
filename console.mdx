@@ -39,13 +39,17 @@ host answers 200). Report a security problem in the console to `security@nyuchi.
 
 ## What it replaces
 
-`@nyuchi/mzizi-console-app` — a Svelte 5 mini-app, last at `0.2.0-beta.1`, which the Nyuchi
+`@nyuchi/mzizi-console-app` — an earlier mini-app, last at `0.2.0-beta.1`, which the Nyuchi
 Console mounted under `/apps/mzizi/*`. It was never published to npm and shipped manually.
 
-The rewrite makes it a standalone surface at its own domain, and makes it Rust: the framework
-doctrine is that the UI is Astro and underneath is Rust first, TypeScript second, with no third
-UI framework. That also separates the two owners cleanly — Mzizi serves `mzizi.dev` and
-`api.mzizi.dev`; the console serves `app.mzizi.dev`.
+The rewrite makes it a standalone surface at its own domain, and makes it Rust. That follows the
+`documentation-architecture-framework` doctrine ("Astro + Vite+ (Capacitor shell)"), which lives
+in `mzizi-dev/mzizi-registry` as
+[`astro-vite-plus.mdx`](https://github.com/mzizi-dev/mzizi-registry/blob/f10d8024f2989a50732db3fa9c6e1c5205a7002a/content/doctrine/documentation-architecture-framework/astro-vite-plus.mdx).
+At registry commit `f10d802` its rules read "The UI is Astro.", "Underneath is Rust first,
+TypeScript second." and "Mzizi's own surfaces have no third UI framework." The rewrite also
+separates the two owners cleanly — Mzizi serves `mzizi.dev` and `api.mzizi.dev`; the console
+serves `app.mzizi.dev`.
 
 ## Ported by contract, not translated
 
@@ -58,12 +62,15 @@ model was retired. So the route was rewritten against nodes, rungs and strands. 
 listed separately rather than as nodes with an empty backbone, because belonging to neither
 backbone is the fact the model turns on. See [the helix](/architecture/overview).
 
-**Tokens** was described in the Svelte manifest as the "Five African Minerals" palette. There
-are **seven** minerals, in a palette of 21 colour families. That naming was removed from the framework repository and guarded against
-there; the guard does not reach a separate repository, which is how the wrong count survived
-in a client.
+**Tokens** was described in the earlier manifest as the "Five African Minerals" palette. There
+are **seven** minerals, in a palette of 21 colour families. `mzizi-dev/mzizi-registry` removed the
+retired name "Five African Minerals". Its
+[`__tests__/tokens-seven-fold.test.ts`](https://github.com/mzizi-dev/mzizi-registry/blob/f10d8024f2989a50732db3fa9c6e1c5205a7002a/__tests__/tokens-seven-fold.test.ts)
+fails if that exact name appears in the registry's tracked files outside its changelog, release
+records and tests. The guard reads only the registry, so the name survived in a separate
+repository's client.
 
-|                  | Svelte app             | The port                                      |
+|                  | Earlier app            | The port                                      |
 | ---------------- | ---------------------- | --------------------------------------------- |
 | API base         | `mzizi.dev/api/v1`     | `api.mzizi.dev/v1`                            |
 | `GET /ui`        | typed as an array      | a registry document, components under `items` |
@@ -89,7 +96,7 @@ empty page rather than as an error.
 
 The console's test suite decodes **captured live responses** with its production types. That
 is a different claim from decoding fixtures the repository wrote itself, which prove only that
-the types are self-consistent — the Svelte client's types were self-consistent and wrong.
+the types are self-consistent — the earlier client's types were self-consistent and wrong.
 
 ```bash
 for e in ui brand architecture; do
