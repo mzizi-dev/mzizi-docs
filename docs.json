@@ -69,7 +69,8 @@
               "compiler",
               "toolchain/mcp",
               "toolchain/cli",
-              "toolchain/skills"
+              "toolchain/skills",
+              "toolchain/connect"
             ]
           }
         ]

@@ -1,0 +1,458 @@
+---
+title: "Connect a client"
+description: "Connect the Mzizi MCP server, and get the Mzizi skills, in Claude, Claude Code, the Claude API, ChatGPT, Codex, the OpenAI API, Cursor, VS Code, Gemini CLI, OpenCode, Windsurf and Z.ai's coding plan, each in its vendor's own format."
+sidebarTitle: "Connect a client"
+icon: "cable"
+---
+
+Every client below reaches the same two things: [the MCP server](/toolchain/mcp) at
+`https://mcp.mzizi.dev/mcp`, and [the agent skills](/toolchain/skills). Each section gives the
+vendor's own config format, checked against that vendor's documentation on 20 October 2026
+and linked, so you can check it again. Formats move; where a vendor's page and this one
+disagree, the vendor's page wins.
+
+## What you connect
+
+| Endpoint                                            | Use it for                                                                                 |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| `https://mcp.mzizi.dev/mcp`                         | Every tool, with no account. Streamable HTTP. It never asks you to sign in                 |
+| `https://mcp.mzizi.dev/mcp/signin`                  | The same server behind sign-in. It answers `401` until you sign in, then serves every tool |
+| `npx -y @nyuchi/mzizi-mcp` (stdio, on your machine) | The same tools and bundled data, offline except the `docs_*` tools. No credential          |
+
+**Which tools need sign-in.** Only `mzizi_fundi` and `mzizi_report_issue`, which act as your
+Mzizi console user. Connected to `/mcp`, they are listed, and calling one answers with how to
+sign in. A client starts its OAuth flow only when a server answers `401`, and `/mcp` never
+does, so to use those two tools, add `/mcp/signin` (as a second server, or instead of `/mcp`).
+The server supports dynamic client registration, so a client that asks how to register should
+register automatically. It does not publish a client ID metadata document.
+
+**How the skills arrive.** One of three ways, depending on the client:
+
+- **Natively, from the `mzizi` plugin.** Claude Code, and Codex and ChatGPT through the same
+  plugin, install the seven skills as skills and connect the MCP server in one step.
+- **Natively, from npm.** `npm install -D @nyuchi/mzizi-skills`, then
+  `npx skills experimental_sync`, links the skills into `.agents/skills/`, which Codex,
+  Cursor, VS Code, Gemini CLI and OpenCode all read.
+- **Over MCP.** Any client connected to the server can call `mzizi_get_skills`: with no
+  arguments it lists the skills and their categories, `name` returns one in full, and
+  `category` (`dev`, `design`, `language` or `build`) returns every skill in it in full.
+  Nothing to install. This is the route for Claude.ai, ChatGPT without the plugin, the APIs
+  and Windsurf.
+
+## At a glance
+
+| Client                        | Connect with                                                | Skills arrive                                                     | For the Fundi tools                               |
+| ----------------------------- | ----------------------------------------------------------- | ----------------------------------------------------------------- | ------------------------------------------------- |
+| Claude.ai                     | A custom connector                                          | Over MCP                                                          | A second connector at `/mcp/signin`               |
+| Claude Desktop                | A custom connector, or `claude_desktop_config.json` (stdio) | Over MCP                                                          | The connector route; stdio has no `mzizi_fundi`   |
+| Claude Code                   | The `mzizi` plugin, or `claude mcp add`                     | Natively with the plugin; over MCP otherwise                      | `claude mcp add` for `/mcp/signin`, then `/mcp`   |
+| The Claude API                | The MCP connector (`mcp_servers`)                           | Over MCP                                                          | `/mcp/signin` with an `authorization_token`       |
+| ChatGPT                       | A custom MCP server under Plugins                           | Over MCP                                                          | A second server at `/mcp/signin`                  |
+| OpenAI Codex                  | The `mzizi` plugin, or `config.toml`                        | Natively with the plugin or `.agents/skills/`; over MCP otherwise | A `/mcp/signin` table, then `codex mcp login`     |
+| The OpenAI API and Agents SDK | A `type: "mcp"` tool                                        | Over MCP                                                          | `/mcp/signin` with `authorization`                |
+| Z.ai's GLM Coding Plan        | Claude Code (or another tool it supports)                   | As that tool gets them                                            | As that tool does                                 |
+| OpenCode                      | `opencode.json`                                             | Natively from `.agents/skills/`, or over MCP                      | A second `remote` entry, then `opencode mcp auth` |
+| Cursor                        | `mcp.json`                                                  | Natively from `.agents/skills/`, or over MCP                      | A second entry at `/mcp/signin`                   |
+| VS Code and GitHub Copilot    | `MCP: Add Server`, `.mcp.json` or `mcp-config.json`         | Natively from `.agents/skills/`, or over MCP                      | A second HTTP server at `/mcp/signin`             |
+| Windsurf (Cascade)            | `mcp_config.json`                                           | Over MCP                                                          | A second `serverUrl` entry at `/mcp/signin`       |
+| Gemini CLI                    | `gemini mcp add` or `settings.json`                         | Natively from `.agents/skills/`, or over MCP                      | `gemini mcp add` for `/mcp/signin`                |
+
+## Claude
+
+### Claude.ai
+
+Add a custom connector: in [Customize > Connectors](https://claude.ai/customize/connectors),
+choose **+ Add**, then **Add custom connector**, name it `Mzizi`, and enter
+`https://mcp.mzizi.dev/mcp`. Under **Authentication**, choose **No sign in**. On Team and
+Enterprise plans an owner adds it once in
+[Organization settings > Connectors](https://claude.ai/admin-settings/connectors) (**Add**,
+then **Custom**, then **Web**), and each member connects to it.
+
+For the Fundi tools, add a second connector at `https://mcp.mzizi.dev/mcp/signin`, choose a
+sign-in option under **Authentication**, and **Register automatically** under **OAuth client**.
+
+Enable it in a conversation from **+**, then **Connectors**. Skills arrive over MCP: ask Claude
+to call `mzizi_get_skills`. Free plans are limited to one custom connector. Claude connects to
+the server from Anthropic's cloud, not from your device; `mcp.mzizi.dev` is public, so that works.
+
+Checked against [Get started with custom connectors using remote
+MCP](https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp).
+
+### Claude Desktop
+
+The custom connector above works in Claude Desktop too; it is configured on your Claude
+account, not on the machine. To run the server on your machine instead, over stdio, open
+**Settings** from the Claude menu, then **Developer**, then **Edit Config**, and add it to
+`claude_desktop_config.json` (`~/Library/Application Support/Claude/` on macOS,
+`%APPDATA%\Claude\` on Windows):
+
+```json
+{
+  "mcpServers": {
+    "mzizi": {
+      "command": "npx",
+      "args": ["-y", "@nyuchi/mzizi-mcp"]
+    }
+  }
+}
+```
+
+Restart Claude Desktop. The stdio server needs Node.js, holds no credential, and does not
+offer `mzizi_fundi`. Skills arrive over MCP.
+
+Checked against the custom connectors article above and [Connect to local MCP
+servers](https://modelcontextprotocol.io/docs/develop/connect-local-servers).
+
+### Claude Code
+
+**The plugin** carries the seven skills and connects the server:
+
+```text
+/plugin marketplace add mzizi-dev/mzizi-registry
+/plugin install mzizi@mzizi
+```
+
+From a shell, the same is `claude plugin marketplace add mzizi-dev/mzizi-registry` and
+`claude plugin install mzizi@mzizi`. It lives in the `plugin/` directory of
+[`mzizi-dev/mzizi-registry`](https://github.com/mzizi-dev/mzizi-registry/tree/main/plugin); see
+[the skills bundle](/toolchain/skills#as-a-claude-code-plugin) for which skills version it
+carries.
+
+**Or the server alone**, with skills over MCP:
+
+```bash
+claude mcp add --transport http --scope user mzizi https://mcp.mzizi.dev/mcp
+# for the Fundi tools; run /mcp in a session to sign in
+claude mcp add --transport http --scope user mzizi-signin https://mcp.mzizi.dev/mcp/signin
+```
+
+Leave out `--scope user` to add it to the current project only. On 20 October 2026,
+`claude mcp list` showed `mzizi` as connected and `mzizi-signin` as needing authentication,
+and the plugin installed from a local copy of the registry listed seven skills and the `mzizi`
+server, connected.
+
+Checked against the Claude Code [MCP](https://code.claude.com/docs/en/mcp),
+[plugin manifest](https://code.claude.com/docs/en/plugins-reference) and
+[marketplace](https://code.claude.com/docs/en/plugins/marketplace-reference) references.
+
+### The Claude API
+
+The Messages API's MCP connector reaches a remote server for you. It needs the
+`mcp-client-2025-11-20` beta header, a server in `mcp_servers` and an `mcp_toolset` that names
+it. Use the model you would otherwise call:
+
+```bash
+curl https://api.anthropic.com/v1/messages \
+  -H "content-type: application/json" \
+  -H "x-api-key: $ANTHROPIC_API_KEY" \
+  -H "anthropic-version: 2023-06-01" \
+  -H "anthropic-beta: mcp-client-2025-11-20" \
+  -d '{
+    "model": "YOUR_MODEL",
+    "max_tokens": 2048,
+    "messages": [{"role": "user", "content": "Load the Mzizi dev skills."}],
+    "mcp_servers": [
+      {"type": "url", "url": "https://mcp.mzizi.dev/mcp", "name": "mzizi"}
+    ],
+    "tools": [{"type": "mcp_toolset", "mcp_server_name": "mzizi"}]
+  }'
+```
+
+No `authorization_token` is needed for `/mcp`. Only tool calls are supported, so skills arrive
+through `mzizi_get_skills`. The Fundi tools need a token from the sign-in flow in
+`authorization_token`, against `/mcp/signin`; the connector does not run that flow for you.
+
+Checked against [MCP connector](https://platform.claude.com/docs/en/agents-and-tools/mcp-connector).
+Not run here: it needs an API key.
+
+## OpenAI
+
+### ChatGPT
+
+Go to [ChatGPT Plugins](https://chatgpt.com/plugins), select **+**, then **Add custom MCP
+server**. Name it `Mzizi`, enter `https://mcp.mzizi.dev/mcp` under **Connection**, set no
+authentication, review the warning, and select **Create as a plugin**. Install it, start a new
+conversation, and type `@` to pick it. Account and workspace policies decide whether you can
+add a custom server. Skills arrive over MCP.
+
+The `mzizi` plugin also packages the skills for ChatGPT, in the portable layout below. The
+ChatGPT desktop app reads a repository's `.agents/plugins/marketplace.json`, but installing it
+from GitHub has not been tested here.
+
+Checked against [Connect and test your
+plugin](https://developers.openai.com/plugins/deploy/connect-chatgpt).
+
+### OpenAI Codex
+
+**The plugin.** The registry's `plugin/` carries a portable Agent Plugins manifest
+(`plugin/plugin.json` and `plugin/mcp.json`) beside the Claude one, and a repo marketplace at
+`.agents/plugins/marketplace.json`:
+
+```bash
+codex plugin marketplace add mzizi-dev/mzizi-registry
+codex   # then /plugins, choose the Mzizi marketplace and install mzizi
+```
+
+Start a new session after installing. The plugin's `mcp.json` connects `/mcp` over
+`streamable-http`.
+
+<Note>
+  The Codex and ChatGPT manifests arrive in `mzizi-dev/mzizi-registry` with its pull request
+  #520. Until that reaches the registry's `main` branch, `codex plugin marketplace add` finds no
+  plugin there: use the server alone, below.
+</Note>
+
+**Or the server alone**, in `~/.codex/config.toml` (or a trusted project's
+`.codex/config.toml`), which the Codex CLI, the IDE extension and the ChatGPT desktop app share:
+
+```toml
+[mcp_servers.mzizi]
+url = "https://mcp.mzizi.dev/mcp"
+
+# for the Fundi tools; then run: codex mcp login mzizi-signin
+[mcp_servers.mzizi-signin]
+url = "https://mcp.mzizi.dev/mcp/signin"
+```
+
+`codex mcp add mzizi --url https://mcp.mzizi.dev/mcp` writes the first table for you.
+
+**Skills.** Codex reads skills from `.agents/skills/` in the repository and from
+`~/.agents/skills/`, which is where `npx skills experimental_sync` links them; otherwise they
+arrive over MCP. Codex also reads `AGENTS.md` before any work, so a repository can tell it to
+load the skills:
+
+```md
+## Mzizi
+
+Before any work, call `mzizi_get_skills` with `category: "dev"` on the Mzizi MCP server
+(`https://mcp.mzizi.dev/mcp`), and load `mzizi-roots`, `mzizi-design` or `mzizi-language`
+before touching components, styling or `.mz` source.
+```
+
+Checked against [Package your plugin](https://developers.openai.com/codex/plugins/build),
+[Model Context Protocol](https://developers.openai.com/codex/mcp),
+[Build skills](https://developers.openai.com/codex/skills) and [Custom instructions with
+AGENTS.md](https://developers.openai.com/codex/guides/agents-md). The manifests validate
+against the Agent Plugins schemas at `agent-plugins.org/schemas/1.0.0`. Not run here: the
+Codex CLI was not installed.
+
+### The OpenAI API and Agents SDK
+
+In the Responses API, the server is a `type: "mcp"` tool. Use the model you would otherwise
+call:
+
+```json
+{
+  "model": "YOUR_MODEL",
+  "tools": [
+    {
+      "type": "mcp",
+      "server_label": "mzizi",
+      "server_description": "The Mzizi language, components, tokens, doctrine, skills and docs.",
+      "server_url": "https://mcp.mzizi.dev/mcp",
+      "require_approval": "never"
+    }
+  ],
+  "input": "Load the Mzizi dev skills, then summarise them."
+}
+```
+
+Every tool on `/mcp` is marked read-only except the two Fundi tools, which refuse without
+sign-in, and `docs_submit_feedback`, which sends feedback about a docs page. Keep
+`"require_approval": "never"` only if you accept that, or narrow the list with `allowed_tools`. For the Fundi
+tools, point `server_url` at `/mcp/signin` and pass an access token in `authorization`.
+
+In the Agents SDK for Python, the same object goes in a hosted tool, and the Responses API makes
+the connection:
+
+```python
+from agents import Agent, HostedMCPTool
+
+agent = Agent(
+    name="Mzizi builder",
+    instructions="Load the Mzizi dev skills with mzizi_get_skills before any work.",
+    tools=[
+        HostedMCPTool(
+            tool_config={
+                "type": "mcp",
+                "server_label": "mzizi",
+                "server_url": "https://mcp.mzizi.dev/mcp",
+                "require_approval": "never",
+            }
+        )
+    ],
+)
+```
+
+To connect from your own process instead, use `MCPServerStreamableHttp` with
+`params={"url": "https://mcp.mzizi.dev/mcp"}` and pass it in `mcp_servers`. Skills arrive over
+MCP.
+
+Checked against [MCP servers](https://developers.openai.com/api/docs/guides/tools-connectors-mcp)
+and the Agents SDK's [MCP page](https://openai.github.io/openai-agents-python/mcp/). Not run
+here: it needs an API key.
+
+## Z.ai's GLM Coding Plan
+
+Z.ai's coding plan runs inside coding tools rather than as its own client. Its documented
+Claude Code setup points Claude Code at Z.ai with `ANTHROPIC_BASE_URL` set to
+`https://api.z.ai/api/anthropic` and your Z.ai key in `ANTHROPIC_AUTH_TOKEN`, in
+`~/.claude/settings.json`, or through Z.ai's helper, `npx @z_ai/coding-helper`. Plugins and MCP
+servers are Claude Code's own, so connect Mzizi exactly as in [Claude Code](#claude-code): the
+`mzizi` plugin, or `claude mcp add`. Z.ai's own MCP servers use the same commands
+(`claude mcp add -s user …`).
+
+Z.ai documents other tools too. In OpenCode, Cursor or another client, follow that client's
+section here.
+
+Checked against Z.ai's [Claude Code](https://docs.z.ai/devpack/tool/claude) and
+[Vision MCP server](https://docs.z.ai/devpack/mcp/vision-mcp-server) pages. Not run here: it
+needs a Z.ai key.
+
+## Editors and other CLIs
+
+### OpenCode
+
+In `opencode.json` (the project's, or your global config):
+
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "mzizi": {
+      "type": "remote",
+      "url": "https://mcp.mzizi.dev/mcp",
+      "enabled": true
+    }
+  }
+}
+```
+
+For the Fundi tools, add a second `remote` entry at `/mcp/signin`. OpenCode starts OAuth itself
+when a server answers `401`, or run `opencode mcp auth <name>`. Skills: OpenCode reads
+`.agents/skills/` and `~/.agents/skills/`, so the npm route works; otherwise over MCP.
+
+Checked against [MCP servers](https://opencode.ai/docs/mcp-servers/) and
+[Agent Skills](https://opencode.ai/docs/skills/).
+
+### Cursor
+
+In `.cursor/mcp.json` in the project, or `~/.cursor/mcp.json` for every project:
+
+```json
+{
+  "mcpServers": {
+    "mzizi": {
+      "url": "https://mcp.mzizi.dev/mcp"
+    }
+  }
+}
+```
+
+Add a `mzizi-signin` entry at `/mcp/signin` for the Fundi tools; Cursor runs the OAuth flow.
+Skills: Cursor reads `.agents/skills/` (and `.cursor/skills/`, and Claude's and Codex's skill
+folders), so the npm route works; otherwise over MCP.
+
+Checked against Cursor's [MCP](https://cursor.com/docs/mcp) and
+[Skills](https://cursor.com/docs/skills) pages.
+
+### VS Code and GitHub Copilot
+
+Run **MCP: Add Server** from the Command Palette, choose **HTTP**, enter
+`https://mcp.mzizi.dev/mcp` and the ID `mzizi`. Or from a shell:
+
+```bash
+code --add-mcp '{"name":"mzizi","type":"http","url":"https://mcp.mzizi.dev/mcp"}'
+```
+
+To share it with a team, commit a workspace-root `.mcp.json`. Its portable format, which
+GitHub Copilot CLI also reads from `~/.copilot/mcp-config.json`, uses `mcpServers`:
+
+```json
+{
+  "mcpServers": {
+    "mzizi": {
+      "type": "http",
+      "url": "https://mcp.mzizi.dev/mcp"
+    }
+  }
+}
+```
+
+The older `.vscode/mcp.json` uses `servers` instead of `mcpServers`, with the same entry.
+Skills: VS Code reads `.agents/skills/`, `.github/skills/` and `.claude/skills/`, so the npm
+route works; otherwise over MCP.
+
+Checked against [Add and manage MCP
+servers](https://code.visualstudio.com/docs/agent-customization/mcp-servers), the [MCP
+configuration reference](https://code.visualstudio.com/docs/agents/reference/mcp-configuration)
+and [Agent skills](https://code.visualstudio.com/docs/agent-customization/agent-skills).
+
+### Windsurf
+
+Windsurf's documentation now sits under Devin Desktop. For the Cascade agent, open the **...**
+menu in the Cascade panel, then the MCP config file, and add the server to `mcp_config.json`
+(`~/.config/devin/mcp_config.json` on macOS and Linux, `%APPDATA%\devin\mcp_config.json` on
+Windows). A remote server takes `serverUrl`:
+
+```json
+{
+  "mcpServers": {
+    "mzizi": {
+      "serverUrl": "https://mcp.mzizi.dev/mcp"
+    }
+  }
+}
+```
+
+Skills arrive over MCP. The page says the Devin Local agent, now the default for new tabs, keeps
+MCP servers in the Devin CLI's config instead; that format is not covered here.
+
+Checked against [Cascade MCP configuration](https://docs.windsurf.com/windsurf/cascade/mcp).
+
+### Gemini CLI
+
+```bash
+gemini mcp add --transport http --scope user mzizi https://mcp.mzizi.dev/mcp
+```
+
+That writes `~/.gemini/settings.json`; without `--scope user` it writes the project's
+`.gemini/settings.json`. By hand, a Streamable HTTP server takes `httpUrl`:
+
+```json
+{
+  "mcpServers": {
+    "mzizi": {
+      "httpUrl": "https://mcp.mzizi.dev/mcp"
+    }
+  }
+}
+```
+
+Skills: Gemini CLI reads `.agents/skills/` and `~/.agents/skills/`, so the npm route works;
+otherwise over MCP.
+
+Checked against [MCP servers with Gemini
+CLI](https://github.com/google-gemini/gemini-cli/blob/main/docs/tools/mcp-server.md) and
+[Agent skills](https://github.com/google-gemini/gemini-cli/blob/main/docs/cli/skills.md).
+
+### Any other MCP client
+
+Most clients take one of the shapes above: a Streamable HTTP URL, `https://mcp.mzizi.dev/mcp`,
+or the stdio command `npx -y @nyuchi/mzizi-mcp`. The server is listed in the
+[MCP Registry](https://registry.modelcontextprotocol.io/v0/servers?search=io.github.mzizi-dev/mzizi-mcp)
+as `io.github.mzizi-dev/mzizi-mcp`, so a client that installs from the registry finds both.
+
+## What is not verified here
+
+- **The Codex plugin in a live Codex CLI or ChatGPT desktop app.** The manifests follow
+  OpenAI's packaging guide and validate against the Agent Plugins schemas, but no Codex install
+  ran.
+- **Per-server sign-in in the portable `mcp.json`.** OpenAI's guide puts OAuth settings under a
+  server's `extensions["com.openai"].auth`, but the Agent Plugins MCP schema allows no
+  `extensions` key on a server. The plugin's `mcp.json` connects the anonymous `/mcp` and
+  declares no `auth`; connect `/mcp/signin` yourself for the Fundi tools.
+- **The Devin Local agent's MCP config,** in Windsurf's successor. Only the Cascade agent's
+  `mcp_config.json` is documented above.
+- **The Claude API, the OpenAI API and Z.ai** snippets come from the vendors' pages; none was
+  run, because each needs an account key.
