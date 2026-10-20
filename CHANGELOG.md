@@ -21,6 +21,12 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
+### Changed — the merge convention: rebase or squash, never auto-merge (2026-10-20)
+
+- **`AGENTS.md` ("Merge convention") and `CLAUDE.md` no longer call this repository rebase-only or say to land with `gh pr merge <n> --rebase --auto`.** They now state the settings read off the GitHub API and rulesets on 2026-10-20: rebase and squash are allowed and merge commits are not (`allow_merge_commit: false`; the org and enterprise rulesets allow only `squash` and `rebase` and require linear history on `main` and `staging`). A linear branch is rebased; one carrying merge commits, including after "Update branch" (required checks are strict), is squashed. Auto-merge is never turned on, because it merges on green CI, before the org merge gate's runtime check and code review. Org admins can bypass the rulesets; agents never do, and nobody uses `--admin`.
+- **Releases and sync-back are written down.** A merge into `main` deploys docs.mzizi.dev, so only the owner, or an agent the owner authorised, releases `staging` to `main`: a `release/` branch of `main` plus `staging`'s tree, squashed. After each release a sync PR into `staging` (a branch off `staging` with `main` merged in, squashed) makes the trees match again.
+- **`platform/api-gateway.mdx` no longer calls the gateway rebase-only.** Its "Developing" section now says its pull requests merge by rebase or squash and that only the registry pin bot turns on auto-merge, for its own pull request. No page moved and no URL changed.
+
 ### Changed — `console.mdx` and `foundations/tokens.mdx` name the registry files they rely on
 
 - **Both pages now name `mzizi-dev/mzizi-registry` where they said "the framework doctrine" or
