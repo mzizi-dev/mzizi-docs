@@ -21,9 +21,26 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
-### Changed — the earlier console app is named without a framework (2026-10-20)
+### Changed — `console.mdx` names the repository its doctrine and its palette guard live in
 
-- **`console.mdx` and `registry/consuming.mdx` no longer name a UI framework they replaced or contrast with.** The owner's decision, 2026-10-20 (mzizi-dev/mzizi-registry#503), is that one framework is removed from every repository. The console page now calls the earlier app "an earlier mini-app", "an earlier manifest", and "the earlier client", and its comparison table's first column is "Earlier app" (same rows). The registry page's list of what a `.astro` file sits beside is now "no React or Vue under it". No URL, version, count or fact moved.
+- **"The framework doctrine" and "the framework repository" on `console.mdx` now name
+  [`mzizi-dev/mzizi-registry`](https://github.com/mzizi-dev/mzizi-registry).** With the earlier
+  app's framework no longer named, "the framework" had no referent. The stack doctrine is the
+  registry's `content/doctrine/documentation-architecture-framework/astro-vite-plus.mdx`, and the
+  guard against the retired "Five African Minerals" name is its
+  `__tests__/tokens-seven-fold.test.ts`. Both are linked or named in place. No claim changed.
+
+### Changed — the earlier console app is named without a framework
+
+- **`console.mdx` and `registry/consuming.mdx` no longer name the UI framework the owner removed
+  from every repository** (owner decision, 2026-10-20, mzizi-dev/mzizi-registry#503).
+- `console.mdx`: the earlier app is now "an earlier mini-app", "the earlier manifest" and "the
+  earlier client", and the comparison table's first column is "Earlier app" (same rows).
+- `registry/consuming.mdx`: an Astro component sits beside its `.tsx` and `.rs` "with no React
+  or Vue under it". React and Vue are still named there.
+- Removed: that framework's name, five times (four on `console.mdx`, one on
+  `registry/consuming.mdx`), and its major version, 5, once ("a … 5 mini-app"). That change
+  (#59) touched nothing else on either page.
 
 ### Changed — the language's fourth release of 8 October 2026: every Tier 1 row is ✅, so M1 is met
 
