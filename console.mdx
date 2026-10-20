@@ -39,7 +39,7 @@ host answers 200). Report a security problem in the console to `security@nyuchi.
 
 ## What it replaces
 
-`@nyuchi/mzizi-console-app` — a Svelte 5 mini-app, last at `0.2.0-beta.1`, which the Nyuchi
+`@nyuchi/mzizi-console-app` — an earlier mini-app, last at `0.2.0-beta.1`, which the Nyuchi
 Console mounted under `/apps/mzizi/*`. It was never published to npm and shipped manually.
 
 The rewrite makes it a standalone surface at its own domain, and makes it Rust: the framework
@@ -58,12 +58,12 @@ model was retired. So the route was rewritten against nodes, rungs and strands. 
 listed separately rather than as nodes with an empty backbone, because belonging to neither
 backbone is the fact the model turns on. See [the helix](/architecture/overview).
 
-**Tokens** was described in the Svelte manifest as the "Five African Minerals" palette. There
+**Tokens** was described in the earlier manifest as the "Five African Minerals" palette. There
 are **seven** minerals, in a palette of 21 colour families. That naming was removed from the framework repository and guarded against
 there; the guard does not reach a separate repository, which is how the wrong count survived
 in a client.
 
-|                  | Svelte app             | The port                                      |
+|                  | Earlier app            | The port                                      |
 | ---------------- | ---------------------- | --------------------------------------------- |
 | API base         | `mzizi.dev/api/v1`     | `api.mzizi.dev/v1`                            |
 | `GET /ui`        | typed as an array      | a registry document, components under `items` |
@@ -89,7 +89,7 @@ empty page rather than as an error.
 
 The console's test suite decodes **captured live responses** with its production types. That
 is a different claim from decoding fixtures the repository wrote itself, which prove only that
-the types are self-consistent — the Svelte client's types were self-consistent and wrong.
+the types are self-consistent — the earlier client's types were self-consistent and wrong.
 
 ```bash
 for e in ui brand architecture; do
