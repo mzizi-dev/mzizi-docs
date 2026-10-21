@@ -13,11 +13,11 @@ disagree, the vendor's page wins.
 
 ## What you connect
 
-| Endpoint                                            | Use it for                                                                                 |
-| --------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| `https://mcp.mzizi.dev/mcp`                         | Every tool, with no account. Streamable HTTP. It never asks you to sign in                 |
-| `https://mcp.mzizi.dev/mcp/signin`                  | The same server behind sign-in. It answers `401` until you sign in, then serves every tool |
-| `npx -y @nyuchi/mzizi-mcp` (stdio, on your machine) | The same tools and bundled data, offline except the `docs_*` tools. No credential          |
+| Endpoint                                            | Use it for                                                                                              |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `https://mcp.mzizi.dev/mcp`                         | Every tool, with no account. Streamable HTTP. It never asks you to sign in                              |
+| `https://mcp.mzizi.dev/mcp/signin`                  | The same server behind sign-in. It answers `401` until you sign in, then serves every tool              |
+| `npx -y @nyuchi/mzizi-mcp` (stdio, on your machine) | Every tool except `mzizi_fundi`, and the bundled data, offline except the `docs_*` tools. No credential |
 
 **Which tools need sign-in.** Only `mzizi_fundi` and `mzizi_report_issue`, which act as your
 Mzizi console user. Connected to `/mcp`, they are listed, and calling one answers with how to
@@ -190,8 +190,10 @@ plugin](https://developers.openai.com/plugins/deploy/connect-chatgpt).
 
 ```bash
 codex plugin marketplace add mzizi-dev/mzizi-registry
-codex   # then /plugins, choose the Mzizi marketplace and install mzizi
 ```
+
+Then install `mzizi` from the Plugins directory: in the ChatGPT desktop app, or with `/plugins`
+in the Codex CLI where your version has it.
 
 Start a new session after installing. The plugin's `mcp.json` connects `/mcp` over
 `streamable-http`.
@@ -229,10 +231,10 @@ Before any work, call `mzizi_get_skills` with `category: "dev"` on the Mzizi MCP
 before touching components, styling or `.mz` source.
 ```
 
-Checked against [Package your plugin](https://developers.openai.com/codex/plugins/build),
-[Model Context Protocol](https://developers.openai.com/codex/mcp),
-[Build skills](https://developers.openai.com/codex/skills) and [Custom instructions with
-AGENTS.md](https://developers.openai.com/codex/guides/agents-md). The manifests validate
+Checked against [Package your plugin](https://developers.openai.com/plugins/build/plugins),
+[Model Context Protocol](https://learn.chatgpt.com/docs/extend/mcp),
+[Build skills](https://learn.chatgpt.com/docs/build-skills) and [Custom instructions with
+AGENTS.md](https://learn.chatgpt.com/docs/agent-configuration/agents-md). The manifests validate
 against the Agent Plugins schemas at `agent-plugins.org/schemas/1.0.0`. Not run here: the
 Codex CLI was not installed.
 
@@ -379,7 +381,7 @@ GitHub Copilot CLI also reads from `~/.copilot/mcp-config.json`, uses `mcpServer
 }
 ```
 
-The older `.vscode/mcp.json` uses `servers` instead of `mcpServers`, with the same entry.
+VS Code's own `.vscode/mcp.json` uses `servers` instead of `mcpServers`, with the same entry.
 Skills: VS Code reads `.agents/skills/`, `.github/skills/` and `.claude/skills/`, so the npm
 route works; otherwise over MCP.
 
@@ -408,7 +410,7 @@ Windows). A remote server takes `serverUrl`:
 Skills arrive over MCP. The page says the Devin Local agent, now the default for new tabs, keeps
 MCP servers in the Devin CLI's config instead; that format is not covered here.
 
-Checked against [Cascade MCP configuration](https://docs.windsurf.com/windsurf/cascade/mcp).
+Checked against [Cascade MCP configuration](https://docs.devin.ai/desktop/cascade/mcp).
 
 ### Gemini CLI
 

@@ -76,8 +76,9 @@ serves. On 20 October 2026 npm and the MCP server served `0.11.0`, with all seve
 and the plugin still served `0.8.5`, with the first five: the registry depended on
 `@nyuchi/mzizi-skills` `^0.8.1`, a range that never takes `0.9` or later, so they move only when
 that dependency is bumped (see [how each copy stays current](#how-each-copy-stays-current)).
-mzizi-registry #520 bumps it to `^0.11.0` and regenerates the plugin's copy; the API follows
-when the gateway re-pins to a registry commit that has it.
+mzizi-registry #520 waits on the next skills release, `0.12.0`, and will move the dependency to
+`^0.12.0` and regenerate the plugin's copy; the API follows when the gateway re-pins to a registry
+commit that has it.
 
 [Connect a client](/toolchain/connect) says which of these each AI client can use.
 
@@ -111,8 +112,8 @@ version a surface is serving: its `meta` carries `version` and `count`.
 ### As a Claude Code plugin
 
 The public `mzizi` plugin carries the skills and connects the Mzizi MCP server. On 20 October
-2026 it carried the five skills of `0.8.5`; from mzizi-registry #520 (plugin `1.3.0`) it carries
-the seven of `0.11.0`:
+2026 it carried the five skills of `0.8.5`; mzizi-registry #520 (plugin `1.3.0`) will move it to
+the next skills release, `0.12.0`:
 
 ```text
 /plugin marketplace add mzizi-dev/mzizi-registry
