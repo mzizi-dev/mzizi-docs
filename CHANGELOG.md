@@ -21,6 +21,11 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
+### Changed — merging is squash through the merge queue (2026-10-21)
+
+- **`AGENTS.md` ("Merge convention") and `CLAUDE.md` now describe squash merging through the merge queue**, the org's convention since 2026-10-21: land with `gh pr merge <n> --squash --auto`, which adds the pull request to the queue once the merge gate is met. Rebase and merge commits are disabled in the repo settings and rulesets. The squash commit keeps every commit message in its body (`COMMIT_MESSAGES`). Updating a branch with its base is fine, and the merge queue tests each pull request against the latest base. This replaces the 2026-10-20 "rebase or squash, never auto-merge" entry below.
+- **`platform/api-gateway.mdx`'s "Developing" section** now says the gateway's pull requests merge by squash through the merge queue. No page moved and no URL changed.
+
 ### Changed — the merge convention: rebase or squash, never auto-merge (2026-10-20)
 
 - **`AGENTS.md` ("Merge convention") and `CLAUDE.md` no longer call this repository rebase-only or say to land with `gh pr merge <n> --rebase --auto`.** They now state the settings read off the GitHub API and rulesets on 2026-10-20: rebase and squash are allowed and merge commits are not (`allow_merge_commit: false`; the org and enterprise rulesets allow only `squash` and `rebase` and require linear history on `main` and `staging`). A linear branch is rebased; one carrying merge commits, including after "Update branch" (required checks are strict), is squashed. Auto-merge is never turned on, because it merges on green CI, before the org merge gate's runtime check and code review. Org admins can bypass the rulesets; agents never do, and nobody uses `--admin`.

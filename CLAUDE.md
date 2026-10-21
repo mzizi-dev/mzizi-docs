@@ -72,10 +72,10 @@ workflow rather than retyping it.
   off `staging` with `main` merged in, squashed) so the trees match again.
 - **A merge to `main` deploys docs.mzizi.dev** through the Mintlify GitHub App; pull requests
   get preview deployments. Deployment settings live in the Mintlify dashboard, not here.
-- **Merges are rebase or squash, never a merge commit, and never auto-merge**, as `AGENTS.md`
-  "Merge convention" says. Rebase a linear branch (`gh pr merge <n> --rebase`); squash one
-  that carries merge commits, including after "Update branch" (required checks are strict).
-  Never pass `--auto` (it merges on green CI, before the merge gate) or `--admin`.
+- **Merges are squash through the merge queue**, as `AGENTS.md` "Merge convention" says:
+  `gh pr merge <n> --squash --auto` enqueues the PR, once the merge gate is met. Never
+  `--admin`. Rebase and merge commits are disabled. Updating a branch with the base
+  (GitHub's "Update branch") is fine; the merge queue tests each PR against the latest base.
 
 ## Pull request checklist
 
