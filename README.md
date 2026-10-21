@@ -72,7 +72,7 @@ Checked 2026-09-29. Most inherited prose gets at least one of these wrong.
 - **No database outside the console.** The registry is files (`registry.json`, component
   source, `content/doctrine/**`). `api.mzizi.dev` is `mzizi-api` (formerly `mzizi-api-gateway`), a Hono Worker
   that bundles those files from a pinned registry commit; `mcp.mzizi.dev` does the same.
-  Only `mzizi-console` uses a database, and today that is Supabase; its decided store is Cloudflare D1.
+  `mzizi-console` keeps no database of its own today (no Supabase client); any state it keeps is decided to go in Cloudflare D1.
 - **The install form is `https://api.mzizi.dev/v1/ui/<name>`.** `mzizi.dev/api/v1/*`
   redirects there.
 - **The palette is 21 colour families**: 7 minerals, 7 heritage, 7 experimental.

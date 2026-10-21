@@ -17,9 +17,11 @@ the registry, the components, the tokens, the architecture and developer tooling
 Astro in front, with Dioxus islands behind for the data. It reads the registry at
 `https://api.mzizi.dev/v1`.
 
-It is also the one part of Mzizi with a database. Accounts, component version history,
-usage telemetry and the Fundi issue desk live there. Today that store is Supabase, and nowhere
-else. See [where data lives](/platform/data). The console is where the gated [Fundi tools](/toolchain/mcp#the-fundi-tools)
+It is the one part of Mzizi meant to keep state: accounts, component version history, usage
+telemetry and the Fundi issue desk belong to it. Today it keeps no database of its own: the
+repository has no Supabase client, environment variable or migration, its data comes from the
+public API, and sign-in is WorkOS AuthKit. Decided, not built: any state it keeps goes in
+Cloudflare D1. See [where data lives](/platform/data). The console is where the gated [Fundi tools](/toolchain/mcp#the-fundi-tools)
 get their signed-in user.
 
 ## The split
@@ -40,7 +42,7 @@ Decided, not built ([`mzizi-console#34`](https://github.com/mzizi-dev/mzizi-cons
 
 - **One Rust Worker** serves Astro's output. There is no second service for the chrome.
 - **Sign-in moves to the server**, through WorkOS, with a session cookie.
-- **The data store is Cloudflare D1**, not Supabase.
+- **The data store is Cloudflare D1**, for any state the console keeps.
 - **It depends on the published Roots crates** rather than on a framework's islands.
 
 Until that work lands, the page above describes what runs today.

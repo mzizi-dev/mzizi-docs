@@ -156,12 +156,15 @@ first, smallest, most measurable slice of that claim, not the whole of it.
 
 <Note>
   **Decided 2026-10-20, not yet in this charter.** The owner decided that Mzizi builds to three
-  targets: Cloudflare Workers (wasm32), containers (any OCI host, such as Fly machines), and bare
-  metal (a native Linux binary). Every backend sits behind a trait with an adapter per side, so a
+  targets: Cloudflare Workers (wasm32), containers (a standard OCI image, built with Docker by
+  default and run by any OCI runtime, such as on Fly machines), and bare metal (a native Linux binary). Every backend sits behind a trait with an adapter per side, so a
   Cloudflare-hosted store and a Fly-hosted store are reachable from either. The table above and
   the Phase 1 text below are quoted as the charter has them, including containers "reached from a
-  Worker through the Container binding". They will be amended by RFC. What builds today: a native
-  axum service and a native program. There is no container image and no Workers target yet.
+  Worker through the Container binding". RFC-0016 (a draft,
+  [mzizi#123](https://github.com/mzizi-dev/mzizi/pull/123)) designs the three targets, and the owner
+  approved it as design only on 21 October 2026: the charter amendment and every build wave wait for
+  the Phase 0 gate. What builds today: a native axum service and a native program. There is no
+  container image and no Workers target, and no container or bare-metal build work has started.
 </Note>
 
 ## The phasing

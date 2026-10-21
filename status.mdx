@@ -113,7 +113,7 @@ merged as `6f7b096` and tagged `v0.9.0`) carries no new language construct. What
   language cannot build yet; the one diagnostic is `MZ0919` at the signature. `MZ0962` names another
   language's spelling as written (`parseInt(s)`, `toUpperCase`), with the same fix. Tested in
   `compiler/tests/program_collections.rs` and `program_text.rs`.
-- **Tier 2, as a draft.** [RFC-0014](/rfcs) (#110) designs modules and imports across files (P1), the
+- **Tier 2, as a draft.** [RFC-0014](/rfcs) (mzizi#111) designs modules and imports across files (P1), the
   standard library (P2), lowering and runnable builds (P3, P4), errors mapped back to `.mz` (P5), and Rust
   crates through an exact pin (P6). Nothing in it is implemented: `mz check` does not accept `import`,
   `module`, `public` or `extern` today.
@@ -125,9 +125,11 @@ merged as `6f7b096` and tagged `v0.9.0`) carries no new language construct. What
   charter without a UI framework's name; #119, the dated changelog).
 
 **Three build targets, decided on 2026-10-20 and not built.** The owner decided that Mzizi builds to Cloudflare
-Workers (wasm32), containers (any OCI host, such as Fly machines) and bare metal (a native Linux binary), with
-every backend behind a trait and an adapter per side. The charter still says containers are reached from a
-Worker; it will be amended by RFC. The table above is unchanged: there is no Workers, Containers or WebAssembly
+Workers (wasm32), containers (a standard OCI image, built with Docker by default and run by any OCI runtime)
+and bare metal (a native Linux binary), with every backend behind a trait and an adapter per side. The charter
+still says containers are reached from a Worker. RFC-0016 (a draft, mzizi#123) designs the three targets and is
+approved as design only (owner, 21 October 2026): the charter amendment and every build wave wait for the Phase 0
+gate. The table above is unchanged: there is no Workers, Containers or WebAssembly
 target yet.
 
 Nothing here is measured against the kill criterion, and no benchmark has run on these features.
