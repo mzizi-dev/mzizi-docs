@@ -72,10 +72,15 @@ many that are not. Where each `0.7.0` skill went, from the bundle's README:
 ## Getting the skills
 
 Four ways, serving the same bundle once each has caught up; each says which version it
-serves. On 7 October 2026 npm and the MCP server served `0.11.0`, with all seven skills. The API
-and the plugin still served `0.8.5`, with the first five: the registry depends on
-`@nyuchi/mzizi-skills` `^0.8.1`, so they move only when that dependency is bumped (see
-[how each copy stays current](#how-each-copy-stays-current)).
+serves. On 20 October 2026 npm and the MCP server served `0.11.0`, with all seven skills. The API
+and the plugin still served `0.8.5`, with the first five: the registry depended on
+`@nyuchi/mzizi-skills` `^0.8.1`, a range that never takes `0.9` or later, so they move only when
+that dependency is bumped (see [how each copy stays current](#how-each-copy-stays-current)).
+mzizi-registry #520 waits on the next skills release, `0.12.0`, and will move the dependency to
+`^0.12.0` and regenerate the plugin's copy; the API follows when the gateway re-pins to a registry
+commit that has it.
+
+[Connect a client](/toolchain/connect) says which of these each AI client can use.
 
 ### From npm
 
@@ -86,13 +91,16 @@ npx skills experimental_sync          # links the bundled skills into .agents/sk
 
 `npx skills add @nyuchi/mzizi-skills` does not work: the `skills` CLI reads that argument as a
 GitHub repository and fails to clone it. `experimental_sync` is its route for skills shipped
-in `node_modules`.
+in `node_modules`. Codex, Cursor, VS Code, Gemini CLI and OpenCode all read `.agents/skills/`,
+so the skills load there natively.
 
 ### From the MCP server
 
 `mzizi_get_skills` on [the MCP server](/toolchain/mcp) lists the skills, or returns one in
 full. From `mzizi-mcp` `0.13.0`, `category` returns every skill in one category in full. It is
-free, with no sign-in and nothing to install. Each skill's `source` names where it is authored,
+free, with no sign-in and nothing to install, so **any MCP client can fetch the skills this way
+instead of installing the npm package**: Claude.ai, ChatGPT and the Claude and OpenAI APIs,
+which cannot install a package, included. Each skill's `source` names where it is authored,
 `mzizi-dev/agent-tools/mzizi-skills/skills/<name>`, from `mzizi-mcp` `0.11.1`.
 
 ### From the API
@@ -103,8 +111,9 @@ version a surface is serving: its `meta` carries `version` and `count`.
 
 ### As a Claude Code plugin
 
-The public `mzizi` plugin carries the skills and connects the Mzizi MCP server. On 7 October
-2026 it carried the five skills of `0.8.5`:
+The public `mzizi` plugin carries the skills and connects the Mzizi MCP server. On 20 October
+2026 it carried the five skills of `0.8.5`; mzizi-registry #520 (plugin `1.3.0`) will move it to
+the next skills release, `0.12.0`:
 
 ```text
 /plugin marketplace add mzizi-dev/mzizi-registry
@@ -115,6 +124,12 @@ It lives in the `plugin/` directory of
 [`mzizi-dev/mzizi-registry`](https://github.com/mzizi-dev/mzizi-registry/tree/main/plugin),
 which holds a byte-for-byte copy of the bundle's `skills/`, and its manifest points the MCP
 connection at `https://mcp.mzizi.dev/mcp`.
+
+From the same pull request, the plugin also installs in Codex and ChatGPT: `plugin/` carries
+OpenAI's portable manifest (`plugin.json` and `mcp.json`) beside the Claude one, and the
+registry a repo marketplace at `.agents/plugins/marketplace.json`, so
+`codex plugin marketplace add mzizi-dev/mzizi-registry` then `/plugins` installs it. See
+[Connect a client](/toolchain/connect#openai-codex).
 
 <Note>
   The plugin and the `mzizi-tools` marketplace that used to live in the private tooling
