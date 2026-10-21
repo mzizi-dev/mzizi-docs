@@ -21,6 +21,10 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
+### Fixed — the Roots crates are at 0.4.0 (2026-10-21)
+
+- **`roots/overview.mdx` says the crates are on crates.io at `0.4.0`**, published on 20 October 2026 for registry release v4.9.0, not `0.3.0`. The install example uses `mzizi-roots = "0.4"`, and the page says `0.4.0` is breaking for code that builds or matches `Inline::Link` (links now carry a `title`) or `ListItem::children` (now `Vec<ListChild>`). `check-freshness.mjs` reported the drift. No page moved and no URL changed.
+
 ### Changed — merging is squash through the merge queue (2026-10-21)
 
 - **`AGENTS.md` ("Merge convention") and `CLAUDE.md` now describe squash merging through the merge queue**, the org's convention since 2026-10-21: land with `gh pr merge <n> --squash --auto`, which adds the pull request to the queue once the merge gate is met. Rebase and merge commits are disabled in the repo settings and rulesets. The squash commit keeps every commit message in its body (`COMMIT_MESSAGES`). Updating a branch with its base is fine, and the merge queue tests each pull request against the latest base. This replaces the 2026-10-20 "rebase or squash, never auto-merge" entry below.
