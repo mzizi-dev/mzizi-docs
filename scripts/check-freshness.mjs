@@ -233,7 +233,7 @@ await check("mzizi-dev/mzizi charter, tracker and arms", async () => {
     if (missing.length > 0) drift.push(`tracker.mdx: rows missing from the page: ${missing.join(", ")}`);
     // The sentence every capability page carries, read off the tracker's marks. Modules, the
     // standard library and concurrency are not built while P1, P2 and P9 are ❌. Text operations
-    // are not named as partial: C6 is ✅ on main (the fourth release, v0.8.0), so a page that still
+    // are not named as partial: C6 is ✅ on main (the fourth release, v0.8.0; still so at v0.9.0), so a page that still
     // says so is stale. Maps, sets and records are not named as absent either: C7 and C8 are ✅.
     const sentence = "Mzizi has no modules, standard library or concurrency yet";
     const want = { P1: "❌", P2: "❌", P9: "❌" };
@@ -281,7 +281,7 @@ await check("api.mzizi.dev", async () => {
   }
   const { headers } = await get("https://api.mzizi.dev/v1/health");
   const header = headers.get("x-mzizi-source") ?? "";
-  gatewayPin = header.match(/^mzizi-api-gateway; registry=([0-9a-f]{12})$/)?.[1];
+  gatewayPin = header.match(/^mzizi-api(?:-gateway)?; registry=([0-9a-f]{12})$/)?.[1];
   if (!gatewayPin) {
     drift.push(`api.mzizi.dev x-mzizi-source is "${header}", not the shape platform/api-gateway.mdx documents`);
     return;

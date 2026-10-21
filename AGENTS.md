@@ -67,7 +67,7 @@ Facts that inherited prose often gets wrong:
 - **The DNA helix, not axes or layers.** Eight nodes, six strands, four rungs.
   `/v1/architecture/frontend/axes` and `/layers` answer **410 Gone**, deliberately.
 - **No database outside the console.** The registry is files; `api.mzizi.dev`
-  (`mzizi-api-gateway`, a **Hono** Worker, not Rust) and `mcp.mzizi.dev` bundle those files
+  (`mzizi-dev/mzizi-api`, formerly `mzizi-api-gateway`, a **Hono** Worker, not Rust) and `mcp.mzizi.dev` bundle those files
   at build time from a pinned registry commit. Only `mzizi-console` uses Supabase.
 - **One MCP server**, at `mcp.mzizi.dev/mcp`. `mzizi.dev/mcp` is a 308 to it. It is free
   with no sign-in except the Fundi tools (`mzizi_fundi`, `mzizi_report_issue`); an anonymous

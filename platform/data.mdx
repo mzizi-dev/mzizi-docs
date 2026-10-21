@@ -45,7 +45,11 @@ and the MCP server names it in
 ## The console is the one database
 
 The Mzizi console at [`app.mzizi.dev`](/console), run under Nyuchi, is the only part of Mzizi
-that uses a database, Supabase. It holds what cannot be a file:
+meant to keep state. Today it keeps no database of its own: `mzizi-console` has no Supabase
+client, environment variable or migration, its data comes from `api.mzizi.dev`, and sign-in is
+WorkOS AuthKit. Decided, not built: any state it keeps goes in Cloudflare D1
+([`mzizi-console#34`](https://github.com/mzizi-dev/mzizi-console/issues/34)). What belongs to it is
+what cannot be a file:
 
 - accounts, users, keys and anything else per-user;
 - component version history, written by releases;
