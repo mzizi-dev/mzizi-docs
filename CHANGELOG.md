@@ -21,6 +21,10 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
+### Added — Dependabot version updates target `staging` (2026-10-21)
+
+- `.github/dependabot.yml` is new: weekly version updates for GitHub Actions, every entry with `target-branch: staging` (owner rule, 2026-10-21: "all dependabot should target staging not main.") and a seven-day cooldown before a new release is proposed.
+
 ### Fixed — the Roots crates are at 0.4.0 (2026-10-21)
 
 - **`roots/overview.mdx` says the crates are on crates.io at `0.4.0`**, published on 20 October 2026 for registry release v4.9.0, not `0.3.0`. The install example uses `mzizi-roots = "0.4"`, and the page says `0.4.0` is breaking for code that builds or matches `Inline::Link` (links now carry a `title`) or `ListItem::children` (now `Vec<ListChild>`). `check-freshness.mjs` reported the drift. No page moved and no URL changed.
