@@ -65,11 +65,17 @@ workflow rather than retyping it.
 - **Every merge into `staging` is tagged as the next patch version** by
   `.github/workflows/staging-version.yml` (the org's reusable staging-release workflow; minor
   and major only by manual dispatch).
-- **`staging` is promoted to `main` by a release PR** (for example "Release v0.1.0"), and
-  `main` is synced back into `staging` with "chore: bring staging up to main" PRs.
+- **`staging` is promoted to `main` by a release PR** (for example "Release v0.1.0"): a
+  `release/` branch made of `main` plus `staging`'s exact tree, squashed. Only the owner, or
+  an agent the owner authorised for that release, opens and merges it. After each release,
+  `main` is synced back into `staging` with a "chore: bring staging up to main" PR (a branch
+  off `staging` with `main` merged in, squashed) so the trees match again.
 - **A merge to `main` deploys docs.mzizi.dev** through the Mintlify GitHub App; pull requests
   get preview deployments. Deployment settings live in the Mintlify dashboard, not here.
-- Merges are rebase-only (`gh pr merge <n> --rebase --auto`), as `AGENTS.md` says.
+- **Merges are rebase or squash, never a merge commit, and never auto-merge**, as `AGENTS.md`
+  "Merge convention" says. Rebase a linear branch (`gh pr merge <n> --rebase`); squash one
+  that carries merge commits, including after "Update branch" (required checks are strict).
+  Never pass `--auto` (it merges on green CI, before the merge gate) or `--admin`.
 
 ## Pull request checklist
 
