@@ -219,6 +219,6 @@ npm test               # offline route tests
 npm run parity         # live api.mzizi.dev against the local Worker
 ```
 
-Pull requests merge by rebase or squash, never by merge commit, and people never turn on
-auto-merge (only the pin bot does, for its own pull request). See the repository's
-`CONTRIBUTING.md` for merging, changing a route or moving the pin.
+Pull requests merge by squash through the merge queue (`gh pr merge <n> --squash --auto`);
+rebase and merge commits are disabled. See the repository's `CONTRIBUTING.md` for merging,
+changing a route or moving the pin.
