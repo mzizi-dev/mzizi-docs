@@ -21,6 +21,12 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
+### Added — the Kweli Address page, the `xs` radius and the kweli mark (2026-10-24)
+
+- **New page, `patterns/kweli-address`, in the Patterns group.** It covers the four Address primitives (`address-code`, `address-share-card` with its QR code, the "deliver to" `address-selector` and `address-private-row`), the `signals` and `title` props on `mzizi-trust-meter` for "Address trust", and the kweli mark, favicon and `BrandMark` lockup (`tagline="mukoko · Africa"`). They are on the registry's `staging` branch (mzizi-registry#544, #546), and the page says so. Refs mzizi-dev/mzizi-registry#543.
+- **`foundations/tokens.mdx` radii:** five numbers. `xs` is 4px (the 7px unit less 3), and the page says `2xl` is 17px, not the 24px an older skill gave.
+- **`registry/contracts.mdx`:** the BrandMark gap now says Nyuchi, Mukoko and Kweli ship. The page used to say only Nyuchi, which was already out of date for Mukoko.
+
 ### Added — Dependabot version updates target `staging` (2026-10-21)
 
 - `.github/dependabot.yml` is new: weekly version updates for GitHub Actions, every entry with `target-branch: staging` (owner rule, 2026-10-21: "all dependabot should target staging not main.") and a seven-day cooldown before a new release is proposed.
