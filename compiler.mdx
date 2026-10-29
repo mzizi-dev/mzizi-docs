@@ -38,7 +38,7 @@ cargo run --bin mz -- harness  definition                           # the langua
 ```
 
 Run `cargo test --workspace` from the repository root for the whole suite: 765 tests in 29
-suites at `6f7b096`, 634 of them in the compiler crate and the rest in the benchmark harness,
+suites at `2b36c8f`, 634 of them in the compiler crate and the rest in the benchmark harness,
 runner and probe crate. `compiler/src` is 33,518 lines. All 765 pass there, and the eight
 example programs run through `mz run` against their `.expected` files.
 
@@ -213,7 +213,7 @@ landed. The fourth release, tagged `v0.8.0`, adds no code: `MZ0915` also reports
 `int(s)` and `float(s)` on text with a guess to `parse_int` and `parse_float`.
 
 **This table is generated from the [language harness](/language-harness), not written by
-hand:** it is `mz harness definition` at language `main` `6f7b096` (tagged `v0.9.0`), each `MZ09xx` entry's severity,
+hand:** it is `mz harness definition` at language `main` `2b36c8f` (tagged `v0.12.0`), each `MZ09xx` entry's severity,
 the tool that reports it, its `say` text and the fix kinds it is recorded as raising. "Or none"
 means some reports of that code carry no fix. The `say` text is the entry's own, which the
 harness writes by hand and does not compare with the checker; `mz harness entry <code>` prints
