@@ -1,0 +1,103 @@
+---
+title: "Kweli Address"
+description: "The four Address primitives (address code, share card with a QR code, the deliver-to selector, the private-address row), the counted-signal trust meter, and the kweli brand mark and lockup."
+sidebarTitle: "Kweli Address"
+icon: "map-pin"
+---
+
+Kweli Address is open addressing for informal Africa: any place, home, stall or person gets a
+short code (`NYU-7K2Q`) that resolves to directions, the entrance and who to call on arrival.
+It is specified in the Kweli Address RFC v0.1
+([mukoko-dev/kweli#195](https://github.com/mukoko-dev/kweli/issues/195)). These are the
+Mzizi parts Kweli and its consumers (Mukoko Events first) build the address screens from.
+They were added to the registry upstream first, before Kweli uses them
+([mzizi-registry#543](https://github.com/mzizi-dev/mzizi-registry/issues/543)).
+
+<Note>
+  These components are on the registry's `staging` branch through
+  [mzizi-registry#544](https://github.com/mzizi-dev/mzizi-registry/pull/544) and
+  [#546](https://github.com/mzizi-dev/mzizi-registry/pull/546). They reach api.mzizi.dev and
+  `@bundu/ui` with the next registry release and the `@bundu/ui` sync that follows it.
+</Note>
+
+Each part has one contract in
+[`contracts/ui/`](https://github.com/mzizi-dev/mzizi-registry/tree/staging/contracts/ui) and
+two builds held to the whole contract by the registry's tests: a pure `.astro` (the default)
+and a `.tsx`. All four are server-rendered with no script. Their colour is semantic only
+(`--card`, `--border`, `--foreground`, `--muted-foreground`, `--primary`, `--ring`), so the
+kweli brand overlay, malachite, colours the links and the selection. No part names a mineral
+or a colour value.
+
+## The parts
+
+| Part                  | Registry name         | Node | What it is                                                                                                                                                                                                                                               |
+| --------------------- | --------------------- | ---- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **AddressCode**       | `address-code`        | N2   | The code as a `<code>` in the mono face, and a 44px link that opens the address. The link's accessible name names the code ("Open address NYU-7K2Q"). Without `href`, the chip is the code alone.                                                        |
+| **AddressShareCard**  | `address-share-card`  | N3   | A QR code that opens the share link, the code chip, the link written out, and the directions in words. The QR is drawn when the page renders, as one SVG path in `currentColor`, with `role="img"` and a label naming the link.                          |
+| **AddressSelector**   | `address-selector`    | N2   | "Deliver to": native radios in a `<fieldset>` with a `<legend>`. Each option is a 56px whole-row label with the address's name, a line and its code. "Private" and "Link only" addresses say so in words. An empty list says so and offers the add link. |
+| **AddressPrivateRow** | `address-private-row` | N2   | One of the owner's private addresses: a decorative lock, the name, the code, who can open it ("Private" or "Link only", also in `data-visibility`), an optional detail line, and a 44px manage link named for the address.                               |
+
+The QR encoding comes from [`uqr`](https://github.com/unjs/uqr) (MIT, no dependencies) through
+the registry's `qr-matrix` module. The registry had no QR primitive before this. The share
+card's contract records one gap: in a dark theme the code is light modules on a dark card.
+Phone cameras read that, but some older scanners do not.
+
+```astro
+---
+import AddressShareCard from "@bundu/ui/AddressShareCard.astro";
+import AddressSelector from "@bundu/ui/AddressSelector.astro";
+---
+
+<AddressShareCard
+  code="NYU-7K2Q"
+  url="https://kweli.mukoko.com/a/NYU-7K2Q"
+  title="Tendai's stall"
+  directions="Green gate with the bee sign, opposite the bus rank."
+/>
+
+<form method="post" action="/checkout">
+  <AddressSelector
+    addresses={[
+      { id: "home", label: "Home", code: "NYU-7K2Q", visibility: "private" },
+      { id: "shop", label: "Shop", line: "Stall 4, Mbare Musika", code: "HRE-2M9X" },
+    ]}
+    value="home"
+    addHref="/addresses/new"
+  />
+</form>
+```
+
+## Address trust
+
+An address earns trust from things that happened: check-ins at the entrance, deliveries
+completed, neighbours who vouched. `mzizi-trust-meter` takes a `signals` list (`label`,
+`count`, an optional `detail`) and a `title`. With `signals`, it lists one row per signal with
+its count instead of its three-signal breakdown. Without them it renders as before. Its
+`role="meter"` carries `aria-valuenow`, `aria-valuemin` and `aria-valuemax`.
+
+```tsx
+<MziziTrustMeter
+  title="Address trust"
+  trustScore={0.62}
+  signals={[
+    { label: "Check-ins at the entrance", count: 12, detail: "Mukoko Events" },
+    { label: "Deliveries completed", count: 34 },
+    { label: "Neighbours who vouched", count: 3 },
+  ]}
+/>
+```
+
+None of these parts shows a verification tier, so none reads the `--tier-*` colours.
+
+## The kweli mark and lockup
+
+Kweli is a Mukoko mini-app, and its brand mineral is malachite (the `kweli` row in the
+registry's brand canon). Its mark is a shield with a tick, mono in malachite: `#004D40` on
+light grounds and `#64FFDA` on dark. It is Kweli's own artwork from mukoko-dev/kweli, copied
+and not redrawn. The registry ships it as `kweli-mark-light`, `kweli-mark-dark` and
+`kweli-favicon`, and `BrandMark` takes `brand="kweli"`. The lockup puts the wordmark over a
+muted tagline:
+
+```astro
+<BrandMark brand="kweli" wordmark tagline="mukoko · Africa" />
+```

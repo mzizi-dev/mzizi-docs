@@ -6,7 +6,7 @@ icon: "server"
 ---
 
 [`api.mzizi.dev`](https://api.mzizi.dev/v1) is the registry API. It is served by
-[`mzizi-dev/mzizi-api-gateway`](https://github.com/mzizi-dev/mzizi-api-gateway), a
+[`mzizi-dev/mzizi-api`](https://github.com/mzizi-dev/mzizi-api) (formerly `mzizi-api-gateway`), a
 [Hono](https://hono.dev) Cloudflare Worker written in TypeScript. It has **no origin, no
 database and no Supabase**. Everything it serves is a file from the registry repository,
 bundled into the Worker when it is built.
@@ -27,7 +27,7 @@ registry's own Worker.
 curl https://api.mzizi.dev/v1                 # the discovery document
 curl https://api.mzizi.dev/v1/ui              # the component index
 curl https://api.mzizi.dev/v1/ui/button       # one component, source inline (shadcn format)
-curl https://api.mzizi.dev/v1/rs/button       # its Rust (Dioxus) source, where one exists
+curl https://api.mzizi.dev/v1/rs/button       # its Rust source, where one exists
 curl https://api.mzizi.dev/v1/brand           # the brand system: 21 colour families
 curl https://api.mzizi.dev/v1/architecture    # the DNA helix: 8 nodes, 4 rungs, 6 strands
 curl "https://api.mzizi.dev/v1/search?q=card&node=3"   # search, filtered by node
@@ -53,7 +53,8 @@ x-mzizi-source: mzizi-api-gateway; registry=<registry commit>
 ```
 
 For example, on 30 September 2026 it read `registry=9b86e034ffd8`. That is an example, not
-the current value; the header is.
+the current value; the header is. After the repository rename the service may name itself `mzizi-api`; the
+freshness check accepts either name, and the header's value is what counts.
 
 From registry commit `9b86e03` on, `/v1/rs/{name}` serves the twelve Mzizi Roots brand
 components, and its `crate` field names each component's own crate, with a `git` field for
@@ -94,7 +95,7 @@ the Worker rather than in separate storage.
 The pin is `ref` in the gateway's `scripts/registry-ref.json`. The owner decided on 30
 September 2026 to keep the pin and move it automatically, and the gateway has a bot built to
 keep it on registry `main`. The gateway's README describes it under
-[Registry pin bump](https://github.com/mzizi-dev/mzizi-api-gateway#registry-pin-bump).
+[Registry pin bump](https://github.com/mzizi-dev/mzizi-api#registry-pin-bump).
 
 1. **Every hour** the bot compares the pin with registry `main`. When they differ, it
    opens or updates one pull request, from the branch `bot/registry-pin`, that moves the pin.
@@ -110,7 +111,7 @@ keep it on registry `main`. The gateway's README describes it under
 
 The bot runs on its own token, the `RELEASE_BUMP_TOKEN` Actions secret (a fine-grained token
 with Contents, Pull requests and Workflows read and write), and it is live: on 2 October 2026 it opened
-mzizi-api-gateway#29 and, for the MCP server's pin, agent-tools#169. It merges its own pull request only if the token
+mzizi-api#29 and, for the MCP server's pin, agent-tools#169. It merges its own pull request only if the token
 also has **Checks: Read-only** and **Commit statuses: Read-only**, because it reads the bump's
 check runs and commit status before merging; without them that read fails with a `403` and
 the pull request waits for a person. A bump by hand keeps working too, and the bot steps aside
@@ -144,7 +145,7 @@ request that uses it gets the same results, plus a `Deprecation: true` header an
 
 ### The Rust route
 
-`/v1/rs/{name}` answers with a component's Rust (Dioxus) source where one exists, and `404`
+`/v1/rs/{name}` answers with a component's Rust source where one exists, and `404`
 where there is none. The document names the crate the component ships in, and the crate
 differs by node: `mzizi-ui` for the primitives, `mzizi-brand` for the brand components,
 `mzizi-shell` for the app chrome, and so on. For example, on 30 September 2026:
@@ -186,7 +187,7 @@ notes that its old table is historical.
 ## Parity
 
 The acceptance test for the cutover was
-[`scripts/parity.mjs`](https://github.com/mzizi-dev/mzizi-api-gateway/blob/main/scripts/parity.mjs).
+[`scripts/parity.mjs`](https://github.com/mzizi-dev/mzizi-api/blob/main/scripts/parity.mjs).
 It sends read-only requests to a baseline and a candidate: every route, every component slug
 on `/v1/ui/{name}` and `/v1/rs/{name}`, the renamed names, the filters, the error paths and
 the method handling. It diffs status, `Location`, content type, the CORS, cache and security
@@ -219,6 +220,6 @@ npm test               # offline route tests
 npm run parity         # live api.mzizi.dev against the local Worker
 ```
 
-Pull requests merge by rebase or squash, never by merge commit, and people never turn on
-auto-merge (only the pin bot does, for its own pull request). See the repository's
-`CONTRIBUTING.md` for merging, changing a route or moving the pin.
+Pull requests merge by squash through the merge queue (`gh pr merge <n> --squash --auto`);
+rebase and merge commits are disabled. See the repository's `CONTRIBUTING.md` for merging,
+changing a route or moving the pin.

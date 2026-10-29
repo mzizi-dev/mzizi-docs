@@ -1,0 +1,315 @@
+---
+title: "The Mzizi Cookbook"
+description: "Recipes for building with and contributing to Mzizi, by a person or an agent: write and check a component, write a service, build it into a container, write a program, add a diagnostic, add an RFC, run a benchmark episode, and file a good issue."
+sidebarTitle: "Cookbook"
+icon: "chef-hat"
+---
+
+<Warning>
+  Mzizi is a Phase 0 prototype. These recipes show how the toolchain works today; they do not
+  show that Mzizi beats anything. The kill-criterion run has not happened, and four small pilots
+  showed no advantage ([results](/pilots)). Every output below was produced by running `mz` built
+  from the language's `main` at `2b36c8f` (`v0.12.0`) on 29 October 2026, except where a recipe
+  says it was not run.
+</Warning>
+
+[The Playbook](/playbook) says why the project works this way. This page is the how. You need a
+checkout of [`mzizi-dev/mzizi`](https://github.com/mzizi-dev/mzizi) and a Rust toolchain; the
+compiler has no dependencies.
+
+```bash
+git clone https://github.com/mzizi-dev/mzizi && cd mzizi
+cargo build --release -p mzizi-lang-compiler    # builds target/release/mz
+export PATH="$PWD/target/release:$PATH"
+```
+
+All the commands on this page are the ones the binary on `main` dispatches: `check`, `fix`,
+`contract`, `outline`, `hash`, `ir`, `build`, `run` and `harness`. Commands that are designed but
+not built (`mz refs`, `mz path`, `mz patch`, `mz diff`, `mz test`, `mz fmt`) are not used here.
+
+## 1. Write and check a component
+
+A component is one `.mz` file with one `component`, its props, a `view` and a `contract`. Start
+from a real one, never from an RFC's example: the repository's `primitives/` are CI-gated.
+
+```text
+component separator
+
+  enum separator_axis
+    horizontal  class "h-px w-full"
+    vertical    class "w-px self-stretch"
+  end
+
+  prop axis: separator_axis = horizontal
+  prop decorative: bool = true
+
+  view
+    rule
+      slot = "separator"
+      axis = axis
+      decorative = decorative
+      class = "shrink-0 bg-border {axis.class}"
+    end
+  end
+
+  contract
+    separator_axis.horizontal class contains "w-full"
+    separator_axis.vertical class contains "self-stretch"
+    slot is "separator"
+  end
+
+end component separator
+```
+
+(This is `primitives/separator.mz` with its `portal` attribute and comments left out; it passed
+`mz check` and `mz contract` as written.) Then run the loop:
+
+```bash
+mz check --agent file.mz    # NDJSON diagnostics, then a summary line
+mz fix file.mz              # apply every exact fix, then re-check
+mz contract file.mz         # evaluates the contract against the component
+mz outline file.mz          # the signature view an agent can read cheaply
+```
+
+On `primitives/separator.mz`, `mz contract` printed `mz: 0 errors (0 exact-fixable), 3 contract
+clauses, 0 failed`. A contract that fails is a defect to fix in the component, not in the
+contract. A contract may constrain only what the component renders, never a declared copy of it.
+
+<Note>
+  `mz contract` checks a component against itself. **No component lowers to Rust or renders
+  yet.** Components that ship today are in the registry, installed with `mzizi add` or
+  `cargo add mzizi-roots`; see [Mzizi Roots](/roots/overview). The registry is the source for
+  every component, in every format, and a component an app needs that is missing goes upstream
+  first ([Playbook](/playbook#upstream-first)).
+</Note>
+
+## 2. Write a service and run its contract
+
+A `service` declares HTTP routes and handlers (`when`, `header`, `respond`) and a contract of
+`example` and `ensure` clauses ([RFC-0011](https://github.com/mzizi-dev/mzizi/blob/main/design/RFC-0011-handlers.md)).
+Read `examples/registry.mz` in full, then write yours in its shape:
+
+```text
+service registry
+
+  record health
+    field status: text
+  end
+
+  route health_check
+    get "/v1/health"
+    respond 200 json health status "ok"
+  end
+
+  fallback
+    respond 404 json health status "not found"
+  end
+
+  contract
+    example get "/v1/health" status is 200
+    example get "/v1/health" body.status is "ok"
+    example get "/nope" status is 404
+    ensure status in 200 204 308 404 405
+  end
+
+end service registry
+```
+
+This reduced service passed `mz check` and `mz contract` on 29 October 2026 (4 contract clauses,
+0 failed, tested over 25 generated requests). Its first draft said `ensure status in 200 404`,
+and `mz contract` rejected it: `MZ0611`, `delete "/v1/health" gives status 405`, and then
+`get "//mz-unknown" gives status 308`. That is the contract doing its job. The generated
+requests include methods and paths you did not list, so an `ensure` must cover the statuses
+the service really returns for them. The full example, run the same day:
+
+```bash
+mz check examples/registry.mz      # mz: 0 errors (0 exact-fixable)
+mz contract examples/registry.mz   # 22 contract clauses, 0 failed, tested over 61 generated requests
+```
+
+The `ensure` clauses are checked over generated requests. That is a test, not a proof.
+
+## 3. Build a service and run it in a container
+
+`mz build` lowers a service to a local Rust and axum package. A service **binds loopback unless
+told otherwise** (`127.0.0.1`), so it is private by default; a container sets `HOST=0.0.0.0`.
+
+```bash
+mz build examples/registry.mz --out ./registry-svc
+```
+
+That wrote `Cargo.toml`, `fixtures/` and `src/main.rs`. The generated `main.rs`, read on
+29 October 2026, does what the language changelog says: it reads `PORT`, then `HOST`, and exits 1 with
+`HOST must be an IP address` if `HOST` is not one. The generated `Cargo.toml` pins its
+dependencies exactly (`axum`, `tokio =1.53.3`) and carries a `[profile.release]` with `lto`,
+`codegen-units = 1`, `panic = "abort"`, `strip` and `overflow-checks`.
+
+A container recipe, built from those facts and from tracker row P11:
+
+```dockerfile
+# Not run for this page: it is a recipe built from the generated package's behaviour.
+FROM rust:1 AS build
+RUN rustup target add x86_64-unknown-linux-musl
+WORKDIR /svc
+COPY registry-svc/ .
+RUN cargo build --release --target x86_64-unknown-linux-musl
+
+FROM scratch
+COPY --from=build /svc/target/x86_64-unknown-linux-musl/release/mz-registry /mz-registry
+COPY --from=build /svc/fixtures /fixtures
+ENV HOST=0.0.0.0 PORT=8080
+EXPOSE 8080
+ENTRYPOINT ["/mz-registry"]
+```
+
+<Warning>
+  This image was not built or run for this page. The language's changelog reports, for `examples/registry.mz`
+  built with the musl target on 29 October 2026, a binary of 1,671,144 B before the slim profile
+  and 934,720 B after, and idle memory of about 3.5 MB before and about 1 MB after. Those
+  measure **Rust's output through Mzizi's lowering, not a Mzizi advantage**, and nothing has met
+  the kill criterion. Check the working directory the service resolves `fixtures/` from before
+  relying on the `FROM scratch` layout. The generated package's tests run in the language's `lowering` CI
+  job, which serves the package on a non-loopback address and sends it a request.
+</Warning>
+
+Rebuild any service built before `v0.12.0`: its `tokio` pin was moved for RUSTSEC-2026-0386.
+
+## 4. Write a program and `mz run`
+
+A `program` holds `fn`s, one of them `fn main`. Programs are checked, lowered to a
+dependency-free Rust package, built with Cargo and run.
+
+```text
+program hello
+
+  fn main
+    print("hello, world")
+  end fn main
+
+end program hello
+```
+
+```bash
+mz run examples/hello.mz         # prints: hello, world
+mz run --release examples/fib.mz # a release build
+```
+
+On 29 October 2026 each of the eight example programs (`hello`, `fib`, `numbers`, `control`,
+`errors`, `collections`, `records`, `text`), run with `mz run`, printed exactly its
+`.expected` file. The `.expected` files are CI's oracle; add one for any example you add.
+
+A program is where the idioms other languages bring get caught with fixes. Writing `x = 2 ** 3`
+inside `fn main` gave two diagnostics on this run:
+
+```json
+{"code":"MZ0923","severity":"error","span":[4,5,4,6],"say":"`x` is assigned before it is bound — a binding starts with `let`: `let x = 2.pow(3)`","fix":{"span":[4,5,4,5],"replace":"let ","confidence":"exact"}}
+{"code":"MZ0910","severity":"error","span":[4,11,4,13],"say":"`**` is not a Mzizi operator — a power is the method `x.pow(n)`, with an int `n`","fix":{"span":[4,9,4,15],"replace":"2.pow(3)","confidence":"guess"}}
+{"summary":true,"errors":2,"warnings":0,"exact_fixable":1,"ms":8}
+```
+
+`mz fix` applied the one `exact` fix (inserting `let`) and left the `guess` for the author,
+exiting 1 with one error remaining. An agent reads the `say` text, rewrites the line, and
+re-checks. The program-level paths in the output were shortened here.
+
+A program has expressions, bindings, functions, control flow, numbers, results, text, lists,
+maps, sets and records with methods, in a narrow form. It has **no modules, standard library or
+concurrency**, and no generics. [The programs page](/programs) is the reference.
+
+## 5. Add a diagnostic, with its fix and harness entry
+
+A change to what the language can do is not complete without its harness entry and its tracker
+row (owner, 7 October 2026). The rules are in `CONTRIBUTING.md`, "The language harness", and
+[RFC-0012](https://github.com/mzizi-dev/mzizi/blob/main/design/RFC-0012-harness.md) §1.2:
+
+1. **Name the failure mode** the diagnostic removes (an idiom another language brings, a cascade
+   of errors that hides the cause). If it cannot be named, it does not belong.
+2. **Emit the code** in `compiler/src`, with a `say` text that tells the reader what to write, and
+   a `fix` whose `confidence` is `exact` only when the fix is certain. A fix that needs an
+   operand it does not have is not `exact` (RFC-0006 §8.2 was corrected on exactly this).
+3. **Register it in `compiler/src/harness.rs`**: one `Code` in `CODES` with a `trigger` source
+   that emits it, and the feature's entry in `FEATURES` with tested examples (including their
+   output, for a program).
+4. **Test it**: `compiler/tests/harness.rs` enforces that every construct and code is registered,
+   and the example's trigger must fire the code.
+5. **Check what an agent will read**: `mz harness entry MZ0923` prints the entry. For `MZ0923` it
+   showed `"fixes": ["exact","guess"]`, the programs that raise it, and its trigger source.
+6. **Update `LANGUAGE-TRACKER.md`** if a row's status changes, and add a `CHANGELOG.md` entry
+   under `## [Unreleased]`, in the same pull request.
+7. **Regenerate the docs table.** The `MZ09xx` table on [The compiler](/compiler) is
+   `mz harness definition` at the commit it names; do not hand-edit it.
+
+Before pushing, run the gates `CONTRIBUTING.md` lists from `compiler/`: `cargo fmt -- --check`,
+`cargo clippy --all-targets -- -D warnings`, `cargo test`, then `mz check` and `mz contract`
+over every primitive and example.
+
+## 6. Add an RFC
+
+Anything that changes the surface syntax, the type system, the IR node model, the agent
+protocol or the public/private test boundary needs an RFC in `design/`.
+
+1. Take **the next free number**. Numbers are never reused, and RFC-0005 is reserved. Check open
+   issues and open pull requests as well as `design/`.
+2. File: `design/RFC-NNNN-kebab-case-topic.md`, with the H1 `# RFC-NNNN — <what it settles>`.
+3. Header block, three bold fields and a rule: **Status** (state implementation precisely; there
+   is no "accepted"), **Author**, **Scope** (what it settles and what it defers).
+4. Design against **named failure modes** and cite them in the headings.
+5. Use **real examples** (a component with a reference, or a primitive). Measure any number with
+   a test, and label a prediction as one.
+6. Record corrections in place: an amendment note on the earlier RFC, and a struck-through,
+   answered open question.
+7. End with open questions, addressed to the next RFC by number.
+8. Open the pull request with the implementation in the same branch where you can, and the
+   tracker, harness and changelog updates that go with it.
+
+## 7. Run a benchmark episode
+
+The runner is `mzbench`, in the language repository. An _episode_ gives an author (a model or an
+agent) one task's input and asks it to write one file in one arm's language, with up to five
+iterations against that arm's checker. Pilots 3 and 4 used the agent-driven mode (Mode 2):
+
+```bash
+cargo build --workspace
+EP=$(mzbench episode start --task benchmarks/tasks/button --arm mzizi \
+       --model-label <label> --out results --seed 1)
+# give the author "$EP/prompt.md"; it writes candidate.mz and submits it:
+mzbench episode submit "$EP" candidate.mz    # exit 0 clean, 1 errors, 2 refused
+mzbench episode finish "$EP"                 # only after the author has reported
+mzbench summarize results
+```
+
+These commands are copied from `benchmarks/runner/README.md`; no episode was run for this
+page. Rules that come from the pilots' run records:
+
+- **Finish an episode only after its author has reported.** Pilot 3 finished one early and had
+  to revert the premature line, and says so.
+- **Register a `PLAN.md` before the first episode** (`mzbench plan`) and do not change it
+  afterwards. Then publish the raw episodes, the run record and every departure.
+- **Say what the run is not.** A pilot on public tasks declares no pass or fail. Only a run that
+  applies RFC-0009 §6 on held-out tasks with the ~7B model can test the kill criterion.
+- **Do not name a model in a docs page.** Say "a frontier model" and link the write-up, which
+  names it.
+
+## 8. File a good issue
+
+The organisation's issue forms (bug report, feature request) live in
+[`mzizi-dev/.github`](https://github.com/mzizi-dev/.github). A good Mzizi issue:
+
+- Names **the repository that owns the problem**, and the file or command. A language bug goes in
+  `mzizi-dev/mzizi`; a component in `mzizi-dev/mzizi-registry`; a docs error in `mzizi-dev/mzizi-docs`.
+- Gives **a reproduction that runs**: the exact `.mz` file, the command, the output it printed,
+  and what you expected. Say which commit of `mz` you built.
+- **Separates tested from designed**: say whether you saw a thing happen, or read it in an RFC.
+- For substantial work, **holds the goal, the owner's decisions verbatim, the plan, acceptance
+  criteria and owner-only steps**, so another session or person can pick it up. Every pull
+  request then references it with `Refs #n`.
+- Never contains a secret, a credential's status, or exploitable detail on a public repository.
+  Security reports go to `security@nyuchi.com`, not an issue.
+
+<CardGroup cols={2}>
+  <Card title="The Playbook" icon="book-open-check" href="/playbook">
+    Why the project works this way: vision, mission, goals, the kill criterion and the practices.
+  </Card>
+  <Card title="The compiler" icon="cpu" href="/compiler">
+    Every `mz` command, and the generated diagnostic table.
+  </Card>
+</CardGroup>

@@ -1,15 +1,16 @@
 ---
 title: "The Phase 0 pilots"
-description: "Two small pilots of the Phase 0 benchmark ran on 2026-09-27. Neither showed an advantage for Mzizi, and neither is the run that tests the kill criterion."
+description: "Four small pilots of the Phase 0 benchmark have run: two on 2026-09-27 and two on 2026-10-29. None showed an advantage for Mzizi, and none is the run that tests the kill criterion."
 sidebarTitle: "Pilot results"
 icon: "clipboard-list"
 ---
 
 <Warning>
-  **Neither pilot showed an advantage for Mzizi.** With a frontier model the two arms tied,
-  and Mzizi used about 8% fewer tokens. With a ~7B open-weight model, the size the language
-  is designed for, Mzizi did **worse** on all three metrics. Both pilots are tiny, and
-  neither is the charter's measurement. The run that tests the kill criterion has not
+  **No pilot showed an advantage for Mzizi.** In the first two (2026-09-27), with a frontier
+  model the two arms tied, and Mzizi used about 8% fewer tokens; with a ~7B open-weight model,
+  the size the language is designed for, Mzizi did **worse** on all three metrics. The two
+  of 2026-10-29 sat at the ceiling and separated nothing. All four are tiny, and
+  none is the charter's measurement. The run that tests the kill criterion has not
   happened.
 </Warning>
 
@@ -112,6 +113,35 @@ flatter Mzizi.
   contaminated.
 - **Shared authorship.** The RFCs and guides were written by the same model family as the
   frontier author, which may find Mzizi unusually legible for that reason.
+
+## Pilots 3 and 4: React, on the same three tasks (2026-10-29)
+
+Two more pilots ran on 2026-10-29 and were published in the language's `CHANGELOG.md` for
+`v0.12.0`. **Neither declares a pass or a fail, and neither is the kill-criterion run**
+(tracked in [mzizi#137](https://github.com/mzizi-dev/mzizi/issues/137)). Each ran the public
+`button`, `badge` and `card` tasks of the `ui-spec` family for the `mzizi` and `react` arms,
+three seeds each (18 episodes), in Mode 2: a fresh subagent per episode.
+
+| Pilot | Author                   | Episodes                      | What happened                                                                                                                                                                                   |
+| ----- | ------------------------ | ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 3     | A frontier model         | 27 (the 18, and `dioxus` x 3) | 26 of 27 clean at iteration 1 with no defects. One `mzizi` `card` candidate added a slot the spec does not list (1 defect); another failed iteration 1 (`MZ0712`) and was clean at iteration 2. |
+| 4     | A smaller, cheaper model | 18                            | All 18 clean at iteration 1. One `mzizi` `card` candidate declared one slot where the spec lists seven (1 defect).                                                                              |
+
+**Read them as ceiling effects.** At these model sizes, on these public tasks, the metrics
+sit at the ceiling, so the arms are not separated and a difference of one defect in nine
+episodes is not evidence either way. Tokens were not measured (no tokenizer endpoint). The
+~7B open-weight headline model was not run, the tasks are public, there is no held-out set,
+and the `backend` family has not run. The frontier model and the language's guides share an
+author (a threat to validity), and Mode 2's rules are instructions, not enforcement. The run
+records state their own departures, including a `flock` shim for macOS and one premature
+`episode finish` that was reverted. Read
+[`2026-10-29-pilot-3-frontier`](https://github.com/mzizi-dev/mzizi/tree/main/benchmarks/results/2026-10-29-pilot-3-frontier)
+and
+[`2026-10-29-pilot-4-haiku`](https://github.com/mzizi-dev/mzizi/tree/main/benchmarks/results/2026-10-29-pilot-4-haiku)
+for the detail.
+
+Pilot 3 also ran the `dioxus` arm on `button` only. New work does not use Dioxus, Leptos or
+Yew (owner, 2026-10-20): components come from the registry and are built in Mzizi Roots.
 
 ## What has to change before the real run
 
@@ -222,5 +252,5 @@ is, Mzizi did worse, so a loss on today's compiler is the expected result.
 
 "Designed for small models" is accurate. Calling Mzizi "faster", "cheaper" or "better" is not:
 nothing has shown it. The honest summary is that Mzizi is a design with an argument behind
-it, that the first two pilots did not show an advantage, and that the measurement that
+it, that none of the four pilots showed an advantage, and that the measurement that
 decides the project has not run.
