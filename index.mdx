@@ -1,6 +1,6 @@
 ---
 title: "Mzizi: a general-purpose programming language"
-description: "Built to make Rust better, the way TypeScript makes JavaScript better: no borrows, lifetimes or ownership in the language you write, with the language harness as its spine, the layer an agent reads. That is the goal Phase 0 measures, not a result. Its goal is to be used instead of TypeScript, Python and C++. It is a Phase 0 prototype, and the first two pilots showed no advantage."
+description: "Built to make Rust better, the way TypeScript makes JavaScript better: no borrows, lifetimes or ownership in the language you write, with the language harness as its spine, the layer an agent reads. That is the goal Phase 0 measures, not a result. Its goal is to be used instead of TypeScript, Python and C++. It is a Phase 0 prototype, and none of the four pilots showed an advantage."
 sidebarTitle: "Overview"
 icon: "sprout"
 mode: "wide"
@@ -16,8 +16,9 @@ mode: "wide"
   and text methods, which `mz run` lowers to Rust, builds and runs. No component lowers yet, and nothing renders. **Mzizi has no modules,
   standard library or concurrency yet**: a program has expressions,
   bindings, functions, control flow, numbers, results, text, lists, maps, sets and records with methods,
-  in a narrow form, and those rows are ✅ ([what still has to be built](/tracker)). Two small pilots
-  of the benchmark ran on 2026-09-27, and **neither showed an advantage** ([results](/pilots)).
+  in a narrow form, and those rows are ✅ ([what still has to be built](/tracker)). Four small
+  pilots of the benchmark have run (two on 2026-09-27, two on 2026-10-29), and **none showed an
+  advantage** ([results](/pilots)).
   The run that tests the kill criterion has not happened.
 </Note>
 
@@ -90,11 +91,12 @@ and [charter v0.4](/charter) §4 states it. Two task families gate, on held-out 
 
 | Family    | What the agent writes                             | Measured against                                                                                                                    |
 | --------- | ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| `ui-spec` | UI components, from a language-neutral `spec.md`  | Rust with Dioxus and with Leptos, TypeScript with React (all exist; Leptos and React have never run)                                |
+| `ui-spec` | UI components, from a language-neutral `spec.md`  | Rust with Dioxus and with Leptos, TypeScript with React (all exist; Leptos has never run, React only in pilots 3 and 4)             |
 | `backend` | HTTP handlers and services, scored by HTTP probes | TypeScript (Hono), Python (FastAPI), Go, C++20 and Rust (axum), none added yet. The Mzizi arm, `mzizi-be`, exists and has never run |
 
-Nothing has been measured against that goal yet. The two pilots of 2026-09-27, which ported
-registry UI components into Mzizi and Dioxus, were the first tests inside Phase 0, not its
+Nothing has been measured against that goal yet. The four pilots so far (two on 2026-09-27,
+which ported registry UI components into Mzizi and Dioxus, and two on 2026-10-29, on a
+frontier model and a smaller one, against React) were tests inside Phase 0, not its
 goal. See [the benchmark](/benchmark) for every arm and its state.
 
 ## Where Mzizi is heading
@@ -117,7 +119,7 @@ goal. See [the benchmark](/benchmark) for every arm and its state.
   service's run in process, tested over generated requests, not proven.
 - **A wider benchmark.** The benchmark will extend to TypeScript and React on UI tasks, and to
   TypeScript, Python, Go, C++ and Rust on backend tasks. Today it has Dioxus, Leptos and
-  React arms for UI components and the `mzizi-be` arm for the backend; only the Dioxus arm has
+  React arms for UI components and the `mzizi-be` arm for the backend; only the Dioxus and React arms have
   ever run, and the other-language backend arms are not added yet.
 - **M1, a language that computes, is met on `main`.** Every Tier 1 row of the tracker is ✅ since
   the fourth release of 8 October 2026, built in waves under
