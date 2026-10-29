@@ -9,7 +9,7 @@ icon: "book-open-check"
   **This playbook describes how Mzizi is built, not that Mzizi has won anything.** The language is
   a Phase 0 prototype. Four small pilots have run and none showed an advantage for Mzizi
   ([results](/pilots)). The run that tests the kill criterion (RFC-0009 §6) has not happened, so
-  nothing here claims Mzizi is faster, cheaper or better than any other language. Numbers from the
+  nothing here claims a Mzizi advantage over any other language. Numbers from the
   pilots, and from Rust's output through Mzizi's lowering, are labelled as exactly that wherever
   they appear.
 </Warning>
@@ -106,7 +106,8 @@ outcome.
 
 The language's `AGENTS.md` calls this "the one rule that overrides the others". Concretely:
 
-- "Designed for" is fine. "Faster", "cheaper", "better" and "the benchmark shows" are not, and a
+- "Designed for" is fine. A claim of speed, cost or quality over another language, or a sentence
+  that says a benchmark proved something, is not, and a
   commit message, pull request description or comment that implies otherwise is rejected.
 - "Compiles to Rust" is true only of a `service` and a `program`, and a program only in Tier 1's
   narrow form. It is false of a component.
