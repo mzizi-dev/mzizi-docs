@@ -88,7 +88,7 @@ summarised on [What still has to be built](/tracker).
 | Workers, Containers or WebAssembly targets           | **Not started**                                                                                                                            | `LANGUAGE-TRACKER.md` P11                                                      |
 | Rendering, any target                                | **Not started.** Phase 1                                                                                                                   | —                                                                              |
 
-The compiler source is 33,518 lines across `compiler/src`. The workspace has **765 tests in 29 suites**,
+The compiler source is 33,540 lines across `compiler/src`. The workspace has **765 tests in 29 suites**,
 634 of them in the compiler crate and the rest in the benchmark harness, runner and probe crate
 (the counts the language's README states at `2b36c8f`; the suite was not re-run for this update; the last full run, at `6f7b096`, was 634 and 765, all passing). CI gates on
 `cargo fmt --check`, `cargo clippy --all-targets -D warnings`, `cargo test`, `mz check` and
@@ -140,7 +140,7 @@ merged as `6f7b096` and tagged `v0.9.0`) carries no new language construct. What
   crates through an exact pin (P6). Nothing in it is implemented: `mz check` does not accept `import`,
   `module`, `public` or `extern` today.
 - **Tests.** 765 in the workspace, 29 suites, and 634 in the compiler crate, all passing. `compiler/src` is
-  33,518 lines. The language harness holds 197 entries: 79 distinct diagnostic codes (53 `MZ09xx`, 26 shared)
+  33,540 lines. The language harness holds 197 entries: 79 distinct diagnostic codes (53 `MZ09xx`, 26 shared)
   and 49 pending codes. The 8 October page said 80 codes, with 27 shared; the definition does not give that,
   and the release added and removed no code entry.
 - **The CI and documentation fixes** (#113 and #116, the `rust-toolchain` pins; #115, the README and the
