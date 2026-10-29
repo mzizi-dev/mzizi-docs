@@ -1,12 +1,12 @@
 ---
 title: "Status"
-description: "What exists, what is tested, what has been measured, and what is still only a design. The Mzizi language is a Phase 0 prototype: a front end, a service that lowers to Rust and axum, and a first program slice that mz run lowers to Rust and runs. Two small pilots have run and neither showed an advantage; the kill criterion has not been tested."
+description: "What exists, what is tested, what has been measured, and what is still only a design. The Mzizi language is a Phase 0 prototype: a front end, a service that lowers to Rust and axum, and a first program slice that mz run lowers to Rust and runs. Four small pilots have run and none showed an advantage; the kill criterion has not been tested."
 icon: "gauge"
 ---
 
 <Warning>
   **Nothing on this site documents a working production language.** Mzizi is a Phase 0
-  prototype front end. Two small pilots of the benchmark ran on 2026-09-27, and **neither
+  prototype front end. Four small pilots of the benchmark have run (two on 2026-09-27, two on 2026-10-29), and **none
   showed an advantage** for Mzizi ([results](/pilots)). The run that tests the charter's
   kill criterion has not happened. A `service` lowers to a local Rust + axum package, and a
   [`program`](/programs) in RFC-0013's first slice lowers to a Rust package that `mz run`
@@ -24,16 +24,17 @@ existing language for each kind of task** (RFC-0009, and charter v0.4 §4). The
 languages it is measured against are TypeScript, Python, Go, C++ and Rust: Rust with Dioxus
 and Leptos and TypeScript with React for UI components, and TypeScript, Python, Go, C++ and
 Rust for backend handlers and services. **Nothing has been measured against that
-yet.** The two pilots below were the first tests inside Phase 0, on a few registry UI
-components against Dioxus. They are not its goal, and they showed no advantage. See
+yet.** The pilots below were tests inside Phase 0, on a few registry UI
+components, against Dioxus (pilots 1 and 2) and React (pilots 3 and 4). They are not its goal, and they showed no advantage. See
 [the benchmark](/benchmark#the-arms) for every arm and whether it exists.
 
 The table below is the language's front end, which lives in its toolchain, the `mz`
 compiler. The compiler implements the language; it is not the language.
 
-Checked against [`mzizi-dev/mzizi`](https://github.com/mzizi-dev/mzizi) at `6f7b096` on
-20 October 2026, the merge of [mzizi#120](https://github.com/mzizi-dev/mzizi/pull/120), which
-released `staging` to `main` and is tagged `v0.9.0`. The release of 8 October,
+Checked against [`mzizi-dev/mzizi`](https://github.com/mzizi-dev/mzizi) at `2b36c8f` on
+29 October 2026, the merge of [mzizi#140](https://github.com/mzizi-dev/mzizi/pull/140), which
+released `staging` to `main` and is tagged `v0.12.0`. The release of 20 October,
+[mzizi#120](https://github.com/mzizi-dev/mzizi/pull/120), is `6f7b096`, tagged `v0.9.0`; `v0.11.0` (21 October) is `ed5eab8`. The release of 8 October,
 [mzizi#109](https://github.com/mzizi-dev/mzizi/pull/109), is `1d5e578`, tagged `v0.8.0`, the fourth of that
 day. The first,
 [mzizi#91](https://github.com/mzizi-dev/mzizi/pull/91), is `be88017`, tagged `v0.5.0`; the
@@ -69,11 +70,11 @@ summarised on [What still has to be built](/tracker).
 | `result(T, E)`, `error`, `try`, enum columns         | Exist, tested in a program (RFC-0013 §12, C9)                                                                                              | `compiler/src/program/errors.rs`, `examples/errors.mz`                         |
 | `mz run`: a program lowered to Rust, built and run   | Exists, tested. A dependency-free package; CI runs every example program                                                                   | `compiler/src/run.rs`                                                          |
 | The language harness: `mz harness`                   | **First slice exists.** 197 entries, 80 diagnostic codes, 49 pending; plugin host not built                                                | `compiler/src/harness.rs`, RFC-0012                                            |
-| Benchmark runner and scorer                          | Exist, tested, used for two pilots                                                                                                         | `benchmarks/runner`, `benchmarks/harness`                                      |
-| Benchmark arms                                       | `mzizi`, `dioxus`, `leptos`, `react`, `mzizi-be`; React, Leptos and `mzizi-be` never run                                                   | `benchmarks/arms/`                                                             |
+| Benchmark runner and scorer                          | Exist, tested, used for four pilots                                                                                                        | `benchmarks/runner`, `benchmarks/harness`                                      |
+| Benchmark arms                                       | `mzizi`, `dioxus`, `leptos`, `react`, `mzizi-be`; Leptos and `mzizi-be` never run, React only in pilots 3 and 4                            | `benchmarks/arms/`                                                             |
 | Backend probe crate and task B1                      | Exist, tested; the runner does not score with probes yet                                                                                   | `benchmarks/probe`, `benchmarks/tasks/b1-routing`                              |
 | Kill-criterion driver and task checker               | Exist, never run for real; refuse to start without `PLAN.md`                                                                               | `benchmarks/kill-criterion/`                                                   |
-| Phase 0 pilot results                                | **Two pilots, no advantage shown**                                                                                                         | `benchmarks/results/`                                                          |
+| Phase 0 pilot results                                | **Four pilots, no advantage shown**                                                                                                        | `benchmarks/results/`                                                          |
 | Readiness audit of pilot 2's fixes                   | **Mostly fixed; the run still waits on the items listed there**                                                                            | `benchmarks/READINESS.md`                                                      |
 | Performance suite against hand-written Rust          | Exists. CI checks only that outputs agree; **no timing is committed, none is a result**                                                    | `benchmarks/perf/`                                                             |
 | Kill-criterion benchmark run                         | **Has not happened**                                                                                                                       | —                                                                              |
@@ -87,9 +88,9 @@ summarised on [What still has to be built](/tracker).
 | Workers, Containers or WebAssembly targets           | **Not started**                                                                                                                            | `LANGUAGE-TRACKER.md` P11                                                      |
 | Rendering, any target                                | **Not started.** Phase 1                                                                                                                   | —                                                                              |
 
-The compiler source is 33,518 lines across `compiler/src`. The workspace has **765 tests in 29 suites**,
+The compiler source is 33,540 lines across `compiler/src`. The workspace has **765 tests in 29 suites**,
 634 of them in the compiler crate and the rest in the benchmark harness, runner and probe crate
-(re-run for these docs at `6f7b096`: 634 and 765, all passing). CI gates on
+(the counts the language's README states at `2b36c8f`; the suite was not re-run for this update; the last full run, at `6f7b096`, was 634 and 765, all passing). CI gates on
 `cargo fmt --check`, `cargo clippy --all-targets -D warnings`, `cargo test`, `mz check` and
 `mz contract` over every primitive and example, and a `lowering` job that builds, tests and
 serves the example service, runs every example program through `mz run` against its
@@ -100,6 +101,27 @@ repository to `main` is tagged (`v0.4.0` is `0653903`, `v0.5.0` is `be88017` and
 `dc156c5`, both of 8 October 2026, `v0.7.0` is `4d0cdc3`, the third release of that day, and `v0.8.0` is `1d5e578`, the fourth, and `v0.9.0` is `6f7b096`, of 20 October), but that tags the repository, not a
 published compiler: there is no `cargo install mz` and no published crate. You build it from
 the repository or you do not have it.
+
+## Released to `main` on 29 October 2026
+
+The release of 29 October 2026 ([mzizi#140](https://github.com/mzizi-dev/mzizi/pull/140), `staging` to `main`,
+merged as `2b36c8f` and tagged `v0.12.0`) adds no language construct, and the language
+harness definition is unchanged (the same SHA-256 as at `v0.9.0`). What it carries, from the
+language's `CHANGELOG.md`:
+
+- **A generated service can listen off loopback.** `mz build` services read `HOST` (default
+  `127.0.0.1`) alongside `PORT`; a container sets `HOST=0.0.0.0`, and a value that is not an IP
+  address stops the service with exit 1. Tracker row P11 says so.
+- **Generated services build slim.** The generated `Cargo.toml` carries a `[profile.release]`
+  (`lto`, `codegen-units = 1`, `panic = "abort"`, `strip`, `overflow-checks`). The language's
+  changelog measured one example by hand (1,671,144 B to 934,720 B, idle RSS about 3.5 MB to
+  about 1 MB). That is Rust's output through Mzizi's lowering, **not a Mzizi advantage**, and
+  nothing here has met the kill criterion.
+- **The `tokio` pin moves to `=1.53.3`** in generated services, for RUSTSEC-2026-0386. Rebuild a
+  service built before this.
+- **Pilots 3 and 4**, published on the [pilot results](/pilots) page.
+- **Merging is squash through the merge queue**, in the language's `AGENTS.md`,
+  `CONTRIBUTING.md` and `MIGRATION.md`.
 
 ## Released to `main` on 20 October 2026
 
@@ -118,7 +140,7 @@ merged as `6f7b096` and tagged `v0.9.0`) carries no new language construct. What
   crates through an exact pin (P6). Nothing in it is implemented: `mz check` does not accept `import`,
   `module`, `public` or `extern` today.
 - **Tests.** 765 in the workspace, 29 suites, and 634 in the compiler crate, all passing. `compiler/src` is
-  33,518 lines. The language harness holds 197 entries: 79 distinct diagnostic codes (53 `MZ09xx`, 26 shared)
+  33,540 lines. The language harness holds 197 entries: 79 distinct diagnostic codes (53 `MZ09xx`, 26 shared)
   and 49 pending codes. The 8 October page said 80 codes, with 27 shared; the definition does not give that,
   and the release added and removed no code entry.
 - **The CI and documentation fixes** (#113 and #116, the `rust-toolchain` pins; #115, the README and the
@@ -295,7 +317,7 @@ RFC-0009 §6.3 argues the change is not moving the goalposts, because it only go
 way: beating the best on a metric implies beating Dioxus and Leptos on it. The gate itself
 is unchanged: Phase 1 waits for a real number.
 
-The two pilots are not that run. They used two or three public tasks, one comparison
+The four pilots are not that run. They used two or three public tasks, one comparison
 language and a checker that was still growing. Their honest reading is that they did not
 show an advantage. The second one found concrete fixes to make before the real run, and
 most of those are now made; see

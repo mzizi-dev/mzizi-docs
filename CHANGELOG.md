@@ -21,6 +21,23 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
+### Added — the Playbook and the Cookbook; the language pages at `v0.12.0` (2026-10-29)
+
+Refs mzizi-dev/mzizi-docs#72.
+
+- **New pages, `playbook` and `cookbook`, in a new "How we build" group in the Language tab.** The Playbook covers the vision, the mission, the goals, Phase 0 and the kill criterion (and why no claim is made before it is measured), openness, the four recurring loops (authoring, change, progress, freshness) and the practices that let an agent author safely: the content-addressed IR, contracts everywhere, the NDJSON protocol with `exact` fixes, RFC-first design, the tracker and the language harness, drift gates, upstream first, and how an agent's pull request is reviewed. The Cookbook has eight recipes: a component, a service, a container, a program, a diagnostic with its harness entry, an RFC, a benchmark episode and an issue. Its component, service and program snippets, the `MZ0923` and `MZ0910` output, and the eight example programs were run with `mz` built from language `main` at `2b36c8f`. The container recipe and the benchmark commands were **not** run, and the pages say so.
+- **Pilots 3 and 4 (2026-10-29) are on `pilots`**, and every page that said "two pilots" now says four, with none showing an advantage. The two new pilots sat at the ceiling and separated nothing. `benchmark` says the React arm has run (pilots 3 and 4), and that there is no new Dioxus, Leptos or Yew work (owner, 2026-10-20).
+
+### Changed — the language is at `v0.12.0` (`2b36c8f`, mzizi#140)
+
+- `status`, `compiler`, `programs` and `language-harness` are re-checked at `2b36c8f`. `status` has a new "Released to `main` on 29 October 2026" section: `HOST` for a generated service, the slim release profile (a measurement of Rust's output through the lowering, not a Mzizi advantage), the `tokio` pin and the merge queue. The `compiler/src` line count is 33,540. The language harness definition is unchanged (same SHA-256). The test count is the language README's; the suite was not re-run.
+
+### Fixed — stale component and package facts
+
+- **`roots/overview` says fourteen crates at `0.6.0`**, not ten at `0.4.0`: the four added are `mzizi-harness`, `mzizi-data`, `mzizi-mongodb` and `mzizi-activitypub`, with the `0.5.0` `mzizi-mongodb` breaking change. `check-freshness.mjs` reported the drift.
+- **`toolchain/skills` and `toolchain/mcp` say `@nyuchi/mzizi-skills` and the MCP server are at `0.13.0`.** The API still serves `0.8.5` and the plugin `1.2.3`. The page says the published `mzizi-language` skill still lists expressions and functions as unbuilt (agent-tools#280), and that the tracker wins.
+- `patterns/observability` logs `itemCount: 656`, the registry's live total, not 575.
+
 ### Added — the Kweli Address page, the `xs` radius and the kweli mark (2026-10-24)
 
 - **New page, `patterns/kweli-address`, in the Patterns group.** It covers the four Address primitives (`address-code`, `address-share-card` with its QR code, the "deliver to" `address-selector` and `address-private-row`), the `signals` and `title` props on `mzizi-trust-meter` for "Address trust", and the kweli mark, favicon and `BrandMark` lockup (`tagline="mukoko · Africa"`). They are on the registry's `staging` branch (mzizi-registry#544, #546), and the page says so. Refs mzizi-dev/mzizi-registry#543.
