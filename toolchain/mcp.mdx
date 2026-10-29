@@ -9,7 +9,7 @@ The Mzizi MCP server gives agents the registry, the brand tokens, the architectu
 the doctrine, the agent skills and these docs over the
 [Model Context Protocol](https://modelcontextprotocol.io). It is the `mzizi-mcp` Cloudflare
 Worker, published as [`@nyuchi/mzizi-mcp`](https://www.npmjs.com/package/@nyuchi/mzizi-mcp)
-(`0.13.0`, read from npm on 7 October 2026; the hosted server answered `initialize` with
+(`0.13.0`, read from npm on 29 October 2026; the hosted server answered `initialize` with
 the same version, and the MCP Registry lists it). In the
 [MCP Registry](https://registry.modelcontextprotocol.io) it is
 `io.github.mzizi-dev/mzizi-mcp`, listing both the hosted endpoint and the npm package. The
@@ -212,7 +212,7 @@ The server holds no database credential. Former `nyuchi-*` component names resol
 
 `mzizi_get_skills` serves the seven skills of [`@nyuchi/mzizi-skills`](/toolchain/skills),
 bundled from the skills' source when the server is built, so it answers with the same version
-as npm (`0.11.0` on 7 October 2026, and again on 20 October). A client can fetch the skills
+as npm (`0.13.0` on 29 October 2026). A client can fetch the skills
 here instead of installing the npm package. From `0.13.0` it takes `category`: `dev`, `design`,
 `language` or `build` returns every skill in that category in full, and `category: "dev"`
 (`digital-hygiene` and `progress-report`) is what every Mzizi repository's `AGENTS.md` asks an

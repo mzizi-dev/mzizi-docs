@@ -1,6 +1,6 @@
 ---
 title: "Mzizi Roots"
-description: "Mzizi Roots: Mzizi's own UI and server components for the agentic web, being rebuilt in Rust. Ten crates on crates.io at 0.4.0, a first batch of twelve brand components, and a Markdown renderer that is safe by construction. The React components keep working as the React build."
+description: "Mzizi Roots: Mzizi's own UI and server components for the agentic web, being rebuilt in Rust. Fourteen crates on crates.io at 0.6.0, a first batch of twelve brand components, and a Markdown renderer that is safe by construction. The React components keep working as the React build."
 sidebarTitle: "Mzizi Roots"
 icon: "component"
 ---
@@ -55,13 +55,17 @@ language for each kind of task ([the benchmark](/benchmark)).
 
 The Rust half of the registry lives in `mzizi-rs/` in
 [`mzizi-dev/mzizi-registry`](https://github.com/mzizi-dev/mzizi-registry), a Cargo workspace.
-All ten of its crates are on crates.io at `0.4.0` (checked 21 October 2026): eight node
-crates, one per node that has Rust, and two umbrella crates that re-export them. The crates
-move together. `0.1.0` was the first release (29 September 2026); `0.2.0` and `0.3.0` were
-published on 7 October 2026 by registry releases v4.6.0 and v4.7.0, v4.8.0 left them at
-`0.3.0`, and `0.4.0` was published on 20 October 2026 for registry release v4.9.0. `0.4.0` is
+All fourteen of its crates are on crates.io at `0.6.0` (checked 29 October 2026): eight node
+crates, one per node that has Rust, two umbrella crates that re-export them, and four
+supporting crates (`mzizi-harness`, `mzizi-data`, `mzizi-mongodb` and `mzizi-activitypub`). The
+crates move together. `0.1.0` was the first release (29 September 2026); `0.2.0` and `0.3.0` were
+published on 7 October 2026, `0.4.0` on 20 October for registry release v4.9.0, `0.5.0` with
+registry release v4.16.0 and `0.6.0` with v4.17.0 (published 25 October 2026). `0.4.0` was
 **breaking** for code that builds or matches `Inline::Link` (links now carry a `title`) or
-`ListItem::children` (now `Vec<ListChild>`).
+`ListItem::children` (now `Vec<ListChild>`), and `0.5.0` was **breaking** for `mzizi-mongodb`,
+which refuses cross-collection `$lookup`, `$graphLookup` and `$unionWith` in `aggregate` (use
+`aggregate_joining`) and returns `Zeroizing` wrappers from `Uri::password` and
+`scram::salted_password`. The registry's changelog has each release in full.
 
 **The render path.** The components are Mzizi's own, not borrowed from another framework. Their
 render path is moving to Mzizi's own `render(props) -> String`: registry
@@ -72,18 +76,22 @@ static primitives. Dioxus is still a dependency of `mzizi-ui`, `mzizi-brand`, `m
 crates published on crates.io still depend on Dioxus, and the table and examples below describe
 them as published.
 
-| Crate                | What it holds (from each crate's own description)                                                                                                           |
-| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `mzizi-roots`        | **Umbrella, UI side.** Re-exports the tokens, `mzizi-ui`, `mzizi-brand` and `mzizi-shell`                                                                   |
-| `mzizi-roots-server` | **Umbrella, server side.** Re-exports `mzizi-assurance`, `mzizi-fundi`, `mzizi-docs` and `mzizi-discovery`                                                  |
-| `mzizi-tokens`       | N1 design tokens: the 21-family palette as Rust consts, generated from one source                                                                           |
-| `mzizi-ui`           | N2 primitives for Dioxus: alert, avatar, badge, button, card, chart, input, label, a safe Markdown renderer, progress, separator, skeleton and status badge |
-| `mzizi-brand`        | N3 brand components for Dioxus: the first Roots batch, each with a checkable contract                                                                       |
-| `mzizi-shell`        | N7 app chrome for Dioxus: bottom nav, footer, command palette, connectivity, theme, toasts, deep links and lifecycle                                        |
-| `mzizi-assurance`    | N8 assurance: probes, telemetry and the OTLP exporter                                                                                                       |
-| `mzizi-fundi`        | The N9 fundi rung, client side: what is worth filing, shaping the issue, which fixes worked                                                                 |
-| `mzizi-docs`         | The N10 documentation rung: AI context, docs API and routing, changelog, portal rendering                                                                   |
-| `mzizi-discovery`    | The N11 discovery rung: page metadata and Schema.org JSON-LD                                                                                                |
+| Crate                | What it holds (from each crate's own description)                                                                                                                                         |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `mzizi-roots`        | **Umbrella, UI side.** Re-exports the tokens, `mzizi-ui`, `mzizi-brand` and `mzizi-shell`                                                                                                 |
+| `mzizi-roots-server` | **Umbrella, server side.** Re-exports `mzizi-assurance`, `mzizi-fundi`, `mzizi-docs` and `mzizi-discovery`                                                                                |
+| `mzizi-tokens`       | N1 design tokens: the 21-family palette as Rust consts, generated from one source                                                                                                         |
+| `mzizi-ui`           | N2 primitives for Dioxus: alert, avatar, badge, button, card, chart, input, label, a safe Markdown renderer, progress, separator, skeleton and status badge                               |
+| `mzizi-brand`        | N3 brand components for Dioxus: the first Roots batch, each with a checkable contract                                                                                                     |
+| `mzizi-shell`        | N7 app chrome for Dioxus: bottom nav, footer, command palette, connectivity, theme, toasts, deep links and lifecycle                                                                      |
+| `mzizi-assurance`    | N8 assurance: probes, telemetry and the OTLP exporter                                                                                                                                     |
+| `mzizi-fundi`        | The N9 fundi rung, client side: what is worth filing, shaping the issue, which fixes worked                                                                                               |
+| `mzizi-docs`         | The N10 documentation rung: AI context, docs API and routing, changelog, portal rendering                                                                                                 |
+| `mzizi-discovery`    | The N11 discovery rung: page metadata and Schema.org JSON-LD                                                                                                                              |
+| `mzizi-harness`      | The Mzizi harness: one scoped log, motion and announce interface, the same for the UI, the language and every server component                                                            |
+| `mzizi-data`         | The transport trait, error type and Cloudflare Workers socket shared by the sans-IO database clients, and the data layer above them (fetch cascade, sync, tombstones, local-first writes) |
+| `mzizi-mongodb`      | A read-only MongoDB client over the wire protocol (OP_MSG, SCRAM-SHA-256, a small BSON codec), sans-IO, for Cloudflare Workers                                                            |
+| `mzizi-activitypub`  | The sans-IO documents a read-only ActivityPub host serves (actors' context, content negotiation, WebFinger, host-meta, NodeInfo, outbox collections)                                      |
 
 ## Install
 
@@ -105,12 +113,12 @@ cargo add mzizi-brand
 
 The node crates are the ones that compile each component, and they keep their names.
 
-`cargo add` takes the newest release, `0.4.0`. To write the dependency by hand, use the
+`cargo add` takes the newest release, `0.6.0`. To write the dependency by hand, use the
 requirement the crate READMEs use:
 
 ```toml
 [dependencies]
-mzizi-roots = "0.4"
+mzizi-roots = "0.6"
 ```
 
 ## The first batch: twelve brand components
