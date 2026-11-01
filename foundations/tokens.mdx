@@ -152,10 +152,11 @@ Surfaces are a ladder, not a single background colour:
 
 ## Radii
 
-Four numbers, and one identity rule.
+Five numbers, all from a 7px unit, and one identity rule.
 
 | Token         | Value  |
 | ------------- | ------ |
+| `xs`          | 4px    |
 | `sm`          | 7px    |
 | `md`          | 12px   |
 | `lg` / `base` | 14px   |
@@ -165,6 +166,12 @@ Four numbers, and one identity rule.
 **Buttons are always pill-shaped**, and so are inputs, avatars and badges. That is a brand
 identity decision rather than a styling preference, and it is why those categories carry
 `borderRadius: 9999` rather than a scale value.
+
+`xs` (the unit less 3) is for the smallest marks: legend swatches, kbd keys and inline tags.
+It was added on the registry's `staging` branch in
+[mzizi-registry#544](https://github.com/mzizi-dev/mzizi-registry/pull/544), and reaches
+`/v1/brand` with the next registry release. `2xl` is 17px, the same as `xl`. An older version
+of the design skill said 24px, which was never the registry's value.
 
 ## Spacing
 

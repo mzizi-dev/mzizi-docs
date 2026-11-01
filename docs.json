@@ -56,6 +56,10 @@
           {
             "group": "The research programme",
             "pages": ["charter", "benchmark", "rfcs"]
+          },
+          {
+            "group": "How we build",
+            "pages": ["playbook", "cookbook"]
           }
         ]
       },
@@ -69,7 +73,8 @@
               "compiler",
               "toolchain/mcp",
               "toolchain/cli",
-              "toolchain/skills"
+              "toolchain/skills",
+              "toolchain/connect"
             ]
           }
         ]
@@ -127,6 +132,7 @@
               "patterns/dashboard-standard",
               "patterns/discover-standard",
               "patterns/discover-detail",
+              "patterns/kweli-address",
               "patterns/authentication",
               "patterns/resource-index",
               "patterns/resource-detail"

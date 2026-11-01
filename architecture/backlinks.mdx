@@ -16,7 +16,7 @@ chaos probes depended on console data that the registry no longer holds.
 | --------------- | ------------------------------------- | -------------------------------------------- | --------------------------------------- |
 | Portal          | `mzizi.dev/components/{name}`         | Documentation page                           | `200`                                   |
 | API — component | `api.mzizi.dev/v1/ui/{name}`          | Component metadata and source, shadcn format | `200`                                   |
-| API — Rust      | `api.mzizi.dev/v1/rs/{name}`          | The Dioxus source, where one exists          | `200`                                   |
+| API — Rust      | `api.mzizi.dev/v1/rs/{name}`          | The Rust source, where one exists            | `200`                                   |
 | API — docs      | `api.mzizi.dev/v1/ui/{name}/docs`     | Use cases, variants, accessibility notes     | `200`                                   |
 | API — versions  | `api.mzizi.dev/v1/ui/{name}/versions` | Per-component version JSON                   | `503`: console data, not the registry's |
 | Source          | `mzizi.dev/source/{name}`             | Full source view                             | `404`                                   |

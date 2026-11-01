@@ -375,6 +375,22 @@ it is built, and it measures nothing.
 
 ---
 
+## RFC-0014 — Tier 2 (a draft)
+
+<Card title="design/RFC-0014-tier2.md" icon="github" href="https://github.com/mzizi-dev/mzizi/blob/main/design/RFC-0014-tier2.md" horizontal>
+  Tier 2 design, a draft, on `main` since 20 October 2026 ([mzizi#111](https://github.com/mzizi-dev/mzizi/pull/111); M2's tracking issue is [mzizi#110](https://github.com/mzizi-dev/mzizi/issues/110)).
+</Card>
+
+The design of Tier 2 of the [tracker](/tracker), the M2 goal: modules and imports across files, with
+`module`, `import` and `public` (P1); the standard library as a closed list, with std-only modules and one
+crate for HTTP (P2); lowering and runnable builds (P3, P4); errors mapped back to `.mz` by markers in the
+generated Rust (P5); and Rust crates through an exact pin and a hand-written companion checked by `rustc`
+(P6). It opens the `MZ1001`–`MZ1099` range, proposes six waves with their tests, and asks the owner nineteen
+questions.
+
+**Designed, not built.** `mz check` does not accept `import`, `module`, `public` or `extern` today, and no
+test reads the draft. Its rows on the tracker are still ❌, 🟡 or 📝.
+
 ## Reading order
 
 <Steps>
