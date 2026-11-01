@@ -21,6 +21,60 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
+### Added — the Playbook and the Cookbook; the language pages at `v0.12.0` (2026-10-29)
+
+Refs mzizi-dev/mzizi-docs#72.
+
+- **New pages, `playbook` and `cookbook`, in a new "How we build" group in the Language tab.** The Playbook covers the vision, the mission, the goals, Phase 0 and the kill criterion (and why no claim is made before it is measured), openness, the four recurring loops (authoring, change, progress, freshness) and the practices that let an agent author safely: the content-addressed IR, contracts everywhere, the NDJSON protocol with `exact` fixes, RFC-first design, the tracker and the language harness, drift gates, upstream first, and how an agent's pull request is reviewed. The Cookbook has eight recipes: a component, a service, a container, a program, a diagnostic with its harness entry, an RFC, a benchmark episode and an issue. Its component, service and program snippets, the `MZ0923` and `MZ0910` output, and the eight example programs were run with `mz` built from language `main` at `2b36c8f`. The container recipe and the benchmark commands were **not** run, and the pages say so.
+- **Pilots 3 and 4 (2026-10-29) are on `pilots`**, and every page that said "two pilots" now says four, with none showing an advantage. The two new pilots sat at the ceiling and separated nothing. `benchmark` says the React arm has run (pilots 3 and 4), and that there is no new Dioxus, Leptos or Yew work (owner, 2026-10-20).
+
+### Changed — the language is at `v0.12.0` (`2b36c8f`, mzizi#140)
+
+- `status`, `compiler`, `programs` and `language-harness` are re-checked at `2b36c8f`. `status` has a new "Released to `main` on 29 October 2026" section: `HOST` for a generated service, the slim release profile (a measurement of Rust's output through the lowering, not a Mzizi advantage), the `tokio` pin and the merge queue. The `compiler/src` line count is 33,540. The language harness definition is unchanged (same SHA-256). The test count is the language README's; the suite was not re-run.
+
+### Fixed — stale component and package facts
+
+- **`roots/overview` says fourteen crates at `0.6.0`**, not ten at `0.4.0`: the four added are `mzizi-harness`, `mzizi-data`, `mzizi-mongodb` and `mzizi-activitypub`, with the `0.5.0` `mzizi-mongodb` breaking change. `check-freshness.mjs` reported the drift.
+- **`toolchain/skills` and `toolchain/mcp` say `@nyuchi/mzizi-skills` and the MCP server are at `0.13.0`.** The API still serves `0.8.5` and the plugin `1.2.3`. The page says the published `mzizi-language` skill still lists expressions and functions as unbuilt (agent-tools#280), and that the tracker wins.
+- `patterns/observability` logs `itemCount: 656`, the registry's live total, not 575.
+
+### Added — the Kweli Address page, the `xs` radius and the kweli mark (2026-10-24)
+
+- **New page, `patterns/kweli-address`, in the Patterns group.** It covers the four Address primitives (`address-code`, `address-share-card` with its QR code, the "deliver to" `address-selector` and `address-private-row`), the `signals` and `title` props on `mzizi-trust-meter` for "Address trust", and the kweli mark, favicon and `BrandMark` lockup (`tagline="mukoko · Africa"`). They are on the registry's `staging` branch (mzizi-registry#544, #546), and the page says so. Refs mzizi-dev/mzizi-registry#543.
+- **`foundations/tokens.mdx` radii:** five numbers. `xs` is 4px (the 7px unit less 3), and the page says `2xl` is 17px, not the 24px an older skill gave.
+- **`registry/contracts.mdx`:** the BrandMark gap now says Nyuchi, Mukoko and Kweli ship. The page used to say only Nyuchi, which was already out of date for Mukoko.
+
+### Added — Dependabot version updates target `staging` (2026-10-21)
+
+- `.github/dependabot.yml` is new: weekly version updates for GitHub Actions, every entry with `target-branch: staging` (owner rule, 2026-10-21: "all dependabot should target staging not main.") and a seven-day cooldown before a new release is proposed.
+
+### Fixed — the Roots crates are at 0.4.0 (2026-10-21)
+
+- **`roots/overview.mdx` says the crates are on crates.io at `0.4.0`**, published on 20 October 2026 for registry release v4.9.0, not `0.3.0`. The install example uses `mzizi-roots = "0.4"`, and the page says `0.4.0` is breaking for code that builds or matches `Inline::Link` (links now carry a `title`) or `ListItem::children` (now `Vec<ListChild>`). `check-freshness.mjs` reported the drift. No page moved and no URL changed.
+
+### Changed — merging is squash through the merge queue (2026-10-21)
+
+### Changed — the language's release of 20 October 2026 (`v0.9.0`, mzizi#120): the status and programs pages name it
+
+- **Read from `mzizi-dev/mzizi` `main` at `6f7b096`, tagged `v0.9.0`.** The status, programs, language-harness, compiler, roadmap and benchmark pages now name that commit. Measured there in a fresh worktree: `cargo test --workspace` gives 765 tests in 29 suites, all passing, 634 of them in the compiler crate; `compiler/src` is 33,518 lines; `mz harness definition` gives 197 entries, 79 distinct diagnostic codes (53 `MZ09xx`, 26 shared) and 49 pending codes; the eight example programs' `mz run` output matches their `.expected` files. Readers see the new figures in place of the 8 October ones.
+- **Correction.** The 8 October pages said 80 diagnostic codes, with 27 shared. The definition does not reproduce that figure, and the release added and removed no code entry, so the pages now say 79 and 26.
+- **New: RFC-0014 (Tier 2), a draft (mzizi#111).** The RFC index lists `design/RFC-0014-tier2.md`, and it says plainly that nothing in it is built: `mz check` does not accept `import`, `module`, `public` or `extern` today.
+- **The C6 review follow-ups** on the status page: the `int` minimum literal under a unary minus (RFC-0013 §3.1), `MZ0710` on a `return`, and `MZ0962` naming another language's spelling as written. The 8 October and 20 October sections stay in the status page's history.
+
+### Changed — the platform's repositories are renamed; the console's direction is stated (2026-10-20)
+
+- **`mzizi-dev/mzizi-api` (formerly `mzizi-api-gateway`).** The API's repository is named in the ecosystem, the platform pages, the toolchain overview and the README. The host, `api.mzizi.dev`, does not change. The old name appears once, in brackets. The owner has renamed the repository; GitHub redirects the old name.
+- **The console is standalone, and its direction is stated as decided, not built.** `console.mdx` and `platform/data.mdx` say what runs today (Astro with Dioxus islands, WorkOS sign-in, and no database of its own: the `mzizi-console` repository has no Supabase client, environment variable or migration). They also say what is decided in `mzizi-console#34`: one Rust Worker serving Astro's output, sign-in moved to the server, and Cloudflare D1 for any state it keeps. The ecosystem page, the data page and the README no longer say the console uses Supabase today. The ecosystem page follows the same wording.
+- **Build targets.** `charter.mdx` now has a note, after the charter's table and before its phasing, that the owner decided three targets on 2026-10-20 (Cloudflare Workers, containers as a standard OCI image, bare metal). RFC-0016 (mzizi#123) designs them and is approved as design only (owner, 21 October 2026); the charter amendment and every build wave wait for the Phase 0 gate. The charter's own text is quoted unchanged. `compiler.mdx`, `language-harness.mdx` and `status.mdx` still say there is no Workers, Containers or WebAssembly target, because none is built.
+- **Components render with Mzizi's own `render()`.** `roots/overview.mdx` has a note that the Roots components' render path is moving to Mzizi's own `render(props) -> String` (registry #506 and #510 are merged) and that Dioxus is still a dependency of `mzizi-ui`, `mzizi-brand`, `mzizi-shell`, `mzizi-docs` and `mzizi-roots` until the migration finishes. The registry overview and the component page no longer call the Rust source Dioxus.
+- **Fixed on rebase (2026-10-21).** RFC-0014 is mzizi#111 (mzizi#110 is M2's tracking issue) on `rfcs.mdx` and `status.mdx`. The Roots note no longer names `0.3.0` as the published version. The console pages say it keeps no database of its own today.
+- **Scripts.** `scripts/check-freshness.mjs` accepts either gateway name in the `x-mzizi-source` header, since the service may name itself `mzizi-api` after the rename.
+
+### Changed — the earlier console app is named without a framework (2026-10-20)
+
+- **`AGENTS.md` ("Merge convention") and `CLAUDE.md` now describe squash merging through the merge queue**, the org's convention since 2026-10-21: land with `gh pr merge <n> --squash --auto`, which adds the pull request to the queue once the merge gate is met. Rebase and merge commits are disabled in the repo settings and rulesets. The squash commit keeps every commit message in its body (`COMMIT_MESSAGES`). Updating a branch with its base is fine, and the merge queue tests each pull request against the latest base. This replaces the 2026-10-20 "rebase or squash, never auto-merge" entry below.
+- **`platform/api-gateway.mdx`'s "Developing" section** now says the gateway's pull requests merge by squash through the merge queue. No page moved and no URL changed.
+
 ### Changed — the merge convention: rebase or squash, never auto-merge (2026-10-20)
 
 - **`AGENTS.md` ("Merge convention") and `CLAUDE.md` no longer call this repository rebase-only or say to land with `gh pr merge <n> --rebase --auto`.** They now state the settings read off the GitHub API and rulesets on 2026-10-20: rebase and squash are allowed and merge commits are not (`allow_merge_commit: false`; the org and enterprise rulesets allow only `squash` and `rebase` and require linear history on `main` and `staging`). A linear branch is rebased; one carrying merge commits, including after "Update branch" (required checks are strict), is squashed. Auto-merge is never turned on, because it merges on green CI, before the org merge gate's runtime check and code review. Org admins can bypass the rulesets; agents never do, and nobody uses `--admin`.
@@ -53,6 +107,12 @@ entries move under it. Mintlify does not publish this file.
 - Removed: that framework's name, five times (four on `console.mdx`, one on
   `registry/consuming.mdx`), and its major version, 5, once ("a … 5 mini-app"). That change
   (#59) touched nothing else on either page.
+
+### Added — Connect a client: the Mzizi MCP server and the skills in every major AI client (2026-10-20)
+
+- **New page, `toolchain/connect.mdx`** ("Connect a client", in the Toolchain tab after Skills). For Claude.ai, Claude Desktop, Claude Code, the Claude API, ChatGPT, OpenAI Codex, the OpenAI API and Agents SDK, Z.ai's GLM Coding Plan, OpenCode, Cursor, VS Code and GitHub Copilot, Windsurf (Cascade) and Gemini CLI it gives the vendor's own config for `https://mcp.mzizi.dev/mcp`, each checked against that vendor's documentation on 20 October 2026 and linked. It says, per client, whether the skills arrive natively (the `mzizi` plugin, or `.agents/skills/` from npm) or over MCP (`mzizi_get_skills`), and how to reach the two tools that need sign-in (`mzizi_fundi`, `mzizi_report_issue`) through `https://mcp.mzizi.dev/mcp/signin`. A closing section lists what could not be verified: the Codex plugin in a live Codex install, per-server sign-in in the portable `mcp.json`, the Devin Local agent's MCP config, and the API snippets, which need account keys.
+- **`toolchain/skills.mdx`.** "Getting the skills" is dated 20 October 2026: npm and the MCP server serve `0.11.0`, the API and the plugin still `0.8.5`, because the registry's `^0.8.1` range never takes `0.9` or later; mzizi-registry #520 waits on `@nyuchi/mzizi-skills` `0.12.0` and will move the range to `^0.12.0`, the next skills release, and make the plugin `1.3.0`. "From the MCP server" now says any MCP client can fetch the skills that way instead of installing the npm package. "From npm" names the clients that read `.agents/skills/`. "As a Claude Code plugin" adds that the same plugin installs in Codex and ChatGPT from #520 on.
+- **`toolchain/mcp.mdx`.** "Connecting" links the new page, and "The skills" says a client can fetch the skills over MCP instead of npm.
 
 ### Changed — the language's fourth release of 8 October 2026: every Tier 1 row is ✅, so M1 is met
 

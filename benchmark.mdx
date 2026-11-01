@@ -1,14 +1,15 @@
 ---
 title: "The Phase 0 benchmark"
-description: "Phase 0's one goal: to build Mzizi as a programming language, measured against the best existing language for each kind of task, TypeScript, Python, Go, C++ and Rust among them. The arms, the task families, the benchmark harness, why one input is held out, and the rule that keeps the project forkable. Two pilots have run; the kill-criterion run has not."
+description: "Phase 0's one goal: to build Mzizi as a programming language, measured against the best existing language for each kind of task, TypeScript, Python, Go, C++ and Rust among them. The arms, the task families, the benchmark harness, why one input is held out, and the rule that keeps the project forkable. Four pilots have run; the kill-criterion run has not."
 icon: "flask-conical"
 ---
 
 <Warning>
-  **Two pilots have run, and neither showed an advantage for Mzizi.** Both ran on
-  2026-09-27, on two or three small tasks. With a frontier model the arms tied; with a ~7B
-  open-weight model Mzizi did worse on all three metrics. Neither is the run that tests the
-  kill criterion, and that run has not happened. See [the pilot results](/pilots).
+  **Four pilots have run, and none showed an advantage for Mzizi.** Two ran on
+  2026-09-27, on two or three small tasks: with a frontier model the arms tied, and with a ~7B
+  open-weight model Mzizi did worse on all three metrics. Two ran on 2026-10-29 (a frontier
+  model and a smaller one, against React) and sat at the ceiling, so they separate nothing.
+  None is the run that tests the kill criterion, and that run has not happened. See [the pilot results](/pilots).
 </Warning>
 
 ## The goal
@@ -41,21 +42,21 @@ gateway, and every fact is checked at the HTTP boundary, so no language's syntax
 
 What Mzizi is measured against, from RFC-0009 §1, with each arm's state as
 [`benchmarks/arms/`](https://github.com/mzizi-dev/mzizi/tree/main/benchmarks/arms) holds it at
-language `main` `1d5e578`. The benchmark's design, not a result: nothing has been measured
+language `main` `2b36c8f` (the arms are unchanged since `4d0cdc3`). The benchmark's design, not a result: nothing has been measured
 against TypeScript, Python, Go, C++ or a Rust backend.
 
-| Arm        | Family  | Language and framework                              | State                                                                                                    |
-| ---------- | ------- | --------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| `mzizi`    | UI      | Mzizi                                               | Exists                                                                                                   |
-| `dioxus`   | UI      | Rust, Dioxus `=0.7.10`                              | Exists; both pilots ran it                                                                               |
-| `leptos`   | UI      | Rust, Leptos `=0.8.21`                              | Exists; never run                                                                                        |
-| `react`    | UI      | TypeScript, React, `class-variance-authority`       | Exists; never run. Pinned from the registry's lockfile (`pnpm-lock.yaml` at `3afeb752`, 7 October 2026)  |
-| `mzizi-be` | backend | Mzizi, a `service` (RFC-0011)                       | Exists, with the probe crate `mzprobe` and task B1; never run: the runner does not score with probes yet |
-| `ts`       | backend | TypeScript, Hono on Node                            | Not added yet                                                                                            |
-| `python`   | backend | Python, FastAPI with pydantic v2, served by uvicorn | Not added yet                                                                                            |
-| `go`       | backend | Go, `net/http` from the standard library            | Not added yet                                                                                            |
-| `cpp`      | backend | C++20, `cpp-httplib` and `nlohmann/json`            | Not added yet                                                                                            |
-| `rust`     | backend | Rust, axum on tokio, serde                          | Not added yet                                                                                            |
+| Arm        | Family  | Language and framework                              | State                                                                                                                                                                  |
+| ---------- | ------- | --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `mzizi`    | UI      | Mzizi                                               | Exists                                                                                                                                                                 |
+| `dioxus`   | UI      | Rust, Dioxus `=0.7.10`                              | Exists; pilots 1 and 2 ran it, and pilot 3 ran `button` only. No new Dioxus, Leptos or Yew work (owner, 2026-10-20): components come from the registry, in Mzizi Roots |
+| `leptos`   | UI      | Rust, Leptos `=0.8.21`                              | Exists; never run                                                                                                                                                      |
+| `react`    | UI      | TypeScript, React, `class-variance-authority`       | Exists; ran in pilots 3 and 4 (`button`, `badge`, `card`). Pinned from the registry's lockfile (`pnpm-lock.yaml` at `3afeb752`, 7 October 2026)                        |
+| `mzizi-be` | backend | Mzizi, a `service` (RFC-0011)                       | Exists, with the probe crate `mzprobe` and task B1; never run: the runner does not score with probes yet                                                               |
+| `ts`       | backend | TypeScript, Hono on Node                            | Not added yet                                                                                                                                                          |
+| `python`   | backend | Python, FastAPI with pydantic v2, served by uvicorn | Not added yet                                                                                                                                                          |
+| `go`       | backend | Go, `net/http` from the standard library            | Not added yet                                                                                                                                                          |
+| `cpp`      | backend | C++20, `cpp-httplib` and `nlohmann/json`            | Not added yet                                                                                                                                                          |
+| `rust`     | backend | Rust, axum on tokio, serde                          | Not added yet                                                                                                                                                          |
 
 Task B1's reference implementations, one in Mzizi and one in plain axum, both hold all 59 of
 its facts; a reference is not an arm. The public suites (MultiPL-E, EvalPlus, Aider polyglot,
@@ -160,7 +161,7 @@ in that pull request's description, not in the repository. See
 The owner's rule: **every run is published, whichever way it falls.** Each lands in
 [`benchmarks/results/`](https://github.com/mzizi-dev/mzizi/tree/main/benchmarks/results)
 with its raw episodes, and RFC-0009 §7 adds a `PLAN.md` committed before a run's first
-episode, so a run that never reported is visible as exactly that. That includes the two pilots, which did not show an advantage. For
+episode, so a run that never reported is visible as exactly that. That includes the four pilots, which did not show an advantage. For
 the held-out set, scores are published immediately; the task texts are published only when a
 task set is retired, so that publishing them does not contaminate a set still in use.
 

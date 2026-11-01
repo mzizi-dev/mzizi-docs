@@ -51,8 +51,8 @@ Binds a logger to a module name. Use it in any file that logs more than once.
 ```ts
 const logger = createLogger("registry")
 
-logger.info("Registry index served", { data: { itemCount: 575 } })
-// [mzizi:registry] INFO Registry index served { itemCount: 575 }
+logger.info("Registry index served", { data: { itemCount: 656 } })
+// [mzizi:registry] INFO Registry index served { itemCount: 656 }
 
 logger.warn("File not found, skipping", { data: { filePath: "components/ui/missing.tsx" } })
 // [mzizi:registry] WARN File not found, skipping { filePath: … }

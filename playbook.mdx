@@ -1,0 +1,330 @@
+---
+title: "The Mzizi Playbook"
+description: "How and why Mzizi is built: the vision, mission and goals, Phase 0 and the kill criterion, the recurring build loops, and the graph engineering practices that let an agent author work safely. Written from the organisation's own AGENTS.md files, charter and RFCs."
+sidebarTitle: "Playbook"
+icon: "book-open-check"
+---
+
+<Warning>
+  **This playbook describes how Mzizi is built, not that Mzizi has won anything.** The language is
+  a Phase 0 prototype. Four small pilots have run and none showed an advantage for Mzizi
+  ([results](/pilots)). The run that tests the kill criterion (RFC-0009 §6) has not happened, so
+  nothing here claims a Mzizi advantage over any other language. Numbers from the
+  pilots, and from Rust's output through Mzizi's lowering, are labelled as exactly that wherever
+  they appear.
+</Warning>
+
+Nothing on this page is invented for it. Each section names the file it comes from, and all of
+them are public: the language's
+[`CHARTER.md`](https://github.com/mzizi-dev/mzizi/blob/main/CHARTER.md),
+[`AGENTS.md`](https://github.com/mzizi-dev/mzizi/blob/main/AGENTS.md) and
+[`CONTRIBUTING.md`](https://github.com/mzizi-dev/mzizi/blob/main/CONTRIBUTING.md), the RFCs in
+[`design/`](https://github.com/mzizi-dev/mzizi/tree/main/design), the
+[`mzizi-dev/.github` `AGENTS.md`](https://github.com/mzizi-dev/.github/blob/main/AGENTS.md) that
+every repository inherits, and the `AGENTS.md` of the registry and of this docs site. Where this
+page and one of those disagree, they win. For the matching step-by-step recipes, read
+[the Cookbook](/cookbook).
+
+## Vision
+
+**Mzizi is a general-purpose programming language, built to make Rust better, the way TypeScript
+makes JavaScript better.** That sentence is the owner's tagline and the charter's thesis
+(charter v0.4, §1), and it is a goal, not a result. You write `.mz`. Rust is the platform, the
+way JavaScript is TypeScript's: Mzizi is designed to lower to Rust, with no borrows, lifetimes or
+ownership at the surface (RFC-0001 §1.8), so that the compiler owns that plumbing and an agent
+never has to.
+
+The one sharp edge is **machine authorship**. Rust, TypeScript and Python were designed assuming
+a person types, reads and holds context in their head. The bottleneck now is an agent iterating
+against a compiler hundreds of times in a loop. So Mzizi's syntax, type system and compiler
+feedback are designed for that reader (charter §3):
+
+- low syntactic ambiguity, so there are fewer ways to be subtly wrong;
+- dense, actionable compiler errors, with the machine-applicable fix attached;
+- fast incremental compilation;
+- a contract on everything, checked by the toolchain;
+- a token-efficient representation.
+
+The honest state of the vision today is on [Status](/status) and in the language's own
+[`LANGUAGE-TRACKER.md`](https://github.com/mzizi-dev/mzizi/blob/main/LANGUAGE-TRACKER.md),
+which is the one list of what Mzizi has and lacks. If a row there is not ✅, Mzizi does not have
+it. As of `v0.12.0` it has the Tier 1 core in a narrow form (expressions, functions, control
+flow, results, text, collections, records with methods), a `service` that lowers to a local Rust
+and axum package, and a `program` that `mz run` lowers to a dependency-free Rust package and
+runs. It has no modules, no standard library, no concurrency, and no component lowers.
+
+## Mission
+
+The organisation's mission, set by the owner on 24 October 2026 and recorded at the top of
+[`mzizi-dev/.github/AGENTS.md`](https://github.com/mzizi-dev/.github/blob/main/AGENTS.md), applies
+to every repository: build a platform that competes with the top five in the world, from Africa
+but not as "a product for Africa", on open data and published open standards, with no proprietary
+data structures. Mzizi's part in it is stated there too: **Mzizi is the open architecture
+framework and language, built on Rust, and it is the rule that no app drifts from.**
+
+That mission comes with an engineering bar that applies to every service and data model: open
+standards by default, nothing crashes, everything ships to production, never close a conflicting
+pull request, and **honesty: report what is measured, label design as design, and never
+overclaim**. The last item is the one this playbook leans on hardest.
+
+## Goals
+
+The language repository has **one goal**: build Mzizi as a programming language that stands
+against the best existing language for each kind of task (charter §1; RFC-0009). Components, the
+registry, the site and a framework are not goals of that repository. They support it.
+
+The owner has also stated four directions for what the language is for. They are **direction, not
+shipped**, and each is gated on the measurement in the next section:
+
+| Direction            | What it means                                                                                      | Where it stands today                                                                                                        |
+| -------------------- | -------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| The whole stack      | Mzizi builds the backend as well as the interface, including Mzizi's own backend                   | A `service` lowers to a local Rust and axum package. No Mzizi backend is ported; `api.mzizi.dev` is a TypeScript Hono Worker |
+| Two frontend shapes  | Astro with Mzizi UI (Mzizi Roots) underneath, or pure Rust end to end                              | Roots crates are on crates.io; no component lowers to Rust, and nothing renders                                              |
+| Contracts everywhere | Every component, function, handler and service carries a contract the toolchain checks (RFC-0010)  | Components and services carry contracts. A service's run in process, tested over generated requests, not proven              |
+| A wider benchmark    | Mzizi measured against TypeScript, Python, Go, C++ and Rust, on UI and on backend tasks (RFC-0009) | Arms exist for the UI family and for `mzizi-be`; the other-language backend arms are not added yet                           |
+
+## Phase 0 and the kill criterion
+
+Research portfolios ship one thread at a time or nothing ships (charter §4). **Phase 0 attaches no
+rendering and no deployment. It exists to put a real number on the goal.** The number is the kill
+criterion, [RFC-0009](https://github.com/mzizi-dev/mzizi/blob/main/design/RFC-0009-comparison-benchmark.md)
+§6, the owner's decision of 29 September 2026:
+
+- A task family passes when Mzizi beats the best incumbent's value on **at least two of three
+  metrics** (tokens consumed, iterations to a clean compile, defect rate),
+- on the **~7B open-weight model**, the size the language is designed for,
+- on **held-out tasks**,
+- with a paired bootstrap that resamples tasks giving a 95% interval that excludes zero for each
+  win that counts.
+- The rule is **pre-registered**: fixed before any held-out score is seen.
+
+If Mzizi does not show a measurable advantage, **Phase 1 does not start**. That gate is why the
+build is ordered as it is, and why this playbook can describe a process while claiming no
+outcome.
+
+### Why no claim before the measurement
+
+The language's `AGENTS.md` calls this "the one rule that overrides the others". Concretely:
+
+- "Designed for" is fine. A claim of speed, cost or quality over another language, or a sentence
+  that says a benchmark proved something, is not, and a
+  commit message, pull request description or comment that implies otherwise is rejected.
+- "Compiles to Rust" is true only of a `service` and a `program`, and a program only in Tier 1's
+  narrow form. It is false of a component.
+- State what is tested (`cargo test`, gated in CI) separately from what is designed (an RFC).
+  Where an RFC and the code disagree, **the code is the fact**: RFC-0003 §7.1 records an RFC
+  claim the implementation disproved and the narrower claim that replaced it.
+- A measurement of Rust's output through Mzizi's lowering (for example the language changelog's
+  hand measurement that a generated service shrank from 1,671,144 B to 934,720 B with the
+  `v0.12.0` release profile) is a measurement of Rust, **not a Mzizi advantage**.
+
+### Openness: every run is published
+
+RFC-0009 §7 and the charter say every benchmark run is published, whichever way it falls. The
+repository does so already for runs that went badly or told us nothing. The 27 September pilot
+with the ~7B model found Mzizi did **worse** on all three metrics and said so. The two pilots of
+29 October sat at the ceiling and separated nothing, and say that. The held-out task texts stay
+private until the set is retired, but their scores and a hash of the raw data are published the
+day of the run. See [the pilot results](/pilots) and [the benchmark](/benchmark).
+
+## The recurring build loops
+
+Four loops repeat. Each is stated in a repository's `AGENTS.md`, not improvised.
+
+### 1. The authoring loop: check, fix, contract, run
+
+This is the loop the language is designed around (RFC-0001 §4, charter §3). An agent writes a
+`.mz` file, then:
+
+```bash
+mz check --agent file.mz     # NDJSON, one diagnostic per line, then a summary line
+mz fix file.mz               # applies every machine-applicable ("exact") fix, re-checks
+mz contract file.mz          # a component's contract, or a service run in process
+mz run program.mz            # for a program: lower to Rust, build, run
+mz build service.mz --out dir   # for a service: a local Rust and axum package
+```
+
+The `exact` fixes are what make the loop tight: a diagnostic whose fix is certain says so, and
+`mz fix` applies every such fix in one pass. A fix that is only a guess is marked as a guess. The
+full protocol is on [The compiler](/compiler).
+
+### 2. The change loop: issue, branch, pull request, squash
+
+Every Mzizi repository follows the same shape (the org `AGENTS.md`, the language's
+`CONTRIBUTING.md`):
+
+1. **Track substantial work in a GitHub issue** in the repository that owns it: goal, the owner's
+   decisions verbatim, plan, acceptance criteria, owner-only steps. Every pull request references
+   it (`Refs #n`). Post progress and a hand-off note as comments.
+2. **Branch from `staging`** (or `main` where there is no `staging`), with a `claude/` prefix for
+   agent work. Never push to `main` or `staging` directly.
+3. **Add a changelog entry** under `## [Unreleased]` in the same pull request. It is an owner rule
+   (7 October 2026 for the language, 30 September 2026 for these docs: "changelogs are super
+   important"), enforced by a CI check.
+4. **Update the tracker and the harness in the same pull request** when a change alters what the
+   language can do (see practices below).
+5. **Squash through the merge queue.** Rebase and merge commits are disabled; the squash commit
+   keeps every commit message in its body, because for this project the commit history is the
+   research record. State what you measured, with the command and the number, not only what you
+   changed.
+6. **Releases are a pull request from `staging` to `main`.** A merge into `main` deploys, so only
+   the owner (or an agent they authorise for that release) releases. After a release, a sync pull
+   request brings `main`'s tree back into `staging`.
+
+### 3. The progress loop: report every ten minutes
+
+All development work runs on a ten-minute progress-report loop, from the `progress-report` skill
+in `@nyuchi/mzizi-skills`. Its covenant: **the owner should never have to ask "where are we?"**
+Every number in a report is measured, never guessed, and every report ends with a "Needs you:"
+line. A report never publishes, releases, merges or deploys on its own. A companion skill,
+`digital-hygiene`, keeps the machine healthy: check free disk before starting, clone only under a
+temporary directory unique to you, and delete your clones after the work merges. See
+[the skills page](/toolchain/skills).
+
+### 4. The freshness loop: the docs and the site never lag
+
+Owner rule, 30 September 2026: **docs.mzizi.dev must never lag the language or the components.**
+Anyone who changes the language or the components says so in the pull request. A standing
+docs-freshness agent compares upstream state with what these pages say and opens a pull request
+when they drift. `scripts/check-freshness.mjs` in this repository checks package and crate
+versions, line and test counts, every tracker row's mark, the benchmark arms, and the live MCP
+and API versions. The same idea is called `check-facts` on the site. It is how a claim stays
+checkable instead of drifting into folklore.
+
+## Graph engineering practices for machine authorship
+
+Work can run on machine authorship only if the project is shaped so that an agent can be wrong
+cheaply and corrected quickly. The practices below are what the repositories actually do. Think
+of the project as a graph of artefacts (source, IR, contracts, diagnostics, RFCs, tracker rows,
+pages) in which every edge is checked by something.
+
+### Content-addressed IR
+
+The compiler lowers a file to a content-addressed IR ([RFC-0003](https://github.com/mzizi-dev/mzizi/blob/main/design/RFC-0003-ir.md)):
+a node's identity is the SHA-256 of its canonical form, so structurally equal subtrees share one
+node. Hashing the same file twice gives the same address, which is how an agent (or a CI job) can
+tell whether a change changed anything. `mz hash` and `mz ir` expose it. For example,
+`mz hash primitives/separator.mz` printed `47e4026615f8  separator  12 nodes`, both times it ran.
+RFC-0003 §7 measures the sharing claims with a test, and labels its structural-sharing figure as
+a prediction. The query and patch commands the IR RFC designs (`mz refs`, `mz path`, `mz patch`,
+`mz diff`) are **designed, not built**.
+
+### Contracts everywhere
+
+Every component, language function, handler and service is meant to carry an in-language
+contract ([RFC-0010](https://github.com/mzizi-dev/mzizi/blob/main/design/RFC-0010-contracts-everywhere.md),
+charter §3). A contract constrains a value the program renders or returns, never a declared copy
+of it: pilot 2 caught a touch-floor contract that checked a number the component does not render
+(failure mode FM-14). Components are checked against themselves by `mz contract`. A service's
+`example` and `ensure` clauses run in process over generated requests. These are tests, not
+proofs, and the docs say so. In the registry, **one contract file per component, whatever the
+language**, is the only place its clauses are written, and a CI check fails on drift between the
+contract and each build of it.
+
+### The NDJSON agent protocol, with `exact` fixes
+
+`mz check --agent` prints one JSON object per diagnostic, with a stable `code`, a `severity`, a
+`span`, a `say` text and, where one exists, a `fix` object (`span`, `replace` and a `confidence` of
+`exact` or `guess`). A final summary line counts errors and how many are fixable by `exact` fixes. The design rule
+(RFC-0001 §0) is to design against **named failure modes**: if a decision does not trace to a
+failure mode, it does not belong in the language. The compiler's idiom diagnostics are those
+failure modes made concrete: for example Python's first assignment (`MZ0923`, whose `exact` fix inserts `let`)
+and `**` for powers (`MZ0910`, whose fix, `2.pow(3)`, is marked a `guess`).
+
+### RFC-first design, with the corrections kept
+
+Anything that changes surface syntax, the type system, the IR node model, the agent protocol or
+the public and private test boundary goes through an RFC in `design/`. Conventions the existing
+RFCs share, as `CONTRIBUTING.md` records them:
+
+- **Name the failure modes** the proposal removes.
+- **Examples come from real components**, never invented, so every line is checkable.
+- **Numbers are measured, not asserted**: if the RFC claims a number, a test measures it.
+- **Corrections are recorded, not edited away.** An amendment goes in a note at the top of the
+  earlier RFC. A resolved open question is struck through in place.
+- **There is no "accepted" status**, because nothing has been validated yet. `Status` states
+  implementation precisely (for example "draft; core implemented in this PR").
+- **Every RFC ends with open questions.** Do not quote an RFC's example as working syntax: RFC-0001's
+  view attributes have no `=`, and the implemented parser requires `name = value`. Quote `.mz`
+  files from the repository, which CI gates.
+
+### The tracker and the language harness move with the code
+
+Two rules keep the project's description and its behaviour in one place:
+
+- **`LANGUAGE-TRACKER.md` is the one list** of what Mzizi still needs. A pull request that changes
+  a row's status updates the row in the same pull request, with its evidence, and says so in its
+  changelog entry. Status is what the code on `main` does, never what an RFC designs.
+- **The language harness is part of the build** (owner, 7 October 2026). Every feature a
+  pull request adds is registered in `compiler/src/harness.rs` with its diagnostic codes and
+  tested examples, and `compiler/tests/harness.rs` enforces it in CI. `mz harness entry <name>`
+  prints exactly what an agent reads for a feature. "The language harness" is not "the benchmark
+  harness" (`benchmarks/harness/`); the two are different things.
+
+### Drift gates: facts are checked, not remembered
+
+The sites and docs treat overclaiming and stale facts as a defect class with automated gates:
+
+- This site's CI greps for overclaiming phrasings (a backstop, not the standard).
+- `check-freshness.mjs` here, and `check-facts.py` on the front-door site, compare stated facts
+  against live sources and fail on drift. **Add a pattern whenever a fact goes stale.**
+- A page's claim is either checkable in the source repository or labelled as a design intention.
+- Counts move, so a page cites the endpoint and the date of the snapshot, not a bare number.
+
+### Upstream first
+
+When an app needs a component that Mzizi lacks, or a change to one it has, the change goes
+upstream at once (owner, 4 October 2026): the contract in `mzizi-dev/mzizi-registry`, the build,
+and the page here, in the same piece of work. A local copy is allowed only while the upstream
+pull request is open, marked `TODO(mzizi): <PR URL>`. The registry is files, and every component
+exists in every format it ships (React, Rust, Astro, and in time `.mz`) with one name and one
+contract. **No new Dioxus, Leptos or Yew work** (owner, 20 October 2026): Mzizi Roots' Rust
+components move to Mzizi's own `render(props) -> String` path, and Dioxus remains a dependency
+of some published crates only until that migration finishes (see [Mzizi Roots](/roots/overview)).
+
+## How a contribution by an agent is reviewed
+
+An agent's pull request goes through the same gates as a person's, and the gates are mostly
+mechanical so that review is not anchored on the author's confidence:
+
+1. **The authoring loop was run**, and the output is in the pull request: the command and the
+   number it printed.
+2. **CI is green**: formatting, `clippy -D warnings`, tests, `mz check` and `mz contract` over
+   every primitive and example, a `lowering` job that builds and serves the example service and
+   runs every example program against its `.expected` output, a secret scan, and the supply
+   chain checks.
+3. **It is verified at runtime**, not only by tests. For the docs, that means running the
+   command on the page.
+4. **The tracker, harness and changelog moved** with the code, so a reader sees what a reader of
+   the docs will find differently.
+5. **`/code-review` has run and its findings are resolved.** The merge gate is: the work is
+   complete, CI is green, it is verified at runtime, and review is done.
+6. **Merge is squash through the merge queue** (`gh pr merge <n> --squash --auto`, the convention
+   in the language repository and in the docs repository's `AGENTS.md` on `staging`), never
+   `--admin`, and never past a ruleset. Each repository's `AGENTS.md` is the authority for that
+   repository, and conventions have changed before, so read it. The owner releases `staging`
+   to `main`.
+
+Two threats to validity are published rather than hidden. The frontier model in the pilots and
+the language's guides share an author, which cannot be removed while the RFCs and guides have one
+author; the plan in `READINESS.md` is that held-out tasks are written by maintainers by hand, or
+drafted by another vendor's model and reviewed by a person (the owner is to confirm). And a Mode 2 episode (a subagent per episode) is governed by instructions the runner
+cannot enforce, which each run records in its own metadata. See the pilots' `RUN.md` files.
+
+## Where to go next
+
+<CardGroup cols={2}>
+  <Card title="The Cookbook" icon="chef-hat" href="/cookbook">
+    Recipes: write and check a component, write a service, build a container, write a program,
+    add a diagnostic, add an RFC, run a benchmark episode, file a good issue.
+  </Card>
+  <Card title="What still has to be built" icon="list-checks" href="/tracker">
+    The tracker's rows, with their marks. Read it before claiming anything.
+  </Card>
+  <Card title="The pilot results" icon="clipboard-list" href="/pilots">
+    What four pilots showed, and what they cannot show.
+  </Card>
+  <Card title="The charter" icon="scroll" href="/charter">
+    The thesis, phasing, non-goals and kill criterion.
+  </Card>
+</CardGroup>
