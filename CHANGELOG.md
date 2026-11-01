@@ -21,6 +21,16 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
+### Fixed — release notes when the previous release has no `CHANGELOG.md` (2026-11-01)
+
+- `release_notes.py` treats a previous release with no `CHANGELOG.md` as the first release, as its docstring says. It matched git's "does not exist" message, but in a checkout where the file exists on disk git says "exists on disk, but not in", so the first `main-release.yml` run that met such a tag stopped before tagging. It now asks git directly (`git cat-file -e`).
+
+### Changed — GitHub releases carry the CHANGELOG entries they ship (2026-11-01)
+
+- Owner, 2026-11-01: a release is not done until its tag and its GitHub release, with notes from `CHANGELOG.md`, exist on the merge commit on `main`. `main-release.yml` now opens each release's notes with every `CHANGELOG.md` entry added since the previous `main` release (`.github/scripts/release_notes.py`, adapted from `mzizi-dev/mzizi`), followed by GitHub's list of merged pull requests. Before, the notes were the pull-request list alone.
+- A commit that already carries its minor tag but has no release gets one, and a manual run of the workflow on such a commit rewrites its notes from `CHANGELOG.md`, so an earlier release can be corrected.
+- Nothing served changes; only the release pages do.
+
 ### Added — the Playbook and the Cookbook; the language pages at `v0.12.0` (2026-10-29)
 
 Refs mzizi-dev/mzizi-docs#72.
