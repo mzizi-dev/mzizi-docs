@@ -39,11 +39,23 @@ Apply the variables to `<html>` and set the default with `font-sans` on `<body>`
 | Title 3    | `text-2xl`  | 24px | 1.25        | Subsection titles      |
 | Heading    | `text-xl`   | 20px | 1.3         | Card titles            |
 | Subheading | `text-lg`   | 18px | 1.5         | Lead paragraphs        |
-| Body       | `text-base` | 16px | 1.5         | Default body text      |
+| Body       | `text-body` | 17px | 1.5         | Default body text      |
 | Caption    | `text-sm`   | 14px | 1.5         | Secondary text, labels |
-| Footnote   | `text-xs`   | 12px | 1.5         | Metadata, timestamps   |
+| Footnote   | `text-xs`   | 14px | 1.5         | Metadata, timestamps   |
 
 The published scale also defines a 72px display step for hero type on marketing surfaces.
+
+### The floor under the scale
+
+Body text is **17px on every device**, desktop included, and nothing readable is smaller than
+**14px**: captions, metadata, badges and chart labels are all 14px or more, so `text-xs` and
+`text-sm` both paint 14px. Only display and heading sizes step down as screens grow; body and
+secondary text never do. See [the Bundu floor](/foundations/bundu-floor) for where the numbers
+come from and how to migrate from the 16px body and 12px footnote.
+
+Write body copy as `text-body`. The token layer registers a `text-base` step at 17px too, but
+a theme that also defines a colour named `base` (`--color-base`) can make the class ambiguous,
+and the registry has not yet decided how to settle it, so prefer `text-body` for now.
 
 ## Serif or sans
 
@@ -55,7 +67,7 @@ content, error messages.
 
 ```tsx
 <h1 className="font-serif text-4xl font-bold tracking-tight">Page title</h1>
-<p className="text-base text-muted-foreground">Supporting body copy.</p>
+<p className="text-body text-muted-foreground">Supporting body copy.</p>
 ```
 
 ## Heading hierarchy
