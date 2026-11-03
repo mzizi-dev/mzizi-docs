@@ -21,6 +21,12 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
+### Changed — `AGENTS.md` states the new `staging` merge-queue rules (2026-11-03)
+
+No issue: repository guidance only. No page a reader of docs.mzizi.dev sees changes.
+
+- **Changed: Merge convention.** It now names the target `merge-queue-staging` configuration (`SQUASH`, no 5-minute wait, up to 5 entries, `ALLGREEN`) as the owner's to apply in the rulesets, says to read the live values with `gh api repos/mzizi-dev/<repo>/rulesets`, and keeps branches linear until they read `SQUASH` and `0`. It also says to enqueue as soon as the merge gate is met, to forward-port `main`-only commits to `staging` before cutting a release, to skip the sync-back when the trees already match, and that only a major release needs the owner.
+
 ### Changed — Connect a client re-checked against current vendor docs; Antigravity, Zed, Cline, Kiro and JetBrains added (2026-11-03, [#82](https://github.com/mzizi-dev/mzizi-docs/issues/82))
 
 Refs #82; companion to the tooling repository's adapters and README fixes. Every format is documented by the vendor, read on 3 November 2026, and not run in the tool.
