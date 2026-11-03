@@ -21,6 +21,17 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
+### Changed — Connect a client re-checked against current vendor docs; Antigravity, Zed, Cline, Kiro and JetBrains added (2026-11-03, [#82](https://github.com/mzizi-dev/mzizi-docs/issues/82))
+
+Refs #82; companion to the tooling repository's adapters and README fixes. Every format is documented by the vendor, read on 3 November 2026, and not run in the tool.
+
+- **Changed: `toolchain/connect`** now says plainly that no client was run, and gives each section's check date. Two tables are new: a client-by-client "At a glance" with 18 rows, and "Skills, instructions and plugins by client" (where each reads `SKILL.md`, its instruction files and its plugin format), with the frontmatter limits that apply (1,024 characters; Claude Code truncates at 1,536; claude.ai uploads reject any key outside the Agent Skills set).
+- **Added: sections** for Antigravity CLI and IDE (`serverUrl` in `~/.gemini/config/mcp_config.json`, no `add` command), Zed (`context_servers`), Cline (`streamableHttp` must be set), Kiro CLI (formerly Amazon Q Developer CLI), JetBrains AI Assistant and Junie, and "Check the server yourself" (the `curl` probes of `mcp.mzizi.dev/mcp`, including the spec deviation: any `https` Origin is accepted).
+- **Changed: Gemini CLI and Windsurf.** Gemini CLI is now the enterprise product; free and Google AI Pro/Ultra users moved to Antigravity CLI on 2026-06-18. Windsurf's documentation is Devin Desktop's: servers in `.devin/mcp_config.json` with `url` and `transport`; the old `serverUrl` format is no longer on the page. The heading changes from "Windsurf" to "Devin Desktop (formerly Windsurf)", so `#windsurf` becomes `#devin-desktop-formerly-windsurf`.
+- **Fixed: Codex.** The page said the CLI installs the plugin with `/plugins`; OpenAI's guide documents `codex plugin marketplace add` and installing from the ChatGPT desktop app, and no CLI install command. `toolchain/skills` said the plugin "installs" in Codex and ChatGPT from the registry's pull request; it now says there is no Codex plugin until mzizi-registry#520 reaches `main`, and what to do instead. The "What is not verified here" list is rewritten to match.
+- **Changed: `toolchain/mcp`, `toolchain/skills`** list the new clients, and `toolchain/skills` says which clients read `.agents/skills/` (Cline and Kiro do not) and that every skill's frontmatter will be only `name` and `description` from the release after `0.17.0`.
+- **Not changed, flagged:** `check-freshness.mjs` reports drift unrelated to this change (component count 656 against 675, `mzizi-activitypub` 0.6.0 against 0.7.0, `mzizi-mcp` 0.13.0 against 0.14.0, `@nyuchi/mzizi-skills` 0.13.0 against 0.16.0 on `toolchain/skills`); the freshness agent owns those.
+
 ### Changed — the docs state the Bundu floor: 17px body, 14px captions, a 49px hit region (2026-11-03, [#79](https://github.com/mzizi-dev/mzizi-docs/issues/79))
 
 Follows mzizi-registry 4.23.0 and `@bundu/ui` 0.8.0 (owner rulings, 1 and 2 November 2026; mzizi-registry#597).
