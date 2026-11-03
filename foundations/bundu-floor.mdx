@@ -1,0 +1,157 @@
+---
+title: "The Bundu floor"
+description: "The minimums every Mzizi surface keeps on every device — 17px body text, 14px captions, a 49px hit region on every control, and WCAG contrast floors — and how to migrate from the earlier sizes."
+sidebarTitle: "The Bundu floor"
+icon: "ruler"
+---
+
+The Bundu floor is a set of hard minimums, and it is the same on a phone, a tablet and a
+desktop. Bundu sets the standard for outdoor reading and for people who find technology hard
+(older users, African and emerging markets), so the minimums are as high as they can be and
+one Bundu will stand by. It shipped in registry 4.23.0 (3 November 2026) and `@bundu/ui` 0.8.0
+(owner rulings of 1 and 2 November 2026; tracking issue
+[mzizi-registry#597](https://github.com/mzizi-dev/mzizi-registry/issues/597)).
+
+## What the floor is
+
+| Floor                              | Value       | Derives from                               |
+| ---------------------------------- | ----------- | ------------------------------------------ |
+| Body text, every device            | 17px        | Apple's iOS default body size; a prime     |
+| Captions, metadata, secondary text | 14px        | 2 × 7, the radius unit                     |
+| Hit region of every control        | 49px        | 7 × 7, above Apple's 44 pt                 |
+| Smallest a control is drawn        | 28px        | 4 × 7; Apple's macOS default control size  |
+| Contrast                           | 7 / 4.5 / 3 | WCAG 2: body text, non-body text, UI parts |
+
+Nothing readable is smaller than 14px, and nothing interactive has a hit region smaller than
+49px. The numbers live in one place in the registry, `BUNDU_FLOOR` in
+`lib/tokens/roles.source.ts`; the token generators, the contract runner, the Rust evaluator
+and the registry's tests all read it. It replaces, in order, the 48px and 56px targets and 16px
+body of the registry before 1 November 2026, and the 44px touch, 24px desktop and 15px desktop
+body that followed for two days.
+
+## How a control keeps 49px on a desktop
+
+A desktop control may be drawn smaller (28 to 40px) but keeps a 49px hit region. The token
+layer's `hit-area` rule gives every `button`, `summary`, `[role="button"]`, `[role="tab"]`,
+`[role="switch"]` and any `.hit-area` element a transparent `::after` of
+`max(100%, var(--target-floor))`. `--target-floor` is 49px and no density layer lowers it.
+
+The rule steps aside on purpose for an element that draws its own `after:` pseudo-element
+(checkbox, switch, radio group, the tabs line variant), for menu and listbox rows (they take
+`min-height: var(--target-floor)` instead), for a calendar day, and for an element with
+`overflow: hidden`, which would clip it. Three consequences matter when you build:
+
+- A native `input`, `select` or `textarea` cannot carry a pseudo-element, so the field roles
+  (`h-field`, `h-field-sm`) stay 49px drawn on a desktop.
+- A standalone link that is a target is drawn at 49px, or takes the `hit-area` class. An
+  inline link in running text is exempt, as in WCAG 2.5.8.
+- Where two covered controls sit closer than 49px apart their overlays overlap and the later
+  sibling wins the overlap, so keep gaps from the spacing tokens.
+
+## Three layers, one floor
+
+The layers are defined once in the token layer and emitted as media queries on the size
+variables. A component never branches on screen size.
+
+| Layer        | Applies when                                              | Controls drawn at        | Hit region | Body | Caption |
+| ------------ | --------------------------------------------------------- | ------------------------ | ---------- | ---- | ------- |
+| Phone, touch | the defaults                                              | 49px (large 56px)        | 49px       | 17px | 14px    |
+| Tablet       | `min-width: 48rem`                                        | 49px: an iPad is touched | 49px       | 17px | 14px    |
+| Desktop      | `min-width: 64rem` and `pointer: fine` and `hover: hover` | 28 to 40px (fields 49px) | 49px       | 17px | 14px    |
+
+Only display and heading sizes step down as screens grow. Body and secondary text never do. A
+touchscreen laptop reports a coarse pointer, so the desktop layer does not apply to it.
+Density is about visual size only: screen size is never used to guess network quality, and the
+gaps between targets are spacing tokens that density does not change.
+
+## Contrast beside the floor
+
+The floor's contrast numbers are WCAG 2 minimums: **7:1** for body text, **4.5:1** for
+non-body text and **3:1** for UI parts. The registry's token build fails when a default role
+is under its minimum, and the APCA bars still apply. Five button-label roles hold 4.5:1 rather
+than 7:1, an owner-confirmed exception: `primary-foreground`, `brand-accent-foreground`,
+`app-accent-foreground`, `sidebar-primary-foreground` and `destructive-foreground`. The
+thresholds, the reason for the exception and how to test a pairing are on
+[accessibility](/foundations/accessibility#contrast-wcag-minimums-and-apca).
+
+## Migrating from the earlier sizes
+
+"Earlier" is the registry's 1 November 2026 sizes (4.21.0 to 4.22.x). Nothing changes for an
+app until it takes the new registry version or `@bundu/ui` 0.8.0.
+
+| Token                                    | Earlier (1 November 2026) | Now: phone, tablet | Now: desktop    |
+| ---------------------------------------- | ------------------------- | ------------------ | --------------- |
+| `--size-touch`, `--size-control`         | 44px; 36px on desktop     | 49px               | 36px (hit 49px) |
+| `--size-control-sm`                      | 44px; 32px on desktop     | 49px               | 32px (hit 49px) |
+| `--size-control-lg`                      | 48px; 40px on desktop     | 56px               | 40px (hit 49px) |
+| `--size-field`, `--size-field-sm`        | 44px; 36px, 32px          | 49px               | 49px            |
+| `--target-floor`                         | 44px; 24px on desktop     | 49px               | 49px            |
+| `--fs-body`                              | 17px; 16px; 15px          | 17px               | 17px            |
+| `--fs-small` (`text-body-sm`, `text-sm`) | 15px; 14px                | 14px               | 14px            |
+| `--fs-caption` (`text-xs`)               | 12px                      | 14px               | 14px            |
+| Badge text, chart axis labels            | 10 to 12px                | 14px               | 14px            |
+
+In an app:
+
+1. Take the registry version (or `@bundu/ui` built from it) and re-run `pnpm tokens:sync` or
+   re-copy `mzizi-tokens-globals.css`.
+2. Replace `h-12`, `h-14` and `min-h-[44px]` on a control with a size role (`h-control`,
+   `h-field`, `min-h-touch-min`). A drawn size under 49px is fine on a desktop for a
+   button-like control, never for a field or a standalone link.
+3. Replace any `text-[Npx]` under 14 with `text-sm`, and write body copy as `text-body`.
+4. If a layout breaks and cannot move yet, set the legacy alias (below) and plan the move.
+
+Expect denser layouts to need room: a badge or a meta label that fitted at 10px is now 14px.
+
+### The legacy alias
+
+To take the version and keep the earlier sizes for a while, put the attribute on the root
+element:
+
+```html
+<html data-mzizi-sizes="legacy">
+```
+
+It restores the sizes from before 1 November 2026 (a 48px floor, 56px and 48px controls, 16px
+body, 12px captions) and outranks the density layer; it does not restore the 1 November
+sizes in the table above. It **steps out of the floor**: that is the point of it, and the
+reason to remove it as soon as the app has moved. It is a compatibility alias, and the
+registry plans to remove it in the next major version. `text-xs` and `text-body` follow the
+same variables, so they step out with it.
+
+### One class name to avoid
+
+Write body copy as `text-body`, not `text-base`. The token layer registers `--text-base`
+(17px), but a theme that also defines a colour named `base` (`--color-base`) can make
+`text-base` ambiguous. The registry has not yet decided how to settle it; `text-body`,
+`text-sm` and `text-xs` work meanwhile.
+
+## What fails the build
+
+The registry's `bundu-floor` test fails when a default type step is under its floor in any
+layer, when a floored size role is under 49px, when `--target-floor` is lowered or the
+`hit-area` rule is gone, when a desktop control is drawn under 28px or a native field under
+49px, when a copy of the floor disagrees with `BUNDU_FLOOR`, or when a registry component names
+an arbitrary text size under 14px. The contract runner and the Rust evaluator fail a density
+row whose interactive control has a hit region under 49px on either pointer. Rows that predate
+the floor are pinned, so a new one cannot join them unseen; see
+[the Dashboard Standard's density table](/patterns/dashboard-standard#density).
+
+## The Bundu Order
+
+The Bundu Order draws on biblical mathematical patterns and prime numbers (owner, 2
+November 2026). This section states only what the registry's code holds, in its
+`brand-guidelines` doctrine page.
+
+- **The unit is 7px** (`--radius-unit`). The radii are 4, 7, 12, 14 and 17px and a pill, and
+  they do not change.
+- **P7 and P17** are prime steps of the surface-elevation ladder (`surface` is P7, `raised` is
+  P17), and the seven experimental colour families are a heptagon of hues offset 17 degrees.
+- **The floors derive from the same numbers.** Body text is 17px, a prime and Apple's iOS
+  default, on every device. Captions are 14px (2 × 7). Every control keeps a 49px hit region
+  (7 × 7, above Apple's 44 pt) and may be drawn down to 28px (4 × 7) at desktop density, never
+  with a smaller hit region.
+
+The sources are the registry's
+[`sizes-and-density.md`](https://github.com/mzizi-dev/mzizi-registry/blob/main/docs/sizes-and-density.md)
+(the migration guide) and its `content/doctrine/documentation/brand-guidelines.mdx`.

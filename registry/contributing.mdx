@@ -35,8 +35,8 @@ const myComponentVariants = cva(
         outline: "border border-border bg-transparent text-foreground",
       },
       size: {
-        default: "h-14 px-4",
-        sm: "h-12 px-3 text-sm",
+        default: "h-control px-4",
+        sm: "h-control-sm px-3 text-body-sm",
       },
     },
     defaultVariants: {
@@ -167,4 +167,5 @@ pnpm build
 - [ ] `pnpm registry:validate` and `pnpm registry:verify` pass
 - [ ] `pnpm build` leaves no diff
 - [ ] Tests, lint and types pass
-- [ ] APCA 3.0 contrast, 48px minimum touch targets, keyboard navigation
+- [ ] WCAG 7:1 / 4.5:1 / 3:1 and APCA 3.0 contrast, a 49px hit region on every control,
+      17px body and nothing readable under 14px, keyboard navigation

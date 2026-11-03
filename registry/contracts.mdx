@@ -135,7 +135,8 @@ them:
   `enhancement`: each ships one script, and everything its `noJs.without` lists works when the
   script does not run. See [Without JavaScript](/patterns/dashboard-standard#without-javascript).
 - **Density.** Every interactive part declares a fine and a coarse height, and each row is
-  evaluated. Controls are dense on a mouse (mostly 32–40px) and 44–48px on touch. See
+  evaluated. Controls are dense on a mouse (mostly 32–40px drawn) and 44–49px on touch, and a
+  control must keep a 49px hit region on every pointer. See
   [Density](/patterns/dashboard-standard#density).
 - **Theming.** A brand overlay changes colour only (`--primary`, `--ring`, AppShell's
   `--app-accent`, and the mark). Layout never varies by brand. The markup carries no colour
@@ -168,8 +169,8 @@ is kept true by the registry's test.
 Four contracts record gaps:
 
 - **AppShell:** the collapse toggle is 32px on every pointer. On a touch screen at 64rem or
-  wider it is under the 44px the rest of the shell keeps (WCAG 2.5.8 is met at 24px; 2.5.5
-  is not).
+  wider it is under the 49px hit region the Bundu floor sets (WCAG 2.5.8 is met at 24px;
+  2.5.5 is not).
 - **PageHeader:** the "View docs" pill is 24px on touch.
 - **InfoTip:** 32px on touch.
 - **BrandMark:** the Nyuchi, Mukoko and Kweli marks ship (Kweli on the registry's `staging`

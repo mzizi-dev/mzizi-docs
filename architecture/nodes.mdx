@@ -30,7 +30,8 @@ z-index, icon sizes, touch targets, density. N1 is the only node allowed to _def
 - Must carry a `data-slot` attribute.
 - Must compose classes through `cn()`.
 - Must not reference mineral colours directly — semantic tokens only.
-- 56px default and 48px minimum touch target.
+- A 49px hit region on every control (56px for the large button), 17px body text and
+  nothing readable under 14px.
 - Pill-shaped categories (button, input, avatar, badge, toggle) use a `9999` radius.
 
 **Is it a branded component carrying the mineral palette?** → **N3 brand**
@@ -39,7 +40,7 @@ z-index, icon sizes, touch targets, density. N1 is the only node allowed to _def
   names redirect to their `mzizi-*` names.)
 - Imports `useMziziHarness` and destructures `{ log, motion, LiveRegion }`.
 - Carries an animation style that respects `prefers-reduced-motion`.
-- ARIA, `data-slot`, `focus-visible`, 48px touch targets.
+- ARIA, `data-slot`, `focus-visible`, a 49px hit region.
 
 **Is it a verification check, content gate or security boundary?** → **N4 safety**
 
@@ -100,7 +101,9 @@ Component source is **files in the repository**, under
 
 ## Accessibility
 
-Mzizi's stated contrast standard is **APCA 3.0**, not a WCAG 2.x ratio. Validate new colour
-pairings against it before shipping them; the two models disagree, and where they disagree the
+Mzizi holds two contrast bars at once: the WCAG 2 minimums (7:1 for body text, 4.5:1 for
+non-body text, 3:1 for UI parts) and **APCA 3.0**. Validate new colour pairings against both
+before shipping them; the two models disagree on some pairs, and where they disagree the
 perceptual one is the one this system follows. See
-[accessibility](/foundations/accessibility) for the thresholds.
+[accessibility](/foundations/accessibility) for the thresholds and the five button-label
+roles that hold 4.5:1.
