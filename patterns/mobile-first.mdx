@@ -1,6 +1,6 @@
 ---
 title: "Mobile-first patterns"
-description: "Designing for mid-range Android phones on variable networks as the primary case — navigation, sheets, touch targets, progressive loading and offline states."
+description: "Designing for mid-range Android phones on variable networks as the primary case — navigation, sheets, 49px touch targets, progressive loading and offline states."
 sidebarTitle: "Mobile-first"
 icon: "smartphone"
 ---
@@ -11,7 +11,7 @@ is the primary platform, not a responsive afterthought.
 ## Principles
 
 1. **Start with mobile** — design the smallest screen, then enhance.
-2. **Optimise for touch** — 48px minimum targets, actions within thumb reach.
+2. **Optimise for touch** — a 49px hit region on every control, actions within thumb reach.
 3. **Minimise data** — lazy-load images, compress assets, do not make requests you can avoid.
 4. **Work offline** — core features function without a connection.
 5. **Paint fast** — show skeleton content immediately, load data progressively.
@@ -65,11 +65,13 @@ On mobile a bottom sheet is easier to reach and dismiss than a centred modal:
 
 ## Touch targets
 
-Every interactive element is at least 48px in the touch dimension.
+Every interactive element has a 49px hit region in the touch dimension, and the same on a
+desktop (the [Bundu floor](/foundations/bundu-floor)). Take the height from a size role, not
+a fixed `h-*` class.
 
 ```tsx
 {/* correct */}
-<button className="flex h-12 items-center gap-3 px-4">
+<button className="flex h-control items-center gap-3 px-4">
   <Icon className="size-5" />
   <span>Menu item</span>
 </button>

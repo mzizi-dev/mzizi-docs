@@ -84,20 +84,29 @@ actions with the brand mineral (Nyuchi gold) instead of the deep text variant sh
 ## Density
 
 Dashboards are dense on a mouse and generous on touch. Every interactive control declares
-both heights, and its contract checks them.
+both heights, and its contract checks them. Since the Bundu floor (registry 4.23.0, 3 November 2026) every control also needs a 49px hit region on every pointer: a button-like control may be
+drawn at the heights below on a mouse and keeps the 49px region through a transparent
+pseudo-element. See [the Bundu floor](/foundations/bundu-floor).
 
-| Control                                                                      | Fine pointer          | Coarse pointer (touch)             |
-| ---------------------------------------------------------------------------- | --------------------- | ---------------------------------- |
-| Nav row, quick search, toolbar menu, top-bar action, account menu, page link | 32px                  | 44px                               |
-| Button `md` / input / select                                                 | 36px                  | 48px                               |
-| Button `sm` / `lg`                                                           | 32px / 40px           | 44px / 48px                        |
-| Command palette result                                                       | 36px                  | 44px                               |
-| Top bar                                                                      | 48px                  | 48px                               |
-| Text                                                                         | 14px (`text-body-sm`) | 16px (so iOS never zooms an input) |
+The table shows the drawn heights the contracts record. Contract rows that predate the floor
+are pinned in the registry as gaps until they move onto a size role: 38 rows across the app,
+Discover, site and `ui` components at registry 4.23.0 (19 of them app components, among them
+the side nav row, the command-palette result and search box, the toolbar search box, form-field
+input and select, and the pagination link). A new row under 49px fails the registry's checks.
 
-Corners use the small radius, not the marketing pill. Three controls are under 44px on touch
-today and are recorded as gaps in their contracts: the sidebar collapse toggle (32px), the
-"View docs" pill (24px) and the info tip (32px). All three meet WCAG 2.2's 24px minimum.
+| Control                                                                      | Fine pointer          | Coarse pointer (touch)                       |
+| ---------------------------------------------------------------------------- | --------------------- | -------------------------------------------- |
+| Nav row, quick search, toolbar menu, top-bar action, account menu, page link | 32px                  | 44px                                         |
+| Button `md` / input / select                                                 | 36px                  | 48px                                         |
+| Button `sm` / `lg`                                                           | 32px / 40px           | 44px / 48px                                  |
+| Command palette result                                                       | 36px                  | 44px                                         |
+| Top bar                                                                      | 48px                  | 48px                                         |
+| Text                                                                         | 14px (`text-body-sm`) | 17px (`text-body`; iOS never zooms an input) |
+
+Corners use the small radius, not the marketing pill. Three controls are under the 49px hit
+region on touch today and are recorded as gaps in their contracts: the sidebar collapse toggle
+(32px), the "View docs" pill (24px) and the info tip (32px). All three meet WCAG 2.2's 24px
+minimum, and none meets the Bundu floor.
 
 ## Brand overlays
 
@@ -157,8 +166,8 @@ WCAG 2.2 criteria it is built to meet. Across the standard:
 - **Meaning is never colour alone.** Trends are written out; badges carry text; charts have
   a figures table.
 - **No timeouts.** Toasts wait to be dismissed (WCAG 2.2.3).
-- **Touch targets** of 44–48px on a coarse pointer, with the three recorded exceptions
-  above.
+- **Touch targets** with a 49px hit region on every pointer, with the recorded gaps above
+  pinned until they move.
 
 ## Without JavaScript
 
