@@ -21,6 +21,16 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
+### Changed — the docs state the Bundu floor: 17px body, 14px captions, a 49px hit region (2026-11-03, [#79](https://github.com/mzizi-dev/mzizi-docs/issues/79))
+
+Follows mzizi-registry 4.23.0 and `@bundu/ui` 0.8.0 (owner rulings, 1 and 2 November 2026; mzizi-registry#597).
+
+- **Added: `foundations/bundu-floor`**, in the Foundations group after Accessibility. It states the floor (17px body, 14px captions, a 49px hit region on every control, 28px smallest drawn control), how a desktop control keeps 49px (the `hit-area` rule and where it steps aside), the three layers, the contrast floors, a migration table from the 1 November sizes, the `data-mzizi-sizes="legacy"` alias (it restores the sizes from before 1 November and steps out of the floor), the `text-base` vs `--color-base` caution (write `text-body`), what fails the registry's build, and The Bundu Order (the 7px unit, primes, the owner's provenance sentence). It is linked from the Foundations overview.
+- **Changed: `foundations/accessibility`** now states two contrast bars, WCAG 2 minimums (7:1 body, 4.5:1 non-body, 3:1 UI) beside APCA 3.0, and the five button-label roles that hold 4.5:1; it said "APCA, not WCAG". Touch targets are a 49px hit region (were 56px default and 48px minimum). It no longer says `mzizi_check_accessibility` simulates colour-vision deficiency or computes APCA: it computes the WCAG ratio only.
+- **Changed:** `foundations/tokens` (component specs: button and input 49px, large button 56px), `foundations/typography` (body `text-body` 17px, footnote 14px), `foundations/layout`, `foundations/overview`, `foundations/icons`, `patterns/mobile-first`, `patterns/components`, `registry/contributing` and `architecture/nodes` say 49px, 17px and 14px instead of 56px, 48px, 16px and 12px; `nodes` and the README say contrast has two bars.
+- **Changed: the Dashboard and Discover Standards.** The density table notes that every control needs a 49px hit region and that 38 contract rows that predate the floor are pinned in the registry as gaps (19 app, 13 Discover, 3 site, 3 `ui`); app text on touch is 17px. Discover no longer says its controls are the same size on every pointer. `registry/contracts` says 49px.
+- **Not changed, flagged:** `toolchain/skills` still describes skills 0.13.0 (npm is at 0.16.0, 0.17.0 teaches the floor once released); `primitives`, `syntax`, `compiler` and `patterns/kweli-address` quote language-side `.mz` files and registry component descriptions that still carry 44, 48 and 56px.
+
 ### Fixed — release notes when the previous release has no `CHANGELOG.md` (2026-11-01)
 
 - `release_notes.py` treats a previous release with no `CHANGELOG.md` as the first release, as its docstring says. It matched git's "does not exist" message, but in a checkout where the file exists on disk git says "exists on disk, but not in", so the first `main-release.yml` run that met such a tag stopped before tagging. It now asks git directly (`git cat-file -e`).

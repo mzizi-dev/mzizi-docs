@@ -118,8 +118,10 @@ merge convention.
 
 ### Why APCA and not WCAG
 
-Mzizi's stated accessibility standard is APCA 3.0, not WCAG 2.x, and the difference is not
-academic here. `mint a11y`'s colour check is WCAG-ratio based and is not polarity-aware — it
+Mzizi's accessibility standard pairs APCA 3.0 with WCAG 2 minimums (7:1 for body text, 4.5:1
+for non-body text, 3:1 for UI parts; see `foundations/accessibility`), and the difference
+between the two models is not academic here. `mint a11y`'s colour check is WCAG-ratio based
+and is not polarity-aware — it
 tests `colors.dark` against _both_ backgrounds and demands 3:1 on each, even though `dark`
 only ever renders in light mode and `light` only ever renders in dark mode. Satisfying it
 pushes both values to mid-tone and serves neither theme.

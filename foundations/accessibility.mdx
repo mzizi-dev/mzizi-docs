@@ -1,6 +1,6 @@
 ---
 title: "Accessibility"
-description: "The accessibility standards the Mzizi design system enforces — APCA 3.0 contrast, 56px touch targets, keyboard navigation and screen-reader support."
+description: "The accessibility standards the Mzizi design system enforces — WCAG 7:1, 4.5:1 and 3:1 contrast with APCA 3.0, 49px hit regions, keyboard navigation and screen-reader support."
 sidebarTitle: "Accessibility"
 icon: "accessibility"
 ---
@@ -9,25 +9,52 @@ Accessibility in this design system is a constraint, not a review step. Componen
 usable in bright sunlight on a cracked screen as readily as on a desktop in an office, and the
 thresholds below are what makes that checkable rather than aspirational.
 
-## Contrast: APCA, not WCAG
+## Contrast: WCAG minimums and APCA
 
-The stated standard is **APCA 3.0** — the Advanced Perceptual Contrast Algorithm — rather than
-the WCAG 2.x contrast ratio. This is not a preference. The two models disagree, and where they
-disagree the perceptual one is the one this system follows.
+Two bars apply together, and both are enforced in the registry's token build. The WCAG 2
+minimums (owner, 2 November 2026) are a floor on the ratio; **APCA 3.0** — the Advanced
+Perceptual Contrast Algorithm — is the perceptual bar the palette is solved against. The two
+models disagree on some pairs, so a colour has to clear both.
+
+| Text type                                | Minimum WCAG 2 ratio | Example                               |
+| ---------------------------------------- | -------------------- | ------------------------------------- |
+| Body text                                | 7:1                  | `--foreground` on `--background`      |
+| Non-body text (captions, metadata, time) | 4.5:1                | `--muted-foreground` on `--surface`   |
+| UI parts (focus rings, control edges)    | 3:1                  | `--ring`, input borders (WCAG 1.4.11) |
+
+Body and non-body text are measured on both `base` and `surface`, in both themes. The APCA
+bars sit beside them:
 
 | Text type                  | Minimum APCA Lc | Example                          |
 | -------------------------- | --------------- | -------------------------------- |
-| Body text, 16px            | Lc 75           | `--foreground` on `--background` |
+| Body text                  | Lc 75           | `--foreground` on `--background` |
 | Large text, 24px and above | Lc 60           | Headings on cards                |
 | UI controls                | Lc 60           | Button labels, form inputs       |
 | Non-text UI                | Lc 30           | The absolute floor               |
 | Placeholder text           | Lc 45           | Input placeholders               |
 
-### Why the difference matters
+### Five button labels hold 4.5:1, not 7:1
+
+One exception is named and owner-confirmed. These five roles hold 4.5:1 on their fill instead
+of 7:1 (APCA Lc 75 still applies):
+
+- `primary-foreground`
+- `brand-accent-foreground`
+- `app-accent-foreground`
+- `sidebar-primary-foreground`
+- `destructive-foreground`
+
+They are button labels, and the fill is each brand's accessible (`-aa`) tier, which is 4.5:1
+under white by definition. Holding 7:1 would darken every brand's action colour, so the
+exception stays until the owner rules otherwise. It covers those five roles and nothing else:
+running text and a label on any other fill need 7:1.
+
+### Why two bars
 
 Sodalite's published `darkHex` is `#3D5AFE`. Against a near-black background it **passes** a
 WCAG ratio check and scores APCA **Lc -25.8** — below even the Lc 30 floor for non-text UI.
-The ratio says fine; the perceptual model says unreadable; the perceptual model is right.
+The ratio says fine; the perceptual model says unreadable; where the two disagree, the
+perceptual one is right, which is why the ratio is a floor and not the whole test.
 
 A ratio check will also mislead you about polarity. It is not polarity-aware, so it tests a
 dark-mode colour against a light background and demands a threshold on both — and satisfying
@@ -36,35 +63,42 @@ that pushes both values to mid-tone and serves neither theme.
 ### Testing a new pairing
 
 1. Test in both light and dark.
-2. Use an APCA calculator, not a WCAG ratio checker.
+2. Check the WCAG ratio against the tier above and the APCA Lc against its row.
 3. Check the pairings that actually ship — `--muted-foreground` on `--muted`,
    `--foreground` on `--card` — not only foreground on background.
 
-The registry exposes this over MCP as `mzizi_check_accessibility`, which covers contrast,
-relative luminance and colour-blindness simulation in one call. See
-[the MCP server](/toolchain/mcp).
+The registry exposes the WCAG ratio over MCP as `mzizi_check_accessibility`, which computes
+the ratio locally, gives the AA, AAA and 7:1 verdicts, and does not compute APCA or simulate
+colour-vision deficiency. See [the MCP server](/toolchain/mcp).
 
 ## Touch targets
 
-**56px default, 48px minimum.** The minimum is a floor, not a target, and nothing interactive
-goes below it.
+**Every interactive control keeps a 49px hit region, on every device, desktop included.**
+That is the Bundu floor (owner, 2 November 2026): 7 × 7, above Apple's 44 pt. Nothing
+interactive has a smaller hit region. On touch, controls are also drawn at 49px; on a desktop
+a button-like control may be drawn smaller (28 to 40px) and keeps the 49px region through a
+transparent pseudo-element. The full rule, the sizes and the migration are on
+[the Bundu floor](/foundations/bundu-floor).
 
-| Size    | Height        | Usage                                 |
-| ------- | ------------- | ------------------------------------- |
-| Default | 56px (`h-14`) | Buttons, inputs, interactive controls |
-| Small   | 48px (`h-12`) | Compact variants, secondary actions   |
-| Minimum | 48px          | The absolute floor                    |
+| Size role      | Drawn on touch | Drawn on desktop      | Hit region |
+| -------------- | -------------- | --------------------- | ---------- |
+| `h-control`    | 49px           | 36px                  | 49px       |
+| `h-control-sm` | 49px           | 32px                  | 49px       |
+| `h-control-lg` | 56px           | 40px                  | 49px       |
+| `h-field`      | 49px           | 49px (a native field) | 49px       |
+
+Use the size roles rather than `h-12` or `h-14`:
 
 ```tsx
-<Button size="default">Submit</Button>   {/* 56px */}
-<Button size="sm">Cancel</Button>        {/* 48px */}
+<Button>Submit</Button>              {/* 49px on touch */}
+<Button size="sm">Cancel</Button>    {/* 49px on touch */}
 ```
 
 For a small visual element such as a checkbox indicator, extend the clickable area with
 padding rather than shrinking the target:
 
 ```tsx
-<label className="flex min-h-12 items-center gap-3 px-3">
+<label className="flex min-h-touch-min items-center gap-3 px-3">
   <Checkbox />
   <span>Accept terms</span>
 </label>
@@ -138,8 +172,9 @@ to a reader.
 
 ## Checklist
 
-- [ ] Contrast meets the APCA threshold for the text size, in both themes
-- [ ] Touch targets are 56px default and never below 48px
+- [ ] Contrast meets the WCAG minimum (7:1 body, 4.5:1 non-body, 3:1 UI) and the APCA
+      threshold, in both themes
+- [ ] Every control has a 49px hit region, and text is 17px body and 14px at the smallest
 - [ ] Every interaction is reachable by keyboard
 - [ ] Focus indicators are visible and unmodified
 - [ ] A screen reader announces the component's purpose and state
