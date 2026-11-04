@@ -33,8 +33,9 @@ working, but point new ones here directly.
 
 Each client writes this in its own format. [Connect a client](/toolchain/connect) has the
 current one for Claude.ai, Claude Desktop, Claude Code, the Claude API, ChatGPT, Codex, the
-OpenAI API and Agents SDK, Z.ai's coding plan, OpenCode, Cursor, VS Code, Windsurf and Gemini
-CLI, and says how the skills reach each.
+OpenAI API and Agents SDK, Z.ai's coding plan, OpenCode, Cursor, VS Code, Antigravity, Gemini
+CLI, Devin Desktop (formerly Windsurf), Zed, Cline, Kiro and JetBrains, and says how the skills
+reach each.
 
 To run it locally over stdio, with no network for anything but the docs tools:
 
@@ -112,6 +113,15 @@ tools:
 
 Start with `mzizi_search` when you do not know the name of the thing you want, and
 `mzizi_get_component` when you do.
+
+<Note>
+  **Shipping with the server's next release:** `mzizi_get_tokens` with `family=floors`,
+  `mzizi_get_doctrine` with `topic=bundu-floor`, and optional spacing inputs on
+  `mzizi_check_accessibility` (inset, gaps, line height), all read from the registry's
+  `/v1/brand` `accessibility` block. They are written up for
+  [the spacing floor](/foundations/spacing-floor); read `catalogue.json` to see whether the
+  server you are connected to has them yet.
+</Note>
 
 ## Components, Rust first
 

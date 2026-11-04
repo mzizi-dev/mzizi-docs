@@ -1,14 +1,17 @@
 ---
 title: "Connect a client"
-description: "Connect the Mzizi MCP server, and get the Mzizi skills, in Claude, Claude Code, the Claude API, ChatGPT, Codex, the OpenAI API, Cursor, VS Code, Gemini CLI, OpenCode, Windsurf and Z.ai's coding plan, each in its vendor's own format."
+description: "Connect the Mzizi MCP server, and get the Mzizi skills, in Claude, Claude Code, the Claude API, ChatGPT, Codex, the OpenAI API, Cursor, VS Code, Antigravity, Gemini CLI, Devin Desktop (formerly Windsurf), Zed, Cline, OpenCode, Kiro, JetBrains and Z.ai's coding plan, each in its vendor's own format."
 sidebarTitle: "Connect a client"
 icon: "cable"
 ---
 
 Every client below reaches the same two things: [the MCP server](/toolchain/mcp) at
 `https://mcp.mzizi.dev/mcp`, and [the agent skills](/toolchain/skills). Each section gives the
-vendor's own config format, checked against that vendor's documentation on 20 October 2026
-and linked, so you can check it again. Formats move; where a vendor's page and this one
+vendor's own config format, checked against that vendor's documentation and linked, so you can
+check it again. Each section says the date it was checked (20 October or 3 November 2026).
+**No client here was run.** Every format is documented by the vendor, not tested in the tool;
+the one thing tested from outside is the server, with `curl`, in [Check the server
+yourself](#check-the-server-yourself). Formats move; where a vendor's page and this one
 disagree, the vendor's page wins.
 
 ## What you connect
@@ -28,34 +31,82 @@ register automatically. It does not publish a client ID metadata document.
 
 **How the skills arrive.** One of three ways, depending on the client:
 
-- **Natively, from the `mzizi` plugin.** Claude Code, and Codex and ChatGPT through the same
-  plugin, install the seven skills as skills and connect the MCP server in one step.
+- **Natively, from the `mzizi` plugin.** Claude Code installs the skills and connects the MCP
+  server in one step. Codex and ChatGPT will through the same plugin once mzizi-registry#520
+  reaches the registry's `main`; until then `codex plugin marketplace add` finds nothing.
 - **Natively, from npm.** `npm install -D @nyuchi/mzizi-skills`, then
-  `npx skills experimental_sync`, links the skills into `.agents/skills/`, which Codex,
-  Cursor, VS Code, Gemini CLI and OpenCode all read.
+  `npx skills experimental_sync`, links the skills into `.agents/skills/`, which Codex, Cursor,
+  VS Code, Gemini CLI, Antigravity, Zed, OpenCode and Devin Desktop all read. Cline reads
+  `.cline/skills/` and `.claude/skills/`, and Kiro `.kiro/skills/`, not `.agents/skills/`.
+- **As instruction files.** For formats that cannot hold a skill, the `@nyuchi/mzizi-skills`
+  package's `adapters/` folder (from its next release) holds files generated from the
+  skills: Cursor `.mdc` rules, Antigravity and Devin Desktop rules, and one section to append
+  to `AGENTS.md`, `GEMINI.md` or `.github/copilot-instructions.md`. Each carries the skill's
+  own description and says where to load the full skill; none copies a skill body, because
+  Antigravity cuts a rule file at 24,000 bytes and Codex stops reading `AGENTS.md` at 32 KiB,
+  and a skill is up to 59 KB.
 - **Over MCP.** Any client connected to the server can call `mzizi_get_skills`: with no
   arguments it lists the skills and their categories, `name` returns one in full, and
   `category` (`dev`, `design`, `language` or `build`) returns every skill in it in full.
-  Nothing to install. This is the route for Claude.ai, ChatGPT without the plugin, the APIs
-  and Windsurf.
+  Nothing to install. This is the route for Claude.ai, ChatGPT without the plugin and the
+  APIs.
 
 ## At a glance
 
-| Client                        | Connect with                                                | Skills arrive                                                     | For the Fundi tools                               |
-| ----------------------------- | ----------------------------------------------------------- | ----------------------------------------------------------------- | ------------------------------------------------- |
-| Claude.ai                     | A custom connector                                          | Over MCP                                                          | A second connector at `/mcp/signin`               |
-| Claude Desktop                | A custom connector, or `claude_desktop_config.json` (stdio) | Over MCP                                                          | The connector route; stdio has no `mzizi_fundi`   |
-| Claude Code                   | The `mzizi` plugin, or `claude mcp add`                     | Natively with the plugin; over MCP otherwise                      | `claude mcp add` for `/mcp/signin`, then `/mcp`   |
-| The Claude API                | The MCP connector (`mcp_servers`)                           | Over MCP                                                          | `/mcp/signin` with an `authorization_token`       |
-| ChatGPT                       | A custom MCP server under Plugins                           | Over MCP                                                          | A second server at `/mcp/signin`                  |
-| OpenAI Codex                  | The `mzizi` plugin, or `config.toml`                        | Natively with the plugin or `.agents/skills/`; over MCP otherwise | A `/mcp/signin` table, then `codex mcp login`     |
-| The OpenAI API and Agents SDK | A `type: "mcp"` tool                                        | Over MCP                                                          | `/mcp/signin` with `authorization`                |
-| Z.ai's GLM Coding Plan        | Claude Code (or another tool it supports)                   | As that tool gets them                                            | As that tool does                                 |
-| OpenCode                      | `opencode.json`                                             | Natively from `.agents/skills/`, or over MCP                      | A second `remote` entry, then `opencode mcp auth` |
-| Cursor                        | `mcp.json`                                                  | Natively from `.agents/skills/`, or over MCP                      | A second entry at `/mcp/signin`                   |
-| VS Code and GitHub Copilot    | `MCP: Add Server`, `.mcp.json` or `mcp-config.json`         | Natively from `.agents/skills/`, or over MCP                      | A second HTTP server at `/mcp/signin`             |
-| Windsurf (Cascade)            | `mcp_config.json`                                           | Over MCP                                                          | A second `serverUrl` entry at `/mcp/signin`       |
-| Gemini CLI                    | `gemini mcp add` or `settings.json`                         | Natively from `.agents/skills/`, or over MCP                      | `gemini mcp add` for `/mcp/signin`                |
+| Client                        | Connect with                                                | Skills arrive                                                | For the Fundi tools                               |
+| ----------------------------- | ----------------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------- |
+| Claude.ai                     | A custom connector                                          | Over MCP, or a skill ZIP uploaded under Customize > Skills   | A second connector at `/mcp/signin`               |
+| Claude Desktop                | A custom connector, or `claude_desktop_config.json` (stdio) | Over MCP                                                     | The connector route; stdio has no `mzizi_fundi`   |
+| Claude Code                   | The `mzizi` plugin, or `claude mcp add`                     | Natively with the plugin; over MCP otherwise                 | `claude mcp add` for `/mcp/signin`, then `/mcp`   |
+| The Claude API                | The MCP connector (`mcp_servers`)                           | Over MCP                                                     | `/mcp/signin` with an `authorization_token`       |
+| ChatGPT                       | A custom MCP server under Plugins                           | Over MCP                                                     | A second server at `/mcp/signin`                  |
+| OpenAI Codex                  | `config.toml` or `codex mcp add` (a plugin after #520)      | Natively from `.agents/skills/`; over MCP otherwise          | A `/mcp/signin` table, then `codex mcp login`     |
+| The OpenAI API and Agents SDK | A `type: "mcp"` tool                                        | Over MCP                                                     | `/mcp/signin` with `authorization`                |
+| Z.ai's GLM Coding Plan        | Claude Code (or another tool it supports)                   | As that tool gets them                                       | As that tool does                                 |
+| OpenCode                      | `opencode.json`                                             | Natively from `.agents/skills/`, or over MCP                 | A second `remote` entry, then `opencode mcp auth` |
+| Cursor                        | `mcp.json`                                                  | Natively from `.agents/skills/`, rules adapters, or over MCP | A second entry at `/mcp/signin`                   |
+| VS Code and GitHub Copilot    | `MCP: Add Server`, `.mcp.json` or `mcp-config.json`         | Natively from `.agents/skills/`, or over MCP                 | A second HTTP server at `/mcp/signin`             |
+| Antigravity CLI and IDE       | `mcp_config.json` with `serverUrl`                          | Natively from `.agents/skills/`, rules adapters, or over MCP | A second `serverUrl` entry at `/mcp/signin`       |
+| Gemini CLI (enterprise)       | `gemini mcp add` or `settings.json`                         | Natively from `.agents/skills/`, or over MCP                 | `gemini mcp add` for `/mcp/signin`                |
+| Devin Desktop (was Windsurf)  | `.devin/mcp_config.json`                                    | Natively from `.agents/skills/`, rules adapters, or over MCP | A second entry at `/mcp/signin`                   |
+| Zed                           | `context_servers` in `settings.json`                        | Natively from `.agents/skills/`, or over MCP                 | A second server at `/mcp/signin`                  |
+| Cline                         | `cline_mcp_settings.json`, `streamableHttp`                 | Natively from `.cline/skills/`, or over MCP                  | A second server with an `Authorization` header    |
+| Kiro CLI (was Amazon Q CLI)   | `.kiro/settings/mcp.json`                                   | Natively from `.kiro/skills/`, or over MCP                   | A second entry at `/mcp/signin`                   |
+| JetBrains AI Assistant        | Settings > Tools > AI Assistant > MCP                       | AI Assistant skills settings, or over MCP                    | A second server at `/mcp/signin`                  |
+| JetBrains Junie               | `.junie/mcp/mcp.json`                                       | `AGENTS.md`, or over MCP                                     | Not documented                                    |
+
+### Skills, instructions and plugins by client
+
+Read from each vendor's documentation on 3 November 2026; none run in the tool. "Not
+documented" means the page checked does not say, not that the tool lacks it.
+
+| Client                  | `SKILL.md` read from                                                                 | Instruction files                                                   | Plugins and marketplaces                                                                                       |
+| ----------------------- | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| Claude Code             | `.claude/skills/`, `~/.claude/skills/`, plugins                                      | `CLAUDE.md`; `AGENTS.md` is not mentioned on the page               | `.claude-plugin/marketplace.json`; this project publishes one                                                  |
+| Claude.ai, Desktop      | An uploaded ZIP of one skill folder                                                  | Project instructions                                                | Org-provisioned skills on Team and Enterprise                                                                  |
+| Codex                   | `.agents/skills/` up to the repo root, `~/.agents/skills/`                           | `AGENTS.md`, 32 KiB by default                                      | Root `plugin.json` or `.codex-plugin/plugin.json`, `.agents/plugins/marketplace.json`; ours waits on #520      |
+| Cursor                  | `.agents/skills/`, `.cursor/skills/`, `.claude/skills/`, `.codex/skills/`            | `.cursor/rules/*.mdc`, `AGENTS.md`                                  | `.cursor-plugin/plugin.json` and `marketplace.json`; this project does not publish one                         |
+| VS Code, Copilot        | `.github/skills/`, `.claude/skills/`, `.agents/skills/`, `~/.copilot/skills/`        | `.github/copilot-instructions.md`, `AGENTS.md`, `*.instructions.md` | Customization Marketplace (preview)                                                                            |
+| Antigravity             | `.agents/skills/`, `~/.gemini/config/skills/`, plugin `skills/`                      | `AGENTS.md`, `GEMINI.md`, `.agents/rules/*.md`                      | Plugins under `~/.gemini/config/plugins/`, with their own `mcp_config.json`; this project does not publish one |
+| Gemini CLI (enterprise) | `.gemini/skills/`, `.agents/skills/`, and the same under `~`                         | `GEMINI.md`; `AGENTS.md` via `context.fileName`                     | Extension skills exist; the format was not read                                                                |
+| Devin Desktop           | `.devin/skills/`, `.agents/skills/`, `.windsurf/skills/`                             | `AGENTS.md`, `.devin/rules/*.md`, legacy `.windsurf/`               | Skills can come from an installed plugin                                                                       |
+| Zed                     | `.agents/skills/`, `~/.agents/skills/`                                               | Not documented on the pages checked                                 | MCP servers ship as extensions                                                                                 |
+| Cline                   | `.cline/skills/`, `.clinerules/skills/`, `.claude/skills/`                           | `.clinerules/`, `AGENTS.md`                                         | Not documented                                                                                                 |
+| OpenCode                | `.opencode/skills/`, `.claude/skills/`, `.agents/skills/`                            | Not documented on the page checked                                  | Not documented                                                                                                 |
+| Kiro                    | `.kiro/skills/` (workspace), `~/.kiro/skills/` (IDE only)                            | Steering files                                                      | Not documented                                                                                                 |
+| JetBrains               | AI Assistant: its skills settings. Junie: `.junie/skills/` (third-party source only) | `AGENTS.md` (Junie)                                                 | Not documented                                                                                                 |
+
+**Skill frontmatter limits.** Every Mzizi skill uses only `name` and `description`, the portable
+core of the [Agent Skills specification](https://agentskills.io/specification): `name` at most
+64 characters, lowercase letters, digits and hyphens, matching the folder; `description` at most
+1,024 characters, and these have no angle bracket. Claude Code truncates a description plus its
+`when_to_use` at 1,536 characters; Cline, VS Code, OpenCode, Kiro and Zed state the 1,024 limit
+(Zed loads a longer one with a warning); Codex, Cursor, Antigravity and Devin Desktop state no
+limit. Claude.ai uploads and the Skills API reject any frontmatter key outside `name`,
+`description`, `license`, `compatibility`, `metadata` and `allowed-tools`, and the skills
+carried `user-invocable: true` until the next `@nyuchi/mzizi-skills` release removes it. Read
+on 3 November 2026 from [Create custom skills](https://claude.com/docs/skills/how-to) and
+[Extend Claude with skills](https://code.claude.com/docs/en/skills).
 
 ## Claude
 
@@ -75,8 +126,16 @@ Enable it in a conversation from **+**, then **Connectors**. Skills arrive over 
 to call `mzizi_get_skills`. Free plans are limited to one custom connector. Claude connects to
 the server from Anthropic's cloud, not from your device; `mcp.mzizi.dev` is public, so that works.
 
-Checked against [Get started with custom connectors using remote
-MCP](https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp).
+You can also upload a skill: zip one skill folder (the folder itself at the top of the ZIP, its
+name matching `name` in `SKILL.md`) and add it under **Customize > Skills** (code execution
+must be on). Upload accepts only the portable frontmatter keys, so use `@nyuchi/mzizi-skills`
+from the release after `0.17.0`, which removes `user-invocable`.
+
+Checked on 3 November 2026 against [Get started with custom connectors using remote
+MCP](https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp),
+[Using skills in Claude](https://support.claude.com/en/articles/12512180-using-skills-in-claude)
+and [Create custom skills](https://claude.com/docs/skills/how-to). The connector article does
+not name the transport; the server answers Streamable HTTP, as [below](#check-the-server-yourself).
 
 ### Claude Desktop
 
@@ -133,7 +192,13 @@ server, connected.
 
 Checked against the Claude Code [MCP](https://code.claude.com/docs/en/mcp),
 [plugin manifest](https://code.claude.com/docs/en/plugins-reference) and
-[marketplace](https://code.claude.com/docs/en/plugins/marketplace-reference) references.
+[marketplace](https://code.claude.com/docs/en/plugins/marketplace-reference) references, and
+on 3 November 2026 against its [MCP](https://code.claude.com/docs/en/mcp),
+[skills](https://code.claude.com/docs/en/skills) and
+[marketplace](https://code.claude.com/docs/en/plugin-marketplaces) pages: `claude mcp add
+--transport http` is the documented form for a remote server, and a JSON entry with a `url` and
+no `type` is read as stdio and skipped. A project's `.mcp.json` asks for approval before it
+loads.
 
 ### The Claude API
 
@@ -192,8 +257,10 @@ plugin](https://developers.openai.com/plugins/deploy/connect-chatgpt).
 codex plugin marketplace add mzizi-dev/mzizi-registry
 ```
 
-Then install `mzizi` from the Plugins directory: in the ChatGPT desktop app, or with `/plugins`
-in the Codex CLI where your version has it.
+Then install `mzizi` from the Plugins directory in the ChatGPT desktop app. OpenAI's plugin
+guide documents `codex plugin marketplace add`, `list`, `upgrade` and `remove` for the
+marketplace source, and the desktop app for installing from it; it documents no CLI install
+command.
 
 Start a new session after installing. The plugin's `mcp.json` connects `/mcp` over
 `streamable-http`.
@@ -232,7 +299,12 @@ before touching components, styling or `.mz` source.
 ```
 
 Checked against [Package your plugin](https://developers.openai.com/plugins/build/plugins),
-[Model Context Protocol](https://learn.chatgpt.com/docs/extend/mcp),
+and on 3 November 2026 against [Build plugins](https://developers.openai.com/codex/plugins/build/)
+and the [submission guide](https://developers.openai.com/plugins/deploy/submission) (the root
+`plugin.json` is the portable format and `.codex-plugin/plugin.json` a compatibility layout;
+skills are discovered in `skills/` and the MCP server in `mcp.json`, typed
+`streamable-http`), [Model Context Protocol](https://learn.chatgpt.com/docs/extend/mcp)
+(`url`, `bearer_token_env_var`, `http_headers`; `--url` is in its `codex mcp add` example),
 [Build skills](https://learn.chatgpt.com/docs/build-skills) and [Custom instructions with
 AGENTS.md](https://learn.chatgpt.com/docs/agent-configuration/agents-md). The manifests validate
 against the Agent Plugins schemas at `agent-plugins.org/schemas/1.0.0`. Not run here: the
@@ -390,12 +462,45 @@ servers](https://code.visualstudio.com/docs/agent-customization/mcp-servers), th
 configuration reference](https://code.visualstudio.com/docs/agents/reference/mcp-configuration)
 and [Agent skills](https://code.visualstudio.com/docs/agent-customization/agent-skills).
 
-### Windsurf
+### Devin Desktop (formerly Windsurf)
 
-Windsurf's documentation now sits under Devin Desktop. For the Cascade agent, open the **...**
-menu in the Cascade panel, then the MCP config file, and add the server to `mcp_config.json`
-(`~/.config/devin/mcp_config.json` on macOS and Linux, `%APPDATA%\devin\mcp_config.json` on
-Windows). A remote server takes `serverUrl`:
+Windsurf's documentation now redirects to Devin Desktop, whose agent, Devin Local, shares its
+harness with the Devin CLI. MCP servers live in `.devin/mcp_config.json` (the project, shared
+through version control), `.devin/mcp_config.local.json` (yours, ignored by git) or
+`~/.config/devin/mcp_config.json` (every project). The page supports `stdio`, Streamable HTTP
+and SSE, with OAuth for each. The Devin CLI's configuration page names a remote server's key
+`url`, with `transport` set to `"http"` (the default) or `"sse"`:
+
+```json
+{
+  "mcpServers": {
+    "mzizi": {
+      "url": "https://mcp.mzizi.dev/mcp",
+      "transport": "http"
+    }
+  }
+}
+```
+
+The earlier Windsurf format, `serverUrl` in `mcp_config.json`, is not on the current page; if
+your install still reads it, use that. Skills: Devin Desktop reads `.devin/skills/`,
+`.agents/skills/` and the legacy `.windsurf/skills/`, so the npm route works. Rules:
+`AGENTS.md` and `.devin/rules/*.md` (with a `trigger: model_decision` and a `description`), and
+the legacy `.windsurf/rules/` is imported.
+
+Checked on 3 November 2026 against [Devin Desktop MCP](https://docs.devin.ai/desktop/cascade/mcp),
+[skills and rules](https://docs.devin.ai/desktop/cascade/skills) and the [Devin CLI MCP
+configuration](https://docs.devin.ai/cli/extensibility/mcp/configuration.md). The two pages
+do not show the same example, so the JSON above is the CLI page's, applied to the Desktop paths
+its own page names.
+
+### Antigravity CLI and IDE
+
+Google moved free individual access and Google AI Pro and Ultra from Gemini CLI to Antigravity
+CLI (`agy`) on 18 June 2026. Antigravity has no command that adds a server: edit
+`~/.gemini/config/mcp_config.json` (every project) or `.agents/mcp_config.json` (the
+workspace). A remote server is Streamable HTTP only, under `serverUrl`, and the page says the
+legacy HTTP+SSE transport and `httpUrl` are not supported:
 
 ```json
 {
@@ -407,19 +512,31 @@ Windows). A remote server takes `serverUrl`:
 }
 ```
 
-Skills arrive over MCP. The page says the Devin Local agent, now the default for new tabs, keeps
-MCP servers in the Devin CLI's config instead; that format is not covered here.
+In the CLI, `/mcp` opens a manager that lists servers and reloads the config. OAuth runs
+through dynamic client registration, so a `/mcp/signin` entry needs no extra config.
 
-Checked against [Cascade MCP configuration](https://docs.devin.ai/desktop/cascade/mcp).
+Skills: Antigravity reads `.agents/skills/` in the workspace and each parent up to the repo
+root, and `~/.gemini/config/skills/` globally, so the npm route works. Instructions:
+`AGENTS.md` or `GEMINI.md`, and `.agents/rules/*.md` with a `trigger` (`model_decision` needs a
+`description`); a file with a missing or invalid `trigger` is silently discarded, and each file
+is cut at 24,000 bytes.
+
+Checked on 3 November 2026 against [MCP](https://antigravity.google/docs/mcp),
+[Agent skills](https://antigravity.google/docs/skills) and
+[Rules](https://antigravity.google/docs/rules).
 
 ### Gemini CLI
+
+Gemini CLI is now maintained for enterprise Gemini Code Assist workflows; individual and
+Google AI Pro and Ultra users are on [Antigravity CLI](#antigravity-cli-and-ide).
 
 ```bash
 gemini mcp add --transport http --scope user mzizi https://mcp.mzizi.dev/mcp
 ```
 
 That writes `~/.gemini/settings.json`; without `--scope user` it writes the project's
-`.gemini/settings.json`. By hand, a Streamable HTTP server takes `httpUrl`:
+`.gemini/settings.json`. By hand, a Streamable HTTP server takes `httpUrl` (`url` is the SSE
+endpoint):
 
 ```json
 {
@@ -431,12 +548,113 @@ That writes `~/.gemini/settings.json`; without `--scope user` it writes the proj
 }
 ```
 
-Skills: Gemini CLI reads `.agents/skills/` and `~/.agents/skills/`, so the npm route works;
-otherwise over MCP.
+Skills: Gemini CLI reads `.agents/skills/` and `.gemini/skills/` in the workspace, and the same
+under `~`, so the npm route works; otherwise over MCP. `GEMINI.md` is the instruction file, and
+`"context": {"fileName": ["AGENTS.md", "GEMINI.md"]}` in `settings.json` makes it read
+`AGENTS.md` too.
 
-Checked against [MCP servers with Gemini
-CLI](https://github.com/google-gemini/gemini-cli/blob/main/docs/tools/mcp-server.md) and
-[Agent skills](https://github.com/google-gemini/gemini-cli/blob/main/docs/cli/skills.md).
+Checked on 3 November 2026 against [MCP servers](https://geminicli.com/docs/tools/mcp-server/),
+[Agent skills](https://geminicli.com/docs/cli/skills/), [GEMINI.md](https://geminicli.com/docs/cli/gemini-md/)
+and the project's [repository notice](https://github.com/google-gemini/gemini-cli).
+
+### Zed
+
+In Zed's `settings.json`, or **Settings > AI > MCP Servers > Add Server > Add Remote Server**:
+
+```json
+{
+  "context_servers": {
+    "mzizi": {
+      "url": "https://mcp.mzizi.dev/mcp"
+    }
+  }
+}
+```
+
+A server with no `Authorization` header starts the standard MCP OAuth flow, so a `/mcp/signin`
+entry prompts you to sign in. Skills: Zed reads `.agents/skills/` in a trusted worktree and
+`~/.agents/skills/` globally, so the npm route works. Its skills page does not mention
+`AGENTS.md` or rules files.
+
+Checked on 3 November 2026 against [Model Context Protocol](https://zed.dev/docs/ai/mcp) and
+[Skills](https://zed.dev/docs/ai/skills).
+
+### Cline
+
+In `cline_mcp_settings.json` (`~/.cline/data/settings/` for the CLI; in the IDE extension, **MCP
+Servers**, **Configure**, **Configure MCP Servers**). Set the type: without it Cline falls back
+to the legacy SSE transport.
+
+```json
+{
+  "mcpServers": {
+    "mzizi": {
+      "type": "streamableHttp",
+      "url": "https://mcp.mzizi.dev/mcp"
+    }
+  }
+}
+```
+
+The page documents no OAuth setting in the JSON, only an `Authorization` header and the CLI's
+**Authorize OAuth** action, so for the Fundi tools add `/mcp/signin` and use that action.
+Skills: Cline reads `.cline/skills/`, `.clinerules/skills/` and `.claude/skills/`, and
+`~/.cline/skills/` globally; its page does not list `.agents/skills/`, so link the skills into
+`.cline/skills/`. Rules: `.clinerules/` and `AGENTS.md`.
+
+Checked on 3 November 2026 against [Adding and configuring
+servers](https://docs.cline.bot/mcp/adding-and-configuring-servers),
+[Rules](https://docs.cline.bot/customization/cline-rules) and
+[Skills](https://docs.cline.bot/customization/skills).
+
+### Kiro CLI (formerly Amazon Q Developer CLI)
+
+Amazon Q Developer CLI is now Kiro CLI. In `.kiro/settings/mcp.json` (the workspace) or
+`~/.kiro/settings/mcp.json` (every workspace; the two merge, and the workspace wins):
+
+```json
+{
+  "mcpServers": {
+    "mzizi": {
+      "url": "https://mcp.mzizi.dev/mcp"
+    }
+  }
+}
+```
+
+Kiro runs the OAuth flow itself and, for most servers, uses dynamic client registration; in the
+CLI, `/mcp auth` signs in again. Skills: Kiro reads `.kiro/skills/` in the workspace (IDE, CLI
+and web) and `~/.kiro/skills/` globally (IDE only), so link the skills into `.kiro/skills/`.
+Kiro's page states the same 64 and 1,024 character limits. It does not mention `AGENTS.md`.
+
+Checked on 3 November 2026 against [MCP configuration](https://kiro.dev/docs/mcp/configuration/)
+and [Skills](https://kiro.dev/docs/skills/).
+
+### JetBrains AI Assistant and Junie
+
+**AI Assistant.** **Settings > Tools > AI Assistant > Model Context Protocol (MCP)** takes a
+`mcpServers` JSON with a `url`, and lists Streamable HTTP as a supported transport. The page
+does not show `headers`, and it also describes bundled skills under **Settings > Tools > AI
+Assistant > Skills**.
+
+```json
+{
+  "mcpServers": {
+    "mzizi": {
+      "url": "https://mcp.mzizi.dev/mcp"
+    }
+  }
+}
+```
+
+**Junie.** Junie reads `.junie/mcp/mcp.json` (the project) and `~/.junie/mcp/mcp.json` (yours),
+the same `mcpServers` shape, with `url` and `headers` for a remote server. Its page does not
+say whether that transport is Streamable HTTP, so if Junie cannot connect, run the stdio
+server instead: `npx -y @nyuchi/mzizi-mcp`. Junie reads `AGENTS.md` in the project root.
+
+Checked on 3 November 2026 against [AI Assistant: MCP](https://www.jetbrains.com/help/ai-assistant/mcp.html)
+and Junie's [MCP configuration](https://junie.jetbrains.com/docs/junie-cli-mcp-configuration.html).
+Junie's older help page said it supported stdio only; the current one does not.
 
 ### Any other MCP client
 
@@ -445,16 +663,46 @@ or the stdio command `npx -y @nyuchi/mzizi-mcp`. The server is listed in the
 [MCP Registry](https://registry.modelcontextprotocol.io/v0/servers?search=io.github.mzizi-dev/mzizi-mcp)
 as `io.github.mzizi-dev/mzizi-mcp`, so a client that installs from the registry finds both.
 
+## Check the server yourself
+
+Any client that sends the `Accept` header the MCP spec requires, with no `Origin` header, gets
+an answer. On 3 November 2026, with `curl`:
+
+```bash
+curl -sS https://mcp.mzizi.dev/mcp \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json, text/event-stream' \
+  -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-11-25","capabilities":{},"clientInfo":{"name":"probe","version":"0"}}}'
+```
+
+It answered `200` with `application/json`, `protocolVersion` `2025-11-25` and no
+`Mcp-Session-Id`: the server is stateless. `tools/list` returned 14 tools; a notification got
+`202`; a `GET` got `405`; an `Accept` of `application/json` alone got `406`. It also answers the
+2026-07-28 revision's per-request form: `server/discover` and `tools/list` with `_meta` and
+`MCP-Protocol-Version`, and `tools/call` without `Mcp-Name` gets `400` with `-32020`. The main
+deviation from the spec's Streamable HTTP page: it accepts any `https` `Origin`, where the spec
+says an invalid one must get `403` (a plain-`http` origin other than localhost, and `null`, do get
+`403`). That does not affect a CLI or desktop client, which sends no `Origin`. The full table of probes is in the MCP server's own README.
+
+A client that only speaks stdio, or cannot reach a remote server, runs
+`npx -y @nyuchi/mzizi-mcp` (every tool except `mzizi_fundi`, offline except `docs_*`).
+`mcp-remote`, a third-party stdio-to-HTTP bridge, is another route this project has not tested.
+
 ## What is not verified here
 
+- **Every client above, run.** No client was installed or run for this page. Config paths, keys
+  and skill folders are what each vendor's page says, read on the date given in its section.
+- **JetBrains and Kiro on the details.** Junie's Streamable HTTP support, and `.junie/skills/`,
+  rest on a vendor page that does not say, and a third-party source. Kiro's page does not name
+  an instruction-file format.
+- **Gemini CLI's extension format,** and Antigravity's and Cursor's plugin manifests: read as
+  existing, not read in full, and this project publishes none of them.
 - **The Codex plugin in a live Codex CLI or ChatGPT desktop app.** The manifests follow
   OpenAI's packaging guide and validate against the Agent Plugins schemas, but no Codex install
-  ran.
+  ran, and they are not yet on the registry's `main` (mzizi-registry#520).
 - **Per-server sign-in in the portable `mcp.json`.** OpenAI's guide puts OAuth settings under a
   server's `extensions["com.openai"].auth`, but the Agent Plugins MCP schema allows no
   `extensions` key on a server. The plugin's `mcp.json` connects the anonymous `/mcp` and
   declares no `auth`; connect `/mcp/signin` yourself for the Fundi tools.
-- **The Devin Local agent's MCP config,** in Windsurf's successor. Only the Cascade agent's
-  `mcp_config.json` is documented above.
-- **The Claude API, the OpenAI API and Z.ai** snippets come from the vendors' pages; none was
-  run, because each needs an account key.
+- **The Claude API, the OpenAI API and Z.ai** snippets come from the vendors' pages, last read
+  on 20 October 2026; none was run, because each needs an account key.
