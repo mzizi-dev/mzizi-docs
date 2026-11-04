@@ -27,6 +27,12 @@ entries move under it. Mintlify does not publish this file.
 - Staging patch tags (`v*`) no longer carry GitHub's auto text: `staging-version.yml` tags with the org workflow's `create-release: false` (it has no input for notes) and a new `release` job writes the pre-release with the `CHANGELOG.md` entries the merge added and a compare link. A merge the changelog gate exempts says so.
 - The new `release notes` workflow tests the scripts and, on a `release/` pull request into `main`, fails when the release would have no changelog entries and prints the notes in the run summary. `AGENTS.md` gains "Release notes (hard rule)".
 
+### Added — the spacing floor page, and the floor on the pages that quote sizes (2026-11-04, [mzizi-registry#617](https://github.com/mzizi-dev/mzizi-registry/issues/617))
+
+- New page `foundations/spacing-floor` ("The spacing floor"), listed after "The Bundu floor" in the Components tab: the five floors (14px inset, 7px control, label and item gaps, 1.5 body line height) and their `--inset-floor`, `--gap-floor` and `--leading-floor` variables, why, how the base layer meets them, the `data-mzizi-sizes="legacy"` opt-out, the `mzizi-spacing-exempt: <reason>` exception comment, and where the same numbers are served. It separates what is on registry `main` (4.24.0: base-layer rules and the token test) from what is design intent (contract tests, the geometry guard).
+- `foundations/bundu-floor`, `foundations/overview`, `foundations/accessibility` and `foundations/layout` link it; the layout page says `p-3` (12px) is under the inset floor for a text surface.
+- `toolchain/cli`, `toolchain/mcp` and `toolchain/skills` say `mzizi check` (`@nyuchi/mzizi-cli` 0.8.0), the MCP floor tools and the `mzizi-design` skill's spacing floor (`@nyuchi/mzizi-skills` 0.17.0) ship with those packages' next releases: npm still has the CLI at 0.7.0.
+
 ### Changed — `AGENTS.md` states the new `staging` merge-queue rules (2026-11-03)
 
 No issue: repository guidance only. No page a reader of docs.mzizi.dev sees changes.
