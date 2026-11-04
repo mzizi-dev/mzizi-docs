@@ -1,0 +1,141 @@
+---
+title: "The spacing floor"
+description: "The minimum space nothing can go under: 14px between text and its container edge, 7px between controls, labels and fields and sibling items, and 1.5 body line height. Part of the Bundu floor."
+sidebarTitle: "The spacing floor"
+icon: "ruler"
+---
+
+The spacing floor is the part of [the Bundu floor](/foundations/bundu-floor) that sets
+minimums for **space** rather than size: padding, gaps and line height that nothing can go
+under, even a component that sets no padding at all. It shipped in registry 4.24.0
+(4 November 2026), on the 7px unit the rest of the floor uses (owner ruling of 4 November
+2026; tracking issue
+[mzizi-registry#617](https://github.com/mzizi-dev/mzizi-registry/issues/617)).
+
+## The five floors
+
+| Floor          | Value | CSS custom property | Meaning                                                        |
+| -------------- | ----- | ------------------- | -------------------------------------------------------------- |
+| `insetPx`      | 14px  | `--inset-floor`     | Padding between text and the edge of its container (2 × 7)     |
+| `controlGapPx` | 7px   | `--gap-floor`       | Gap between adjacent controls, visible edge to visible edge    |
+| `labelGapPx`   | 7px   | `--gap-floor`       | Gap between a label and its field                              |
+| `itemGapPx`    | 7px   | `--gap-floor`       | Gap between sibling items of a list, grid, stack or toolbar    |
+| `leadingBody`  | 1.5   | `--leading-floor`   | Body line height, the value WCAG 1.4.12 asks body text to hold |
+
+The numbers live in one place in the registry, `BUNDU_FLOOR.spacing` in
+`lib/tokens/roles.source.ts`. The registry serves them as the same five numbers everywhere
+(see [one set of numbers](#one-set-of-numbers)). Nothing lowers a floor: not a brand pack,
+not a density layer.
+
+## Why
+
+The reasons are the Bundu floor's: older users, people reading outdoors in glare, people on
+small and cheap phones, and the mis-taps that cramped controls cause. A control with its
+neighbour 2px away is easy to hit by mistake, text that touches its container edge is hard
+to find in glare, and a line height under 1.5 is harder to track for anyone who reads slowly
+or with low vision. The spacing floor is design intent backed by the registry's tests (below),
+not a measured result: no pilot or user study on this site shows its effect.
+
+## How a component meets it
+
+The token layer carries the floor, so a component that sets nothing already meets it.
+
+- **The variables** `--inset-floor`, `--gap-floor` and `--leading-floor` are in `:root` of
+  `mzizi-tokens-globals.css`. They are also registered as fixed size roles, so the platform
+  token files carry 14 and 7 as they carry 49.
+- **The base layer enforces defaults** for an element that sets nothing:
+  `padding-inline: var(--inset-floor)` on a bare `button`, `select`, `textarea` or text
+  `input`; `padding: var(--inset-floor)` on a bare text surface (a native `dialog`, a
+  `[popover]`, an alert, a tooltip, a card with no structured children);
+  `gap: var(--gap-floor)` on a list, group, toolbar or tablist; and
+  `line-height: max(var(--lh-body), var(--leading-floor))` on `body`.
+- **It steps aside, on purpose,** for an icon-only button, an empty element, a fixed square
+  (`size-*`), a calendar day, the native checkbox, radio, range, colour and file inputs, and a
+  card whose padding lives on its `card-header` and `card-content` children (padding both
+  would pad twice).
+- **A utility is your own value.** `p-6` or `gap-2` on the element wins over the base layer,
+  so every explicit value has to be held to the floor by a check (the CLI below, and the contract tests once they land). Write `p-inset-floor`,
+  `px-inset-floor` or `gap-gap-floor` to take the floor itself.
+- **A control's block axis is held by its height.** 14px of block padding does not fit a
+  control drawn at 28px, so for a control the inset floor is the inline axis, and for a surface
+  it is both axes.
+- **Hit regions may touch, never overlap.** The 7px gap is measured between visible edges.
+  The 49px `hit-area` overlay may reach into the gap; where two covered controls sit closer
+  than 49px apart the later sibling wins the overlap, so keep gaps at the floor or above.
+
+## How it is enforced
+
+What is on registry `main` (4.24.0) and what is still to come are different, so the table
+separates them. The registry's 4.24.0 changelog says the component audit, contract and Rust
+parity, the geometry guard and the lint-style tests "follow in their own pull request".
+
+| Check               | State              | What fails                                                                                                                                                                                                                                                             |
+| ------------------- | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Base-layer rule     | On `main`, 4.24.0  | A component that sets nothing gets the floor from the token layer (above).                                                                                                                                                                                             |
+| Token test          | On `main`, 4.24.0  | The registry's `spacing-floor` test fails when the numbers differ between `BUNDU_FLOOR`, canon, `/v1/tokens` and the stylesheet, when a density layer lowers a floor variable, when a base-layer rule is gone, or when a platform token file lacks the 14 and 7 roles. |
+| Contract test       | Design intent      | Each component contract asserts its spacing minimums, the TypeScript runner and the Rust evaluator holding the same numbers. Tracked in mzizi-registry#617; not on `main` at 4.24.0.                                                                                   |
+| Geometry guard      | Design intent      | A rendered check in a browser: neighbouring controls do not overlap, text keeps its inset, and WCAG 1.4.12 text spacing (line height 1.5, paragraph spacing 2×, letter spacing 0.12em, word spacing 0.16em) causes no clipping or overflow. Not on `main` at 4.24.0.   |
+| `mzizi check` (CLI) | Merged, not on npm | Fails with exit code 1 on padding under 14px, zero padding, gaps under 7px, negative margins and line heights under 1.5 in your source. See [the CLI](#in-an-app-the-cli).                                                                                             |
+
+## In an app: the CLI
+
+`@nyuchi/mzizi-cli` **0.8.0** adds `mzizi check [path...]`, which enforces the floor over your
+source. It is merged on the `agent-tools` staging branch and ships with that package's next
+release. As of 4 November 2026 the latest version on npm is `0.7.0`, which has no `check`
+command; run `npx @nyuchi/mzizi-cli --version` to see what you get.
+
+```bash
+npx @nyuchi/mzizi-cli check src          # exit 1 on a violation, with file:line:column
+npx @nyuchi/mzizi-cli check src --json   # one report: violations, exempted, notices, floor, ok
+```
+
+It is offline and reads the values written in your source. It does not resolve `var()` or
+`calc()`, it does not check vertical padding other than zero, and a tight line height on a
+display heading needs an exception comment (below). Those limits are the CLI's own, stated in
+its README.
+
+### The exception comment
+
+A violation that is deliberate carries a comment with a reason, on the same line or the line
+before (in CSS, or the comment syntax of the language you are in):
+
+```css
+/* mzizi-spacing-exempt: dense data table, the cells carry their own inset */
+.data-row {
+  padding: 0;
+}
+```
+
+A comment with no reason is not an exception. Exceptions are listed in the report, so a
+reviewer can see each one. The first 20 lines of a file take a `-file` form that covers the
+whole file.
+
+## The legacy opt-out
+
+`data-mzizi-sizes="legacy"` on the root element, the alias [the Bundu floor](/foundations/bundu-floor#the-legacy-alias)
+describes, also sets the three spacing variables to 0, 0 and 1, so every base-layer rule above
+becomes a no-op. It **steps out of the floor**. Use it only to take the registry version
+before you have moved your layouts, and remove it as soon as you have.
+
+## One set of numbers
+
+The floor is read from the registry, not typed in each place:
+
+| Surface | Where the five numbers are                                                                                                                                                                                                                                                      |
+| ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Tokens  | `--inset-floor`, `--gap-floor`, `--leading-floor` in `mzizi-tokens-globals.css`; the fixed roles `spacing-inset-floor` and `spacing-gap-floor`                                                                                                                                  |
+| API     | [`GET /v1/brand`](https://api.mzizi.dev/v1/brand), in the `accessibility` block: `minInset`, `minControlGap`, `minLabelGap`, `minItemGap`, `minBodyLeading`. Once the API's registry pin reaches 1ac4f81 (the 4.24.0 release); read the live pin in the `x-mzizi-source` header |
+| MCP     | The tools read the same block. `mzizi_get_tokens` (`family=floors`), `mzizi_get_doctrine` (`topic=bundu-floor`) and spacing inputs on `mzizi_check_accessibility` ship with the MCP server's next release; see [the MCP server](/toolchain/mcp)                                 |
+| Skills  | The `mzizi-design` skill teaches the floor from `@nyuchi/mzizi-skills` 0.17.0, which ships with the skills' next release; see [skills](/toolchain/skills)                                                                                                                       |
+| CLI     | `mzizi check`, from `@nyuchi/mzizi-cli` 0.8.0 (above)                                                                                                                                                                                                                           |
+
+If a surface disagrees with `BUNDU_FLOOR`, the surface is wrong: change it upstream in the
+registry.
+
+## Sources
+
+The registry's
+[`sizes-and-density.md`](https://github.com/mzizi-dev/mzizi-registry/blob/main/docs/sizes-and-density.md)
+holds the rule and its tests, and
+[mzizi-registry#617](https://github.com/mzizi-dev/mzizi-registry/issues/617) the owner's ruling
+and the list of surfaces it lands on.
