@@ -1,6 +1,6 @@
 ---
 title: "The Mzizi console"
-description: "app.mzizi.dev — Astro, with Dioxus islands over the registry API today; the rebuild is decided, not built. What it is, what it replaced, and why it was ported by contract rather than translated."
+description: "app.mzizi.dev — Astro, with Rust (WebAssembly) islands over the registry API today; the rebuild is decided, not built. What it is, what it replaced, and why it was ported by contract rather than translated."
 sidebarTitle: "The console"
 icon: "layout-dashboard"
 ---
@@ -14,7 +14,8 @@ icon: "layout-dashboard"
 [`mzizi-dev/mzizi-console`](https://github.com/mzizi-dev/mzizi-console) is the Mzizi console,
 live at [`app.mzizi.dev`](https://app.mzizi.dev). It is a standalone repository, and its scope is
 the registry, the components, the tokens, the architecture and developer tooling. Today it is
-Astro in front, with Dioxus islands behind for the data. It reads the registry at
+Astro in front, with Rust (WebAssembly) islands behind for the data. The UI library those islands
+use, Dioxus, is out of the stack (owner, 4 November 2026); what replaces it in the console is not decided. It reads the registry at
 `https://api.mzizi.dev/v1`.
 
 It is the one part of Mzizi meant to keep state: accounts, component version history, usage
@@ -27,7 +28,7 @@ get their signed-in user.
 ## The split
 
 Astro renders the **chrome** — navigation, headings, prose, the page shell — as static HTML at
-build time. Today, Dioxus **islands** render the **data**, fetched from the registry API at
+build time. Today, Rust **islands** render the **data**, fetched from the registry API at
 runtime. Mzizi's own components are Rust, and their render path is Mzizi's own `render()`; the rebuild described below replaces them.
 
 Both halves are deliberate. The chrome is static because a console's navigation has no reason
