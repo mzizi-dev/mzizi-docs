@@ -78,7 +78,9 @@ That is the Bundu floor (owner, 2 November 2026): 7 × 7, above Apple's 44 pt. N
 interactive has a smaller hit region. On touch, controls are also drawn at 49px; on a desktop
 a button-like control may be drawn smaller (28 to 40px) and keeps the 49px region through a
 transparent pseudo-element. The full rule, the sizes and the migration are on
-[the Bundu floor](/foundations/bundu-floor).
+[the Bundu floor](/foundations/bundu-floor). The space around controls has a floor too:
+14px inset, 7px gaps and 1.5 body line height, on
+[the spacing floor](/foundations/spacing-floor).
 
 | Size role      | Drawn on touch | Drawn on desktop      | Hit region |
 | -------------- | -------------- | --------------------- | ---------- |
@@ -98,7 +100,7 @@ For a small visual element such as a checkbox indicator, extend the clickable ar
 padding rather than shrinking the target:
 
 ```tsx
-<label className="flex min-h-touch-min items-center gap-3 px-3">
+<label className="flex min-h-touch-min items-center gap-3 px-inset-floor">
   <Checkbox />
   <span>Accept terms</span>
 </label>

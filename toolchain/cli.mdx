@@ -49,6 +49,13 @@ What changed since `0.6.1`:
 
 Every command works under either name: `fundi add` and `mzizi add` are the same.
 
+<Note>
+  **Coming in `0.8.0`: `mzizi check [path...]`.** It fails with exit code 1 on padding, gaps,
+  negative margins and line heights under [the spacing floor](/foundations/spacing-floor), and
+  takes `--json`. It is merged for the package's next release; the latest on npm is still
+  `0.7.0`, which has no `check` command.
+</Note>
+
 ## `mzizi add`: the registry installer
 
 ```bash

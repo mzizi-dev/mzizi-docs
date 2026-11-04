@@ -116,6 +116,7 @@
               "foundations/icons",
               "foundations/accessibility",
               "foundations/bundu-floor",
+              "foundations/spacing-floor",
               "foundations/internationalization"
             ]
           },
