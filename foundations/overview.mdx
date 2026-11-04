@@ -41,7 +41,9 @@ Those translate into concrete constraints:
 - **Language-inclusive** — the font stack covers African languages with full diacritics.
   African languages are first-class, not localisations.
 - **Accessible by default** — WCAG 7:1, 4.5:1 and 3:1 contrast with APCA 3.0, 17px body text,
-  and a 49px hit region on every control. See [the Bundu floor](/foundations/bundu-floor).
+  and a 49px hit region on every control, with 14px inset, 7px gaps and 1.5 line height as the
+  spacing floor. See [the Bundu floor](/foundations/bundu-floor) and
+  [the spacing floor](/foundations/spacing-floor).
 - **Performant on constrained devices** — lazy loading, memory-pressure monitoring and
   sequential mount queues.
 - **Offline-capable** — components and patterns degrade gracefully.
@@ -71,6 +73,9 @@ Those translate into concrete constraints:
   <Card title="The Bundu floor" icon="ruler" href="/foundations/bundu-floor">
     The minimums on every device: 17px body, 14px captions, a 49px hit region, and how to
     migrate.
+  </Card>
+  <Card title="The spacing floor" icon="ruler" href="/foundations/spacing-floor">
+    The space nothing goes under: 14px inset, 7px gaps, 1.5 body line height.
   </Card>
   <Card title="Internationalisation" icon="languages" href="/foundations/internationalization">
     Why Noto Sans, text direction, and locale-aware number and date formatting.

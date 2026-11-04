@@ -27,6 +27,13 @@ at version `0.13.0` (the latest on npm on 29 October 2026):
 `progress-report` in `0.10.0`. The React (TSX) build of the components is the deprioritised
 secondary in every skill that mentions it.
 
+### The spacing floor
+
+The `mzizi-design` skill teaches [the spacing floor](/foundations/spacing-floor) (14px inset,
+7px gaps, 1.5 body line height), the tests that hold it and `mzizi check`. That change is
+merged and ships in the skills' next release, `0.17.0` (the latest on npm on 4 November 2026 is
+`0.16.0`); the bundle on npm does not have it until then.
+
 ### Categories
 
 From `0.10.0` every `index.json` entry has a `category`, from the list in the bundle's
@@ -91,8 +98,11 @@ npx skills experimental_sync          # links the bundled skills into .agents/sk
 
 `npx skills add @nyuchi/mzizi-skills` does not work: the `skills` CLI reads that argument as a
 GitHub repository and fails to clone it. `experimental_sync` is its route for skills shipped
-in `node_modules`. Codex, Cursor, VS Code, Gemini CLI and OpenCode all read `.agents/skills/`,
-so the skills load there natively.
+in `node_modules`. Codex, Cursor, VS Code, Gemini CLI, Antigravity, Zed, OpenCode and Devin
+Desktop all read `.agents/skills/`, so the skills load there natively (Cline and Kiro read
+`.cline/skills/` and `.kiro/skills/` instead). Every skill's frontmatter is only `name` and
+`description`, the portable core of the Agent Skills specification, from the release after
+`0.17.0`; see [the limits per client](/toolchain/connect#skills-instructions-and-plugins-by-client).
 
 ### From the MCP server
 
@@ -125,10 +135,11 @@ It lives in the `plugin/` directory of
 which holds a byte-for-byte copy of the bundle's `skills/`, and its manifest points the MCP
 connection at `https://mcp.mzizi.dev/mcp`.
 
-From the same pull request, the plugin also installs in Codex and ChatGPT: `plugin/` carries
-OpenAI's portable manifest (`plugin.json` and `mcp.json`) beside the Claude one, and the
-registry a repo marketplace at `.agents/plugins/marketplace.json`, so
-`codex plugin marketplace add mzizi-dev/mzizi-registry` then `/plugins` installs it. See
+Codex and ChatGPT do not have the plugin yet. mzizi-registry #520 adds OpenAI's portable
+manifest (`plugin.json` and `mcp.json`) beside the Claude one in `plugin/`, and a repo
+marketplace at `.agents/plugins/marketplace.json`. Until that reaches the registry's `main`,
+`codex plugin marketplace add mzizi-dev/mzizi-registry` finds no plugin: connect the server with
+`codex mcp add` and link the skills into `.agents/skills/` instead. See
 [Connect a client](/toolchain/connect#openai-codex).
 
 <Note>
