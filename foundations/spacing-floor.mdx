@@ -14,18 +14,18 @@ under, even a component that sets no padding at all. It shipped in registry 4.24
 
 ## The five floors
 
-| Floor          | Value | CSS custom property | Meaning                                                        |
-| -------------- | ----- | ------------------- | -------------------------------------------------------------- |
-| `insetPx`      | 14px  | `--inset-floor`     | Padding between text and the edge of its container (2 × 7)     |
-| `controlGapPx` | 7px   | `--gap-floor`       | Gap between adjacent controls, visible edge to visible edge    |
-| `labelGapPx`   | 7px   | `--gap-floor`       | Gap between a label and its field                              |
-| `itemGapPx`    | 7px   | `--gap-floor`       | Gap between sibling items of a list, grid, stack or toolbar    |
-| `leadingBody`  | 1.5   | `--leading-floor`   | Body line height, the value WCAG 1.4.12 asks body text to hold |
+| Floor          | Value | CSS custom property | Meaning                                                                            |
+| -------------- | ----- | ------------------- | ---------------------------------------------------------------------------------- |
+| `insetPx`      | 14px  | `--inset-floor`     | Padding between text and the edge of its container (2 × 7)                         |
+| `controlGapPx` | 7px   | `--gap-floor`       | Gap between adjacent controls, visible edge to visible edge                        |
+| `labelGapPx`   | 7px   | `--gap-floor`       | Gap between a label and its field                                                  |
+| `itemGapPx`    | 7px   | `--gap-floor`       | Gap between sibling items of a list, grid, stack or toolbar                        |
+| `leadingBody`  | 1.5   | `--leading-floor`   | Body line height; WCAG 1.4.12 requires content to survive a user setting it to 1.5 |
 
 The numbers live in one place in the registry, `BUNDU_FLOOR.spacing` in
 `lib/tokens/roles.source.ts`. The registry serves them as the same five numbers everywhere
-(see [one set of numbers](#one-set-of-numbers)). Nothing lowers a floor: not a brand pack,
-not a density layer.
+(see [one set of numbers](#one-set-of-numbers)). No brand pack and no density layer lowers a
+floor; the one exception is the [legacy opt-out](#the-legacy-opt-out), which steps out of it.
 
 ## Why
 
@@ -53,15 +53,17 @@ The token layer carries the floor, so a component that sets nothing already meet
   (`size-*`), a calendar day, the native checkbox, radio, range, colour and file inputs, and a
   card whose padding lives on its `card-header` and `card-content` children (padding both
   would pad twice).
-- **A utility is your own value.** `p-6` or `gap-2` on the element wins over the base layer,
-  so every explicit value has to be held to the floor by a check (the CLI below, and the contract tests once they land). Write `p-inset-floor`,
+- **A utility is your own value.** `p-3` or `gap-1` on the element wins over the base layer,
+  even when it is under the floor, so an explicit value is held to the floor only by a check
+  you run (the CLI below); the registry's contract tests are not yet on `main`. Write `p-inset-floor`,
   `px-inset-floor` or `gap-gap-floor` to take the floor itself.
 - **A control's block axis is held by its height.** 14px of block padding does not fit a
   control drawn at 28px, so for a control the inset floor is the inline axis, and for a surface
   it is both axes.
-- **Hit regions may touch, never overlap.** The 7px gap is measured between visible edges.
-  The 49px `hit-area` overlay may reach into the gap; where two covered controls sit closer
-  than 49px apart the later sibling wins the overlap, so keep gaps at the floor or above.
+- **The 7px gap is measured between visible edges.** The registry says hit regions may touch
+  but not overlap. The 49px `hit-area` overlay may reach into the gap, though: where two
+  covered controls sit closer than 49px apart their overlays overlap and the later sibling
+  wins the overlap, so keep gaps at the floor or above.
 
 ## How it is enforced
 
@@ -113,21 +115,22 @@ whole file.
 ## The legacy opt-out
 
 `data-mzizi-sizes="legacy"` on the root element, the alias [the Bundu floor](/foundations/bundu-floor#the-legacy-alias)
-describes, also sets the three spacing variables to 0, 0 and 1, so every base-layer rule above
-becomes a no-op. It **steps out of the floor**. Use it only to take the registry version
+describes, also sets `--inset-floor`, `--gap-floor` and `--leading-floor` to 0, 0 and 1. The
+registry describes the base-layer rules above as a no-op then. A rule that still reads a
+variable set to 0 applies 0, so look at your native dialogs and popovers after you opt out. It **steps out of the floor**. Use it only to take the registry version
 before you have moved your layouts, and remove it as soon as you have.
 
 ## One set of numbers
 
 The floor is read from the registry, not typed in each place:
 
-| Surface | Where the five numbers are                                                                                                                                                                                                                                                      |
-| ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Tokens  | `--inset-floor`, `--gap-floor`, `--leading-floor` in `mzizi-tokens-globals.css`; the fixed roles `spacing-inset-floor` and `spacing-gap-floor`                                                                                                                                  |
-| API     | [`GET /v1/brand`](https://api.mzizi.dev/v1/brand), in the `accessibility` block: `minInset`, `minControlGap`, `minLabelGap`, `minItemGap`, `minBodyLeading`. Once the API's registry pin reaches 1ac4f81 (the 4.24.0 release); read the live pin in the `x-mzizi-source` header |
-| MCP     | The tools read the same block. `mzizi_get_tokens` (`family=floors`), `mzizi_get_doctrine` (`topic=bundu-floor`) and spacing inputs on `mzizi_check_accessibility` ship with the MCP server's next release; see [the MCP server](/toolchain/mcp)                                 |
-| Skills  | The `mzizi-design` skill teaches the floor from `@nyuchi/mzizi-skills` 0.17.0, which ships with the skills' next release; see [skills](/toolchain/skills)                                                                                                                       |
-| CLI     | `mzizi check`, from `@nyuchi/mzizi-cli` 0.8.0 (above)                                                                                                                                                                                                                           |
+| Surface | Where the five numbers are                                                                                                                                                                                                                                                                                              |
+| ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Tokens  | `--inset-floor`, `--gap-floor`, `--leading-floor` in `mzizi-tokens-globals.css`; the fixed roles `spacing-inset-floor` and `spacing-gap-floor`                                                                                                                                                                          |
+| API     | [`GET /v1/brand`](https://api.mzizi.dev/v1/brand), in the `accessibility` block: `minInset`, `minControlGap`, `minLabelGap`, `minItemGap`, `minBodyLeading`. Once the API's registry pin includes registry 4.24.0 (on 4 November 2026 the API's pin was still 4.23.0); read the live pin in the `x-mzizi-source` header |
+| MCP     | The tools read the same block. `mzizi_get_tokens` (`family=floors`), `mzizi_get_doctrine` (`topic=bundu-floor`) and spacing inputs on `mzizi_check_accessibility` ship with the MCP server's next release; see [the MCP server](/toolchain/mcp)                                                                         |
+| Skills  | The `mzizi-design` skill teaches the floor from `@nyuchi/mzizi-skills` 0.17.0, which ships with the skills' next release; see [skills](/toolchain/skills)                                                                                                                                                               |
+| CLI     | `mzizi check`, from `@nyuchi/mzizi-cli` 0.8.0 (above)                                                                                                                                                                                                                                                                   |
 
 If a surface disagrees with `BUNDU_FLOOR`, the surface is wrong: change it upstream in the
 registry.
