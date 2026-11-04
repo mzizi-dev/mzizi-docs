@@ -39,7 +39,7 @@ register automatically. It does not publish a client ID metadata document.
   VS Code, Gemini CLI, Antigravity, Zed, OpenCode and Devin Desktop all read. Cline reads
   `.cline/skills/` and `.claude/skills/`, and Kiro `.kiro/skills/`, not `.agents/skills/`.
 - **As instruction files.** For formats that cannot hold a skill, the `@nyuchi/mzizi-skills`
-  package's `adapters/` folder (from its next release) holds files generated from the
+  package's `adapters/` folder holds files generated from the
   skills: Cursor `.mdc` rules, Antigravity and Devin Desktop rules, and one section to append
   to `AGENTS.md`, `GEMINI.md` or `.github/copilot-instructions.md`. Each carries the skill's
   own description and says where to load the full skill; none copies a skill body, because
@@ -164,7 +164,7 @@ servers](https://modelcontextprotocol.io/docs/develop/connect-local-servers).
 
 ### Claude Code
 
-**The plugin** carries the seven skills and connects the server:
+**The plugin** carries the twelve skills and connects the server:
 
 ```text
 /plugin marketplace add mzizi-dev/mzizi-registry
