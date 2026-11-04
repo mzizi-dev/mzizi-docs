@@ -12,6 +12,15 @@ icon: "scroll-text"
   today is tracked in [`LANGUAGE-TRACKER.md`](/tracker), not in the charter.
 </Note>
 
+<Note>
+  **Dioxus is out of the stack (owner, 4 November 2026).** `CHARTER.md` on `mzizi-dev/mzizi`
+  still names Dioxus as a compatible rendering target and as a comparison arm, and has not
+  been amended. Where this page summarises those passages it follows the owner's decision:
+  components and primitives are Mzizi first, TypeScript second, and native (Swift, Kotlin)
+  where they exist. What renders `mzizi-ui` on the Rust side, and on mobile, is not decided.
+  The benchmark passages below record the comparison as the charter wrote it.
+</Note>
+
 Mzizi's direction is set by a single document:
 [`CHARTER.md`](https://github.com/mzizi-dev/mzizi/blob/main/CHARTER.md), the project's
 **Mzizi Research Charter, v0.4**. Its own status line reads _"charter draft — defines direction and
@@ -145,11 +154,11 @@ first, smallest, most measurable slice of that claim, not the whole of it.
 | Layer                                          | Approach                                                                                                                                                                                                                                  |
 | ---------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **The language, with the harness at its core** | **Novel.** The syntax, the type system, the semantics and the contracts, and the harness an agent reads them through. The research contribution. The toolchain is not the language: the compiler, CLI, MCP server and plugins support it. |
-| **UI layer**                                   | **`mzizi-ui`, Mzizi's own component registry, is first-class.** Dioxus is a compatible third-party rendering target for it, as any Rust UI registry adopting the same contract would be — not the UI strategy itself.                     |
+| **UI layer**                                   | **`mzizi-ui`, Mzizi's own component registry, is first-class.** Components and primitives are Mzizi first, then TypeScript, with native (Swift, Kotlin) ones where they exist (owner, 4 November 2026).                                   |
 | **Full-stack (UI + server)**                   | A component and the handler that serves it ship from the same Mzizi source. The server half is lowered per target, and handlers reach target-specific facilities only through declared capabilities.                                      |
 | **Edge: Workers and Containers**               | **First-class from day one.** Workers lower to `workers-rs` (wasm32); Containers lower to a native Rust HTTP server (axum-class) packaged as a container image and reached from a Worker through the Container binding.                   |
 | **ML workloads**                               | **Native integration with Candle.** Components declare and consume inference as a first-class capability; Mzizi does not build a competing tensor runtime.                                                                                |
-| **Native mobile**                              | Two tracks: `mzizi-ui` through a compatible mobile engine (Dioxus today) near-term; native Swift/ArkTS/Kotlin codegen from the same Rust core later, separately scoped. Named, not designed.                                              |
+| **Native mobile**                              | Native Swift and Kotlin components where they exist; native Swift/ArkTS/Kotlin codegen from the same Rust core later, separately scoped. Named, not designed. The near-term mobile engine is not decided (see the note above).            |
 | **Hardware / embedded**                        | A named future direction, unscoped until Phase 1 has a real deployment.                                                                                                                                                                   |
 | **Compiled artifact**                          | WASM, and native for desktop and compatible-renderer mobile. A real native-per-platform artifact belongs to the later native-mobile track.                                                                                                |
 | **Post-quantum cryptography**                  | **Explicitly deferred.** A future research thread, named so it does not dilute Phase 0.                                                                                                                                                   |
@@ -193,7 +202,7 @@ first, smallest, most measurable slice of that claim, not the whole of it.
   </Step>
   <Step title="Phase 1 — full stack: mzizi-ui plus Cloudflare Workers and Containers" icon="box">
     A Mzizi-authored full-stack application, actually deployed to Cloudflare: UI through
-    `mzizi-ui` rendered by a compatible engine (Dioxus today), server and API from the same
+    `mzizi-ui` (its renderer is not decided; see the note above), server and API from the same
     source, as a Worker or a Container depending on the workload. This merges what v0.1
     called Phase 1 (rendering interop) and Phase 2 (edge deployment).
 

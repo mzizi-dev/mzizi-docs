@@ -21,6 +21,14 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
+### Removed — Dioxus is out of the stack (2026-11-04, [mzizi-registry#635](https://github.com/mzizi-dev/mzizi-registry/issues/635))
+
+Owner decisions: "dioxus is out!!!"; components and primitives are Mzizi first, then TypeScript, with native (Swift, Kotlin) where they exist.
+
+- **Changed: `roots/overview`.** It no longer calls the Rust crates "for Dioxus" or shows a Dioxus usage example for `MarkdownRenderer`. It says the published `0.6.0` crates still depend on Dioxus, that removing it is tracked in registry#635, and that what renders the Rust components afterwards is not decided. The `dioxus-ssr` mention is gone from the contract-suite paragraph.
+- **Changed: `playbook`, `registry/overview`, `registry/contracts`, `registry/consuming`, `ecosystem`, `console`, `charter`, `index`, `status`, `benchmark`, `pilots`.** Live claims that Dioxus is the Rust rendering layer, a "compatible rendering target", the near-term mobile engine or the console's islands now say Dioxus is out and give the owner's rule. `console` and `ecosystem` say the console's islands are Rust (WebAssembly) and that their replacement is not decided. `charter` gains a note that `CHARTER.md` upstream still names Dioxus and has not been amended; its UI-layer, native-mobile and Phase 1 summaries follow the decision.
+- **Left as history, deliberately:** the `dioxus` arm in `benchmark` (the directory is still in `benchmarks/arms/`, which the freshness check compares), the pilot results and arm names on `pilots`, the benchmark's "against Dioxus" rows on `index`, `status` and `tracker` (which mirrors `LANGUAGE-TRACKER.md`), the charter's quoted benchmark wording, and the older changelog entries below.
+
 ### Changed — every release carries notes built from the changelog (2026-11-04, (repository), [mzizi-registry#619](https://github.com/mzizi-dev/mzizi-registry/issues/619))
 
 - The `main-release.yml` minor release builds its notes (the `CHANGELOG.md` entries since the previous release plus a compare link) before it pushes the tag, so a release with no entries fails and tags nothing, and creates the release as a draft that is published once. GitHub's list of merged pull requests is no longer appended, and a manual re-run no longer rewrites a published release's notes (releases are immutable). No page changes.

@@ -121,7 +121,7 @@ As in the language, **a clause, check or density row that a runner cannot evalua
 An unevaluable contract must never read as a passing one (RFC-0006, FM-12).
 
 It is the same grammar the Mzizi Roots crates use for their `pub const CONTRACT` (today the
-twelve `mzizi-brand` components), which each crate's suite evaluates on `dioxus-ssr` markup.
+twelve `mzizi-brand` components), which each crate's suite evaluates on the markup the component renders.
 Neither is run by the language's `mz contract`: no component is written in Mzizi yet, so
 package test suites evaluate these contracts. The grammar is shared so that `mz contract` can
 check them once components are written in Mzizi; that is a design intention, not built.
