@@ -21,7 +21,7 @@ pnpm add -D @nyuchi/mzizi-cli
 
 The package is [`@nyuchi/mzizi-cli`](https://www.npmjs.com/package/@nyuchi/mzizi-cli). It
 installs two names for the same program, `mzizi` and `fundi`. The latest published version
-is `0.8.0`, read from npm on 4 November 2026. It needs Node 20 or later.
+is `0.9.0`, read from npm on 11 November 2026. It needs Node 20 or later.
 
 <Warning>
   **Use `0.6.1` or later, not `0.6.0`.** In `0.6.0` both binaries printed nothing and exited
@@ -31,12 +31,13 @@ is `0.8.0`, read from npm on 4 November 2026. It needs Node 20 or later.
 
 What changed since `0.6.1`:
 
-| Version | Change                                                                                                                                                                                                                |
-| ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `0.6.2` | The request the CLI makes to crates.io names the project's support address, `support@bundu.org`, in its `User-Agent`. Earlier versions sent a person's own address there                                              |
-| `0.6.3` | Depends on `@nyuchi/mzizi-skills` `^0.8.0`, so the CLI bundles [the five `0.8.x` skills](/toolchain/skills) rather than the `0.7.x` set                                                                               |
-| `0.7.0` | Adds `--target astro`, and infers it in an Astro project (see [the target](#mzizi-add-the-registry-installer)). Depends on `@nyuchi/mzizi-skills` `^0.11.0`, so the CLI bundles [all seven skills](/toolchain/skills) |
-| `0.8.0` | Adds `mzizi check [path...]` (see [the spacing floor](/foundations/spacing-floor)). Depends on `@nyuchi/mzizi-skills` `^0.17.0`, so the CLI bundles the skills of that release                                        |
+| Version | Change                                                                                                                                                                                                                                                |
+| ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `0.6.2` | The request the CLI makes to crates.io names the project's support address, `support@bundu.org`, in its `User-Agent`. Earlier versions sent a person's own address there                                                                              |
+| `0.6.3` | Depends on `@nyuchi/mzizi-skills` `^0.8.0`, so the CLI bundles [the five `0.8.x` skills](/toolchain/skills) rather than the `0.7.x` set                                                                                                               |
+| `0.7.0` | Adds `--target astro`, and infers it in an Astro project (see [the target](#mzizi-add-the-registry-installer)). Depends on `@nyuchi/mzizi-skills` `^0.11.0`, so the CLI bundles [all seven skills](/toolchain/skills)                                 |
+| `0.8.0` | Adds `mzizi check [path...]` (see [the spacing floor](/foundations/spacing-floor)). Depends on `@nyuchi/mzizi-skills` `^0.17.0`, so the CLI bundles the skills of that release                                                                        |
+| `0.9.0` | `mzizi add` takes `--type` (`--target` is the same flag) and installs five types: `mzizi`, `tsx`, `astro`, `swift` and `kotlin`, with `rust` and `typescript` accepted as spellings of `mzizi` and `tsx`. Depends on `@nyuchi/mzizi-skills` `^0.19.0` |
 
 ## Commands
 
@@ -60,9 +61,11 @@ Every command works under either name: `fundi add` and `mzizi add` are the same.
 ## `mzizi add`: the registry installer
 
 ```bash
-mzizi add button --target rust     # the Rust build, explicitly
-mzizi add app-data-table --target astro  # the pure Astro build, into src/components/mzizi/
-mzizi add button                   # infer the target from the project
+mzizi add button --type mzizi      # Mzizi (Rust only), explicitly
+mzizi add button --type tsx        # the TypeScript (React) build
+mzizi add app-data-table --type astro  # the pure Astro build, into src/components/mzizi/
+mzizi add mzizi-tokens-swift       # native: the only type it has, so no flag
+mzizi add button                   # infer the type from the project
 mzizi add address-input --dry-run  # print the plan, write nothing
 mzizi add card --overwrite         # replace files that already exist
 ```
@@ -77,7 +80,7 @@ crates.io (see [Mzizi Roots](/roots/overview#install)). In a project with only a
 
 ```text
 $ mzizi add button
-target: rust (Cargo.toml present and no package.json)
+button: type mzizi (Cargo.toml present and no package.json); available: …
 …
 crate dependency: mzizi-ui (crates.io)
 
@@ -94,13 +97,30 @@ names each component's own crate: `mzizi add mzizi-alert-banner` records `mzizi-
 For a React project, it writes the `.tsx` files and lists the npm packages they need, as the
 shadcn CLI would.
 
-**The target** is inferred from the project, and `--target rust`, `--target tsx` or
-`--target astro` overrides it. A project with both a `Cargo.toml` and a `package.json` is
-ambiguous, so `mzizi add` refuses and asks for `--target` rather than guess. An Astro project
-(even one with React islands) infers `astro` (from `@nyuchi/mzizi-cli` 0.7.0): it installs a
-component's pure `.astro` from `api.mzizi.dev/v1/astro/<name>`, with every registry file it
-imports and any brand asset, into `src/components/mzizi/`, and refuses by name a component that
-has no `.astro` rather than install its `.tsx`.
+**The type** is chosen per component, Mzizi first, TypeScript second, native after (owner,
+4 November 2026). `mzizi` means Rust only: it never emits Astro or TypeScript, which are
+separate implementations served from their own files. From `0.9.0` the types are:
+
+| Type     | Served from                                 | What it installs                                     |
+| -------- | ------------------------------------------- | ---------------------------------------------------- |
+| `mzizi`  | `/v1/rs/<name>` (Mzizi Roots, Rust only)    | a crate dependency, not a file copy                  |
+| `tsx`    | `/v1/ui/<name>`                             | the TypeScript (React) files                         |
+| `astro`  | `/v1/astro/<name>`                          | pure `.astro` into `src/components/mzizi/`           |
+| `swift`  | `/v1/ui/<name>`, `.swift` files it declares | the Swift files (for example `mzizi-tokens-swift`)   |
+| `kotlin` | `/v1/ui/<name>`, `.kt` files it declares    | the Kotlin files (for example `mzizi-tokens-kotlin`) |
+
+`--type` wins when given, and a type the component lacks is refused, naming the types it has.
+Otherwise the project's own files decide: `Cargo.toml` alone is `mzizi`; `components.json`,
+or `react` or `next` in `package.json`, is `tsx`; `astro.config.*` or `astro` in the
+dependencies is `astro` (even with React islands); `Package.swift` is `swift`; a Gradle build file
+is `kotlin`. If the project has none of these, `mzizi add` takes the only type the component has,
+and otherwise refuses and asks for `--type` rather than guess. A project with both a `Cargo.toml`
+and a `package.json` is ambiguous, so it refuses too.
+
+The Astro build (from `0.7.0`) installs a component's pure `.astro` from
+`api.mzizi.dev/v1/astro/<name>`, with every registry file it imports and any brand asset, into
+`src/components/mzizi/`, and refuses by name a component that has no `.astro` rather than
+install its `.tsx`.
 
 ## Model access
 
