@@ -21,6 +21,13 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
+### Fixed — the registry's component count is 690 (2026-11-11, freshness)
+
+No issue: freshness update. Read on 11 November 2026 from `GET https://api.mzizi.dev/v1/ui` (`meta.total` 690, registry v4.28.0 at `f673a91ff03d`).
+
+- **Changed: `registry/overview`.** The table is dated 11 November 2026 and reads 503 `registry:ui` items (was 488) and 690 in total (was 675); the other types are unchanged. The page description says 690 items.
+- **Changed: `ecosystem`, `benchmark`, `ir`, `patterns/observability`.** Each states 690 components where it said 675. The fifteen new items are the `react-*` React builds of the `@bundu/ui` primitives (mzizi-registry#640).
+
 ### Fixed — stated versions and counts brought back to their live sources (2026-11-04, freshness)
 
 No issue: freshness update. Read on 4 November 2026 from npm, crates.io, `api.mzizi.dev` and `mcp.mzizi.dev`; `node scripts/check-freshness.mjs` reported 24 drifts and now reports none.
