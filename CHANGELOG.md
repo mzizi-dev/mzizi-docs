@@ -21,6 +21,14 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
+### Fixed — language pages re-checked at `main` `f9bea2b` (v0.13.0); vanished commit hashes replaced (2026-11-11, freshness)
+
+No issue: freshness update. The language repository's history was rewritten, so `2b36c8f` (the commit `status.mdx` cited as checked) and every other release commit the docs named no longer exist. Read on 11 November 2026 from `mzizi-dev/mzizi`: `main` is `f9bea2b`, tag `v0.13.0` (the release of 1 November, mzizi#146); `v0.12.0` is now `9766929`. Between the two, `compiler/`, `examples/`, `primitives/`, `LANGUAGE-TRACKER.md`, `README.md` and `CHARTER.md` are identical, and so are the benchmark arms apart from a comment and a lockfile; so no tracker mark, test count, line count, diagnostic count or harness figure moved. The suite was not re-run: the counts are the README's at `f9bea2b`, and the harness figures were read at `v0.12.0`. Work on the language's `staging` and in open pull requests is not described as released.
+
+- **Changed: `status`.** The checked commit is `f9bea2b`, and a new section "Released to `main` on 1 November 2026" says what that release carries (backend episodes scored by probes; backend development tasks B2 to B5) and that it adds no language construct. The 29 October section now names `9766929`.
+- **Changed: `language-harness`, `compiler`, `programs`, `benchmark`, `cookbook`, `tracker`.** Each page's "checked at" or "measured at" commit is the live one: `f9bea2b` where it describes `main`, `9766929` where a figure was read from the `v0.12.0` source.
+- **Fixed: `status`, `tracker`.** The release commits for `v0.4.0` to `v0.9.0` and `v0.11.0` are the hashes the tags point at now (`d1a8ea5`, `80e01c5`, `3928783`, `951e36c`, `550826a`, `effe7c7`, `fb26c23`). Hashes in `pilots` and `ir` that record where a measurement was taken (`ded425a`, `a9c928d`, `9a88e1d`) can no longer be resolved and are left as the historical record.
+
 ### Fixed — the CLI is 0.9.0 and the skills bundle 0.19.0 (2026-11-11, freshness)
 
 No issue: freshness update. Read on 11 November 2026 from npm, `mcp.mzizi.dev/catalogue.json` and `api.mzizi.dev/v1/skills/summary`; `node scripts/check-freshness.mjs` reported these two drifts and now reports none.

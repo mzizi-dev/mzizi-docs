@@ -31,15 +31,16 @@ components, against Dioxus (pilots 1 and 2) and React (pilots 3 and 4). They are
 The table below is the language's front end, which lives in its toolchain, the `mz`
 compiler. The compiler implements the language; it is not the language.
 
-Checked against [`mzizi-dev/mzizi`](https://github.com/mzizi-dev/mzizi) at `2b36c8f` on
-29 October 2026, the merge of [mzizi#140](https://github.com/mzizi-dev/mzizi/pull/140), which
-released `staging` to `main` and is tagged `v0.12.0`. The release of 20 October,
-[mzizi#120](https://github.com/mzizi-dev/mzizi/pull/120), is `6f7b096`, tagged `v0.9.0`; `v0.11.0` (21 October) is `ed5eab8`. The release of 8 October,
-[mzizi#109](https://github.com/mzizi-dev/mzizi/pull/109), is `1d5e578`, tagged `v0.8.0`, the fourth of that
+Checked against [`mzizi-dev/mzizi`](https://github.com/mzizi-dev/mzizi) at `f9bea2b` on
+11 November 2026, the merge of [mzizi#146](https://github.com/mzizi-dev/mzizi/pull/146), which
+released `staging` to `main` on 1 November and is tagged `v0.13.0`. The release of 29 October,
+[mzizi#140](https://github.com/mzizi-dev/mzizi/pull/140), is `9766929`, tagged `v0.12.0`; nothing under `compiler/` differs between the two. The release of 20 October,
+[mzizi#120](https://github.com/mzizi-dev/mzizi/pull/120), is `effe7c7`, tagged `v0.9.0`; `v0.11.0` (21 October) is `fb26c23`. The release of 8 October,
+[mzizi#109](https://github.com/mzizi-dev/mzizi/pull/109), is `550826a`, tagged `v0.8.0`, the fourth of that
 day. The first,
-[mzizi#91](https://github.com/mzizi-dev/mzizi/pull/91), is `be88017`, tagged `v0.5.0`; the
-second, [mzizi#96](https://github.com/mzizi-dev/mzizi/pull/96), is `dc156c5`, tagged `v0.6.0`; the
-third, [mzizi#104](https://github.com/mzizi-dev/mzizi/pull/104), is `4d0cdc3`, tagged `v0.7.0`. Every row below can be checked
+[mzizi#91](https://github.com/mzizi-dev/mzizi/pull/91), is `80e01c5`, tagged `v0.5.0`; the
+second, [mzizi#96](https://github.com/mzizi-dev/mzizi/pull/96), is `3928783`, tagged `v0.6.0`; the
+third, [mzizi#104](https://github.com/mzizi-dev/mzizi/pull/104), is `951e36c`, tagged `v0.7.0`. Every row below can be checked
 in the repository; that is why it is a table and not a paragraph. The language's own list of what is missing, against Python, Go,
 C++, TypeScript and Rust, is
 [`LANGUAGE-TRACKER.md`](https://github.com/mzizi-dev/mzizi/blob/main/LANGUAGE-TRACKER.md),
@@ -90,22 +91,33 @@ summarised on [What still has to be built](/tracker).
 
 The compiler source is 33,540 lines across `compiler/src`. The workspace has **765 tests in 29 suites**,
 634 of them in the compiler crate and the rest in the benchmark harness, runner and probe crate
-(the counts the language's README states at `2b36c8f`; the suite was not re-run for this update; the last full run, at `6f7b096`, was 634 and 765, all passing). CI gates on
+(the counts the language's README states at `f9bea2b`, where `compiler/` is the same as at `v0.12.0`; the suite was not re-run for this update; the last full run, at `effe7c7`, was 634 and 765, all passing). CI gates on
 `cargo fmt --check`, `cargo clippy --all-targets -D warnings`, `cargo test`, `mz check` and
 `mz contract` over every primitive and example, and a `lowering` job that builds, tests and
 serves the example service, runs every example program through `mz run` against its
 `.expected` output, and builds the performance suite and checks that its outputs agree.
 
 The compiler crate is `version = "0.0.0"` with `publish = false`. Each release of the
-repository to `main` is tagged (`v0.4.0` is `0653903`, `v0.5.0` is `be88017` and `v0.6.0` is
-`dc156c5`, both of 8 October 2026, `v0.7.0` is `4d0cdc3`, the third release of that day, and `v0.8.0` is `1d5e578`, the fourth, and `v0.9.0` is `6f7b096`, of 20 October), but that tags the repository, not a
+repository to `main` is tagged (`v0.4.0` is `d1a8ea5`, `v0.5.0` is `80e01c5` and `v0.6.0` is
+`3928783`, both of 8 October 2026, `v0.7.0` is `951e36c`, the third release of that day, and `v0.8.0` is `550826a`, the fourth, and `v0.9.0` is `effe7c7`, of 20 October), but that tags the repository, not a
 published compiler: there is no `cargo install mz` and no published crate. You build it from
 the repository or you do not have it.
+
+## Released to `main` on 1 November 2026
+
+The release of 1 November 2026 ([mzizi#146](https://github.com/mzizi-dev/mzizi/pull/146), `staging` to `main`,
+merged as `f9bea2b` and tagged `v0.13.0`) changes nothing in `compiler/`, `examples/`, `primitives/`,
+`LANGUAGE-TRACKER.md`, `README.md` or `CHARTER.md`, so no row below moves and the language harness definition is
+unchanged. From the language's `CHANGELOG.md`: `mzbench --family backend` scores a clean candidate with the
+task's probes, instead of recording it unscored; and four backend development tasks, B2 to B5, are public, with
+axum and Python references (B2 and B3 also have a Mzizi reference; B4 and B5 have none, because a `service` has
+no state and cannot read a request body). The language states that they are development tasks, contaminated by
+construction, never gating, and that nothing about Mzizi was measured.
 
 ## Released to `main` on 29 October 2026
 
 The release of 29 October 2026 ([mzizi#140](https://github.com/mzizi-dev/mzizi/pull/140), `staging` to `main`,
-merged as `2b36c8f` and tagged `v0.12.0`) adds no language construct, and the language
+merged as `9766929` and tagged `v0.12.0`) adds no language construct, and the language
 harness definition is unchanged (the same SHA-256 as at `v0.9.0`). What it carries, from the
 language's `CHANGELOG.md`:
 
@@ -126,7 +138,7 @@ language's `CHANGELOG.md`:
 ## Released to `main` on 20 October 2026
 
 The release of 20 October 2026 ([mzizi#120](https://github.com/mzizi-dev/mzizi/pull/120), `staging` to `main`,
-merged as `6f7b096` and tagged `v0.9.0`) carries no new language construct. What it carries:
+merged as `effe7c7` and tagged `v0.9.0`) carries no new language construct. What it carries:
 
 - **The `int` minimum.** `-9223372036854775808` is read as a value only under a unary `-`, where it is
   `i64::MIN` and lowers to `i64::MIN` in Rust (RFC-0013 §3.1). Every other use of that literal is `MZ0103`.
@@ -159,7 +171,7 @@ Nothing here is measured against the kill criterion, and no benchmark has run on
 ## Released to `main` on 8 October 2026
 
 The first release of 8 October 2026 ([mzizi#91](https://github.com/mzizi-dev/mzizi/pull/91),
-`staging` to `main`, merged as `be88017`, tagged `v0.5.0`) carries the first work toward
+`staging` to `main`, merged as `80e01c5`, tagged `v0.5.0`) carries the first work toward
 **M1, a language that computes**. Issue
 [mzizi#69](https://github.com/mzizi-dev/mzizi/issues/69) tracks it, and the
 [roadmap](/roadmap#m1-the-plan) gives the plan. No pull request toward M1 is open on the
@@ -180,7 +192,7 @@ language today.
 ### The second release, the same day (mzizi#96)
 
 The second release of 8 October 2026 ([mzizi#96](https://github.com/mzizi-dev/mzizi/pull/96),
-`staging` to `main`, merged as `dc156c5`, tagged `v0.6.0`) moved the tracker's marks. In
+`staging` to `main`, merged as `3928783`, tagged `v0.6.0`) moved the tracker's marks. In
 `LANGUAGE-TRACKER.md`, **C1, C2, C3, C4, C5, C9 and C10 are ✅**, each with its "done when"
 checked on `main`. **C6 (text operations) is 📝, and C7 (collections) and C8 (user types) are
 🟡**, so M1 is not reached. **P4 and H1 stay 🟡**: a general program cannot be written yet, and
@@ -198,7 +210,7 @@ the plugin host is not built. The same release also:
 ### The third release, the same day (mzizi#104)
 
 The third release of 8 October 2026 ([mzizi#104](https://github.com/mzizi-dev/mzizi/pull/104),
-`staging` to `main`, merged as `4d0cdc3` and tagged `v0.7.0`) carries the rest of the collections and records work and
+`staging` to `main`, merged as `951e36c` and tagged `v0.7.0`) carries the rest of the collections and records work and
 the text methods:
 
 - **Text methods (C6, [mzizi#98](https://github.com/mzizi-dev/mzizi/pull/98)).** `length`,
@@ -224,7 +236,7 @@ has run on these features.
 ### The fourth release, the same day (mzizi#109)
 
 The fourth release of 8 October 2026 ([mzizi#109](https://github.com/mzizi-dev/mzizi/pull/109),
-`staging` to `main`, merged as `1d5e578` and tagged `v0.8.0`) carries the rest of the text
+`staging` to `main`, merged as `550826a` and tagged `v0.8.0`) carries the rest of the text
 operations ([mzizi#106](https://github.com/mzizi-dev/mzizi/pull/106)). With it, every Tier 1 row is
 ✅ on `main`:
 
