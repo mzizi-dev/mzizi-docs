@@ -21,6 +21,13 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
+### Fixed — the CLI is 0.9.0 and the skills bundle 0.19.0 (2026-11-11, freshness)
+
+No issue: freshness update. Read on 11 November 2026 from npm, `mcp.mzizi.dev/catalogue.json` and `api.mzizi.dev/v1/skills/summary`; `node scripts/check-freshness.mjs` reported these two drifts and now reports none.
+
+- **Changed: `toolchain/cli`.** `@nyuchi/mzizi-cli` is 0.9.0 (was 0.8.0). A new row in the version table, and the `mzizi add` section now describes `--type` (`--target` is the same flag) and the five types it installs, `mzizi`, `tsx`, `astro`, `swift` and `kotlin` (`rust` and `typescript` are accepted spellings), and how the type is chosen from the project. Pages that show `--target astro` or `--target tsx` stay correct.
+- **Changed: `toolchain/skills`, `toolchain/mcp`, `foundations/spacing-floor`.** `@nyuchi/mzizi-skills` is 0.19.0 (was 0.18.0), still twelve skills: 0.19.0 adds none and corrects facts in the release skills and in two language and component skills. npm and the MCP server serve 0.19.0 on 11 November 2026; the API and the plugin (`1.7.0`) still carry the twelve skills of 0.18.0, and the pages say so.
+
 ### Fixed — the registry's component count is 690 (2026-11-11, freshness)
 
 No issue: freshness update. Read on 11 November 2026 from `GET https://api.mzizi.dev/v1/ui` (`meta.total` 690, registry v4.28.0 at `f673a91ff03d`).
