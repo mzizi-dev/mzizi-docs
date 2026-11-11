@@ -21,7 +21,7 @@ pnpm add -D @nyuchi/mzizi-cli
 
 The package is [`@nyuchi/mzizi-cli`](https://www.npmjs.com/package/@nyuchi/mzizi-cli). It
 installs two names for the same program, `mzizi` and `fundi`. The latest published version
-is `0.7.0`, read from npm on 7 October 2026. It needs Node 20 or later.
+is `0.8.0`, read from npm on 4 November 2026. It needs Node 20 or later.
 
 <Warning>
   **Use `0.6.1` or later, not `0.6.0`.** In `0.6.0` both binaries printed nothing and exited
@@ -36,12 +36,14 @@ What changed since `0.6.1`:
 | `0.6.2` | The request the CLI makes to crates.io names the project's support address, `support@bundu.org`, in its `User-Agent`. Earlier versions sent a person's own address there                                              |
 | `0.6.3` | Depends on `@nyuchi/mzizi-skills` `^0.8.0`, so the CLI bundles [the five `0.8.x` skills](/toolchain/skills) rather than the `0.7.x` set                                                                               |
 | `0.7.0` | Adds `--target astro`, and infers it in an Astro project (see [the target](#mzizi-add-the-registry-installer)). Depends on `@nyuchi/mzizi-skills` `^0.11.0`, so the CLI bundles [all seven skills](/toolchain/skills) |
+| `0.8.0` | Adds `mzizi check [path...]` (see [the spacing floor](/foundations/spacing-floor)). Depends on `@nyuchi/mzizi-skills` `^0.17.0`, so the CLI bundles the skills of that release                                        |
 
 ## Commands
 
 | Command                             | What it does                                                                                                                                                             |
 | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `mzizi add <name...>`               | Installs components from the registry, with their dependencies. Rust first. No API key and no sign-in                                                                    |
+| `mzizi check [path...]`             | Checks your source against [the spacing floor](/foundations/spacing-floor): exit code 1 on a violation. `--json` for a report. From `0.8.0`                              |
 | `fundi explore`                     | Reads a few files (`package.json`, `tsconfig.json`, the global stylesheet, the Tailwind config, `components.json`) and prints a project snapshot. Offline. No model call |
 | `fundi plan <goal>`                 | **Read-only.** Plans the minimal edits to wire Mzizi in, and prints them as a dry run                                                                                    |
 | `fundi chat <message>`              | One-shot chat scoped to Mzizi doctrine                                                                                                                                   |
@@ -50,10 +52,9 @@ What changed since `0.6.1`:
 Every command works under either name: `fundi add` and `mzizi add` are the same.
 
 <Note>
-  **Coming in `0.8.0`: `mzizi check [path...]`.** It fails with exit code 1 on padding, gaps,
+  **`mzizi check [path...]`, from `0.8.0`.** It fails with exit code 1 on padding, gaps,
   negative margins and line heights under [the spacing floor](/foundations/spacing-floor), and
-  takes `--json`. It is merged for the package's next release; the latest on npm is still
-  `0.7.0`, which has no `check` command.
+  takes `--json`. `0.7.0` and earlier have no `check` command.
 </Note>
 
 ## `mzizi add`: the registry installer

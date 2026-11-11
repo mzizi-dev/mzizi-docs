@@ -71,20 +71,19 @@ What is on registry `main` (4.24.0) and what is still to come are different, so 
 separates them. The registry's 4.24.0 changelog says the component audit, contract and Rust
 parity, the geometry guard and the lint-style tests "follow in their own pull request".
 
-| Check               | State              | What fails                                                                                                                                                                                                                                                             |
-| ------------------- | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Base-layer rule     | On `main`, 4.24.0  | A component that sets nothing gets the floor from the token layer (above).                                                                                                                                                                                             |
-| Token test          | On `main`, 4.24.0  | The registry's `spacing-floor` test fails when the numbers differ between `BUNDU_FLOOR`, canon, `/v1/tokens` and the stylesheet, when a density layer lowers a floor variable, when a base-layer rule is gone, or when a platform token file lacks the 14 and 7 roles. |
-| Contract test       | Design intent      | Each component contract asserts its spacing minimums, the TypeScript runner and the Rust evaluator holding the same numbers. Tracked in mzizi-registry#617; not on `main` at 4.24.0.                                                                                   |
-| Geometry guard      | Design intent      | A rendered check in a browser: neighbouring controls do not overlap, text keeps its inset, and WCAG 1.4.12 text spacing (line height 1.5, paragraph spacing 2×, letter spacing 0.12em, word spacing 0.16em) causes no clipping or overflow. Not on `main` at 4.24.0.   |
-| `mzizi check` (CLI) | Merged, not on npm | Fails with exit code 1 on padding under 14px, zero padding, gaps under 7px, negative margins and line heights under 1.5 in your source. See [the CLI](#in-an-app-the-cli).                                                                                             |
+| Check               | State             | What fails                                                                                                                                                                                                                                                             |
+| ------------------- | ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Base-layer rule     | On `main`, 4.24.0 | A component that sets nothing gets the floor from the token layer (above).                                                                                                                                                                                             |
+| Token test          | On `main`, 4.24.0 | The registry's `spacing-floor` test fails when the numbers differ between `BUNDU_FLOOR`, canon, `/v1/tokens` and the stylesheet, when a density layer lowers a floor variable, when a base-layer rule is gone, or when a platform token file lacks the 14 and 7 roles. |
+| Contract test       | Design intent     | Each component contract asserts its spacing minimums, the TypeScript runner and the Rust evaluator holding the same numbers. Tracked in mzizi-registry#617; not on `main` at 4.24.0.                                                                                   |
+| Geometry guard      | Design intent     | A rendered check in a browser: neighbouring controls do not overlap, text keeps its inset, and WCAG 1.4.12 text spacing (line height 1.5, paragraph spacing 2×, letter spacing 0.12em, word spacing 0.16em) causes no clipping or overflow. Not on `main` at 4.24.0.   |
+| `mzizi check` (CLI) | On npm, 0.8.0     | Fails with exit code 1 on padding under 14px, zero padding, gaps under 7px, negative margins and line heights under 1.5 in your source. See [the CLI](#in-an-app-the-cli).                                                                                             |
 
 ## In an app: the CLI
 
 `@nyuchi/mzizi-cli` **0.8.0** adds `mzizi check [path...]`, which enforces the floor over your
-source. It is merged on the `agent-tools` staging branch and ships with that package's next
-release. As of 4 November 2026 the latest version on npm is `0.7.0`, which has no `check`
-command; run `npx @nyuchi/mzizi-cli --version` to see what you get.
+source. It is on npm (published 4 November 2026); `0.7.0` and earlier have no `check` command, so
+run `npx @nyuchi/mzizi-cli --version` to see what you get.
 
 ```bash
 npx @nyuchi/mzizi-cli check src          # exit 1 on a violation, with file:line:column
@@ -124,13 +123,13 @@ before you have moved your layouts, and remove it as soon as you have.
 
 The floor is read from the registry, not typed in each place:
 
-| Surface | Where the five numbers are                                                                                                                                                                                                                                                                                              |
-| ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Tokens  | `--inset-floor`, `--gap-floor`, `--leading-floor` in `mzizi-tokens-globals.css`; the fixed roles `spacing-inset-floor` and `spacing-gap-floor`                                                                                                                                                                          |
-| API     | [`GET /v1/brand`](https://api.mzizi.dev/v1/brand), in the `accessibility` block: `minInset`, `minControlGap`, `minLabelGap`, `minItemGap`, `minBodyLeading`. Once the API's registry pin includes registry 4.24.0 (on 4 November 2026 the API's pin was still 4.23.0); read the live pin in the `x-mzizi-source` header |
-| MCP     | The tools read the same block. `mzizi_get_tokens` (`family=floors`), `mzizi_get_doctrine` (`topic=bundu-floor`) and spacing inputs on `mzizi_check_accessibility` ship with the MCP server's next release; see [the MCP server](/toolchain/mcp)                                                                         |
-| Skills  | The `mzizi-design` skill teaches the floor from `@nyuchi/mzizi-skills` 0.17.0, which ships with the skills' next release; see [skills](/toolchain/skills)                                                                                                                                                               |
-| CLI     | `mzizi check`, from `@nyuchi/mzizi-cli` 0.8.0 (above)                                                                                                                                                                                                                                                                   |
+| Surface | Where the five numbers are                                                                                                                                                                                                                                          |
+| ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Tokens  | `--inset-floor`, `--gap-floor`, `--leading-floor` in `mzizi-tokens-globals.css`; the fixed roles `spacing-inset-floor` and `spacing-gap-floor`                                                                                                                      |
+| API     | [`GET /v1/brand`](https://api.mzizi.dev/v1/brand), in the `accessibility` block: `minInset`, `minControlGap`, `minLabelGap`, `minItemGap`, `minBodyLeading`. Served by the API (read on 4 November 2026); read the live registry pin in the `x-mzizi-source` header |
+| MCP     | The tools read the same block. `mzizi_get_tokens` (`family=floors`), `mzizi_get_doctrine` (`topic=bundu-floor`) and spacing inputs on `mzizi_check_accessibility` are on the MCP server (`0.17.0`, 4 November 2026); see [the MCP server](/toolchain/mcp)           |
+| Skills  | The `mzizi-design` skill teaches the floor from `@nyuchi/mzizi-skills` 0.17.0, and the latest is 0.18.0 (4 November 2026); see [skills](/toolchain/skills)                                                                                                          |
+| CLI     | `mzizi check`, from `@nyuchi/mzizi-cli` 0.8.0 (above)                                                                                                                                                                                                               |
 
 If a surface disagrees with `BUNDU_FLOOR`, the surface is wrong: change it upstream in the
 registry.

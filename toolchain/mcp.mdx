@@ -9,7 +9,7 @@ The Mzizi MCP server gives agents the registry, the brand tokens, the architectu
 the doctrine, the agent skills and these docs over the
 [Model Context Protocol](https://modelcontextprotocol.io). It is the `mzizi-mcp` Cloudflare
 Worker, published as [`@nyuchi/mzizi-mcp`](https://www.npmjs.com/package/@nyuchi/mzizi-mcp)
-(`0.13.0`, read from npm on 29 October 2026; the hosted server answered `initialize` with
+(`0.17.0`, read from npm on 4 November 2026; the hosted server answered `initialize` with
 the same version, and the MCP Registry lists it). In the
 [MCP Registry](https://registry.modelcontextprotocol.io) it is
 `io.github.mzizi-dev/mzizi-mcp`, listing both the hosted endpoint and the npm package. The
@@ -115,12 +115,11 @@ Start with `mzizi_search` when you do not know the name of the thing you want, a
 `mzizi_get_component` when you do.
 
 <Note>
-  **Shipping with the server's next release:** `mzizi_get_tokens` with `family=floors`,
-  `mzizi_get_doctrine` with `topic=bundu-floor`, and optional spacing inputs on
-  `mzizi_check_accessibility` (inset, gaps, line height), all read from the registry's
-  `/v1/brand` `accessibility` block. They are written up for
-  [the spacing floor](/foundations/spacing-floor); read `catalogue.json` to see whether the
-  server you are connected to has them yet.
+  **The floor tools:** `mzizi_get_tokens` with `family=floors`, `mzizi_get_doctrine` with
+  `topic=bundu-floor`, and optional spacing inputs on `mzizi_check_accessibility` (inset, gaps,
+  line height), all read from the registry's `/v1/brand` `accessibility` block. The server
+  served them on 4 November 2026 (`0.17.0`; `catalogue.json` has a `floors` entry). They are
+  written up for [the spacing floor](/foundations/spacing-floor).
 </Note>
 
 ## Components, Rust first
@@ -220,12 +219,12 @@ The server holds no database credential. Former `nyuchi-*` component names resol
 
 ### The skills
 
-`mzizi_get_skills` serves the seven skills of [`@nyuchi/mzizi-skills`](/toolchain/skills),
+`mzizi_get_skills` serves the twelve skills of [`@nyuchi/mzizi-skills`](/toolchain/skills),
 bundled from the skills' source when the server is built, so it answers with the same version
-as npm (`0.13.0` on 29 October 2026). A client can fetch the skills
+as npm (`0.18.0` on 4 November 2026, from `catalogue.json`). A client can fetch the skills
 here instead of installing the npm package. From `0.13.0` it takes `category`: `dev`, `design`,
 `language` or `build` returns every skill in that category in full, and `category: "dev"`
-(`digital-hygiene` and `progress-report`) is what every Mzizi repository's `AGENTS.md` asks an
+(`digital-hygiene`, `progress-report`, `ship-release`, `registry-propagation` and `pr-gates`) is what every Mzizi repository's `AGENTS.md` asks an
 agent to load before it starts. Every answer carries each skill's `category`, and asking for a
 `name` outside the `category` you named is an error. From `0.11.1`, each skill's `source` names
 where it is authored, `mzizi-dev/agent-tools/mzizi-skills/skills/<name>`. The skills renamed or
