@@ -73,21 +73,25 @@ Facts that inherited prose often gets wrong:
   with no sign-in except the Fundi tools (`mzizi_fundi`, `mzizi_report_issue`); an anonymous
   `tools/list` answered on 7 October 2026. Its MCP Registry name is
   `io.github.mzizi-dev/mzizi-mcp`.
-- **The CLI is free.** `mzizi add` is published from `@nyuchi/mzizi-cli` (0.7.0 on
-  7 October 2026); 0.6.0's binaries printed nothing, so pages say "0.6.1 or later".
-- **Seven skills, in four categories.** `@nyuchi/mzizi-skills` 0.8.0 cut the bundle to five,
+- **The CLI is free.** `mzizi add` is published from `@nyuchi/mzizi-cli` (0.8.0 on
+  4 November 2026, which adds `mzizi check`); 0.6.0's binaries printed nothing, so pages say
+  "0.6.1 or later".
+- **Twelve skills, in four categories.** `@nyuchi/mzizi-skills` 0.8.0 cut the bundle to five,
   `mzizi-language`, `mzizi-roots`, `mzizi-design`, `mzizi-backend` and `discoverability`, with
   no aliases for the old names. 0.9.0 (5 October 2026) added the `dev` skill
-  `digital-hygiene`, 0.10.0 (6 October) added `progress-report` and categories, and 0.11.0
-  (6 October) is the latest. The API and the plugin can lag npm. The Claude Code plugin is the
+  `digital-hygiene`, 0.10.0 (6 October) added `progress-report` and categories, 0.14.0 added
+  `mzizi-architecture`, 0.15.0 restored `mukoko-design`, and 0.18.0 (4 November) is the latest:
+  it added the `dev` skills `ship-release`, `registry-propagation` and `pr-gates`, for twelve
+  (`dev` five, `design` two, `language` one, `build` four). The API and the plugin can lag npm
+  (on 4 November 2026 both carried 0.18.0). The Claude Code plugin is the
   public one in `mzizi-dev/mzizi-registry` (`/plugin install mzizi@mzizi`); the private
   `mzizi-tools` marketplace is retired.
   `npx skills add @nyuchi/mzizi-skills` does not work.
 - **Mzizi's brand mineral is hematite**, a heritage tone, not one of the Seven African
   Minerals. It is the default `--primary` of the registry's `mzizi-tokens-globals.css`;
   `/v1/brand`'s semantic `--primary` is still tanzanite.
-- **The Roots crates are on crates.io**: ten crates at 0.3.0 (7 October 2026), installed with
-  `cargo add mzizi-roots`.
+- **The Roots crates are on crates.io**: fourteen crates at 0.7.0 (read on 4 November 2026),
+  installed with `cargo add mzizi-roots`.
 - **`nyuchi-*` components are `mzizi-*`**, and the old names 308 to the new ones.
 
 Five specific traps:
