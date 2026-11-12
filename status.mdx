@@ -91,7 +91,7 @@ summarised on [What still has to be built](/tracker).
 
 The compiler source is 33,540 lines across `compiler/src`. The workspace has **765 tests in 29 suites**,
 634 of them in the compiler crate and the rest in the benchmark harness, runner and probe crate
-(the counts the language's README states at `f9bea2b`, where `compiler/` is the same as at `v0.12.0`; the suite was not re-run for this update; the last full run, at `effe7c7`, was 634 and 765, all passing). CI gates on
+(the counts the language's README states at `f9bea2b`, where `compiler/` is the same as at `v0.12.0`). A full `cargo test --workspace` run at `f9bea2b` on Linux, 12 November 2026, found 771 tests across 38 result blocks, 636 of them in the compiler crate: 770 passed, none failed, and one is ignored because it needs `axum` and `tokio` in the cargo cache. The README lags that run. CI gates on
 `cargo fmt --check`, `cargo clippy --all-targets -D warnings`, `cargo test`, `mz check` and
 `mz contract` over every primitive and example, and a `lowering` job that builds, tests and
 serves the example service, runs every example program through `mz run` against its
@@ -151,7 +151,7 @@ merged as `effe7c7` and tagged `v0.9.0`) carries no new language construct. What
   standard library (P2), lowering and runnable builds (P3, P4), errors mapped back to `.mz` (P5), and Rust
   crates through an exact pin (P6). Nothing in it is implemented: `mz check` does not accept `import`,
   `module`, `public` or `extern` today.
-- **Tests.** 765 in the workspace, 29 suites, and 634 in the compiler crate, all passing. `compiler/src` is
+- **Tests.** 765 in the workspace, 29 suites, and 634 in the compiler crate, all passing, by the README. A full run at `f9bea2b` on Linux, 12 November 2026, found 771 tests across 38 result blocks, 636 in the compiler crate: 770 passed, none failed, one ignored (it needs `axum` and `tokio` in the cargo cache). `compiler/src` is
   33,540 lines. The language harness holds 197 entries: 79 distinct diagnostic codes (53 `MZ09xx`, 26 shared)
   and 49 pending codes. The 8 October page said 80 codes, with 27 shared; the definition does not give that,
   and the release added and removed no code entry.
