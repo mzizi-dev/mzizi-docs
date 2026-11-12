@@ -30,7 +30,7 @@ z-index, icon sizes, touch targets, density. N1 is the only node allowed to _def
 - Must carry a `data-slot` attribute.
 - Must compose classes through `cn()`.
 - Must not reference mineral colours directly — semantic tokens only.
-- A 49px hit region on every control (56px for the large button), 17px body text and
+- A hit region of 49px on touch and 28px on a desktop (56px on touch for the large button), 17px body text on touch and 15px on a desktop, and
   nothing readable under 14px.
 - Pill-shaped categories (button, input, avatar, badge, toggle) use a `9999` radius.
 
@@ -40,7 +40,7 @@ z-index, icon sizes, touch targets, density. N1 is the only node allowed to _def
   names redirect to their `mzizi-*` names.)
 - Imports `useMziziHarness` and destructures `{ log, motion, LiveRegion }`.
 - Carries an animation style that respects `prefers-reduced-motion`.
-- ARIA, `data-slot`, `focus-visible`, a 49px hit region.
+- ARIA, `data-slot`, `focus-visible`, the floor's hit region (49px on touch, 28px on a desktop).
 
 **Is it a verification check, content gate or security boundary?** → **N4 safety**
 
