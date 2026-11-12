@@ -21,6 +21,16 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
+### Changed — the Bundu floor has two tiers; the plugin split; the 12 November package versions (2026-11-12, freshness)
+
+No issue: a freshness update after registry 4.36.0 (`f94666b`), `@nyuchi/mzizi-skills` 0.20.0, `@nyuchi/mzizi-mcp` 0.19.0 and `@nyuchi/mzizi-cli` 0.10.0. Refs [mzizi-dev/mzizi-registry#660](https://github.com/mzizi-dev/mzizi-registry/issues/660).
+
+- **Changed (`foundations/bundu-floor`):** the page states the owner's 12 November ruling ("yes do the device-based floor, desktop body 15px"). Touch (a coarse pointer, or under 64rem) keeps a 49px hit region and 17px body; a desktop (64rem and up, fine pointer, hover) has a 28px hit region, 15px body, 17px large body, fields at 36px (32px compact) and 14px captions. The "what the floor is", layers and migration tables, the build-failure rules and the Bundu Order bullet are rewritten to match. The spacing floor and contrast are unchanged.
+- **Changed (`foundations/accessibility`, `foundations/typography`, `foundations/tokens`, `foundations/overview`, `foundations/layout`, `foundations/icons`, `patterns/dashboard-standard`, `patterns/discover-standard`, `patterns/mobile-first`, `registry/contracts`, `registry/contributing`, `architecture/nodes`, `toolchain/skills`):** every sentence that said "a 49px hit region on every device" or "17px body on every device" now names the tier. The accessibility size-role table gains a hit-region column per tier.
+- **Changed (`toolchain/skills`):** the page describes two plugins from the same marketplace: `mzizi` (seven Markdown skills and the Mzizi MCP, no scripts or hooks, `1.10.0`) and `mzizi-dev` (five dev skills, their scripts and hooks, `0.1.0`), with `/plugin install mzizi@mzizi` and `/plugin install mzizi-dev@mzizi`. The bundle is `0.20.0`, up from `0.19.0`.
+- **Changed (`toolchain/cli`, `toolchain/mcp`):** `@nyuchi/mzizi-cli` is `0.10.0` (a dependency refresh, a new row in the version table) and `@nyuchi/mzizi-mcp` is `0.19.0`.
+- **Changed (`registry/overview`, `ecosystem`, `benchmark`, `ir`):** the registry holds 693 components, up from 690, read from `/v1/ui` on 12 November 2026; `registry:ui` is 504 and `registry:lib` 70.
+
 ### Changed — the agent guide states the owner's release rule (2026-11-12, [mzizi-dev/mzizi-registry#661](https://github.com/mzizi-dev/mzizi-registry/issues/661))
 
 - `AGENTS.md` state the owner's release rule: the owner approves major releases only; minor and patch releases (the `staging` → `main` release PR, its tag and the sync-back into `staging`) and merges of green PRs that have passed review are done by agents following the repo's playbook, without asking the owner (owner, 2026-11-02). "Only the owner releases `staging` to `main`, or an agent the owner has authorised for that release" and the progress-report line (report ticks never publish, release, merge or deploy without the owner's approval) are replaced with it. Merge method, the merge gate, auto-merge and the changelog rules are unchanged. Nothing served or published changes.
