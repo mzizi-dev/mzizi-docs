@@ -21,7 +21,7 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
-### Changed
+### Changed — status.mdx states the full test run at language `main` (2026-11-12, freshness)
 
 - `status.mdx` now states the result of a full `cargo test --workspace` run at language `main` (`f9bea2b`, Linux, 12 November 2026): 771 tests across 38 result blocks, 636 in the compiler crate, 770 passed, none failed, one ignored. The README's 765 in 29 suites stays beside it as the README's figure, and the page no longer says the suite was not re-run.
 
