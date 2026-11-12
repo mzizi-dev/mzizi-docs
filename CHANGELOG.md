@@ -21,6 +21,10 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
+### Changed — the agent guide states the owner's release rule (2026-11-12, [mzizi-dev/mzizi-registry#661](https://github.com/mzizi-dev/mzizi-registry/issues/661))
+
+- `AGENTS.md` state the owner's release rule: the owner approves major releases only; minor and patch releases (the `staging` → `main` release PR, its tag and the sync-back into `staging`) and merges of green PRs that have passed review are done by agents following the repo's playbook, without asking the owner (owner, 2026-11-02). "Only the owner releases `staging` to `main`, or an agent the owner has authorised for that release" and the progress-report line (report ticks never publish, release, merge or deploy without the owner's approval) are replaced with it. Merge method, the merge gate, auto-merge and the changelog rules are unchanged. Nothing served or published changes.
+
 ### Changed — status.mdx states the full test run at language `main` (2026-11-12, freshness)
 
 - `status.mdx` now states the result of a full `cargo test --workspace` run at language `main` (`f9bea2b`, Linux, 12 November 2026): 771 tests across 38 result blocks, 636 in the compiler crate, 770 passed, none failed, one ignored. The README's 765 in 29 suites stays beside it as the README's figure, and the page no longer says the suite was not re-run.
