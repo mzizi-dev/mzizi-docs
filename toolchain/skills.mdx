@@ -11,13 +11,13 @@ package of agent skills,
 skills so it has the doctrine to hand instead of guessing.
 
 Twelve skills in four categories, from the bundle's `index.json`
-at version `0.19.0` (the latest on npm on 11 November 2026):
+at version `0.20.0` (the latest on npm on 12 November 2026):
 
 | Skill                  | Category   | What it covers                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | ---------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `mzizi-language`       | `language` | Writing and checking `.mz`: `LANGUAGE-TRACKER.md` as the one list of what Mzizi can and cannot do (check it before claiming anything), the component syntax, the backend `service` syntax (routes, handlers with `when`, `header` and `respond`, and `example` and `ensure` contracts; RFC-0011), the `mz check --agent` loop and its NDJSON diagnostics, `mz fix`, `mz contract` (a component's contract, or a service run in process), `mz build` (a service lowered to a local Rust + axum package), programs (`mz run`), the diagnostic codes you will meet, and what is not built yet, by the tracker's marks |
 | `mzizi-roots`          | `build`    | Mzizi's components, Rust first: `cargo add mzizi-roots` and `mzizi-roots-server`, what `mzizi_get_component` returns, the node-to-crate map, contracts (the registry's `contracts/`: the Dashboard Standard's `app/`, the Discover Standard's `discover/`, `site/` and `ui/`), the frontend paths (pure `.astro` from the registry with `mzizi add --target astro`, Astro with Roots, or pure Rust; Next.js adopts through the registry's `.tsx`) and app setup, reuse before build, and contributing a component                                                                                                  |
-| `mzizi-design`         | `design`   | The design system and brand: the 21-family palette and its generated stylesheets, the radius scale, type, pill buttons, [the Bundu floor](/foundations/bundu-floor) (the 49px hit region, 17px body text and 14px captions) and [the spacing floor](/foundations/spacing-floor), status and surface tokens, the Dashboard and Discover Standards' brand overlays (colour and mark only), the brand constellation, the Ubuntu pillars and principles, and the wordmarks                                                                                                                                             |
+| `mzizi-design`         | `design`   | The design system and brand: the 21-family palette and its generated stylesheets, the radius scale, type, pill buttons, [the Bundu floor](/foundations/bundu-floor) (a 49px hit region and 17px body text on touch, 28px and 15px on a desktop, and 14px captions) and [the spacing floor](/foundations/spacing-floor), status and surface tokens, the Dashboard and Discover Standards' brand overlays (colour and mark only), the brand constellation, the Ubuntu pillars and principles, and the wordmarks                                                                                                      |
 | `mukoko-design`        | `design`   | mukoko's brand files and the rules for them: the Seed of Life mark in the seven minerals, the app icon, the favicon set and the lowercase serif lockup, taken from `mukoko-news`, with `SOURCES.md` naming each file's source and checksum. The full-palette mark is the only icon at every size, and the wordmark is always lowercase. For the palette, tokens and UI, use `mzizi-design`                                                                                                                                                                                                                         |
 | `mzizi-backend`        | `build`    | A Mzizi service on Cloudflare Workers: where it stands today (every live Mzizi Worker is TypeScript; the language's `service` slice runs in process under `mz contract` and lowers with `mz build` to a local Rust + axum package, with no Workers target and nothing deployed), the endpoint map, a Rust Worker as a sans-IO core plus a thin host, an MCP server over bundled data, the free-except-Fundi access rule, publishing and deploying                                                                                                                                                                  |
 | `mzizi-architecture`   | `build`    | Where code, data and components belong, read before starting an app, site, console or page: the DNA helix (eight nodes, four rungs, six strands, read live from `api.mzizi.dev/v1/architecture`), the shell first (`AppShell` for the Dashboard Standard, `DiscoverShell` for the Discover Standard), the page patterns, and the system choices (Rust first, Astro as the default UI, Cloudflare Workers, files as the registry's data layer, what is decided against what is built)                                                                                                                               |
@@ -30,14 +30,14 @@ at version `0.19.0` (the latest on npm on 11 November 2026):
 
 `mzizi-language` and `mzizi-roots` are new in `0.8.0`, `digital-hygiene` in `0.9.0`,
 `progress-report` in `0.10.0`, `mzizi-architecture` in `0.14.0`, `mukoko-design` (restored) in
-`0.15.0`, and `ship-release`, `registry-propagation` and `pr-gates` in `0.18.0`. `0.19.0` adds no skill: it corrects facts in the release skills and in two language and component skills. The React (TSX) build of the components is the deprioritised
+`0.15.0`, and `ship-release`, `registry-propagation` and `pr-gates` in `0.18.0`. `0.19.0` adds no skill: it corrects facts in the release skills and in two language and component skills. `0.20.0` adds none either: it quotes every skill's frontmatter `description`, removes the `curl`-from-unpkg rows from the three release skills, and points them at the `mzizi-dev` plugin. The React (TSX) build of the components is the deprioritised
 secondary in every skill that mentions it.
 
 ### The spacing floor
 
 The `mzizi-design` skill teaches [the spacing floor](/foundations/spacing-floor) (14px inset,
 7px gaps, 1.5 body line height), the tests that hold it and `mzizi check`. That change is
-in the bundle from `0.17.0`, and `0.19.0` (the latest on npm on 11 November 2026) carries it.
+in the bundle from `0.17.0`, and `0.20.0` (the latest on npm on 12 November 2026) carries it.
 
 ### Categories
 
@@ -84,8 +84,9 @@ many that are not. Where each `0.7.0` skill went, from the bundle's README:
 ## Getting the skills
 
 Four ways, serving the same bundle once each has caught up; each says which version it
-serves. On 12 November 2026 npm, the MCP server and the API (`/v1/skills/summary`) all served
-`0.19.0`, each with all twelve skills, and the plugin (`1.8.0`) carried the same twelve. They can
+serves. On 12 November 2026 npm, the MCP server, the API (`/v1/skills/summary`) and the plugins
+all served `0.20.0`, each with all twelve skills (seven in the `mzizi` plugin, five in
+`mzizi-dev`). They can
 disagree after a release, because the API and the plugin move only when the registry's
 dependency is bumped (see [how each copy stays current](#how-each-copy-stays-current)).
 
@@ -123,18 +124,28 @@ version a surface is serving: its `meta` carries `version` and `count`.
 
 ### As a Claude Code plugin
 
-The public `mzizi` plugin carries the skills and connects the Mzizi MCP server. On 12 November
-2026 its manifest was at `1.8.0` and named the twelve skills of `0.19.0`:
+There are two plugins, both from the `mzizi` marketplace in
+[`mzizi-dev/mzizi-registry`](https://github.com/mzizi-dev/mzizi-registry). The public `mzizi`
+plugin carries seven Markdown skills (`mzizi-language`, `mzizi-roots`, `mzizi-design`,
+`mukoko-design`, `mzizi-backend`, `mzizi-architecture` and `discoverability`) and connects the
+Mzizi MCP server. It has no scripts and no hooks, which is what the Claude plugin directory
+accepts without a verified organisation. The `mzizi-dev` plugin carries the five dev skills
+(`digital-hygiene`, `progress-report`, `ship-release`, `registry-propagation` and `pr-gates`),
+the shell scripts three of them ship, and the Mzizi house-rules hooks. On 12 November 2026 the
+manifests were at `1.10.0` (`mzizi`) and `0.1.0` (`mzizi-dev`), both naming the skills of `0.20.0`:
 
 ```text
 /plugin marketplace add mzizi-dev/mzizi-registry
 /plugin install mzizi@mzizi
+/plugin install mzizi-dev@mzizi
 ```
 
-It lives in the `plugin/` directory of
+The first install line is the one most people need; add `mzizi-dev` only to work on Mzizi's own
+repositories. They live in the `plugin/` and `plugin-dev/` directories of
 [`mzizi-dev/mzizi-registry`](https://github.com/mzizi-dev/mzizi-registry/tree/main/plugin),
-which holds a byte-for-byte copy of the bundle's `skills/`, and its manifest points the MCP
-connection at `https://mcp.mzizi.dev/mcp`.
+which hold byte-for-byte copies of the bundle's `skills/` (the public copy leaves out one
+favicon the directory cannot read), and the `mzizi` manifest points the MCP connection at
+`https://mcp.mzizi.dev/mcp`.
 
 Codex and ChatGPT do not have the plugin yet. mzizi-registry #520 adds OpenAI's portable
 manifest (`plugin.json` and `mcp.json`) beside the Claude one in `plugin/`, and a repo
@@ -157,7 +168,7 @@ marketplace at `.agents/plugins/marketplace.json`. Until that reaches the regist
 | npm                       | Published from the bundle's source on every merge that bumps its version                                          |
 | `mzizi_get_skills`        | The MCP server bundles the skills from the same source when it is built                                           |
 | `api.mzizi.dev/v1/skills` | The registry depends on the npm package and inlines it at build time; the gateway serves a pinned registry commit |
-| The plugin                | The registry's `plugin/skills/`, regenerated from the npm package it depends on                                   |
+| The plugins               | The registry's `plugin/skills/` and `plugin-dev/skills/`, regenerated from the npm package it depends on          |
 
 The API and the plugin can lag the newest npm release: a release reaches them only when the
 registry's dependency is bumped and, for the API, the gateway is re-pinned. Check the

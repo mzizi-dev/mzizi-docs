@@ -1,43 +1,55 @@
 ---
 title: "The Bundu floor"
-description: "The minimums every Mzizi surface keeps on every device — 17px body text, 14px captions, a 49px hit region on every control, and WCAG contrast floors — and how to migrate from the earlier sizes."
+description: "The minimums every Mzizi surface keeps, in two tiers by pointer — touch keeps a 49px hit region and 17px body, a desktop keeps 28px and 15px — with 14px captions and WCAG contrast floors on both, and how to migrate from the earlier sizes."
 sidebarTitle: "The Bundu floor"
 icon: "ruler"
 ---
 
-The Bundu floor is a set of hard minimums, and it is the same on a phone, a tablet and a
-desktop. Bundu sets the standard for outdoor reading and for people who find technology hard
-(older users, African and emerging markets), so the minimums are as high as they can be and
-one Bundu will stand by. It shipped in registry 4.23.0 (3 November 2026) and `@bundu/ui` 0.8.0
-(owner rulings of 1 and 2 November 2026; tracking issue
-[mzizi-registry#597](https://github.com/mzizi-dev/mzizi-registry/issues/597)).
+The Bundu floor is a set of hard minimums in **two tiers, by pointer**. Touch (a coarse
+pointer, and every device that is not a desktop) keeps the high numbers: a 49px hit region and
+17px body text. A desktop (a fine pointer with hover, 64rem and up) keeps a 28px hit region and
+15px body text. Captions, the spacing floor and contrast are the same on both. Bundu sets the
+standard for outdoor reading and for people who find technology hard (older users, African and
+emerging markets), so the touch minimums are as high as they can be and one Bundu will stand
+by. It shipped in registry 4.23.0 (3 November 2026) and `@bundu/ui` 0.8.0 (owner rulings of 1
+and 2 November 2026; tracking issue
+[mzizi-registry#597](https://github.com/mzizi-dev/mzizi-registry/issues/597)). The desktop tier
+came with registry 4.36.0 (12 November 2026), on the owner's ruling "yes do the device-based
+floor, desktop body 15px"
+([mzizi-registry#660](https://github.com/mzizi-dev/mzizi-registry/issues/660)): a 49px hit
+region and 17px body on every desktop screen cost a great deal of scrolling, and Apple's own
+macOS defaults are a 28 pt control and 13 pt body.
 
 ## What the floor is
 
-| Floor                              | Value       | Derives from                               |
-| ---------------------------------- | ----------- | ------------------------------------------ |
-| Body text, every device            | 17px        | Apple's iOS default body size; a prime     |
-| Captions, metadata, secondary text | 14px        | 2 × 7, the radius unit                     |
-| Hit region of every control        | 49px        | 7 × 7, above Apple's 44 pt                 |
-| Smallest a control is drawn        | 28px        | 4 × 7; Apple's macOS default control size  |
-| Contrast                           | 7 / 4.5 / 3 | WCAG 2: body text, non-body text, UI parts |
+| Floor                              | Touch       | Desktop     | Derives from                                                      |
+| ---------------------------------- | ----------- | ----------- | ----------------------------------------------------------------- |
+| Body text                          | 17px        | 15px        | Apple's iOS default body size (a prime); the owner's desktop size |
+| Captions, metadata, secondary text | 14px        | 14px        | 2 × 7, the radius unit                                            |
+| Hit region of every control        | 49px        | 28px        | 7 × 7, above Apple's 44 pt; 4 × 7, Apple's macOS default control  |
+| Smallest a control is drawn        | 28px        | 28px        | 4 × 7                                                             |
+| Contrast                           | 7 / 4.5 / 3 | 7 / 4.5 / 3 | WCAG 2: body text, non-body text, UI parts                        |
 
 The floor also sets minimums for space: 14px inset, 7px gaps and 1.5 body line height, on
 [the spacing floor](/foundations/spacing-floor) page.
 
 Nothing readable is smaller than 14px, and nothing interactive has a hit region smaller than
-49px. The numbers live in one place in the registry, `BUNDU_FLOOR` in
-`lib/tokens/roles.source.ts`; the token generators, the contract runner, the Rust evaluator
-and the registry's tests all read it. It replaces, in order, the 48px and 56px targets and 16px
-body of the registry before 1 November 2026, and the 44px touch, 24px desktop and 15px desktop
-body that followed for two days.
+its tier's minimum: 49px on touch, 28px on a desktop (above the 24px of WCAG 2.2 SC 2.5.8). The
+numbers live in one place in the registry, `BUNDU_FLOOR` in `lib/tokens/roles.source.ts`, with
+the desktop tier under `pointerFine`; the token generators, the contract runner, the Rust
+evaluator and the registry's tests all read it. The touch tier replaced, in order, the 48px and
+56px targets and 16px body of the registry before 1 November 2026, and the 44px touch, 24px
+desktop and 15px desktop body that followed for two days; the desktop tier of 12 November 2026
+is a 28px hit region and 15px body.
 
-## How a control keeps 49px on a desktop
+## How a control keeps its hit region
 
-A desktop control may be drawn smaller (28 to 40px) but keeps a 49px hit region. The token
-layer's `hit-area` rule gives every `button`, `summary`, `[role="button"]`, `[role="tab"]`,
+On touch, a control keeps a 49px hit region even where it is drawn smaller. The token layer's
+`hit-area` rule gives every `button`, `summary`, `[role="button"]`, `[role="tab"]`,
 `[role="switch"]` and any `.hit-area` element a transparent `::after` of
-`max(100%, var(--target-floor))`. `--target-floor` is 49px and no density layer lowers it.
+`max(100%, var(--target-floor))`. `--target-floor` is 49px on touch, and only the desktop
+density layer lowers it, to 28px and not below. On a desktop a control is drawn 28 to 40px, so
+its drawn box is its hit region and needs no pseudo-element.
 
 The rule steps aside on purpose for an element that draws its own `after:` pseudo-element
 (checkbox, switch, radio group, the tabs line variant), for menu and listbox rows (they take
@@ -45,25 +57,30 @@ The rule steps aside on purpose for an element that draws its own `after:` pseud
 `overflow: hidden`, which would clip it. Three consequences matter when you build:
 
 - A native `input`, `select` or `textarea` cannot carry a pseudo-element, so the field roles
-  (`h-field`, `h-field-sm`) stay 49px drawn on a desktop.
-- A standalone link that is a target is drawn at 49px, or takes the `hit-area` class. An
-  inline link in running text is exempt, as in WCAG 2.5.8.
-- Where two covered controls sit closer than 49px apart their overlays overlap and the later
-  sibling wins the overlap, so keep gaps from the spacing tokens.
+  (`h-field`, `h-field-sm`) are drawn at the hit region: 49px on touch, 36px (32px compact) on
+  a desktop.
+- A standalone link that is a target is drawn at the tier's size (49px on touch, 28px on a
+  desktop), or takes the `hit-area` class. An inline link in running text is exempt, as in
+  WCAG 2.5.8.
+- Where two covered controls sit closer than 49px apart on touch their overlays overlap and the
+  later sibling wins the overlap, so keep gaps from the spacing tokens.
 
-## Three layers, one floor
+## Three layers, two tiers
 
 The layers are defined once in the token layer and emitted as media queries on the size
 variables. A component never branches on screen size.
 
-| Layer        | Applies when                                              | Controls drawn at        | Hit region | Body | Caption |
-| ------------ | --------------------------------------------------------- | ------------------------ | ---------- | ---- | ------- |
-| Phone, touch | the defaults                                              | 49px (large 56px)        | 49px       | 17px | 14px    |
-| Tablet       | `min-width: 48rem`                                        | 49px: an iPad is touched | 49px       | 17px | 14px    |
-| Desktop      | `min-width: 64rem` and `pointer: fine` and `hover: hover` | 28 to 40px (fields 49px) | 49px       | 17px | 14px    |
+| Layer        | Applies when                                                                            | Controls drawn at           | Hit region | Body | Caption |
+| ------------ | --------------------------------------------------------------------------------------- | --------------------------- | ---------- | ---- | ------- |
+| Phone, touch | the defaults                                                                            | 49px (large 56px)           | 49px       | 17px | 14px    |
+| Tablet       | `min-width: 48rem`                                                                      | 49px: an iPad is touched    | 49px       | 17px | 14px    |
+| Desktop      | `min-width: 64rem` and `pointer: fine` and `hover: hover` and not `any-pointer: coarse` | 28 to 40px (fields 32–36px) | 28px       | 15px | 14px    |
 
-Only display and heading sizes step down as screens grow. Body and secondary text never do. A
-touchscreen laptop reports a coarse pointer, so the desktop layer does not apply to it.
+On a desktop, large body text (`text-body-lg`) is 17px, a field is 36px (32px compact) and a
+caption stays 14px. Only display and heading sizes step down as screens grow, and body text
+steps down once, at the desktop tier. A touchscreen laptop reports a coarse pointer
+(`any-pointer: coarse`), so the desktop layer does not apply to it, and neither does it apply
+to a tablet.
 Density is about visual size only: screen size is never used to guess network quality, and the
 gaps between targets are spacing tokens that density does not change.
 
@@ -84,12 +101,12 @@ app until it takes the new registry version or `@bundu/ui` 0.8.0.
 
 | Token                                    | Earlier (1 November 2026) | Now: phone, tablet | Now: desktop    |
 | ---------------------------------------- | ------------------------- | ------------------ | --------------- |
-| `--size-touch`, `--size-control`         | 44px; 36px on desktop     | 49px               | 36px (hit 49px) |
-| `--size-control-sm`                      | 44px; 32px on desktop     | 49px               | 32px (hit 49px) |
-| `--size-control-lg`                      | 48px; 40px on desktop     | 56px               | 40px (hit 49px) |
-| `--size-field`, `--size-field-sm`        | 44px; 36px, 32px          | 49px               | 49px            |
-| `--target-floor`                         | 44px; 24px on desktop     | 49px               | 49px            |
-| `--fs-body`                              | 17px; 16px; 15px          | 17px               | 17px            |
+| `--size-touch`, `--size-control`         | 44px; 36px on desktop     | 49px               | 36px (hit 36px) |
+| `--size-control-sm`                      | 44px; 32px on desktop     | 49px               | 32px (hit 32px) |
+| `--size-control-lg`                      | 48px; 40px on desktop     | 56px               | 40px (hit 40px) |
+| `--size-field`, `--size-field-sm`        | 44px; 36px, 32px          | 49px               | 36px, 32px      |
+| `--target-floor`                         | 44px; 24px on desktop     | 49px               | 28px            |
+| `--fs-body`                              | 17px; 16px; 15px          | 17px               | 15px            |
 | `--fs-small` (`text-body-sm`, `text-sm`) | 15px; 14px                | 14px               | 14px            |
 | `--fs-caption` (`text-xs`)               | 12px                      | 14px               | 14px            |
 | Badge text, chart axis labels            | 10 to 12px                | 14px               | 14px            |
@@ -99,8 +116,8 @@ In an app:
 1. Take the registry version (or `@bundu/ui` built from it) and re-run `pnpm tokens:sync` or
    re-copy `mzizi-tokens-globals.css`.
 2. Replace `h-12`, `h-14` and `min-h-[44px]` on a control with a size role (`h-control`,
-   `h-field`, `min-h-touch-min`). A drawn size under 49px is fine on a desktop for a
-   button-like control, never for a field or a standalone link.
+   `h-field`, `min-h-touch-min`). A drawn size under 49px is fine on a desktop, down to 28px,
+   and never on touch.
 3. Replace any `text-[Npx]` under 14 with `text-sm`, and write body copy as `text-body`.
 4. If a layout breaks and cannot move yet, set the legacy alias (below) and plan the move.
 
@@ -132,12 +149,13 @@ Write body copy as `text-body`, not `text-base`. The token layer registers `--te
 ## What fails the build
 
 The registry's `bundu-floor` test fails when a default type step is under its floor in any
-layer, when a floored size role is under 49px, when `--target-floor` is lowered or the
-`hit-area` rule is gone, when a desktop control is drawn under 28px or a native field under
-49px, when a copy of the floor disagrees with `BUNDU_FLOOR`, or when a registry component names
-an arbitrary text size under 14px. The contract runner and the Rust evaluator fail a density
-row whose interactive control has a hit region under 49px on either pointer. Rows that predate
-the floor are pinned, so a new one cannot join them unseen; see
+layer, when a floored size role is under its tier's minimum (49px on touch), when the desktop
+layer lowers `--target-floor` below 28px or the `hit-area` rule is gone, when a desktop control
+is drawn under 28px, when a copy of the floor disagrees with `BUNDU_FLOOR`, or when a registry
+component names an arbitrary text size under 14px. The contract runner and the Rust evaluator
+fail a density row whose interactive control has a hit region under 49px on a coarse pointer or
+28px on a fine one. Rows that predate the floor are pinned, so a new one cannot join them
+unseen; see
 [the Dashboard Standard's density table](/patterns/dashboard-standard#density).
 
 ## The Bundu Order
@@ -150,10 +168,10 @@ November 2026). This section states only what the registry's code holds, in its
   they do not change.
 - **P7 and P17** are prime steps of the surface-elevation ladder (`surface` is P7, `raised` is
   P17), and the seven experimental colour families are a heptagon of hues offset 17 degrees.
-- **The floors derive from the same numbers.** Body text is 17px, a prime and Apple's iOS
-  default, on every device. Captions are 14px (2 × 7). Every control keeps a 49px hit region
-  (7 × 7, above Apple's 44 pt) and may be drawn down to 28px (4 × 7) at desktop density, never
-  with a smaller hit region.
+- **The floors derive from the same numbers.** Body text is 17px on touch, a prime and Apple's
+  iOS default, and 15px on a desktop (the owner's number). Captions are 14px (2 × 7). Every
+  control keeps a 49px hit region on touch (7 × 7, above Apple's 44 pt) and a 28px one on a
+  desktop (4 × 7, Apple's macOS default control), never with a smaller hit region.
 
 The sources are the registry's
 [`sizes-and-density.md`](https://github.com/mzizi-dev/mzizi-registry/blob/main/docs/sizes-and-density.md)
