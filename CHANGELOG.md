@@ -21,6 +21,12 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
+### Fixed — the API, the MCP server and the plugin all carry skills 0.19.0 (2026-11-12, freshness)
+
+No issue: freshness update. Read on 12 November 2026 from `api.mzizi.dev/v1/skills/summary` (`meta.version` 0.19.0), `mcp.mzizi.dev/catalogue.json` (skills 0.19.0, registry `a64e57f`) and the plugin manifest on registry `main` (1.8.0).
+
+- **Changed: `toolchain/skills`.** "Getting the skills" says npm, the MCP server and the API serve 0.19.0 and the plugin is 1.8.0 with the same twelve skills; the plugin section names 1.8.0 and 0.19.0. The earlier lines that said the API and the plugin still carried 0.18.0 are gone.
+
 ### Fixed — language pages re-checked at `main` `f9bea2b` (v0.13.0); vanished commit hashes replaced (2026-11-11, freshness)
 
 No issue: freshness update. The language repository's history was rewritten, so `2b36c8f` (the commit `status.mdx` cited as checked) and every other release commit the docs named no longer exist. Read on 11 November 2026 from `mzizi-dev/mzizi`: `main` is `f9bea2b`, tag `v0.13.0` (the release of 1 November, mzizi#146); `v0.12.0` is now `9766929`. Between the two, `compiler/`, `examples/`, `primitives/`, `LANGUAGE-TRACKER.md`, `README.md` and `CHARTER.md` are identical, and so are the benchmark arms apart from a comment and a lockfile; so no tracker mark, test count, line count, diagnostic count or harness figure moved. The suite was not re-run: the counts are the README's at `f9bea2b`, and the harness figures were read at `v0.12.0`. Work on the language's `staging` and in open pull requests is not described as released.
