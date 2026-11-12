@@ -47,10 +47,11 @@ The published scale also defines a 72px display step for hero type on marketing 
 
 ### The floor under the scale
 
-Body text is **17px on every device**, desktop included, and nothing readable is smaller than
-**14px**: captions, metadata, badges and chart labels are all 14px or more, so `text-xs` and
-`text-sm` both paint 14px. Only display and heading sizes step down as screens grow; body and
-secondary text never do. See [the Bundu floor](/foundations/bundu-floor) for where the numbers
+Body text is **17px on touch and 15px on a desktop** (a fine pointer with hover, 64rem and up;
+large body text stays 17px), and nothing readable is smaller than **14px**: captions, metadata,
+badges and chart labels are all 14px or more, so `text-xs` and `text-sm` both paint 14px. Only
+display and heading sizes step down as screens grow; secondary text never does, and body text
+steps down once, at the desktop tier. See [the Bundu floor](/foundations/bundu-floor) for where the numbers
 come from and how to migrate from the 16px body and 12px footnote.
 
 Write body copy as `text-body`. The token layer registers a `text-base` step at 17px too, but

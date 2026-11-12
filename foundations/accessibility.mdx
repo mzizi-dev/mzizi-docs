@@ -1,6 +1,6 @@
 ---
 title: "Accessibility"
-description: "The accessibility standards the Mzizi design system enforces — WCAG 7:1, 4.5:1 and 3:1 contrast with APCA 3.0, 49px hit regions, keyboard navigation and screen-reader support."
+description: "The accessibility standards the Mzizi design system enforces — WCAG 7:1, 4.5:1 and 3:1 contrast with APCA 3.0, hit regions of 49px on touch and 28px on a desktop, keyboard navigation and screen-reader support."
 sidebarTitle: "Accessibility"
 icon: "accessibility"
 ---
@@ -73,21 +73,22 @@ colour-vision deficiency. See [the MCP server](/toolchain/mcp).
 
 ## Touch targets
 
-**Every interactive control keeps a 49px hit region, on every device, desktop included.**
-That is the Bundu floor (owner, 2 November 2026): 7 × 7, above Apple's 44 pt. Nothing
-interactive has a smaller hit region. On touch, controls are also drawn at 49px; on a desktop
-a button-like control may be drawn smaller (28 to 40px) and keeps the 49px region through a
-transparent pseudo-element. The full rule, the sizes and the migration are on
+**Every interactive control keeps a hit region of 49px on touch and 28px on a desktop.**
+That is the Bundu floor in two tiers (owner, 2 and 12 November 2026): 7 × 7 on touch, above
+Apple's 44 pt, and 4 × 7 on a desktop with a mouse, Apple's macOS default control and above the
+24px of WCAG 2.2 SC 2.5.8. Nothing interactive has a smaller hit region. On touch, controls are
+also drawn at 49px; on a desktop a control is drawn 28 to 40px and its drawn box is the hit
+region. The full rule, the sizes and the migration are on
 [the Bundu floor](/foundations/bundu-floor). The space around controls has a floor too:
 14px inset, 7px gaps and 1.5 body line height, on
 [the spacing floor](/foundations/spacing-floor).
 
-| Size role      | Drawn on touch | Drawn on desktop      | Hit region |
-| -------------- | -------------- | --------------------- | ---------- |
-| `h-control`    | 49px           | 36px                  | 49px       |
-| `h-control-sm` | 49px           | 32px                  | 49px       |
-| `h-control-lg` | 56px           | 40px                  | 49px       |
-| `h-field`      | 49px           | 49px (a native field) | 49px       |
+| Size role      | Drawn on touch | Drawn on desktop      | Hit region (touch, desktop) |
+| -------------- | -------------- | --------------------- | --------------------------- |
+| `h-control`    | 49px           | 36px                  | 49px, 36px                  |
+| `h-control-sm` | 49px           | 32px                  | 49px, 32px                  |
+| `h-control-lg` | 56px           | 40px                  | 56px, 40px                  |
+| `h-field`      | 49px           | 36px (a native field) | 49px, 36px                  |
 
 Use the size roles rather than `h-12` or `h-14`:
 
@@ -176,7 +177,7 @@ to a reader.
 
 - [ ] Contrast meets the WCAG minimum (7:1 body, 4.5:1 non-body, 3:1 UI) and the APCA
       threshold, in both themes
-- [ ] Every control has a 49px hit region, and text is 17px body and 14px at the smallest
+- [ ] Every control has a hit region of 49px on touch and 28px on a desktop, and text is 17px body (15px on a desktop) and 14px at the smallest
 - [ ] Every interaction is reachable by keyboard
 - [ ] Focus indicators are visible and unmodified
 - [ ] A screen reader announces the component's purpose and state

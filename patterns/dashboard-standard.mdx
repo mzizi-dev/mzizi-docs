@@ -84,15 +84,15 @@ actions with the brand mineral (Nyuchi gold) instead of the deep text variant sh
 ## Density
 
 Dashboards are dense on a mouse and generous on touch. Every interactive control declares
-both heights, and its contract checks them. Since the Bundu floor (registry 4.23.0, 3 November 2026) every control also needs a 49px hit region on every pointer: a button-like control may be
-drawn at the heights below on a mouse and keeps the 49px region through a transparent
-pseudo-element. See [the Bundu floor](/foundations/bundu-floor).
+both heights, and its contract checks them. Since the Bundu floor (registry 4.23.0, 3 November 2026) every control also needs a 49px hit region on touch, and since its desktop tier
+(registry 4.36.0, 12 November 2026) a 28px one on a mouse: a button-like control is drawn at the heights below on a
+mouse, and its drawn box is the hit region. See [the Bundu floor](/foundations/bundu-floor).
 
 The table shows the drawn heights the contracts record. Contract rows that predate the floor
 are pinned in the registry as gaps until they move onto a size role: 38 rows across the app,
 Discover, site and `ui` components at registry 4.23.0 (19 of them app components, among them
 the side nav row, the command-palette result and search box, the toolbar search box, form-field
-input and select, and the pagination link). A new row under 49px fails the registry's checks.
+input and select, and the pagination link). A new row under 49px on a coarse pointer, or 28px on a fine one, fails the registry's checks.
 
 | Control                                                                      | Fine pointer          | Coarse pointer (touch)                       |
 | ---------------------------------------------------------------------------- | --------------------- | -------------------------------------------- |
@@ -166,7 +166,7 @@ WCAG 2.2 criteria it is built to meet. Across the standard:
 - **Meaning is never colour alone.** Trends are written out; badges carry text; charts have
   a figures table.
 - **No timeouts.** Toasts wait to be dismissed (WCAG 2.2.3).
-- **Touch targets** with a 49px hit region on every pointer, with the recorded gaps above
+- **Touch targets** with a 49px hit region on touch and 28px on a mouse, with the recorded gaps above
   pinned until they move.
 
 ## Without JavaScript
