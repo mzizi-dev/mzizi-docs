@@ -21,6 +21,10 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
+### Changed — status.mdx states the full test run at language `main` (2026-11-12, freshness)
+
+- `status.mdx` now states the result of a full `cargo test --workspace` run at language `main` (`f9bea2b`, Linux, 12 November 2026): 771 tests across 38 result blocks, 636 in the compiler crate, 770 passed, none failed, one ignored. The README's 765 in 29 suites stays beside it as the README's figure, and the page no longer says the suite was not re-run.
+
 ### Fixed — the API, the MCP server and the plugin all carry skills 0.19.0 (2026-11-12, freshness)
 
 No issue: freshness update. Read on 12 November 2026 from `api.mzizi.dev/v1/skills/summary` (`meta.version` 0.19.0), `mcp.mzizi.dev/catalogue.json` (skills 0.19.0, registry `a64e57f`) and the plugin manifest on registry `main` (1.8.0).
