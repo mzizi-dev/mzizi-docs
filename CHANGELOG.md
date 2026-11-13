@@ -21,6 +21,12 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
+### Changed — `@nyuchi/mzizi-mcp` 0.20.0, registry 4.37.0 (2026-11-13, freshness)
+
+No issue: a freshness update after registry 4.37.0 (`7c6449a`) and `@nyuchi/mzizi-mcp` 0.20.0.
+
+- **Changed (`toolchain/mcp`):** the page says `@nyuchi/mzizi-mcp` is 0.20.0, read from npm on 13 November 2026 (was 0.19.0). The hosted server and the MCP Registry list the same version. The MCP's bundled brand data now carries the desktop tier of the Bundu floor beside the 49px touch target, which no page stated otherwise.
+
 ### Changed — the Bundu floor has two tiers; the plugin split; the 12 November package versions (2026-11-12, freshness)
 
 No issue: a freshness update after registry 4.36.0 (`f94666b`), `@nyuchi/mzizi-skills` 0.20.0, `@nyuchi/mzizi-mcp` 0.19.0 and `@nyuchi/mzizi-cli` 0.10.0. Refs [mzizi-dev/mzizi-registry#660](https://github.com/mzizi-dev/mzizi-registry/issues/660).
