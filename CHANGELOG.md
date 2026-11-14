@@ -21,6 +21,14 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
+### Changed — Dependabot proposes no semver-major action updates; release actions at nyuchi/.github 0.9.0 (2026-11-14)
+
+No issue: records the CI changes already on `staging` (`42e31e1`, `33ac0d7`), so the release that carries them has notes.
+
+- `.github/dependabot.yml` ignores `version-update:semver-major` for the `github-actions` ecosystem, so a major bump arrives only when someone chooses it (owner, 2026-11-12). The ignore rule never blocks security updates. Dependabot reads its configuration from `main`, so the rule takes effect once this release lands.
+- `main-release.yml` and `staging-version.yml` pin `nyuchi/.github`'s `next-version` action and `reusable-staging-release.yml` workflow at 0.9.0 (`755c937`), up from 0.7.0 (`c2e2506`); Dependabot's actions group.
+- Nothing published changes: no page, navigation entry or redirect moves.
+
 ### Changed — `@nyuchi/mzizi-mcp` 0.20.0, registry 4.37.0 (2026-11-13, freshness)
 
 No issue: a freshness update after registry 4.37.0 (`7c6449a`) and `@nyuchi/mzizi-mcp` 0.20.0.
