@@ -9,7 +9,7 @@ The Mzizi MCP server gives agents the registry, the brand tokens, the architectu
 the doctrine, the agent skills and these docs over the
 [Model Context Protocol](https://modelcontextprotocol.io). It is the `mzizi-mcp` Cloudflare
 Worker, published as [`@nyuchi/mzizi-mcp`](https://www.npmjs.com/package/@nyuchi/mzizi-mcp)
-(`0.23.0` as of 17 November 2026). In the
+(`0.24.0` as of 17 November 2026). In the
 [MCP Registry](https://registry.modelcontextprotocol.io) it is
 `io.github.mzizi-dev/mzizi-mcp`, listing both the hosted endpoint and the npm package.
 
@@ -96,20 +96,20 @@ hit. Use `mzizi_search` to find the name and `mzizi_execute` to read it.
 
 These need no account:
 
-| Operation                          | What it answers                                                                                      |
-| ---------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| `get_component`                    | One component in full, Rust first, then Astro, then React; optional docs and version history         |
-| `list_components`                  | The paged index, filterable by node, owner, collection, type, `rust` and `astro`                     |
-| `get_tokens`                       | The brand system, including all 21 colour families. `family=floors` gives the floor                  |
-| `get_architecture`                 | The DNA helix, or one node or rung                                                                   |
-| `get_doctrine`                     | Ubuntu pillars and principles, conventions, AI instruction sets. `topic=bundu-floor` gives the floor |
-| `get_skills`                       | The agent skills: listed, one in full, or one category in full                                       |
-| `check_accessibility`              | Contrast against the Mzizi floor, computed locally, with optional spacing inputs                     |
-| `list_crates`                      | Every Mzizi Roots crate, with its version, dependencies and components                               |
-| `describe`                         | This server's operations, what each replaces, and its data sources                                   |
-| `docs_search_mzizi`                | Search these docs (federated)                                                                        |
-| `docs_query_docs_filesystem_mzizi` | Read-only `rg`, `cat` and `tree` over these docs' pages (federated)                                  |
-| `docs_submit_feedback`             | Report a problem with these docs (federated)                                                         |
+| Operation                          | What it answers                                                                                                                                                                             |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `get_component`                    | One component in full, Rust first, then Astro, then React; optional docs and version history                                                                                                |
+| `list_components`                  | The paged index, filterable by node, owner, collection, type, `rust` and `astro`                                                                                                            |
+| `get_tokens`                       | The brand system, including all 21 colour families. `family=floors` gives the floor                                                                                                         |
+| `get_architecture`                 | The DNA helix, or one node or rung                                                                                                                                                          |
+| `get_doctrine`                     | Ubuntu pillars and principles, the seven engineering constraints (`topic=engineering-constraints`, 0.24.0 and later), conventions, AI instruction sets. `topic=bundu-floor` gives the floor |
+| `get_skills`                       | The agent skills: listed, one in full, or one category in full                                                                                                                              |
+| `check_accessibility`              | Contrast against the Mzizi floor, computed locally, with optional spacing inputs                                                                                                            |
+| `list_crates`                      | Every Mzizi Roots crate, with its version, dependencies and components                                                                                                                      |
+| `describe`                         | This server's operations, what each replaces, and its data sources                                                                                                                          |
+| `docs_search_mzizi`                | Search these docs (federated)                                                                                                                                                               |
+| `docs_query_docs_filesystem_mzizi` | Read-only `rg`, `cat` and `tree` over these docs' pages (federated)                                                                                                                         |
+| `docs_submit_feedback`             | Report a problem with these docs (federated)                                                                                                                                                |
 
 The sign-in operation is `fundi`. It needs a signed-in console user, and a refused call says
 how to sign in.

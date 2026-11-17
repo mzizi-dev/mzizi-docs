@@ -48,27 +48,27 @@ disagree, the vendor's page wins.
 
 ## At a glance
 
-| Client                        | Connect with                                                | Skills arrive                                                | For the sign-in operations                        |
-| ----------------------------- | ----------------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------- |
-| Claude.ai                     | A custom connector                                          | Over MCP, or a skill ZIP uploaded under Customize > Skills   | A second connector at `/mcp/signin`               |
-| Claude Desktop                | A custom connector, or `claude_desktop_config.json` (stdio) | Over MCP                                                     | The connector route; stdio has no `mzizi_fundi`   |
-| Claude Code                   | The `mzizi` plugin, or `claude mcp add`                     | Natively with the plugin; over MCP otherwise                 | `claude mcp add` for `/mcp/signin`, then `/mcp`   |
-| The Claude API                | The MCP connector (`mcp_servers`)                           | Over MCP                                                     | `/mcp/signin` with an `authorization_token`       |
-| ChatGPT                       | A custom MCP server under Plugins                           | Over MCP                                                     | A second server at `/mcp/signin`                  |
-| OpenAI Codex                  | `config.toml` or `codex mcp add` (a plugin after #520)      | Natively from `.agents/skills/`; over MCP otherwise          | A `/mcp/signin` table, then `codex mcp login`     |
-| The OpenAI API and Agents SDK | A `type: "mcp"` tool                                        | Over MCP                                                     | `/mcp/signin` with `authorization`                |
-| Z.ai's GLM Coding Plan        | Claude Code (or another tool it supports)                   | As that tool gets them                                       | As that tool does                                 |
-| OpenCode                      | `opencode.json`                                             | Natively from `.agents/skills/`, or over MCP                 | A second `remote` entry, then `opencode mcp auth` |
-| Cursor                        | `mcp.json`                                                  | Natively from `.agents/skills/`, rules adapters, or over MCP | A second entry at `/mcp/signin`                   |
-| VS Code and GitHub Copilot    | `MCP: Add Server`, `.mcp.json` or `mcp-config.json`         | Natively from `.agents/skills/`, or over MCP                 | A second HTTP server at `/mcp/signin`             |
-| Antigravity CLI and IDE       | `mcp_config.json` with `serverUrl`                          | Natively from `.agents/skills/`, rules adapters, or over MCP | A second `serverUrl` entry at `/mcp/signin`       |
-| Gemini CLI (enterprise)       | `gemini mcp add` or `settings.json`                         | Natively from `.agents/skills/`, or over MCP                 | `gemini mcp add` for `/mcp/signin`                |
-| Devin Desktop (was Windsurf)  | `.devin/mcp_config.json`                                    | Natively from `.agents/skills/`, rules adapters, or over MCP | A second entry at `/mcp/signin`                   |
-| Zed                           | `context_servers` in `settings.json`                        | Natively from `.agents/skills/`, or over MCP                 | A second server at `/mcp/signin`                  |
-| Cline                         | `cline_mcp_settings.json`, `streamableHttp`                 | Natively from `.cline/skills/`, or over MCP                  | A second server with an `Authorization` header    |
-| Kiro CLI (was Amazon Q CLI)   | `.kiro/settings/mcp.json`                                   | Natively from `.kiro/skills/`, or over MCP                   | A second entry at `/mcp/signin`                   |
-| JetBrains AI Assistant        | Settings > Tools > AI Assistant > MCP                       | AI Assistant skills settings, or over MCP                    | A second server at `/mcp/signin`                  |
-| JetBrains Junie               | `.junie/mcp/mcp.json`                                       | `AGENTS.md`, or over MCP                                     | Not documented                                    |
+| Client                        | Connect with                                                | Skills arrive                                                | For the sign-in operations                          |
+| ----------------------------- | ----------------------------------------------------------- | ------------------------------------------------------------ | --------------------------------------------------- |
+| Claude.ai                     | A custom connector                                          | Over MCP, or a skill ZIP uploaded under Customize > Skills   | A second connector at `/mcp/signin`                 |
+| Claude Desktop                | A custom connector, or `claude_desktop_config.json` (stdio) | Over MCP                                                     | The connector route; stdio has no `fundi` operation |
+| Claude Code                   | The `mzizi` plugin, or `claude mcp add`                     | Natively with the plugin; over MCP otherwise                 | `claude mcp add` for `/mcp/signin`, then `/mcp`     |
+| The Claude API                | The MCP connector (`mcp_servers`)                           | Over MCP                                                     | `/mcp/signin` with an `authorization_token`         |
+| ChatGPT                       | A custom MCP server under Plugins                           | Over MCP                                                     | A second server at `/mcp/signin`                    |
+| OpenAI Codex                  | `config.toml` or `codex mcp add` (a plugin after #520)      | Natively from `.agents/skills/`; over MCP otherwise          | A `/mcp/signin` table, then `codex mcp login`       |
+| The OpenAI API and Agents SDK | A `type: "mcp"` tool                                        | Over MCP                                                     | `/mcp/signin` with `authorization`                  |
+| Z.ai's GLM Coding Plan        | Claude Code (or another tool it supports)                   | As that tool gets them                                       | As that tool does                                   |
+| OpenCode                      | `opencode.json`                                             | Natively from `.agents/skills/`, or over MCP                 | A second `remote` entry, then `opencode mcp auth`   |
+| Cursor                        | `mcp.json`                                                  | Natively from `.agents/skills/`, rules adapters, or over MCP | A second entry at `/mcp/signin`                     |
+| VS Code and GitHub Copilot    | `MCP: Add Server`, `.mcp.json` or `mcp-config.json`         | Natively from `.agents/skills/`, or over MCP                 | A second HTTP server at `/mcp/signin`               |
+| Antigravity CLI and IDE       | `mcp_config.json` with `serverUrl`                          | Natively from `.agents/skills/`, rules adapters, or over MCP | A second `serverUrl` entry at `/mcp/signin`         |
+| Gemini CLI (enterprise)       | `gemini mcp add` or `settings.json`                         | Natively from `.agents/skills/`, or over MCP                 | `gemini mcp add` for `/mcp/signin`                  |
+| Devin Desktop (was Windsurf)  | `.devin/mcp_config.json`                                    | Natively from `.agents/skills/`, rules adapters, or over MCP | A second entry at `/mcp/signin`                     |
+| Zed                           | `context_servers` in `settings.json`                        | Natively from `.agents/skills/`, or over MCP                 | A second server at `/mcp/signin`                    |
+| Cline                         | `cline_mcp_settings.json`, `streamableHttp`                 | Natively from `.cline/skills/`, or over MCP                  | A second server with an `Authorization` header      |
+| Kiro CLI (was Amazon Q CLI)   | `.kiro/settings/mcp.json`                                   | Natively from `.kiro/skills/`, or over MCP                   | A second entry at `/mcp/signin`                     |
+| JetBrains AI Assistant        | Settings > Tools > AI Assistant > MCP                       | AI Assistant skills settings, or over MCP                    | A second server at `/mcp/signin`                    |
+| JetBrains Junie               | `.junie/mcp/mcp.json`                                       | `AGENTS.md`, or over MCP                                     | Not documented                                      |
 
 ### Skills, instructions and plugins by client
 

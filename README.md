@@ -165,5 +165,5 @@ See [`AGENTS.md`](./AGENTS.md) for the merge convention and the MDX/prettier got
 
 Licensed under the [Apache License 2.0](./LICENSE).
 
-Mzizi owns and operates its framework, language, registry, design system, docs and API. The
-Bundu Foundation is the parent copyright holder.
+Mzizi is a Bundu Foundation project, built by Nyuchi; Nyuchi runs its cyber section (the
+console and active cyber testing). The Bundu Foundation is the parent copyright holder.
