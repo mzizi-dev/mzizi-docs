@@ -8,6 +8,38 @@ icon: "map"
 different maturity. This page draws the map. The language is the subject; the toolchain,
 the components and the platform support it.
 
+## The Bundu ecosystem
+
+The Bundu ecosystem is one ecosystem, with one doctrine and one source of truth. Mzizi sits
+inside it. The ecosystem's own overview is at [bundu.org/ecosystem](https://www.bundu.org/ecosystem),
+and the announcement is in [the newsroom](https://www.bundu.org/newsroom/the-bundu-ecosystem).
+This page links them rather than copying them.
+
+The narrative spine, in the owner's words:
+
+> "bundu is the wilderness, shamwari is the ranger, nyuchi is the bee, mukoko is the hive, Mzizi is the root everything grows from."
+
+The four pillars, from the ecosystem record:
+
+| Pillar        | Role                                               | What it is                                                                                                                                                                                                                                                                                                             |
+| ------------- | -------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Bundu Labs    | Research, knowledge, standards and frameworks      | The research and standards arm of the Bundu Foundation. It investigates infrastructure gaps across Africa and emerging markets, and publishes the standards, frameworks and vocabulary the rest of the ecosystem builds on.                                                                                            |
+| Nyuchi Africa | Platform and infrastructure                        | The platform and infrastructure company of the ecosystem: the Nyuchi API, the console, and its own tools and products. Mukoko is a product of Nyuchi Africa; Nyuchi also sells Shamwari AI and builds Mzizi. It builds platforms others build on; it is not an outsourced IT department or a managed service provider. |
+| Mukoko        | The consumer pillar                                | Mukoko is a pillar of Bundu and a product of Nyuchi Africa, built and operated by Nyuchi: the hive and the consumer pillar, and the proof that what is researched reaches production and is used by people, and that the infrastructure works.                                                                         |
+| Shamwari AI   | Community-facing AI and conversational experiences | The ranger in the wilderness, guiding and managing things. Shamwari is Shona for friend: an AI companion with open weights, grounded in Zimbabwean law and policy. A pillar and a Foundation project; it runs on Nyuchi and Nyuchi sells it.                                                                           |
+
+Mzizi is a shared foundation, not a pillar. The ecosystem record lists it with the Ubuntu
+doctrine, the `.cell` data store and the Nyuchi API. The doctrine is on
+[the Ubuntu doctrine page](/foundations/doctrine).
+
+Two proposed items sit alongside these, and neither is live:
+
+- **`.cell`** is a Bundu Labs project that maps directly to SiafuDB; its repository is
+  `siafuDB/cell`. Its spec (0.1.0) is a draft and **proposed**, and it is not adopted. Its
+  register entry is at [standards.bundu.org/cell](https://standards.bundu.org/cell/).
+- **The Mukoko tokens** are a proposed project and a future build-out, not on the current
+  roadmap. Not in development, none issued, none on sale.
+
 ## The repositories
 
 All in the [`mzizi-dev`](https://github.com/mzizi-dev) org.
@@ -34,9 +66,9 @@ All in the [`mzizi-dev`](https://github.com/mzizi-dev) org.
 
   </Card>
   <Card title="mzizi-api" icon="server" href="https://github.com/mzizi-dev/mzizi-api">
-    **`api.mzizi.dev`.** Formerly `mzizi-api-gateway`. A Hono Cloudflare Worker in TypeScript that serves the registry's
-    files, generated at a pinned registry commit and bundled at build time. No origin, no
-    database.
+    **`api.mzizi.dev`.** Formerly `mzizi-api-gateway`. A Rust Cloudflare Worker (`workers-rs`)
+    since 17 November 2026, serving the registry's files, generated at a pinned registry commit
+    and bundled at build time. No origin, no database.
 
     _Live on `api.mzizi.dev` since 29 September 2026. See [the API gateway](/platform/api-gateway)._
 
@@ -102,8 +134,7 @@ mukoko and the other brands sit inside it.
 
 For anything about Mzizi that is not a security report, write to
 [`support@bundu.org`](mailto:support@bundu.org): questions, the docs, the API, the MCP server,
-the CLI and the components. To report a problem with a docs page, you can also use the
-`docs_submit_feedback` tool on [the MCP server](/toolchain/mcp).
+the CLI and the components. To report a problem with a docs page, you can also use `mzizi_feedback` with `target: "docs"` on [the MCP server](/toolchain/mcp), which needs no account.
 
 ### Reporting a security problem
 
