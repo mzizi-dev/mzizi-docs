@@ -21,6 +21,12 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
+### Changed — who Mzizi belongs to (2026-11-17)
+
+- **The home page's Ownership section says Mzizi is a Bundu Foundation project, built by Nyuchi,
+  and that Nyuchi runs its cyber section (the console and active cyber testing).** It said Mzizi
+  owned and operated itself. The owner set this wording on 2026-11-17; mzizi.dev says the same.
+
 ### Fixed — the doctrine constraints are served over MCP 0.24.0; the MCP page lists the new topic (2026-11-17, Refs mzizi-dev/agent-tools#413)
 
 - **`foundations/doctrine` now says the seven engineering constraints are served by `get_doctrine`** with `topic: "engineering-constraints"`, from MCP server 0.24.0. It said they were not served over MCP or the API. The HTTP API still has no constraints route (`/api/v1/doctrine` and the other doctrine paths return 404), so the page says so.
