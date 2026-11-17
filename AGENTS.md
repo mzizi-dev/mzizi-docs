@@ -67,11 +67,12 @@ Facts that inherited prose often gets wrong:
 - **The DNA helix, not axes or layers.** Eight nodes, six strands, four rungs.
   `/v1/architecture/frontend/axes` and `/layers` answer **410 Gone**, deliberately.
 - **No database outside the console.** The registry is files; `api.mzizi.dev`
-  (`mzizi-dev/mzizi-api`, formerly `mzizi-api-gateway`, a **Hono** Worker, not Rust) and `mcp.mzizi.dev` bundle those files
+  (`mzizi-dev/mzizi-api`, formerly `mzizi-api-gateway`, a **Rust** (`workers-rs`) Worker since 17 November 2026; a **Hono** Worker before that) and `mcp.mzizi.dev` bundle those files
   at build time from a pinned registry commit. Only `mzizi-console` uses Supabase.
 - **One MCP server**, at `mcp.mzizi.dev/mcp`. `mzizi.dev/mcp` is a 308 to it. It is free
-  with no sign-in except the Fundi tools (`mzizi_fundi`, `mzizi_report_issue`); an anonymous
-  `tools/list` answered on 7 October 2026. Its MCP Registry name is
+  as three tools (`mzizi_search`, `mzizi_execute`, `mzizi_feedback`). Sign-in is needed only for the
+  `fundi` operation and for filing an issue; an anonymous `tools/list` answered three tools on
+  17 November 2026. Its MCP Registry name is
   `io.github.mzizi-dev/mzizi-mcp`.
 - **The CLI is free.** `mzizi add` is published from `@nyuchi/mzizi-cli` (0.8.0 on
   4 November 2026, which adds `mzizi check`); 0.6.0's binaries printed nothing, so pages say
@@ -90,7 +91,7 @@ Facts that inherited prose often gets wrong:
 - **Mzizi's brand mineral is hematite**, a heritage tone, not one of the Seven African
   Minerals. It is the default `--primary` of the registry's `mzizi-tokens-globals.css`;
   `/v1/brand`'s semantic `--primary` is still tanzanite.
-- **The Roots crates are on crates.io**: fourteen crates at 0.7.0 (read on 4 November 2026),
+- **The Roots crates are on crates.io**: fourteen crates at 0.8.0 (read on 17 November 2026),
   installed with `cargo add mzizi-roots`.
 - **`nyuchi-*` components are `mzizi-*`**, and the old names 308 to the new ones.
 
@@ -330,7 +331,7 @@ Any substantial build, migration, investigation or multi-step task gets a GitHub
 
 ## Dev skills, progress reports and the merge gate
 
-Load the Mzizi **dev skills** before starting work: `mzizi_get_skills category=dev` on the Mzizi MCP (`mcp.mzizi.dev`), or `@nyuchi/mzizi-skills` from npm. They are `digital-hygiene` and `progress-report`.
+Load the Mzizi **dev skills** before starting work: `mzizi_execute` with `get_skills` and `category: dev` on the Mzizi MCP (`mcp.mzizi.dev`), or `@nyuchi/mzizi-skills` from npm. They are `digital-hygiene` and `progress-report`.
 
 - **Digital hygiene.** Check free disk before starting, clone only under `$TMPDIR`, share build caches, and audit, then delete, your clones once the work merges (`digital-hygiene` skill).
 - **Clone isolation.** Clone only into a directory unique to you; never touch another agent's.

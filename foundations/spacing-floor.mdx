@@ -123,13 +123,13 @@ before you have moved your layouts, and remove it as soon as you have.
 
 The floor is read from the registry, not typed in each place:
 
-| Surface | Where the five numbers are                                                                                                                                                                                                                                          |
-| ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Tokens  | `--inset-floor`, `--gap-floor`, `--leading-floor` in `mzizi-tokens-globals.css`; the fixed roles `spacing-inset-floor` and `spacing-gap-floor`                                                                                                                      |
-| API     | [`GET /v1/brand`](https://api.mzizi.dev/v1/brand), in the `accessibility` block: `minInset`, `minControlGap`, `minLabelGap`, `minItemGap`, `minBodyLeading`. Served by the API (read on 4 November 2026); read the live registry pin in the `x-mzizi-source` header |
-| MCP     | The tools read the same block. `mzizi_get_tokens` (`family=floors`), `mzizi_get_doctrine` (`topic=bundu-floor`) and spacing inputs on `mzizi_check_accessibility` are on the MCP server (`0.17.0`, 4 November 2026); see [the MCP server](/toolchain/mcp)           |
-| Skills  | The `mzizi-design` skill teaches the floor from `@nyuchi/mzizi-skills` 0.17.0, and the latest is 0.19.0 (11 November 2026); see [skills](/toolchain/skills)                                                                                                         |
-| CLI     | `mzizi check`, from `@nyuchi/mzizi-cli` 0.8.0 (above)                                                                                                                                                                                                               |
+| Surface | Where the five numbers are                                                                                                                                                                                                                                                 |
+| ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Tokens  | `--inset-floor`, `--gap-floor`, `--leading-floor` in `mzizi-tokens-globals.css`; the fixed roles `spacing-inset-floor` and `spacing-gap-floor`                                                                                                                             |
+| API     | [`GET /v1/brand`](https://api.mzizi.dev/v1/brand), in the `accessibility` block: `minInset`, `minControlGap`, `minLabelGap`, `minItemGap`, `minBodyLeading`. Served by the API (read on 4 November 2026); read the live registry pin in the `x-mzizi-source` header        |
+| MCP     | The operations read the same block. `get_tokens` (`family=floors`), `get_doctrine` (`topic=bundu-floor`) and spacing inputs on `check_accessibility`, run through `mzizi_execute`, are on the MCP server (`0.17.0`, 4 November 2026); see [the MCP server](/toolchain/mcp) |
+| Skills  | The `mzizi-design` skill teaches the floor from `@nyuchi/mzizi-skills` 0.17.0, and the latest is 0.19.0 (11 November 2026); see [skills](/toolchain/skills)                                                                                                                |
+| CLI     | `mzizi check`, from `@nyuchi/mzizi-cli` 0.8.0 (above)                                                                                                                                                                                                                      |
 
 If a surface disagrees with `BUNDU_FLOOR`, the surface is wrong: change it upstream in the
 registry.

@@ -39,6 +39,7 @@ What changed since `0.6.1`:
 | `0.8.0`  | Adds `mzizi check [path...]` (see [the spacing floor](/foundations/spacing-floor)). Depends on `@nyuchi/mzizi-skills` `^0.17.0`, so the CLI bundles the skills of that release                                                                        |
 | `0.9.0`  | `mzizi add` takes `--type` (`--target` is the same flag) and installs five types: `mzizi`, `tsx`, `astro`, `swift` and `kotlin`, with `rust` and `typescript` accepted as spellings of `mzizi` and `tsx`. Depends on `@nyuchi/mzizi-skills` `^0.19.0` |
 | `0.10.0` | A dependency refresh: no command, flag or behaviour changes                                                                                                                                                                                           |
+| `0.11.0` | Calls `mzizi_execute` for the MCP operations it uses, to match the three-tool MCP surface (see [the MCP server](/toolchain/mcp)).                                                                                                                     |
 
 ## Commands
 
@@ -49,7 +50,7 @@ What changed since `0.6.1`:
 | `fundi explore`                     | Reads a few files (`package.json`, `tsconfig.json`, the global stylesheet, the Tailwind config, `components.json`) and prints a project snapshot. Offline. No model call |
 | `fundi plan <goal>`                 | **Read-only.** Plans the minimal edits to wire Mzizi in, and prints them as a dry run                                                                                    |
 | `fundi chat <message>`              | One-shot chat scoped to Mzizi doctrine                                                                                                                                   |
-| `fundi login` / `logout` / `whoami` | Save, clear or show a console token. Only the gated Fundi tools need one                                                                                                 |
+| `fundi login` / `logout` / `whoami` | Save, clear or show a console token. Only the sign-in operations need one                                                                                                |
 
 Every command works under either name: `fundi add` and `mzizi add` are the same.
 
@@ -133,8 +134,8 @@ project snapshot plus the Mzizi skills that match your goal, for that agent to p
 ## Registry access
 
 `plan` and `chat` read the registry through [the MCP server](/toolchain/mcp), which serves
-every tool but the Fundi tools without sign-in. So `explore`, `plan`, `chat` and `add` need no
-account. `fundi login` exists only for the Fundi tools, which act as a Mzizi console user.
+every operation but the sign-in ones without sign-in. So `explore`, `plan`, `chat` and `add` need no
+account. `fundi login` exists only for the sign-in operations, which act as a Mzizi console user.
 
 ## Safety
 

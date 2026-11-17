@@ -109,6 +109,7 @@
             "group": "Foundations",
             "pages": [
               "foundations/overview",
+              "foundations/doctrine",
               "foundations/tokens",
               "foundations/typography",
               "foundations/layout",
