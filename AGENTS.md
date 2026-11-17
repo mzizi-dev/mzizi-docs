@@ -176,8 +176,9 @@ An owner rule, 2026-09-30: "changelogs are super important".
   never link it. Check a host before writing it as live — this list moves.
 - **`mz`** is the compiler binary. **Primitives** are `.mz` source copied into a project, not
   crates.
-- **Ownership.** Mzizi owns and operates the framework, language, registry, design system,
-  docs and API. Nyuchi operates the console and the revenue products. Copyright notices name
+- **Ownership (owner, 17 November 2026).** Mzizi is a Bundu Foundation project, built by
+  Nyuchi: the framework, language, registry, design system, docs and API. Nyuchi runs its cyber
+  section (the console and active cyber testing) and the revenue products. Copyright notices name
   the **Bundu Foundation** as the parent copyright holder; Mzizi is not a separate legal
   entity.
 - **Security contact.** `security@nyuchi.com`, for the console and everything else Mzizi,
