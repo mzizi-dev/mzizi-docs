@@ -21,6 +21,20 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
+### Changed — who Mzizi belongs to (2026-11-17)
+
+- **The home page's Ownership section says Mzizi is a Bundu Foundation project, built by Nyuchi,
+  and that Nyuchi runs its cyber section (the console and active cyber testing).** It said Mzizi
+  owned and operated itself. The owner set this wording on 2026-11-17; mzizi.dev says the same.
+  The console page says the same, and the charter page carries a note that this wording
+  supersedes its owner line until `CHARTER.md` is amended.
+
+### Fixed — the doctrine constraints are served over MCP 0.24.0; the MCP page lists the new topic (2026-11-17, Refs mzizi-dev/agent-tools#413)
+
+- **`foundations/doctrine` now says the seven engineering constraints are served by `get_doctrine`** with `topic: "engineering-constraints"`, from MCP server 0.24.0. It said they were not served over MCP or the API. The HTTP API still has no constraints route (`/api/v1/doctrine` and the other doctrine paths return 404), so the page says so.
+- **`toolchain/mcp` names 0.24.0** as the published version and lists `engineering-constraints` among the `get_doctrine` topics.
+- **Two small corrections:** `toolchain/connect` says stdio has no `fundi` operation, not `mzizi_fundi`, and `roots/overview` links registry #710 at its issue page, not as a pull request.
+
 ### Added — the Ubuntu doctrine page; the organisation process (2026-11-17, refresh)
 
 Refs mzizi-dev/agent-tools#413. The doctrine text comes from `content/doctrine/` in `mzizi-dev/mzizi-registry` at `staging`; the process text from `nyuchi/.github` at `main`.
