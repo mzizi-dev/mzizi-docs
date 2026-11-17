@@ -67,7 +67,7 @@ the Mzizi Roots crates on crates.io, and the `@nyuchi/mzizi-*` npm packages from
 
 ## Facts that drift
 
-Checked 2026-09-29. Most inherited prose gets at least one of these wrong.
+Checked 2026-11-17. Most inherited prose gets at least one of these wrong.
 
 - **No database outside the console.** The registry is files (`registry.json`, component
   source, `content/doctrine/**`). `api.mzizi.dev` is `mzizi-api` (formerly `mzizi-api-gateway`), a Rust (`workers-rs`) Worker

@@ -7,8 +7,7 @@ icon: "scale-balanced"
 
 Mzizi's doctrine is data in [`mzizi-dev/mzizi-registry`](https://github.com/mzizi-dev/mzizi-registry),
 under `content/doctrine/`. It has three parts, each listed below in the order the registry
-sorts it. The names, Shona words and meanings are the registry's own wording. The
-[`get_doctrine`](/toolchain/mcp) operation serves the same text.
+sorts it. The names, Shona words and meanings are the registry's own wording. `get_doctrine` serves the pillars and principles; the engineering constraints are not yet served over MCP or the API.
 
 These are not the four design pillars in [the foundations overview](/foundations/overview).
 Those are the design system's own decisions. The Ubuntu pillars below are the doctrine they
@@ -54,6 +53,8 @@ check, which is how it is held to account.
 | 5   | Personal data sovereignty      | A person owns their data. It lives on their device first, syncs to their own isolated cloud space, and moves to pods in the Nyuchi Honeycomb without being reshaped.                     | Personal data is stored on the device and in the person's isolated space only; a person can export and delete all of it.                                         |
 | 6   | No surveillance business model | We do not earn money from attention or personal data.                                                                                                                                    | No third-party tracking, data sale or engagement-maximising pattern is present; review fails a change that adds one.                                             |
 | 7   | The Bundu floor                | The minimums nothing can go under: text size, contrast, hit regions and spacing, so that nobody is punished for their eyesight or their device.                                          | The existing `bundu-floor` doctrine (`get_doctrine` with `topic: bundu-floor`) and `mzizi_check_accessibility`. See [the Bundu floor](/foundations/bundu-floor). |
+
+Check names are the registry's. Over MCP, call `mzizi_execute` with `operation: "check_accessibility"`.
 
 Each constraint also names the principles it rests on in the registry. Survival and
 connectivity, respect and multilingual parity, and dignity and personal data sovereignty are

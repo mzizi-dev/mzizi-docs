@@ -22,7 +22,7 @@ It is the one part of Mzizi meant to keep state: accounts, component version his
 telemetry and the Fundi issue desk belong to it. Today it keeps no database of its own: the
 repository has no Supabase client, environment variable or migration, its data comes from the
 public API, and sign-in is WorkOS AuthKit. Decided, not built: any state it keeps goes in
-Cloudflare D1. See [where data lives](/platform/data). The console is where the gated [Fundi tools](/toolchain/mcp#the-sign-in-operations)
+Cloudflare D1. See [where data lives](/platform/data). The console is where the gated [sign-in operations](/toolchain/mcp#the-sign-in-operations)
 get their signed-in user.
 
 ## The split

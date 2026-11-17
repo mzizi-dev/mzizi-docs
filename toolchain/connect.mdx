@@ -16,18 +16,13 @@ disagree, the vendor's page wins.
 
 ## What you connect
 
-| Endpoint                                            | Use it for                                                                                                  |
-| --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| `https://mcp.mzizi.dev/mcp`                         | All three tools, with no account. Streamable HTTP. It never asks you to sign in                             |
-| `https://mcp.mzizi.dev/mcp/signin`                  | The same server behind sign-in. It answers `401` until you sign in, then serves every operation             |
-| `npx -y @nyuchi/mzizi-mcp` (stdio, on your machine) | Every operation except `fundi`, and the bundled data, offline except the `docs_*` operations. No credential |
+| Endpoint                                            | Use it for                                                                                                            |
+| --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `https://mcp.mzizi.dev/mcp`                         | Every operation except the sign-in ones, with no account. Streamable HTTP. A sign-in call answers with how to sign in |
+| `https://mcp.mzizi.dev/mcp/signin`                  | The same server behind sign-in. It answers `401` until you sign in, then serves every operation                       |
+| `npx -y @nyuchi/mzizi-mcp` (stdio, on your machine) | Every operation except `fundi`, and the bundled data, offline except the `docs_*` operations. No credential           |
 
-**What needs sign-in.** Only the `fundi` operation and filing an issue with `mzizi_feedback`,
-which act as your Mzizi console user. Connected to `/mcp`, they are listed, and calling one
-answers with how to sign in. A client starts its OAuth flow only when a server answers `401`,
-and `/mcp` never does, so to use those, add `/mcp/signin` (as a second server, or instead of `/mcp`).
-The server supports dynamic client registration, so a client that asks how to register should
-register automatically. It does not publish a client ID metadata document.
+**What needs sign-in.** The `fundi` operation, and filing an issue with `mzizi_feedback`. They act as your Mzizi console user. Called without sign-in, `fundi` answers `200` with instructions to sign in, and a `mzizi_feedback` issue (without `target: "docs"`) answers `401` with an OAuth challenge (`WWW-Authenticate`). A client that runs OAuth starts its sign-in flow from that `401`. A client that does not can connect to `/mcp/signin`, which answers `401` until you sign in. The server supports dynamic client registration, so a client that asks how to register should register automatically. It does not publish a client ID metadata document.
 
 **How the skills arrive.** One of three ways, depending on the client:
 
@@ -53,7 +48,7 @@ register automatically. It does not publish a client ID metadata document.
 
 ## At a glance
 
-| Client                        | Connect with                                                | Skills arrive                                                | For the Fundi tools                               |
+| Client                        | Connect with                                                | Skills arrive                                                | For the sign-in operations                        |
 | ----------------------------- | ----------------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------- |
 | Claude.ai                     | A custom connector                                          | Over MCP, or a skill ZIP uploaded under Customize > Skills   | A second connector at `/mcp/signin`               |
 | Claude Desktop                | A custom connector, or `claude_desktop_config.json` (stdio) | Over MCP                                                     | The connector route; stdio has no `mzizi_fundi`   |
@@ -119,7 +114,7 @@ Enterprise plans an owner adds it once in
 [Organization settings > Connectors](https://claude.ai/admin-settings/connectors) (**Add**,
 then **Custom**, then **Web**), and each member connects to it.
 
-For the Fundi tools, add a second connector at `https://mcp.mzizi.dev/mcp/signin`, choose a
+For the sign-in operations, add a second connector at `https://mcp.mzizi.dev/mcp/signin`, choose a
 sign-in option under **Authentication**, and **Register automatically** under **OAuth client**.
 
 Enable it in a conversation from **+**, then **Connectors**. Skills arrive over MCP: ask Claude
@@ -181,7 +176,7 @@ carries.
 
 ```bash
 claude mcp add --transport http --scope user mzizi https://mcp.mzizi.dev/mcp
-# for the Fundi tools; run /mcp in a session to sign in
+# for the sign-in operations; run /mcp in a session to sign in
 claude mcp add --transport http --scope user mzizi-signin https://mcp.mzizi.dev/mcp/signin
 ```
 
@@ -278,7 +273,7 @@ Start a new session after installing. The plugin's `mcp.json` connects `/mcp` ov
 [mcp_servers.mzizi]
 url = "https://mcp.mzizi.dev/mcp"
 
-# for the Fundi tools; then run: codex mcp login mzizi-signin
+# for the sign-in operations; then run: codex mcp login mzizi-signin
 [mcp_servers.mzizi-signin]
 url = "https://mcp.mzizi.dev/mcp/signin"
 ```
@@ -331,10 +326,7 @@ call:
 }
 ```
 
-Every tool on `/mcp` is marked read-only except the two Fundi tools, which refuse without
-sign-in, and `docs_submit_feedback`, which sends feedback about a docs page. Keep
-`"require_approval": "never"` only if you accept that, or narrow the list with `allowed_tools`. For the Fundi
-tools, point `server_url` at `/mcp/signin` and pass an access token in `authorization`.
+On `/mcp`, the live annotations (read from `tools/list` on 17 November 2026) are these. `mzizi_search` is `readOnlyHint: true`. `mzizi_execute` is `readOnlyHint: false` and `destructiveHint: true`. `mzizi_feedback` is `readOnlyHint: false`. Keep `"require_approval": "never"` only if you accept that. Narrowing is the safer choice: set `allowed_tools: ["mzizi_search"]`, or require approval for `mzizi_execute` and `mzizi_feedback`. For the sign-in operations, point `server_url` at `/mcp/signin` and pass an access token in `authorization`.
 
 In the Agents SDK for Python, the same object goes in a hosted tool, and the Responses API makes
 the connection:
@@ -402,7 +394,7 @@ In `opencode.json` (the project's, or your global config):
 }
 ```
 
-For the Fundi tools, add a second `remote` entry at `/mcp/signin`. OpenCode starts OAuth itself
+For the sign-in operations, add a second `remote` entry at `/mcp/signin`. OpenCode starts OAuth itself
 when a server answers `401`, or run `opencode mcp auth <name>`. Skills: OpenCode reads
 `.agents/skills/` and `~/.agents/skills/`, so the npm route works; otherwise over MCP.
 
@@ -423,7 +415,7 @@ In `.cursor/mcp.json` in the project, or `~/.cursor/mcp.json` for every project:
 }
 ```
 
-Add a `mzizi-signin` entry at `/mcp/signin` for the Fundi tools; Cursor runs the OAuth flow.
+Add a `mzizi-signin` entry at `/mcp/signin` for the sign-in operations; Cursor runs the OAuth flow.
 Skills: Cursor reads `.agents/skills/` (and `.cursor/skills/`, and Claude's and Codex's skill
 folders), so the npm route works; otherwise over MCP.
 
@@ -597,7 +589,7 @@ to the legacy SSE transport.
 ```
 
 The page documents no OAuth setting in the JSON, only an `Authorization` header and the CLI's
-**Authorize OAuth** action, so for the Fundi tools add `/mcp/signin` and use that action.
+**Authorize OAuth** action, so for the sign-in operations add `/mcp/signin` and use that action.
 Skills: Cline reads `.cline/skills/`, `.clinerules/skills/` and `.claude/skills/`, and
 `~/.cline/skills/` globally; its page does not list `.agents/skills/`, so link the skills into
 `.cline/skills/`. Rules: `.clinerules/` and `AGENTS.md`.
@@ -703,6 +695,6 @@ A client that only speaks stdio, or cannot reach a remote server, runs
 - **Per-server sign-in in the portable `mcp.json`.** OpenAI's guide puts OAuth settings under a
   server's `extensions["com.openai"].auth`, but the Agent Plugins MCP schema allows no
   `extensions` key on a server. The plugin's `mcp.json` connects the anonymous `/mcp` and
-  declares no `auth`; connect `/mcp/signin` yourself for the Fundi tools.
+  declares no `auth`; connect `/mcp/signin` yourself for the sign-in operations.
 - **The Claude API, the OpenAI API and Z.ai** snippets come from the vendors' pages, last read
   on 20 October 2026; none was run, because each needs an account key.

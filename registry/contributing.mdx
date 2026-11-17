@@ -194,9 +194,10 @@ request to choose a version.
 
 ### Pull requests and merges
 
-- **Squash or rebase.** The org ruleset allows both and requires linear history. Squash is the
-  default; the pull request title becomes the commit message.
-- **Merge commits are disabled.**
+- **Feature pull requests into `staging` are squashed.** `staging` keeps linear history, and the pull request title becomes the commit message.
+- **Promotion is a merge commit.** A release (`staging` into the default branch) and a `hotfix/*` pull request are merged with a merge commit, so the default branch contains `staging`'s history. The default branch does not require linear history.
+
+Source: `nyuchi/.github`, `ORG_SETTINGS.md` and `settings/README.md` (the promotion merge changed on 2026-11-02).
 
 ### All checks green
 

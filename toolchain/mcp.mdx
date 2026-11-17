@@ -135,9 +135,7 @@ issue and running `fundi` both act for a user, so the server needs to know who t
 server advertises its OAuth metadata at
 [`/.well-known/oauth-protected-resource`](https://mcp.mzizi.dev/.well-known/oauth-protected-resource),
 so MCP clients can run the sign-in flow themselves. Called without sign-in, a gated call
-answers with how to sign in rather than failing silently. An anonymous issue report still
-reaches the registry: the answer carries the report as a pre-filled GitHub issue for
-`mzizi-dev/mzizi-registry`, so it is not lost. Over HTTP the server also answers with an
+answers with how to sign in rather than failing silently. An anonymous issue report is not lost: the answer carries a pre-filled GitHub issue link you can submit, for `mzizi-dev/mzizi-registry`. Over HTTP the server also answers with an
 OAuth challenge, so a client can offer sign-in. A client that cannot run the flow can connect
 to `https://mcp.mzizi.dev/mcp/signin` instead, which asks you to sign in and then serves every
 tool.
