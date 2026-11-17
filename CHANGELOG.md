@@ -21,6 +21,22 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
+### Added — the Ubuntu doctrine page; the organisation process (2026-11-17, refresh)
+
+Refs mzizi-dev/agent-tools#413. The doctrine text comes from `content/doctrine/` in `mzizi-dev/mzizi-registry` at `staging`; the process text from `nyuchi/.github` at `main`.
+
+- **Added: `foundations/doctrine`.** The five Ubuntu pillars (Family, Community, Society, Environment, Spirituality), the five Ubuntu principles (Survival, Solidarity, Compassion, Respect, Dignity) and the seven engineering constraints (Outdoor readability, Connectivity-gradient design, Multilingual parity, Shared-device awareness, Personal data sovereignty, No surveillance business model, The Bundu floor), in the registry's order and wording. The page is in the Foundations group. The four design pillars on `foundations/overview` are the design system's own and are not the Ubuntu pillars.
+- **Added: "How Mzizi is built and released"** on `registry/contributing`: the versioning policy (a merge into `staging` is a PATCH, `staging` to `main` is a MINOR, a MAJOR only when a person runs it, and agents never release one), the squash-or-rebase merge rule, the all-green rule (nothing merges while any check is red or pending; making the gate required in every repository is still pending), and the tooling order as the owner's direction of 17 November 2026, not yet in any repository.
+
+### Changed — the MCP surface is three tools; the runtime and the crates (2026-11-17, refresh)
+
+- **Changed: `toolchain/mcp`.** The server exposes three tools: `mzizi_search`, `mzizi_execute` and `mzizi_feedback`. The page has a search-then-execute example and a table of the earlier names. Those names still work until 1.0.0. `@nyuchi/mzizi-mcp` is 0.23.0.
+- **Changed: `toolchain/connect`, `toolchain/overview`, `toolchain/skills`, `toolchain/cli`, `foundations/accessibility`, `foundations/spacing-floor`, `patterns/dashboard-standard`.** Tool calls are written as `mzizi_execute` operations. `toolchain/cli` lists `0.11.0`, which calls `mzizi_execute`.
+- **Changed: `platform/api-gateway`.** `api.mzizi.dev` is a Rust Worker (`workers-rs`) since 17 November 2026. It serves the same routes; strict parity was 1669 of 1669 responses identical against the TypeScript Worker. Shared types are in the `mzizi-api-types` crate, not yet on crates.io.
+- **Changed: `roots/overview`.** The fourteen Roots crates are at `0.8.0` (install with `version = "0.8"`). `mzizi-tokens` exports `Family` and `FAMILIES`; `mzizi-discovery`'s `SeoConfig` takes a site's own identity. The core of `mzizi-roots` no longer depends on Dioxus. Eight components render unstyled from `mzizi-roots`. Removing Dioxus from the rest is ongoing, not finished. The page describes the unstyled pattern: `data-*` hooks, `tokens.css`, `floor.css` and an opt-in `mzizi-theme.css`. Tailwind is not yet removed from the other components.
+- **Changed: `AGENTS.md`, `README.md`.** The API runtime is Rust; the MCP sign-in statement and the Roots version match the pages.
+- **Not changed yet.** The ecosystem and Mukoko wording, and the Ubuntu doctrine text beyond the new page, follow in a later change.
+
 ### Changed — Dependabot proposes no semver-major action updates; release actions at nyuchi/.github 0.9.0 (2026-11-14)
 
 No issue: records the CI changes already on `staging` (`42e31e1`, `33ac0d7`), so the release that carries them has notes.

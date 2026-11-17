@@ -1,6 +1,6 @@
 ---
 title: "Mzizi Roots"
-description: "Mzizi Roots: Mzizi's own UI and server components for the agentic web, being rebuilt in Rust. Fourteen crates on crates.io at 0.7.0, a first batch of twelve brand components, and a Markdown renderer that is safe by construction. The React components keep working as the React build."
+description: "Mzizi Roots: Mzizi's own UI and server components for the agentic web, being rebuilt in Rust. Fourteen crates on crates.io at 0.8.0, a first batch of twelve brand components, and a Markdown renderer that is safe by construction. The React components keep working as the React build."
 sidebarTitle: "Mzizi Roots"
 icon: "component"
 ---
@@ -55,12 +55,12 @@ language for each kind of task ([the benchmark](/benchmark)).
 
 The Rust half of the registry lives in `mzizi-rs/` in
 [`mzizi-dev/mzizi-registry`](https://github.com/mzizi-dev/mzizi-registry), a Cargo workspace.
-All fourteen of its crates are on crates.io at `0.7.0` (checked 4 November 2026): eight node
+All fourteen of its crates are on crates.io at `0.8.0` (checked 17 November 2026): eight node
 crates, one per node that has Rust, two umbrella crates that re-export them, and four
 supporting crates (`mzizi-harness`, `mzizi-data`, `mzizi-mongodb` and `mzizi-activitypub`). The
 crates move together. `0.1.0` was the first release (29 September 2026); `0.2.0` and `0.3.0` were
 published on 7 October 2026, `0.4.0` on 20 October for registry release v4.9.0, `0.5.0` with
-registry release v4.16.0, `0.6.0` with v4.17.0 (published 25 October 2026) and `0.7.0` on 1 November 2026. `0.4.0` was
+registry release v4.16.0, `0.6.0` with v4.17.0 (published 25 October 2026) `0.7.0` on 1 November 2026, and `0.8.0` on 17 November 2026. The `0.8.0` release carried the work in registry release 4.42.0; registry release 4.43.0 fixed crate publishing. `0.4.0` was
 **breaking** for code that builds or matches `Inline::Link` (links now carry a `title`) or
 `ListItem::children` (now `Vec<ListChild>`), and `0.5.0` was **breaking** for `mzizi-mongodb`,
 which refuses cross-collection `$lookup`, `$graphLookup` and `$unionWith` in `aggregate` (use
@@ -71,28 +71,41 @@ which refuses cross-collection `$lookup`, `$graphLookup` and `$unionWith` in `ag
 render path is moving to Mzizi's own `render(props) -> String`: registry
 [#506](https://github.com/mzizi-dev/mzizi-registry/pull/506) and
 [#510](https://github.com/mzizi-dev/mzizi-registry/pull/510) are merged, with a skeleton and six
-static primitives. **Dioxus is out of the stack (owner, 4 November 2026).** The crates
-published on crates.io (`0.7.0`) still depend on it, in `mzizi-ui`, `mzizi-brand`, `mzizi-shell`,
-`mzizi-docs` and `mzizi-roots`, and the table below describes them as published. Removing it is
-tracked in [`mzizi-registry#635`](https://github.com/mzizi-dev/mzizi-registry/issues/635); what
-renders the Rust components once it is gone is not decided, and this page does not say.
+static primitives. **Dioxus is out of the stack (owner, 4 November 2026).** Its removal is in progress, not
+finished. The core of `mzizi-roots` no longer depends on Dioxus (`0.8.0`). Eight components render
+unstyled from `mzizi-roots`: alert, badge, card, chart, markdown-renderer, progress,
+safe-area-frame and separator. Removing Dioxus from the remaining components is ongoing, and
+more steps follow. The removal is tracked in
+[`mzizi-registry#635`](https://github.com/mzizi-dev/mzizi-registry/issues/635).
 
-| Crate                | What it holds (from each crate's own description)                                                                                                                                         |
-| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `mzizi-roots`        | **Umbrella, UI side.** Re-exports the tokens, `mzizi-ui`, `mzizi-brand` and `mzizi-shell`                                                                                                 |
-| `mzizi-roots-server` | **Umbrella, server side.** Re-exports `mzizi-assurance`, `mzizi-fundi`, `mzizi-docs` and `mzizi-discovery`                                                                                |
-| `mzizi-tokens`       | N1 design tokens: the 21-family palette as Rust consts, generated from one source                                                                                                         |
-| `mzizi-ui`           | N2 primitives: alert, avatar, badge, button, card, chart, input, label, a safe Markdown renderer, progress, separator, skeleton and status badge                                          |
-| `mzizi-brand`        | N3 brand components: the first Roots batch, each with a checkable contract                                                                                                                |
-| `mzizi-shell`        | N7 app chrome: bottom nav, footer, command palette, connectivity, theme, toasts, deep links and lifecycle                                                                                 |
-| `mzizi-assurance`    | N8 assurance: probes, telemetry and the OTLP exporter                                                                                                                                     |
-| `mzizi-fundi`        | The N9 fundi rung, client side: what is worth filing, shaping the issue, which fixes worked                                                                                               |
-| `mzizi-docs`         | The N10 documentation rung: AI context, docs API and routing, changelog, portal rendering                                                                                                 |
-| `mzizi-discovery`    | The N11 discovery rung: page metadata and Schema.org JSON-LD                                                                                                                              |
-| `mzizi-harness`      | The Mzizi harness: one scoped log, motion and announce interface, the same for the UI, the language and every server component                                                            |
-| `mzizi-data`         | The transport trait, error type and Cloudflare Workers socket shared by the sans-IO database clients, and the data layer above them (fetch cascade, sync, tombstones, local-first writes) |
-| `mzizi-mongodb`      | A read-only MongoDB client over the wire protocol (OP_MSG, SCRAM-SHA-256, a small BSON codec), sans-IO, for Cloudflare Workers                                                            |
-| `mzizi-activitypub`  | The sans-IO documents a read-only ActivityPub host serves (actors' context, content negotiation, WebFinger, host-meta, NodeInfo, outbox collections)                                      |
+## The unstyled pattern
+
+Components carry structure, state and ARIA, and no styling. They expose `data-slot`,
+`data-variant`, `data-size` and `data-state` hooks, so a team styles them with its own CSS.
+`tokens.css` holds values only, `floor.css` the accessibility minimums, and `mzizi-theme.css`
+is an opt-in look. The button is the first pattern component, in React, Astro and Rust. Its
+stylesheets are built with Lightning CSS by the `mzizi-css` tool. Moving the other components
+to this pattern is the direction and is in progress, so Tailwind is not yet removed from them.
+
+Because the structure and the floors are separate from any brand, any team can adopt Mzizi's
+components and accessibility floors without taking on the Nyuchi or Mukoko brand.
+
+| Crate                | What it holds (from each crate's own description)                                                                                                                                                                            |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `mzizi-roots`        | **Umbrella, UI side.** Re-exports the tokens, `mzizi-ui`, `mzizi-brand` and `mzizi-shell`                                                                                                                                    |
+| `mzizi-roots-server` | **Umbrella, server side.** Re-exports `mzizi-assurance`, `mzizi-fundi`, `mzizi-docs` and `mzizi-discovery`                                                                                                                   |
+| `mzizi-tokens`       | N1 design tokens: the full per-family colour record (`Family`, `FAMILIES`, 21 families) as Rust, generated from one source                                                                                                   |
+| `mzizi-ui`           | N2 primitives: alert, avatar, badge, button, card, chart, input, label, a safe Markdown renderer, progress, separator, skeleton and status badge                                                                             |
+| `mzizi-brand`        | N3 brand components: the first Roots batch, each with a checkable contract                                                                                                                                                   |
+| `mzizi-shell`        | N7 app chrome: bottom nav, footer, command palette, connectivity, theme, toasts, deep links and lifecycle                                                                                                                    |
+| `mzizi-assurance`    | N8 assurance: probes, telemetry and the OTLP exporter                                                                                                                                                                        |
+| `mzizi-fundi`        | The N9 fundi rung, client side: what is worth filing, shaping the issue, which fixes worked                                                                                                                                  |
+| `mzizi-docs`         | The N10 documentation rung: AI context, docs API and routing, changelog, portal rendering                                                                                                                                    |
+| `mzizi-discovery`    | The N11 discovery rung: page metadata and Schema.org JSON-LD. `SeoConfig` takes the site's own identity (base URL, site name, title template, default image, Twitter handles, alternates); its defaults keep Mukoko's output |
+| `mzizi-harness`      | The Mzizi harness: one scoped log, motion and announce interface, the same for the UI, the language and every server component                                                                                               |
+| `mzizi-data`         | The transport trait, error type and Cloudflare Workers socket shared by the sans-IO database clients, and the data layer above them (fetch cascade, sync, tombstones, local-first writes)                                    |
+| `mzizi-mongodb`      | A read-only MongoDB client over the wire protocol (OP_MSG, SCRAM-SHA-256, a small BSON codec), sans-IO, for Cloudflare Workers                                                                                               |
+| `mzizi-activitypub`  | The sans-IO documents a read-only ActivityPub host serves (actors' context, content negotiation, WebFinger, host-meta, NodeInfo, outbox collections)                                                                         |
 
 ## Install
 
@@ -114,13 +127,15 @@ cargo add mzizi-brand
 
 The node crates are the ones that compile each component, and they keep their names.
 
-`cargo add` takes the newest release, `0.7.0`. To write the dependency by hand, use the
+`cargo add` takes the newest release, `0.8.0`. To write the dependency by hand, use the
 requirement the crate READMEs use:
 
 ```toml
 [dependencies]
-mzizi-roots = "0.7"
+mzizi-roots = "0.8"
 ```
+
+To turn the defaults off on the same line, write `mzizi-roots = { version = "0.8", default-features = false }`.
 
 ## The first batch: twelve brand components
 
@@ -195,7 +210,7 @@ the latest on 7 October 2026). The Rust source is at
 <Warning>
   **The MCP server still serves the old React `markdown-renderer`.** On 7 October 2026
   `mcp.mzizi.dev` was pinned at registry `9f3631c` (v4.5.0), from before the rebuild. Its
-  `mzizi_get_component` answer for `markdown-renderer` leads with that React build, which builds
+  `get_component` answer (through `mzizi_execute`) for `markdown-renderer` leads with that React build, which builds
   an HTML string and injects it with `dangerouslySetInnerHTML`, and has no Rust or Astro build.
   Until the server's pin moves past registry v4.6.0, install it from `api.mzizi.dev`:
   `mzizi add markdown-renderer`, the crate, or the shadcn command with the URL
@@ -226,7 +241,7 @@ and the server rungs in their own crates. On 30 September 2026 the API was built
 commit, and so was the [MCP server](/toolchain/mcp). Both pins move, so read the live one from
 the source: the API's `x-mzizi-source` header, or the MCP server's `catalogue.json`.
 
-The MCP server is Rust first too: `mzizi_get_component` leads with the component's crate,
+The MCP server is Rust first too: the `get_component` operation leads with the component's crate,
 its `cargo add` line, its contract and its `.rs` source, then gives the pure Astro build where
 there is one (from `mzizi-mcp` `0.12.0`), and the React build last.
 

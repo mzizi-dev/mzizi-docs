@@ -67,7 +67,7 @@ that pushes both values to mid-tone and serves neither theme.
 3. Check the pairings that actually ship — `--muted-foreground` on `--muted`,
    `--foreground` on `--card` — not only foreground on background.
 
-The registry exposes the WCAG ratio over MCP as `mzizi_check_accessibility`, which computes
+The registry exposes the WCAG ratio over MCP as the `check_accessibility` operation, run through `mzizi_execute`, which computes
 the ratio locally, gives the AA, AAA and 7:1 verdicts, and does not compute APCA or simulate
 colour-vision deficiency. See [the MCP server](/toolchain/mcp).
 

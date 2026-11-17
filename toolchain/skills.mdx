@@ -16,7 +16,7 @@ at version `0.20.0` (the latest on npm on 12 November 2026):
 | Skill                  | Category   | What it covers                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | ---------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `mzizi-language`       | `language` | Writing and checking `.mz`: `LANGUAGE-TRACKER.md` as the one list of what Mzizi can and cannot do (check it before claiming anything), the component syntax, the backend `service` syntax (routes, handlers with `when`, `header` and `respond`, and `example` and `ensure` contracts; RFC-0011), the `mz check --agent` loop and its NDJSON diagnostics, `mz fix`, `mz contract` (a component's contract, or a service run in process), `mz build` (a service lowered to a local Rust + axum package), programs (`mz run`), the diagnostic codes you will meet, and what is not built yet, by the tracker's marks |
-| `mzizi-roots`          | `build`    | Mzizi's components, Rust first: `cargo add mzizi-roots` and `mzizi-roots-server`, what `mzizi_get_component` returns, the node-to-crate map, contracts (the registry's `contracts/`: the Dashboard Standard's `app/`, the Discover Standard's `discover/`, `site/` and `ui/`), the frontend paths (pure `.astro` from the registry with `mzizi add --target astro`, Astro with Roots, or pure Rust; Next.js adopts through the registry's `.tsx`) and app setup, reuse before build, and contributing a component                                                                                                  |
+| `mzizi-roots`          | `build`    | Mzizi's components, Rust first: `cargo add mzizi-roots` and `mzizi-roots-server`, what the `get_component` operation returns, the node-to-crate map, contracts (the registry's `contracts/`: the Dashboard Standard's `app/`, the Discover Standard's `discover/`, `site/` and `ui/`), the frontend paths (pure `.astro` from the registry with `mzizi add --target astro`, Astro with Roots, or pure Rust; Next.js adopts through the registry's `.tsx`) and app setup, reuse before build, and contributing a component                                                                                          |
 | `mzizi-design`         | `design`   | The design system and brand: the 21-family palette and its generated stylesheets, the radius scale, type, pill buttons, [the Bundu floor](/foundations/bundu-floor) (a 49px hit region and 17px body text on touch, 28px and 15px on a desktop, and 14px captions) and [the spacing floor](/foundations/spacing-floor), status and surface tokens, the Dashboard and Discover Standards' brand overlays (colour and mark only), the brand constellation, the Ubuntu pillars and principles, and the wordmarks                                                                                                      |
 | `mukoko-design`        | `design`   | mukoko's brand files and the rules for them: the Seed of Life mark in the seven minerals, the app icon, the favicon set and the lowercase serif lockup, taken from `mukoko-news`, with `SOURCES.md` naming each file's source and checksum. The full-palette mark is the only icon at every size, and the wordmark is always lowercase. For the palette, tokens and UI, use `mzizi-design`                                                                                                                                                                                                                         |
 | `mzizi-backend`        | `build`    | A Mzizi service on Cloudflare Workers: where it stands today (every live Mzizi Worker is TypeScript; the language's `service` slice runs in process under `mz contract` and lowers with `mz build` to a local Rust + axum package, with no Workers target and nothing deployed), the endpoint map, a Rust Worker as a sans-IO core plus a thin host, an MCP server over bundled data, the free-except-Fundi access rule, publishing and deploying                                                                                                                                                                  |
@@ -51,15 +51,14 @@ From `0.10.0` every `index.json` entry has a `category`, from the list in the bu
 | `language` | `mzizi-language`                                                                         | Writing and checking `.mz`                 |
 | `build`    | `mzizi-roots`, `mzizi-backend`, `mzizi-architecture`, `discoverability`                  | Building components, services and sites    |
 
-Load the `dev` skills before any dev work: `mzizi_get_skills` with `category: "dev"` on
-[the MCP server](/toolchain/mcp), or `@nyuchi/mzizi-skills` from npm. Every Mzizi repository's
+Load the `dev` skills before any dev work: `get_skills` with `category: "dev"`, run through `mzizi_execute` on [the MCP server](/toolchain/mcp), or `@nyuchi/mzizi-skills` from npm. Every Mzizi repository's
 `AGENTS.md` asks for this. Skill folders stay at `skills/<name>/`, so install paths do not change.
 
 ## Renamed and removed skills
 
 <Warning>
   **Breaking in `0.8.0`: the nine `0.7.0` skills became five, with no aliases.** Anything
-  that loads a skill by an old name (`mzizi_get_skills`, `GET /v1/skills/<name>`,
+  that loads a skill by an old name (`get_skills` on the MCP server, `GET /v1/skills/<name>`,
   `skills/<name>/SKILL.md`, a plugin command) must switch to the new name. An old name
   answers `404` on `api.mzizi.dev/v1/skills/<name>`.
 </Warning>
@@ -109,8 +108,7 @@ Desktop all read `.agents/skills/`, so the skills load there natively (Cline and
 
 ### From the MCP server
 
-`mzizi_get_skills` on [the MCP server](/toolchain/mcp) lists the skills, or returns one in
-full. From `mzizi-mcp` `0.13.0`, `category` returns every skill in one category in full. It is
+`get_skills`, run through `mzizi_execute` on [the MCP server](/toolchain/mcp), lists the skills, or returns one in full. From `mzizi-mcp` `0.13.0`, `category` returns every skill in one category in full. It is
 free, with no sign-in and nothing to install, so **any MCP client can fetch the skills this way
 instead of installing the npm package**: Claude.ai, ChatGPT and the Claude and OpenAI APIs,
 which cannot install a package, included. Each skill's `source` names where it is authored,
@@ -166,7 +164,7 @@ marketplace at `.agents/plugins/marketplace.json`. Until that reaches the regist
 | Copy                      | Where it gets the bundle                                                                                          |
 | ------------------------- | ----------------------------------------------------------------------------------------------------------------- |
 | npm                       | Published from the bundle's source on every merge that bumps its version                                          |
-| `mzizi_get_skills`        | The MCP server bundles the skills from the same source when it is built                                           |
+| `get_skills` (MCP)        | The MCP server bundles the skills from the same source when it is built                                           |
 | `api.mzizi.dev/v1/skills` | The registry depends on the npm package and inlines it at build time; the gateway serves a pinned registry commit |
 | The plugins               | The registry's `plugin/skills/` and `plugin-dev/skills/`, regenerated from the npm package it depends on          |
 
@@ -201,7 +199,7 @@ For maintainers, the rules the bundle's own gate enforces:
 1. Edit `skills/<name>/SKILL.md`. Adding a skill also needs an `index.json` entry, because
    consumers read the index and an unlisted skill is invisible.
 2. Bump the version in both `package.json` and `index.json`; they move together. Any change
-   to skill text needs a bump, so npm and `mzizi_get_skills` stay on the same version.
+   to skill text needs a bump, so npm and `get_skills` stay on the same version.
 3. The offline validator checks the version, the index, the frontmatter and the `exports`
    map before publish, and needs no credentials.
 4. A merge without a version bump publishes nothing.
