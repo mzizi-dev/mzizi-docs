@@ -26,6 +26,8 @@ entries move under it. Mintlify does not publish this file.
 - **The home page's Ownership section says Mzizi is a Bundu Foundation project, built by Nyuchi,
   and that Nyuchi runs its cyber section (the console and active cyber testing).** It said Mzizi
   owned and operated itself. The owner set this wording on 2026-11-17; mzizi.dev says the same.
+  The console page says the same, and the charter page carries a note that this wording
+  supersedes its owner line until `CHARTER.md` is amended.
 
 ### Fixed — the doctrine constraints are served over MCP 0.24.0; the MCP page lists the new topic (2026-11-17, Refs mzizi-dev/agent-tools#413)
 
