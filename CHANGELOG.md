@@ -35,7 +35,10 @@ Refs mzizi-dev/agent-tools#413. The doctrine text comes from `content/doctrine/`
 - **Changed: `platform/api-gateway`.** `api.mzizi.dev` is a Rust Worker (`workers-rs`) since 17 November 2026. It serves the same routes; strict parity was 1669 of 1669 responses identical against the TypeScript Worker. Shared types are in the `mzizi-api-types` crate, not yet on crates.io.
 - **Changed: `roots/overview`.** The fourteen Roots crates are at `0.8.0` (install with `version = "0.8"`). `mzizi-tokens` exports `Family` and `FAMILIES`; `mzizi-discovery`'s `SeoConfig` takes a site's own identity. The core of `mzizi-roots` no longer depends on Dioxus. Eight components render unstyled from `mzizi-roots`. Removing Dioxus from the rest is ongoing, not finished. The page describes the unstyled pattern: `data-*` hooks, `tokens.css`, `floor.css` and an opt-in `mzizi-theme.css`. Tailwind is not yet removed from the other components.
 - **Changed: `AGENTS.md`, `README.md`.** The API runtime is Rust; the MCP sign-in statement and the Roots version match the pages.
-- **Not changed yet.** The ecosystem and Mukoko wording, and the Ubuntu doctrine text beyond the new page, follow in a later change.
+- **Changed: `ecosystem`.** Adds "The Bundu ecosystem": the narrative spine, the four pillars (Bundu Labs, Nyuchi Africa, Mukoko, Shamwari AI) from the ecosystem record, links to bundu.org's ecosystem page and newsroom, and `.cell` as a proposed Bundu Labs project (not adopted). The Mukoko tokens are stated as a proposed project, not on the current roadmap. `api.mzizi.dev` is a Rust Worker.
+- **Changed: `registry/contributing`.** The tooling order reads "Rust first, then Deno or Vite+ (vp), never Node by default", labelled as owner direction of 17 November 2026.
+- **Changed: `foundations/tokens`.** "Sister brands" is now "the other brands".
+- **Not changed yet.** Nothing else is held back.
 
 ### Changed — Dependabot proposes no semver-major action updates; release actions at nyuchi/.github 0.9.0 (2026-11-14)
 
