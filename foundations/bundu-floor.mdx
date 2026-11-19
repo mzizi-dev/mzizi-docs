@@ -97,7 +97,7 @@ The rule steps aside on purpose for an element that draws its own `after:` pseud
 `overflow: hidden`, which would clip it. Three consequences matter when you build:
 
 - A native `input`, `select` or `textarea` cannot carry a pseudo-element, so the field roles
-  (`h-field`, `h-field-sm`) are drawn at the hit region: 45px on touch, and on a desktop 36px
+  (`h-field`, `h-field-sm`) are drawn at their componentSpecs height: 49px on touch, and on a desktop 36px
   (33px in the compact form). Their drawn box is the hit region.
 - A standalone link that is a target is drawn at 45px on touch and 24px on a desktop at least, or
   takes the `hit-area` class. An inline link in running text is exempt, as in WCAG 2.5.8.
@@ -139,7 +139,7 @@ the 1 November sizes can use this table to see what it has to change:
 | `--size-touch`, `--size-control`         | 44px; 36px on desktop     | 49px                  | 36px (hit 36px) |
 | `--size-control-sm`                      | 44px; 32px on desktop     | 49px                  | 33px (hit 33px) |
 | `--size-control-lg`                      | 48px; 40px on desktop     | 56px                  | 41px (hit 41px) |
-| `--size-field`, `--size-field-sm`        | 44px; 36px, 32px          | 45px                  | 36px, 33px      |
+| `--size-field`, `--size-field-sm`        | 44px; 36px, 32px          | 49px                  | 36px, 33px      |
 | `--target-floor`                         | 44px; 24px on desktop     | 45px                  | 24px            |
 | `--fs-body`                              | 17px; 16px; 15px          | 17px                  | 15px            |
 | `--fs-small` (`text-body-sm`, `text-sm`) | 15px; 14px                | 14px                  | 14px            |
@@ -186,7 +186,7 @@ work meanwhile.
 The registry's `bundu-floor` test fails when a default type step is under its floor in any layer,
 when a floored size role is under its tier's minimum (45px on touch), when the desktop layer
 lowers `--target-floor` below 24px or the `hit-area` rule is gone, when a desktop control is drawn
-under 24px, when a copy of the floor disagrees with `BUNDU_FLOOR`, or when a registry component
+under 28px, when a copy of the floor disagrees with `BUNDU_FLOOR`, or when a registry component
 names an arbitrary text size under 14px. The contract runner and the Rust evaluator fail a density
 row whose interactive control has a hit region under 45px on a coarse pointer or 24px on a fine
 one. Rows that predate the floor are pinned, so a new one cannot join them unseen; see
