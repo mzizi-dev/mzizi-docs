@@ -88,8 +88,8 @@ On touch, a control keeps a 45px hit region even where it is drawn smaller. The 
 `hit-area` rule gives every `button`, `summary`, `[role="button"]`, `[role="tab"]`,
 `[role="switch"]` and any `.hit-area` element a transparent `::after` of
 `max(100%, var(--target-floor))`. `--target-floor` is 2.8125rem (45px) on touch, and only the
-desktop density layer lowers it, to 1.5rem (24px) and not below. On a desktop a control is drawn
-at 28 to 41px, so its drawn box is its hit region and needs no pseudo-element.
+desktop density layer lowers it, to 1.5rem (24px) and not below. On a desktop a control is drawn at no less than 28px, and its hit region is at least 24px. Its drawn
+box is its hit region when it is drawn at least 24px, and it needs no pseudo-element.
 
 The rule steps aside on purpose for an element that draws its own `after:` pseudo-element
 (checkbox, switch, radio group, the tabs line variant), for menu and listbox rows (they take
@@ -97,8 +97,8 @@ The rule steps aside on purpose for an element that draws its own `after:` pseud
 `overflow: hidden`, which would clip it. Three consequences matter when you build:
 
 - A native `input`, `select` or `textarea` cannot carry a pseudo-element, so the field roles
-  (`h-field`, `h-field-sm`) are drawn at their componentSpecs height: 49px on touch, and on a desktop 36px
-  (33px in the compact form). Their drawn box is the hit region.
+  (`h-field`, `h-field-sm`) are drawn at their component height, 49px on touch, which is above the 45px hit floor, and on a
+  desktop 36px (33px in the compact form). Their drawn box is the hit region.
 - A standalone link that is a target is drawn at 45px on touch and 24px on a desktop at least, or
   takes the `hit-area` class. An inline link in running text is exempt, as in WCAG 2.5.8.
 - Where two covered controls sit closer than 45px apart on touch, their overlays overlap and the
@@ -185,8 +185,7 @@ work meanwhile.
 
 The registry's `bundu-floor` test fails when a default type step is under its floor in any layer,
 when a floored size role is under its tier's minimum (45px on touch), when the desktop layer
-lowers `--target-floor` below 24px or the `hit-area` rule is gone, when a desktop control is drawn
-under 28px, when a copy of the floor disagrees with `BUNDU_FLOOR`, or when a registry component
+lowers `--target-floor` below 24px or the `hit-area` rule is gone, when a desktop control is drawn under its 28px drawn minimum or its hit region is under 24px, when a copy of the floor disagrees with `BUNDU_FLOOR`, or when a registry component
 names an arbitrary text size under 14px. The contract runner and the Rust evaluator fail a density
 row whose interactive control has a hit region under 45px on a coarse pointer or 24px on a fine
 one. Rows that predate the floor are pinned, so a new one cannot join them unseen; see
