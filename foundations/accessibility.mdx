@@ -74,12 +74,11 @@ colour-vision deficiency. See [the MCP server](/toolchain/mcp).
 ## Touch targets
 
 **Every interactive control keeps a hit region of 45px on touch and 24px on a desktop.**
-That is the Bundu floor in two tiers, as the owner set it on 19 November 2026 (it moved them from
-49px and 28px). 45px is 3 × 15, the nearest Mzizi number above the 44 of WCAG 2.5.5 and Apple's
-44 pt. 24px is WCAG 2.2 SC 2.5.8's minimum, and on a desktop it is 3 × 8. Nothing interactive has
-a smaller hit region. On touch, controls are also drawn at 49px; on a desktop a control is drawn
-28 to 40px and its drawn box is the hit region. The release that carries these values is in
-progress; until it ships, the live tokens still report 49px and 28px. The full rule, the sizes and
+This is the Bundu floor in two tiers, set by the owner on 19 November 2026. It replaced 49px and
+28px. 45px is 3 × 15, the nearest Mzizi number above the 44 of WCAG 2.5.5 and Apple's 44 pt. 24px is
+WCAG 2.2 SC 2.5.8's minimum. Nothing interactive has a smaller hit region. On touch, controls are
+also drawn at 49px. On a desktop, a control is drawn at 28 to 41px, and its drawn box is the hit
+region. The full rule, the sizes and
 the migration are on [the Bundu floor](/foundations/bundu-floor). The space around controls is
 layered: 17px of inline padding, 9px between controls, 21px for cards and 28px for containers, on
 [the spacing layers](/foundations/spacing-layers).

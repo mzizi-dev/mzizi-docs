@@ -17,11 +17,14 @@ the 45px target and the 9px gap between controls. A developer shipping to Bulawa
 not need to know the WCAG numbers, because the build will not let a screen go under them.
 
 <Note>
-**The owner's ruling of 19 November 2026 moves the hit regions.** Touch goes from 49px to **45px**
-and the desktop from 28px to **24px**. 45 is the nearest Mzizi number at or above WCAG's 44 and
-Apple's 44 pt (3 × 15), and 24 is WCAG 2.2's minimum (3 × 8). The registry release that carries
-these tokens is in progress. Until it ships, the live MCP server and tokens still report 49 and 28.
+**Registry 4.45 and later.** The values on this page are the owner's ruling of 19 November 2026,
+and they ship in the registry from version 4.45. The registry sets the exact version when it
+ships.
 </Note>
+
+The owner's ruling moves the hit regions. Touch is **45px**, and the desktop is **24px**. 45 is the
+nearest Mzizi number at or above WCAG's 44 and Apple's 44 pt (3 × 15), and 24 is WCAG 2.2's minimum
+(3 × 8).
 
 ## What the floor is
 
@@ -44,13 +47,13 @@ evaluator and the registry's tests all read it.
 
 ## How the floor has moved
 
-| From                                           | Touch hit region  | Desktop hit region | Source                                                                                                                 |
-| ---------------------------------------------- | ----------------- | ------------------ | ---------------------------------------------------------------------------------------------------------------------- |
-| Before 1 November 2026                         | 48px (56px large) | not set            | The registry before the touch tier                                                                                     |
-| 1 to 2 November 2026                           | 44px              | 24px               | The first Bundu floor sizes                                                                                            |
-| 3 November 2026 (registry 4.23.0)              | 49px              | not split, 49px    | Owner rulings of 1 and 2 November ([mzizi-registry#597](https://github.com/mzizi-dev/mzizi-registry/issues/597))       |
-| 12 November 2026 (registry 4.36.0)             | 49px              | 28px               | The desktop tier, on the owner's ruling ([mzizi-registry#660](https://github.com/mzizi-dev/mzizi-registry/issues/660)) |
-| 19 November 2026 (ruling; release in progress) | **45px**          | **24px**           | This page and [the spacing layers](/foundations/spacing-layers)                                                        |
+| From                               | Touch hit region  | Desktop hit region | Source                                                                                                                 |
+| ---------------------------------- | ----------------- | ------------------ | ---------------------------------------------------------------------------------------------------------------------- |
+| Before 1 November 2026             | 48px (56px large) | not set            | The registry before the touch tier                                                                                     |
+| 1 to 2 November 2026               | 44px              | 24px               | The first Bundu floor sizes                                                                                            |
+| 3 November 2026 (registry 4.23.0)  | 49px              | not split, 49px    | Owner rulings of 1 and 2 November ([mzizi-registry#597](https://github.com/mzizi-dev/mzizi-registry/issues/597))       |
+| 12 November 2026 (registry 4.36.0) | 49px              | 28px               | The desktop tier, on the owner's ruling ([mzizi-registry#660](https://github.com/mzizi-dev/mzizi-registry/issues/660)) |
+| 19 November 2026 (owner's ruling)  | **45px**          | **24px**           | This page and [the spacing layers](/foundations/spacing-layers)                                                        |
 
 Body text has been 17px on touch and 15px on a desktop since the desktop tier, and the owner's
 19 November ruling does not change it.
@@ -60,16 +63,20 @@ Body text has been 17px on touch and 15px on a desktop since the desktop tier, a
 The layers are defined once in the token layer and emitted as media queries on the size
 variables. A component never branches on screen size.
 
-| Layer        | Applies when                                                                            | Controls drawn at              | Hit region | Body | Caption |
-| ------------ | --------------------------------------------------------------------------------------- | ------------------------------ | ---------- | ---- | ------- |
-| Phone, touch | the defaults                                                                            | 49px (large 56px)              | 45px       | 17px | 14px    |
-| Tablet       | `min-width: 48rem`                                                                      | 49px: an iPad is touched       | 45px       | 17px | 14px    |
-| Desktop      | `min-width: 64rem` and `pointer: fine` and `hover: hover` and not `any-pointer: coarse` | 28 to 40px (fields 32 to 36px) | 24px       | 15px | 14px    |
+| Layer        | Applies when                                                                            | Controls drawn at             | Hit region | Body | Caption |
+| ------------ | --------------------------------------------------------------------------------------- | ----------------------------- | ---------- | ---- | ------- |
+| Phone, touch | the defaults                                                                            | 49px (large 56px)             | 45px       | 17px | 14px    |
+| Tablet       | `min-width: 48rem`                                                                      | 49px: an iPad is touched      | 45px       | 17px | 14px    |
+| Desktop      | `min-width: 64rem` and `pointer: fine` and `hover: hover` and not `any-pointer: coarse` | 28 to 41px (28, 33, 36 or 41) | 24px       | 15px | 14px    |
 
-On a desktop, large body text (`text-body-lg`) is 17px, a field is 36px (32px compact) and a
-caption stays 14px. Only display and heading sizes step down as screens grow, and body text steps
-down once, at the desktop tier. A touchscreen laptop reports a coarse pointer (`any-pointer:
-coarse`), so the desktop layer does not apply to it, and neither does it apply to a tablet.
+The control sizes on the rule are 28, 33, 36, 41, 48 and 56px. On a desktop a control is drawn at
+one of the smaller sizes, from 28 to 41px. A field is 36px on a desktop, and 33px in its compact
+form. A standard button on touch is 49px, and the large button is 56px.
+
+On a desktop, large body text (`text-body-lg`) is 17px, and a caption stays 14px. Only display and
+heading sizes step down as screens grow, and body text steps down once, at the desktop tier. A
+touchscreen laptop reports a coarse pointer (`any-pointer: coarse`), so the desktop layer does not
+apply to it, and neither does it apply to a tablet.
 
 Density is about visual size only. Screen size is never used to guess network quality, and the
 gaps between targets are spacing tokens that density does not change.
@@ -81,7 +88,7 @@ On touch, a control keeps a 45px hit region even where it is drawn smaller. The 
 `[role="switch"]` and any `.hit-area` element a transparent `::after` of
 `max(100%, var(--target-floor))`. `--target-floor` is 2.8125rem (45px) on touch, and only the
 desktop density layer lowers it, to 1.5rem (24px) and not below. On a desktop a control is drawn
-28 to 40px, so its drawn box is its hit region and needs no pseudo-element.
+at 28 to 41px, so its drawn box is its hit region and needs no pseudo-element.
 
 The rule steps aside on purpose for an element that draws its own `after:` pseudo-element
 (checkbox, switch, radio group, the tabs line variant), for menu and listbox rows (they take
@@ -89,11 +96,10 @@ The rule steps aside on purpose for an element that draws its own `after:` pseud
 `overflow: hidden`, which would clip it. Three consequences matter when you build:
 
 - A native `input`, `select` or `textarea` cannot carry a pseudo-element, so the field roles
-  (`h-field`, `h-field-sm`) are drawn at the hit region: 49px on touch, 36px (32px compact) on a
-  desktop.
-- A standalone link that is a target is drawn at the tier's size (49px on touch, 28px on a
-  desktop), or takes the `hit-area` class. An inline link in running text is exempt, as in WCAG
-  2.5.8.
+  (`h-field`, `h-field-sm`) are drawn at the hit region: 45px on touch, and on a desktop 36px
+  (33px in the compact form). Their drawn box is the hit region.
+- A standalone link that is a target is drawn at 45px on touch and 24px on a desktop at least, or
+  takes the `hit-area` class. An inline link in running text is exempt, as in WCAG 2.5.8.
 - Where two covered controls sit closer than 45px apart on touch, their overlays overlap and the
   later sibling wins the overlap, so keep gaps from the spacing tokens.
 
@@ -109,44 +115,43 @@ the reason for the exception and how to test a pairing are on
 
 ## Migrating
 
-The 19 November ruling changes two things for an app that already uses the 12 November registry:
-the hit regions, and the spacing, which moves from one 14px inset and a 7px gap to a value per
-layer. Nothing changes for an app until it takes a registry version that carries the release.
+The 19 November ruling changes the hit regions, the spacing and the control heights. Body text,
+captions, line height and contrast do not change.
 
-| Token or floor                                                  | Until the release (12 November values) | After the release (19 November ruling)                                                                     |
-| --------------------------------------------------------------- | -------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| `--target-floor`, touch                                         | 49px                                   | 45px                                                                                                       |
-| `--target-floor`, desktop                                       | 28px                                   | 24px                                                                                                       |
-| Inset floor                                                     | 14px                                   | 17px controls (12px dense), 12px chips (9px dense), 9px pills, 21px cards, 28px containers, 17px page edge |
-| Gap between adjacent controls                                   | 7px                                    | 9px                                                                                                        |
-| Gap between a label and its field                               | 7px                                    | 7px default, 5px dense                                                                                     |
-| Gap between sibling items in a list, grid or toolbar            | 7px                                    | 14px default, 7px dense (the card gap)                                                                     |
-| `spacing-control-sm`, `spacing-control-lg`, `--touch-target-sm` | 32px, 40px, 40px                       | 33px, 42px, 42px                                                                                           |
-| Body text, captions, line height, contrast                      | 17px and 15px; 14px; 1.5; 7 / 4.5 / 3  | Unchanged                                                                                                  |
+| Token or floor                                                    | Earlier (registry 4.36.0, 12 November 2026) | Now (19 November 2026 ruling)                                                     |
+| ----------------------------------------------------------------- | ------------------------------------------- | --------------------------------------------------------------------------------- |
+| `--target-floor`, touch                                           | 49px                                        | 45px                                                                              |
+| `--target-floor`, desktop                                         | 28px                                        | 24px                                                                              |
+| Inset floor                                                       | 14px                                        | 17px controls, 12px chips, 9px pills, 21px cards, 28px containers, 17px page edge |
+| Gap between adjacent controls                                     | 7px                                         | 9px                                                                               |
+| Gap between a label and its field                                 | 7px                                         | 7px default, 5px dense                                                            |
+| Gap between sibling items in a list, grid or toolbar              | 7px                                         | 14px default, 7px dense (the card gap)                                            |
+| `spacing-control-sm`, `spacing-control-dense`, `spacing-field-sm` | 32px                                        | 33px                                                                              |
+| `spacing-control-lg`, `--touch-target-sm`                         | 40px                                        | 41px                                                                              |
+| Body text, captions, line height, contrast                        | 17px and 15px; 14px; 1.5; 7 / 4.5 / 3       | Unchanged                                                                         |
 
-The size roles that were set in 1 November 2026 moved again on 3 and 12 November. An app that is
-still on the 1 November sizes can use this table to see what it has to change:
+The size roles set on 1 November 2026 moved again on 3 and 12 November. An app that still uses
+the 1 November sizes can use this table to see what it has to change:
 
-| Token                                    | Earlier (1 November 2026) | Now: phone and tablet         | Now: desktop                  |
-| ---------------------------------------- | ------------------------- | ----------------------------- | ----------------------------- |
-| `--size-touch`, `--size-control`         | 44px; 36px on desktop     | 49px                          | 36px (hit 36px)               |
-| `--size-control-sm`                      | 44px; 32px on desktop     | 49px                          | 32px (hit 32px)               |
-| `--size-control-lg`                      | 48px; 40px on desktop     | 56px                          | 40px (hit 40px)               |
-| `--size-field`, `--size-field-sm`        | 44px; 36px, 32px          | 49px                          | 36px, 32px                    |
-| `--target-floor`                         | 44px; 24px on desktop     | 49px (45px after the release) | 28px (24px after the release) |
-| `--fs-body`                              | 17px; 16px; 15px          | 17px                          | 15px                          |
-| `--fs-small` (`text-body-sm`, `text-sm`) | 15px; 14px                | 14px                          | 14px                          |
-| `--fs-caption` (`text-xs`)               | 12px                      | 14px                          | 14px                          |
-| Badge text, chart axis labels            | 10 to 12px                | 14px                          | 14px                          |
+| Token                                    | Earlier (1 November 2026) | Now: phone and tablet | Now: desktop    |
+| ---------------------------------------- | ------------------------- | --------------------- | --------------- |
+| `--size-touch`, `--size-control`         | 44px; 36px on desktop     | 49px                  | 36px (hit 36px) |
+| `--size-control-sm`                      | 44px; 32px on desktop     | 49px                  | 33px (hit 33px) |
+| `--size-control-lg`                      | 48px; 40px on desktop     | 56px                  | 41px (hit 41px) |
+| `--size-field`, `--size-field-sm`        | 44px; 36px, 32px          | 49px                  | 36px, 33px      |
+| `--target-floor`                         | 44px; 24px on desktop     | 45px                  | 24px            |
+| `--fs-body`                              | 17px; 16px; 15px          | 17px                  | 15px            |
+| `--fs-small` (`text-body-sm`, `text-sm`) | 15px; 14px                | 14px                  | 14px            |
+| `--fs-caption` (`text-xs`)               | 12px                      | 14px                  | 14px            |
+| Badge text, chart axis labels            | 10 to 12px                | 14px                  | 14px            |
 
 In an app:
 
 1. Take the registry version (or `@bundu/ui` built from it) and re-run `pnpm tokens:sync` or
    re-copy `mzizi-tokens-globals.css`.
 2. Replace `h-12`, `h-14` and `min-h-[44px]` on a control with a size role (`h-control`,
-   `h-field`, `min-h-touch-min`). A drawn size under 49px is fine on a desktop, where the drawn box
-   is the hit region, and it must stay at the desktop floor: 28px until the release, 24px after.
-   On touch a control never goes under the touch floor: 49px until the release, 45px after.
+   `h-field`, `min-h-touch-min`). On a desktop a control is drawn at 28 to 41px, and its drawn box
+   is the hit region, which is at least 24px. On touch a control never goes under 45px.
 3. Replace any `text-[Npx]` under 14 with `text-sm`, and write body copy as `text-body`.
 4. If a layout breaks and cannot move yet, set the legacy alias (below) and plan the move.
 
@@ -178,13 +183,12 @@ work meanwhile.
 ## What fails the build
 
 The registry's `bundu-floor` test fails when a default type step is under its floor in any layer,
-when a floored size role is under its tier's minimum, when the desktop layer lowers `--target-floor`
-below its floor or the `hit-area` rule is gone, when a desktop control is drawn under its floor,
-when a copy of the floor disagrees with `BUNDU_FLOOR`, or when a registry component names an
-arbitrary text size under 14px. The contract runner and the Rust evaluator fail a density row whose
-interactive control has a hit region under the touch floor on a coarse pointer, or under the
-desktop floor on a fine one. Until the release ships, those floors are 49px and 28px. Rows that
-predate the floor are pinned, so a new one cannot join them unseen; see
+when a floored size role is under its tier's minimum (45px on touch), when the desktop layer
+lowers `--target-floor` below 24px or the `hit-area` rule is gone, when a desktop control is drawn
+under 28px, when a copy of the floor disagrees with `BUNDU_FLOOR`, or when a registry component
+names an arbitrary text size under 14px. The contract runner and the Rust evaluator fail a density
+row whose interactive control has a hit region under 45px on a coarse pointer or 24px on a fine
+one. Rows that predate the floor are pinned, so a new one cannot join them unseen; see
 [the Dashboard Standard's density table](/patterns/dashboard-standard#density).
 
 ## The Bundu Order

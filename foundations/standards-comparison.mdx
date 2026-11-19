@@ -11,9 +11,8 @@ and Anthropic's brand guidelines. Mzizi enforces its numbers. The other systems 
 theirs, and an app or a review can still ship under them.
 
 <Note>
-**The floor shown here is the owner's ruling of 19 November 2026.** The registry release that
-carries these tokens is in progress. Until it ships, the live MCP server and tokens still report
-49px on touch and 28px on a desktop. See [the Bundu floor](/foundations/bundu-floor).
+**The floor shown here is the owner's ruling of 19 November 2026.** See
+[the Bundu floor](/foundations/bundu-floor) for the rule and its history.
 </Note>
 
 ## The numbers
@@ -26,7 +25,7 @@ advises the value. **Not set** means the system gives no value.
 | Requirement         | Mzizi, the Bundu floor                                               | WCAG 2.2                                       | Apple HIG                                         | Material 3                               | Anthropic brand                    |
 | ------------------- | -------------------------------------------------------------------- | ---------------------------------------------- | ------------------------------------------------- | ---------------------------------------- | ---------------------------------- |
 | Touch target        | **45 × 45 px**, enforced. Coarse pointer, or any window under 64rem  | 44 × 44 px, AAA (2.5.5)                        | 44 × 44 pt, recommended                           | 48 × 48 dp, recommended                  | Not set                            |
-| Fine-pointer target | **24 × 24 px**, enforced. Fine pointer with hover, 64rem and up      | 24 × 24 px, AA (2.5.8)                         | 28 pt macOS regular control, a convention         | 48 dp on all platforms, not separate     | Not set                            |
+| Fine-pointer target | **24 × 24 px**, enforced. Fine pointer with hover, 64rem and up      | 24 × 24 px, AA (2.5.8)                         | 28 pt, the macOS default control size             | 48 dp on all platforms, not separate     | Not set                            |
 | Body text           | **17 px** on touch, **15 px** on a desktop. Captions 14 px, enforced | No size. 1.4.4 requires text to resize to 200% | 17 pt body. Captions 12 and 11 pt, default        | 16 sp body, 14 sp medium, type scale     | Typefaces only: Lora body          |
 | Body text contrast  | **7 : 1**, enforced, with APCA. Non-body text 4.5 : 1                | 4.5 : 1 at AA; 7 : 1 at AAA (1.4.3, 1.4.6)     | 4.5 : 1 for custom colours; system colours adapt  | 4.5 : 1, and 3 : 1 for large text        | 17.5 : 1 (Dark on Light, measured) |
 | UI parts contrast   | **3 : 1**, enforced: borders, icons, focus, control states           | 3 : 1 (1.4.11)                                 | Covered by system materials and Increase Contrast | 3 : 1 for icons and component boundaries | Not set                            |
@@ -50,13 +49,13 @@ Mzizi. The Bundu floor uses a 3, 7 and prime rhythm, where Material and most too
 
 Each number is drawn at its size in CSS pixels, for a fingertip.
 
-| Size  | What it is                                   | Source                            |
-| ----- | -------------------------------------------- | --------------------------------- |
-| 24 px | Mzizi desktop, and WCAG AA's minimum         | WCAG 2.2, 2.5.8                   |
-| 44 px | WCAG AAA, and Apple's 44 pt                  | WCAG 2.2, 2.5.5; Apple HIG        |
-| 45 px | Mzizi touch, 3 × 15                          | The Bundu floor, 19 November 2026 |
-| 48 px | Material 3's touch target                    | Material 3                        |
-| 49 px | Mzizi's touch floor until the release, 7 × 7 | The Bundu floor, 2 November 2026  |
+| Size  | What it is                                         | Source                            |
+| ----- | -------------------------------------------------- | --------------------------------- |
+| 24 px | Mzizi desktop, and WCAG AA's minimum               | WCAG 2.2, 2.5.8                   |
+| 44 px | WCAG AAA, and Apple's 44 pt                        | WCAG 2.2, 2.5.5; Apple HIG        |
+| 45 px | Mzizi touch, 3 × 15                                | The Bundu floor, 19 November 2026 |
+| 48 px | Material 3's touch target                          | Material 3                        |
+| 49 px | Mzizi's touch floor before 19 November 2026, 7 × 7 | The Bundu floor, 2 November 2026  |
 
 ## Contrast: Anthropic's palette against the floor
 
@@ -64,15 +63,15 @@ Anthropic's brand guidelines name colours and typefaces, and set no accessibilit
 figures below measure each accent against the brand's own Light (`#faf9f5`) and Dark (`#141413`)
 backgrounds, using the WCAG 2 relative-luminance formula.
 
-| Colour        | Hex                    | On Light (`#faf9f5`) | On Dark (`#141413`) | Reading                                     |
-| ------------- | ---------------------- | -------------------- | ------------------- | ------------------------------------------- |
-| Orange        | `#d97757`              | 2.96 : 1             | 5.90 : 1            | Shapes only on Light; non-body text on Dark |
-| Blue          | `#6a9bcc`              | 2.78 : 1             | 6.30 : 1            | Shapes only on Light; non-body text on Dark |
-| Green         | `#788c5d`              | 3.49 : 1             | 5.01 : 1            | Shapes only on Light; non-body text on Dark |
-| Mid Gray      | `#b0aea5`              | 2.11 : 1             | 8.29 : 1            | Passes 7 : 1 on Dark only                   |
-| Dark on Light | `#141413` on `#faf9f5` | 17.50 : 1            | —                   | Body text passes the 7 : 1 floor            |
+| Colour        | Hex                    | On Light (`#faf9f5`) | On Dark (`#141413`) | Reading                                                       |
+| ------------- | ---------------------- | -------------------- | ------------------- | ------------------------------------------------------------- |
+| Orange        | `#d97757`              | 2.96 : 1             | 5.90 : 1            | Decorative only on Light (below 3 : 1); non-body text on Dark |
+| Blue          | `#6a9bcc`              | 2.78 : 1             | 6.30 : 1            | Decorative only on Light (below 3 : 1); non-body text on Dark |
+| Green         | `#788c5d`              | 3.49 : 1             | 5.01 : 1            | UI shapes on Light (passes 3 : 1); non-body text on Dark      |
+| Mid Gray      | `#b0aea5`              | 2.11 : 1             | 8.29 : 1            | Passes 7 : 1 on Dark only                                     |
+| Dark on Light | `#141413` on `#faf9f5` | 17.50 : 1            | —                   | Body text passes the 7 : 1 floor                              |
 
-On Light, the accents work for shapes at most, never for text. On Dark, Orange, Blue and Green pass
+On Light, Green passes 3 : 1 for UI shapes. Orange and Blue fall below 3 : 1, so they are decorative only. None of the three works for text on Light. On Dark, Orange, Blue and Green pass
 non-body text at 4.5 : 1 but not the 7 : 1 body floor. That fits how Anthropic uses the palette: the
 accents are for shapes and highlights, and running text stays Dark on Light. The Bundu floor makes
 the same split explicit and testable.
@@ -128,10 +127,10 @@ the same split explicit and testable.
     - 1.5 leading by default. WCAG only requires that content survive it.
   </Card>
   <Card title="In line" icon="circle-check">
-    - 45px on touch and 24px on a desktop meet WCAG 2.5.5 and 2.5.8 and Apple's 44 pt, one pixel
-      above the number rule's minimum.
+    - 45px on touch is one pixel above WCAG 2.5.5 and Apple's 44 pt, and it is the number rule's
+      value. 24px on a desktop meets WCAG 2.5.8.
     - Material's 48dp stays 3px larger. An Android-only product can still choose 48.
-    - The old 49px was above every standard and cost 5px of every row on small phones.
+    - The previous 49px touch floor was 4px taller than 45px on every row of small phones.
   </Card>
   <Card title="Watching" icon="eye">
     - **Text scaling.** Apple's Dynamic Type and Android font scaling grow text with the user's
@@ -154,7 +153,7 @@ the same split explicit and testable.
   and [Material 3 Expressive research](https://design.google/library/expressive-material-design-google-research).
 - **Anthropic:** the brand guidelines for colours and typefaces. Contrast ratios are computed with
   the WCAG 2 relative-luminance formula.
-- **Modern web guidance:** form-factor adaptation and accessibility, at 24px by default and 44px
-  under `pointer: coarse`.
+- **Modern web guidance:** [form-factor adaptation and accessibility](https://github.com/GoogleChrome/modern-web-guidance),
+  at 24px by default and 44px under `pointer: coarse`.
 
 For the rule that sets the spacing values, see [the spacing layers](/foundations/spacing-layers).
