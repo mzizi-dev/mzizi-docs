@@ -18,8 +18,7 @@ not need to know the WCAG numbers, because the build will not let a screen go un
 
 <Note>
 **Registry 4.45 and later.** The values on this page are the owner's ruling of 19 November 2026,
-and they ship in the registry from version 4.45. The registry sets the exact version when it
-ships.
+and they ship in the registry from version 4.45.
 </Note>
 
 The owner's ruling moves the hit regions. Touch is **45px**, and the desktop is **24px**. 45 is the
@@ -136,7 +135,8 @@ the 1 November sizes can use this table to see what it has to change:
 
 | Token                                    | Earlier (1 November 2026) | Now: phone and tablet | Now: desktop    |
 | ---------------------------------------- | ------------------------- | --------------------- | --------------- |
-| `--size-touch`, `--size-control`         | 44px; 36px on desktop     | 49px                  | 36px (hit 36px) |
+| `--size-touch`                           | 44px; 36px on desktop     | 45px                  | 36px (hit 36px) |
+| `--size-control`                         | 44px; 36px on desktop     | 49px                  | 36px (hit 36px) |
 | `--size-control-sm`                      | 44px; 32px on desktop     | 49px                  | 33px (hit 33px) |
 | `--size-control-lg`                      | 48px; 40px on desktop     | 56px                  | 41px (hit 41px) |
 | `--size-field`, `--size-field-sm`        | 44px; 36px, 32px          | 49px                  | 36px, 33px      |
@@ -217,6 +217,7 @@ systems is on [the standards comparison](/foundations/standards-comparison).
 - The registry's
   [`sizes-and-density.md`](https://github.com/mzizi-dev/mzizi-registry/blob/main/docs/sizes-and-density.md)
   (the migration guide) and its `content/doctrine/documentation/brand-guidelines.mdx`.
-- The live MCP server: `get_tokens` (`family=floors`) and `get_doctrine` (`topic=bundu-floor`).
+- Registry 4.45 and later, through the MCP operations `get_tokens` (`family=floors`) and `get_doctrine`
+  (`topic=bundu-floor`), once the MCP server is repinned to that release.
 - The other systems: [the standards comparison](/foundations/standards-comparison), which lists
   WCAG 2.2, Apple's Human Interface Guidelines, Material 3 and Anthropic's brand guidelines.

@@ -137,11 +137,12 @@ layer's dense floor. Where a component's layer is unknown, the global floor neve
 
 ## Where the values are served
 
-| Surface                                                                     | Serves                                                                                              |
-| --------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| Tokens (`mzizi-tokens-globals.css`)                                         | The layer tokens above, both densities, and `--target-floor` at 45px on touch and 24px on a desktop |
-| [`GET /v1/brand`](https://api.mzizi.dev/v1/brand), `accessibility` block    | The layer values, with the label gap at 7px and the sibling-item gap at 14px                        |
-| MCP `get_tokens` (`family=floors`) and `get_doctrine` (`topic=bundu-floor`) | The floors on this page                                                                             |
+Registry 4.45 and later: the tokens, `registry.json`, and `/v1/brand` once `api.mzizi.dev` pins 4.45.
+
+| Surface                                                                  | Holds                                                                                                                                             |
+| ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Tokens (`mzizi-tokens-globals.css`)                                      | The layer tokens above, both densities, and `--target-floor` at 45px on touch and 24px on a desktop                                               |
+| [`GET /v1/brand`](https://api.mzizi.dev/v1/brand), `accessibility` block | `minInset` 14, `minControlGap` 9, `minLabelGap` 7, `minItemGap` 7 and `minBodyLeading` 1.5. No per-layer values: those are the `--space-*` tokens |
 
 The registry generates the tokens to CSS, Rust and React Native from one source. The registry's
 tests check that the numbers agree between `BUNDU_FLOOR`, canon, `/v1/tokens` and the stylesheet.
