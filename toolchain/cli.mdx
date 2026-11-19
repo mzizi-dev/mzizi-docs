@@ -36,7 +36,7 @@ What changed since `0.6.1`:
 | `0.6.2`  | The request the CLI makes to crates.io names the project's support address, `support@bundu.org`, in its `User-Agent`. Earlier versions sent a person's own address there                                                                              |
 | `0.6.3`  | Depends on `@nyuchi/mzizi-skills` `^0.8.0`, so the CLI bundles [the five `0.8.x` skills](/toolchain/skills) rather than the `0.7.x` set                                                                                                               |
 | `0.7.0`  | Adds `--target astro`, and infers it in an Astro project (see [the target](#mzizi-add-the-registry-installer)). Depends on `@nyuchi/mzizi-skills` `^0.11.0`, so the CLI bundles [all seven skills](/toolchain/skills)                                 |
-| `0.8.0`  | Adds `mzizi check [path...]` (see [the spacing floor](/foundations/spacing-floor)). Depends on `@nyuchi/mzizi-skills` `^0.17.0`, so the CLI bundles the skills of that release                                                                        |
+| `0.8.0`  | Adds `mzizi check [path...]` (see [the spacing layers](/foundations/spacing-layers)). Depends on `@nyuchi/mzizi-skills` `^0.17.0`, so the CLI bundles the skills of that release                                                                      |
 | `0.9.0`  | `mzizi add` takes `--type` (`--target` is the same flag) and installs five types: `mzizi`, `tsx`, `astro`, `swift` and `kotlin`, with `rust` and `typescript` accepted as spellings of `mzizi` and `tsx`. Depends on `@nyuchi/mzizi-skills` `^0.19.0` |
 | `0.10.0` | A dependency refresh: no command, flag or behaviour changes                                                                                                                                                                                           |
 | `0.11.0` | Calls `mzizi_execute` for the MCP operations it uses, to match the three-tool MCP surface (see [the MCP server](/toolchain/mcp)).                                                                                                                     |
@@ -46,7 +46,7 @@ What changed since `0.6.1`:
 | Command                             | What it does                                                                                                                                                             |
 | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `mzizi add <name...>`               | Installs components from the registry, with their dependencies. Rust first. No API key and no sign-in                                                                    |
-| `mzizi check [path...]`             | Checks your source against [the spacing floor](/foundations/spacing-floor): exit code 1 on a violation. `--json` for a report. From `0.8.0`                              |
+| `mzizi check [path...]`             | Checks your source against [the spacing layers](/foundations/spacing-layers): exit code 1 on a violation. `--json` for a report. From `0.8.0`                            |
 | `fundi explore`                     | Reads a few files (`package.json`, `tsconfig.json`, the global stylesheet, the Tailwind config, `components.json`) and prints a project snapshot. Offline. No model call |
 | `fundi plan <goal>`                 | **Read-only.** Plans the minimal edits to wire Mzizi in, and prints them as a dry run                                                                                    |
 | `fundi chat <message>`              | One-shot chat scoped to Mzizi doctrine                                                                                                                                   |
@@ -56,7 +56,7 @@ Every command works under either name: `fundi add` and `mzizi add` are the same.
 
 <Note>
   **`mzizi check [path...]`, from `0.8.0`.** It fails with exit code 1 on padding, gaps,
-  negative margins and line heights under [the spacing floor](/foundations/spacing-floor), and
+  negative margins and line heights under [the spacing layers](/foundations/spacing-layers), and
   takes `--json`. `0.7.0` and earlier have no `check` command.
 </Note>
 
