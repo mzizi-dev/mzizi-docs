@@ -62,25 +62,26 @@ Controls are buttons, chips and inputs. Cards are cards, list items and tiles. C
 dialogs, sheets and panels. Layout is the page edge and the gaps between sections. Pills and
 badges are their own small layer.
 
-| Layer      | Token                     | Default | Built from | Default reference             | Dense | Built from   | Dense reference          |
-| ---------- | ------------------------- | ------- | ---------- | ----------------------------- | ----- | ------------ | ------------------------ |
-| Layout     | `--space-page-x`          | 17      | prime      | Apple and Material compact 16 | —     | —            | —                        |
-| Layout     | `--space-page-x-wide`     | 28      | 7 × 4      | Material medium, expanded 24  | 21    | 7 × 3        | 16 to 24                 |
-| Layout     | `--space-section`         | 49      | 7 × 7      | 48                            | 28    | 7 × 4        | 24                       |
-| Containers | `--space-container`       | 28      | 7 × 4      | Material dialog 24            | 21    | 7 × 3        | Material sheet 16        |
-| Containers | `--space-container-gap`   | 21      | 7 × 3      | Material dialog 16            | 14    | 7 × 2        | 12                       |
-| Cards      | `--space-card`            | 21      | 7 × 3      | Material card 16              | 14    | 7 × 2        | Material list item 12    |
-| Cards      | `--space-card-gap`        | 14      | 7 × 2      | Material card gap 8           | 7     | 7            | 4                        |
-| Cards      | `--space-card-stack`      | 7       | 7          | Title to body 4               | 7     | 7            | 4                        |
-| Controls   | `--space-control-x`       | 17      | prime      | Material small button 16      | 12    | 3 × 4        | Material dense button 12 |
-| Controls   | `--space-field-x`         | 17      | prime      | Material text field 16        | 12    | 3 × 4        | 12                       |
-| Controls   | `--space-control-gap`     | 9       | 3 × 3      | Material icon to label 8      | 7     | 7            | 6                        |
-| Controls   | `--space-control-between` | 9       | 3 × 3      | Material target spacing 8     | 9     | 3 × 3        | 8, no dense step         |
-| Chips      | `--space-chip-x`          | 12      | 3 × 4      | Material chip 12              | 9     | 3 × 3        | Material chip 8          |
-| Pills      | `--space-pill-x`          | 9       | 3 × 3      | 8                             | 5     | prime        | Material badge 4         |
-| Pills      | `--space-pill-gap`        | 5       | prime      | 4                             | 3     | prime, 3 × 1 | 2                        |
+| Layer      | Token                     | Default | Built from | Default reference               | Dense | Built from   | Dense reference          |
+| ---------- | ------------------------- | ------- | ---------- | ------------------------------- | ----- | ------------ | ------------------------ |
+| Layout     | `--space-page-x`          | 17      | prime      | Apple and Material compact 16   | —     | —            | —                        |
+| Layout     | `--space-page-x-wide`     | 28      | 7 × 4      | Material medium, expanded 24    | 21    | 7 × 3        | 16 to 24                 |
+| Layout     | `--space-section`         | 49      | 7 × 7      | 48                              | 28    | 7 × 4        | 24                       |
+| Containers | `--space-container`       | 28      | 7 × 4      | Material dialog 24              | 21    | 7 × 3        | Material sheet 16        |
+| Containers | `--space-container-gap`   | 21      | 7 × 3      | Material dialog 16              | 14    | 7 × 2        | 12                       |
+| Cards      | `--space-card`            | 21      | 7 × 3      | Material card 16                | 14    | 7 × 2        | Material list item 12    |
+| Cards      | `--space-card-gap`        | 14      | 7 × 2      | Material card gap 8             | 7     | 7            | 4                        |
+| Cards      | `--space-card-stack`      | 7       | 7          | Title to body 4                 | 7     | 7            | 4                        |
+| Controls   | `--space-control-x`       | 17      | prime      | Material small button 16        | 12    | 3 × 4        | Material dense button 12 |
+| Controls   | `--space-field-x`         | 17      | prime      | Material text field 16          | 12    | 3 × 4        | 12                       |
+| Controls   | `--space-control-gap`     | 9       | 3 × 3      | Material icon to label 8        | 7     | 7            | 6                        |
+| Controls   | `--space-control-between` | 9       | 3 × 3      | Material target spacing 8       | 9     | 3 × 3        | 8, no dense step         |
+| Controls   | `--space-label-gap`       | 7       | 7          | Material label to field, 6 to 8 | 5     | prime        | Material 4               |
+| Chips      | `--space-chip-x`          | 12      | 3 × 4      | Material chip 12                | 9     | 3 × 3        | Material chip 8          |
+| Pills      | `--space-pill-x`          | 9       | 3 × 3      | 8                               | 5     | prime        | Material badge 4         |
+| Pills      | `--space-pill-gap`        | 5       | prime      | 4                               | 3     | prime, 3 × 1 | 2                        |
 
-Where the dense column reads "—", the default is the floor at every density.
+Where the dense column reads "—", the default is the floor at every density. Sibling items in a list, grid or toolbar take the card gap, `--space-card-gap`.
 
 ## The hit-area floors
 
@@ -109,17 +110,18 @@ Already valid: 36, 28, 48 and 56.
 
 ## What changed from today
 
-| Earlier                             | From the 19 November ruling                                                                 |
-| ----------------------------------- | ------------------------------------------------------------------------------------------- |
-| Touch hit region 49px               | 45px (3 × 15)                                                                               |
-| Desktop hit region 28px             | 24px (3 × 8)                                                                                |
-| One 14px inset floor for everything | A default and a dense value for each layer, listed above                                    |
-| 14px inline inset on status pills   | `--space-pill-x`: 9px default, 5px dense                                                    |
-| Chips on the 14px inset             | `--space-chip-x`: 12px default, 9px dense (replaces `--space-control-x-sm`)                 |
-| 7px gap between adjacent controls   | 9px default (`--space-control-between`), 7px dense for the control gap                      |
-| 7px gap floor                       | 7px only as the card stack (`--space-card-stack`), title to body, and as the dense card gap |
-| Gap between cards, at least 7px     | 14px default (`--space-card-gap`)                                                           |
-| Page edge with no value of its own  | 17px on phones (`--space-page-x`), 28px wide (`--space-page-x-wide`)                        |
+| Earlier                               | From the 19 November ruling                                                                 |
+| ------------------------------------- | ------------------------------------------------------------------------------------------- |
+| Touch hit region 49px                 | 45px (3 × 15)                                                                               |
+| Desktop hit region 28px               | 24px (3 × 8)                                                                                |
+| One 14px inset floor for everything   | A default and a dense value for each layer, listed above                                    |
+| 14px inline inset on status pills     | `--space-pill-x`: 9px default, 5px dense                                                    |
+| Chips on the 14px inset               | `--space-chip-x`: 12px default, 9px dense (replaces `--space-control-x-sm`)                 |
+| 7px gap between adjacent controls     | 9px default (`--space-control-between`), 7px dense for the control gap                      |
+| 7px gap between a label and its field | 7px default (`--space-label-gap`), 5px dense                                                |
+| 7px gap floor                         | 7px only as the card stack (`--space-card-stack`), title to body, and as the dense card gap |
+| Gap between cards, at least 7px       | 14px default (`--space-card-gap`), also the gap between sibling items, 7px dense            |
+| Page edge with no value of its own    | 17px on phones (`--space-page-x`), 28px wide (`--space-page-x-wide`)                        |
 
 Body text, captions, contrast and line height do not change. Body stays at 17px on touch and 15px
 on a desktop, captions at 14px, contrast at 7:1 for body text, 4.5:1 for other text and 3:1 for UI,
@@ -127,24 +129,17 @@ and the body line height at 1.5.
 
 Screens built on the old values get slightly roomier when they update. Nothing breaks.
 
-<Note>
-**Not set by this ruling.** The earlier floors also named a 7px gap between a label and its field,
-and a 7px gap between sibling items. The 19 November ruling gives those no layer, so this page
-does not state a floor for either. Use `--space-card-stack` (7px) between a title and its body, and
-`--space-control-between` (9px) between controls.
-</Note>
-
 ## Until the release ships
 
 The registry PR builds these values and generates them to CSS, Rust and React Native. Until it
 ships, the earlier values stay in force.
 
-| Surface                                                                     | Serves today                                                                                                         | Serves after the release                                               |
-| --------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| Tokens (`mzizi-tokens-globals.css`)                                         | `--inset-floor` 14px, `--gap-floor` 7px, `--leading-floor` 1.5, `--target-floor` 49px on touch and 28px on a desktop | The layer tokens above, both densities, `--target-floor` 45px and 24px |
-| [`GET /v1/brand`](https://api.mzizi.dev/v1/brand), `accessibility` block    | `minInset` 14, `minControlGap` 7, `minLabelGap` 7, `minItemGap` 7, `minBodyLeading` 1.5                              | The layer values, with the label and item gaps still unset             |
-| MCP `get_tokens` (`family=floors`) and `get_doctrine` (`topic=bundu-floor`) | The earlier floors                                                                                                   | The new floors                                                         |
-| `mzizi check` in `@nyuchi/mzizi-cli` 0.8.0                                  | Fails padding under 14px, gaps under 7px, negative margins and line heights under 1.5                                | Checks the layer values, once a release carries them                   |
+| Surface                                                                     | Serves today                                                                                                         | Serves after the release                                                     |
+| --------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| Tokens (`mzizi-tokens-globals.css`)                                         | `--inset-floor` 14px, `--gap-floor` 7px, `--leading-floor` 1.5, `--target-floor` 49px on touch and 28px on a desktop | The layer tokens above, both densities, `--target-floor` 45px and 24px       |
+| [`GET /v1/brand`](https://api.mzizi.dev/v1/brand), `accessibility` block    | `minInset` 14, `minControlGap` 7, `minLabelGap` 7, `minItemGap` 7, `minBodyLeading` 1.5                              | The layer values, with the label gap at 7px and the sibling-item gap at 14px |
+| MCP `get_tokens` (`family=floors`) and `get_doctrine` (`topic=bundu-floor`) | The earlier floors                                                                                                   | The new floors                                                               |
+| `mzizi check` in `@nyuchi/mzizi-cli` 0.8.0                                  | Fails padding under 14px, gaps under 7px, negative margins and line heights under 1.5                                | Checks the layer values, once a release carries them                         |
 
 The registry's tests on `main` hold the earlier values today: the token test fails when the numbers
 differ between `BUNDU_FLOOR`, canon, `/v1/tokens` and the stylesheet, and the base-layer rules give a
