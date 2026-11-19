@@ -117,7 +117,8 @@
               "foundations/icons",
               "foundations/accessibility",
               "foundations/bundu-floor",
-              "foundations/spacing-floor",
+              "foundations/spacing-layers",
+              "foundations/standards-comparison",
               "foundations/internationalization"
             ]
           },
@@ -193,6 +194,10 @@
     {
       "source": "/registry/mcp",
       "destination": "/toolchain/mcp"
+    },
+    {
+      "source": "/foundations/spacing-floor",
+      "destination": "/foundations/spacing-layers"
     }
   ],
   "navbar": {

@@ -21,6 +21,21 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
+### Changed — the Bundu floor moves to 45px and 24px, and spacing becomes layered (2026-11-19)
+
+The owner's rulings of 19 November 2026 set the hit regions and the spacing. They ship with the registry release that carries these tokens. Touch is 45px, the desktop is 24px, and the layer values replace the 14px inset and 7px gaps.
+
+- **Hit regions.** Touch goes from 49px to 45px (3 × 15, above WCAG 2.5.5 and Apple's 44). Desktop goes from 28px to 24px (3 × 8, WCAG 2.5.8). Every page that stated 49px or 28px now states the new values.
+- **Spacing layers.** `foundations/spacing-floor` is now `foundations/spacing-layers` (the old URL redirects). It sets a default and a dense value for each layer: controls, chips, pills, cards, containers and layout, with the `--space-*` and `-dense` tokens. Both values are floors, and nothing goes below dense.
+- **Density.** The spacing layers page explains density: white space where it serves the reader, dense where the content needs it. Dense controls keep the full hit region.
+- **Label and sibling gaps.** `--space-label-gap` is 7px, dense 5px, the gap between a label and its field. Sibling items in a list, grid or toolbar take `--space-card-gap`: 14px, dense 7px.
+- **Control heights.** `spacing-control-sm` rounds from 32 to 33, `spacing-control-lg` and `--touch-target-sm` from 40 to 41 (the nearest Mzizi number, 41 is prime), `spacing-control-dense` and `spacing-field-sm` from 32 to 33.
+- **Pages updated for the new values:** `foundations/bundu-floor`, `foundations/spacing-layers`, `foundations/overview`, `foundations/accessibility`, `foundations/layout`, `foundations/tokens`, `foundations/icons`, `patterns/dashboard-standard`, `patterns/discover-standard`, `patterns/kweli-address` (its two 44px links are 45px), `patterns/mobile-first`, `registry/contracts`, `registry/contributing`, `architecture/nodes`, `content/writing`, `roots/overview`, `toolchain/cli` and `toolchain/skills`.
+
+### Added — the standards comparison (2026-11-19)
+
+- **Added: `foundations/standards-comparison`.** The Bundu floor beside WCAG 2.2, Apple's Human Interface Guidelines, Material 3 and Anthropic's brand guidelines: the numbers, the contrast of Anthropic's accents on its own backgrounds, each system's principles, and the sources. It is in the Foundations navigation.
+
 ### Changed — who Mzizi belongs to (2026-11-17)
 
 - **The home page's Ownership section says Mzizi is a Bundu Foundation project, built by Nyuchi,
