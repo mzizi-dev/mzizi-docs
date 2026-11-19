@@ -84,9 +84,8 @@ actions with the brand mineral (Nyuchi gold) instead of the deep text variant sh
 ## Density
 
 Dashboards are dense on a mouse and generous on touch. Every interactive control declares
-both heights, and its contract checks them. Since the Bundu floor (registry 4.23.0, 3 November 2026) every control also needs a 49px hit region on touch, and since its desktop tier
-(registry 4.36.0, 12 November 2026) a 28px one on a mouse: a button-like control is drawn at the heights below on a
-mouse, and its drawn box is the hit region. See [the Bundu floor](/foundations/bundu-floor). The 19 November 2026 ruling sets the touch floor at 45px and the desktop floor at 24px.
+both heights, and its contract checks them. Every control needs a hit region of 45px on touch and 24px on a mouse. A button-like control is drawn
+at the heights below on a mouse, and its drawn box is the hit region. See [the Bundu floor](/foundations/bundu-floor).
 
 The table shows the drawn heights the contracts record. Contract rows that predate the floor
 are pinned in the registry as gaps until they move onto a size role: 38 rows across the app,
@@ -96,9 +95,9 @@ input and select, and the pagination link). A new row under 45px on a coarse poi
 
 | Control                                                                      | Fine pointer          | Coarse pointer (touch)                       |
 | ---------------------------------------------------------------------------- | --------------------- | -------------------------------------------- |
-| Nav row, quick search, toolbar menu, top-bar action, account menu, page link | 32px                  | 44px                                         |
+| Nav row, quick search, toolbar menu, top-bar action, account menu, page link | 33px                  | 44px                                         |
 | Button `md` / input / select                                                 | 36px                  | 48px                                         |
-| Button `sm` / `lg`                                                           | 32px / 40px           | 44px / 48px                                  |
+| Button `sm` / `lg`                                                           | 33px / 41px           | 44px / 48px                                  |
 | Command palette result                                                       | 36px                  | 44px                                         |
 | Top bar                                                                      | 48px                  | 48px                                         |
 | Text                                                                         | 14px (`text-body-sm`) | 17px (`text-body`; iOS never zooms an input) |

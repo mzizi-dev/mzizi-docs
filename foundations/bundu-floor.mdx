@@ -69,9 +69,10 @@ variables. A component never branches on screen size.
 | Tablet       | `min-width: 48rem`                                                                      | 49px: an iPad is touched      | 45px       | 17px | 14px    |
 | Desktop      | `min-width: 64rem` and `pointer: fine` and `hover: hover` and not `any-pointer: coarse` | 28 to 41px (28, 33, 36 or 41) | 24px       | 15px | 14px    |
 
-The control sizes on the rule are 28, 33, 36, 41, 48 and 56px. On a desktop a control is drawn at
+The control sizes on the rule are 28, 33, 36, 41, 48, 49 and 56px. On a desktop a control is drawn at
 one of the smaller sizes, from 28 to 41px. A field is 36px on a desktop, and 33px in its compact
-form. A standard button on touch is 49px, and the large button is 56px.
+form. A standard button on touch is drawn at 49px, and the large button at 56px. The 45px touch floor
+is a hit region, not a drawn size.
 
 On a desktop, large body text (`text-body-lg`) is 17px, and a caption stays 14px. Only display and
 heading sizes step down as screens grow, and body text steps down once, at the desktop tier. A
@@ -185,7 +186,7 @@ work meanwhile.
 The registry's `bundu-floor` test fails when a default type step is under its floor in any layer,
 when a floored size role is under its tier's minimum (45px on touch), when the desktop layer
 lowers `--target-floor` below 24px or the `hit-area` rule is gone, when a desktop control is drawn
-under 28px, when a copy of the floor disagrees with `BUNDU_FLOOR`, or when a registry component
+under 24px, when a copy of the floor disagrees with `BUNDU_FLOOR`, or when a registry component
 names an arbitrary text size under 14px. The contract runner and the Rust evaluator fail a density
 row whose interactive control has a hit region under 45px on a coarse pointer or 24px on a fine
 one. Rows that predate the floor are pinned, so a new one cannot join them unseen; see
