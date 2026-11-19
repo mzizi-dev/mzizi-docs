@@ -1,6 +1,6 @@
 ---
 title: "Accessibility"
-description: "The accessibility standards the Mzizi design system enforces — WCAG 7:1, 4.5:1 and 3:1 contrast with APCA 3.0, hit regions of 49px on touch and 28px on a desktop, keyboard navigation and screen-reader support."
+description: "The accessibility standards the Mzizi design system enforces — WCAG 7:1, 4.5:1 and 3:1 contrast with APCA 3.0, hit regions of 45px on touch and 24px on a desktop, keyboard navigation and screen-reader support."
 sidebarTitle: "Accessibility"
 icon: "accessibility"
 ---
@@ -73,15 +73,16 @@ colour-vision deficiency. See [the MCP server](/toolchain/mcp).
 
 ## Touch targets
 
-**Every interactive control keeps a hit region of 49px on touch and 28px on a desktop.**
-That is the Bundu floor in two tiers (owner, 2 and 12 November 2026): 7 × 7 on touch, above
-Apple's 44 pt, and 4 × 7 on a desktop with a mouse, Apple's macOS default control and above the
-24px of WCAG 2.2 SC 2.5.8. Nothing interactive has a smaller hit region. On touch, controls are
-also drawn at 49px; on a desktop a control is drawn 28 to 40px and its drawn box is the hit
-region. The full rule, the sizes and the migration are on
-[the Bundu floor](/foundations/bundu-floor). The space around controls has a floor too:
-14px inset, 7px gaps and 1.5 body line height, on
-[the spacing floor](/foundations/spacing-floor).
+**Every interactive control keeps a hit region of 45px on touch and 24px on a desktop.**
+That is the Bundu floor in two tiers, as the owner set it on 19 November 2026 (it moved them from
+49px and 28px). 45px is 3 × 15, the nearest Mzizi number above the 44 of WCAG 2.5.5 and Apple's
+44 pt. 24px is WCAG 2.2 SC 2.5.8's minimum, and on a desktop it is 3 × 8. Nothing interactive has
+a smaller hit region. On touch, controls are also drawn at 49px; on a desktop a control is drawn
+28 to 40px and its drawn box is the hit region. The release that carries these values is in
+progress; until it ships, the live tokens still report 49px and 28px. The full rule, the sizes and
+the migration are on [the Bundu floor](/foundations/bundu-floor). The space around controls is
+layered: 17px of inline padding, 9px between controls, 21px for cards and 28px for containers, on
+[the spacing layers](/foundations/spacing-layers).
 
 | Size role      | Drawn on touch | Drawn on desktop      | Hit region (touch, desktop) |
 | -------------- | -------------- | --------------------- | --------------------------- |
@@ -177,7 +178,7 @@ to a reader.
 
 - [ ] Contrast meets the WCAG minimum (7:1 body, 4.5:1 non-body, 3:1 UI) and the APCA
       threshold, in both themes
-- [ ] Every control has a hit region of 49px on touch and 28px on a desktop, and text is 17px body (15px on a desktop) and 14px at the smallest
+- [ ] Every control has a hit region of 45px on touch and 24px on a desktop, and text is 17px body (15px on a desktop) and 14px at the smallest
 - [ ] Every interaction is reachable by keyboard
 - [ ] Focus indicators are visible and unmodified
 - [ ] A screen reader announces the component's purpose and state

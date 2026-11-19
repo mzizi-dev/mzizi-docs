@@ -1,0 +1,196 @@
+---
+title: "Spacing layers"
+description: "The spacing floor, one default value and one dense value for each layer of a screen. Both are floors, and nothing goes below dense. Part of the Bundu floor."
+sidebarTitle: "Spacing layers"
+icon: "ruler"
+---
+
+The spacing floor is the part of [the Bundu floor](/foundations/bundu-floor) that sets minimums
+for **space**: padding, gaps and the hit regions around them. Each layer of a screen has two values.
+The default is the floor at default density. The dense value is the absolute floor, and nothing in
+the layer goes below it, even a component that sets no padding at all.
+
+The owner approved these layered tokens on 19 November 2026. They replace the single 14px inset
+floor and the 7px gap floor that the earlier registry used. The comparison with WCAG 2.2, Apple,
+Material 3 and Anthropic's brand is on [the standards comparison](/foundations/standards-comparison).
+
+<Note>
+**The registry release that carries these tokens is in progress.** Until it ships, the live API,
+the MCP server and the tokens still serve the earlier values: a 14px inset, 7px gaps, and the 49px
+touch and 28px desktop hit regions. This page describes the target.
+</Note>
+
+## The number rule
+
+Every Mzizi spacing or size value is a multiple of 3, a multiple of 7, or a prime number.
+
+1. Start from the recommended value: WCAG, Apple HIG or Material 3.
+2. Take the nearest Mzizi number at or above it. A little larger is fine. Lower never is.
+3. Cards, containers and page layout use multiples of 7. Controls may use any Mzizi number, so
+   they can sit tighter.
+
+| Recommended                  | Nearest Mzizi number at or above | Built from |
+| ---------------------------- | -------------------------------- | ---------- |
+| 8 (Material 3 compact gap)   | 9                                | 3 × 3      |
+| 16 (Material 3 small button) | 17                               | prime      |
+| 16 on a card                 | 21                               | 7 × 3      |
+| 24 (Material 3 dialog)       | 28                               | 7 × 4      |
+| 44 (WCAG 2.5.5, Apple)       | 45                               | 3 × 15     |
+| 48 (layout section)          | 49                               | 7 × 7      |
+
+## Density
+
+White space where it serves the reader, and dense where the content needs it. A dense screen is
+a screen of data, a long list or a table; a default screen is one that a person reads at leisure
+or touches with a thumb. Both densities are supported by the same components, and the choice is
+the layer's, not the app's.
+
+Each layer has a **default** value and a **dense** value, and both are floors:
+
+- The default is the floor at default density.
+- The dense value is the absolute floor. Nothing goes below it, at any density.
+- Where a layer has no dense step, its default is the floor at every density.
+
+Dense controls are drawn smaller, but they keep the full hit area: 45px on touch and 24px on a
+desktop, through the hit-area pseudo-element. Density changes the visible size, never the target.
+
+Dense tokens are named `<token>-dense`, for example `--space-card-dense`.
+
+## The layers
+
+Controls are buttons, chips and inputs. Cards are cards, list items and tiles. Containers are
+dialogs, sheets and panels. Layout is the page edge and the gaps between sections. Pills and
+badges are their own small layer.
+
+| Layer      | Token                     | Default | Built from | Default reference             | Dense | Built from   | Dense reference          |
+| ---------- | ------------------------- | ------- | ---------- | ----------------------------- | ----- | ------------ | ------------------------ |
+| Layout     | `--space-page-x`          | 17      | prime      | Apple and Material compact 16 | —     | —            | —                        |
+| Layout     | `--space-page-x-wide`     | 28      | 7 × 4      | Material medium, expanded 24  | 21    | 7 × 3        | 16 to 24                 |
+| Layout     | `--space-section`         | 49      | 7 × 7      | 48                            | 28    | 7 × 4        | 24                       |
+| Containers | `--space-container`       | 28      | 7 × 4      | Material dialog 24            | 21    | 7 × 3        | Material sheet 16        |
+| Containers | `--space-container-gap`   | 21      | 7 × 3      | Material dialog 16            | 14    | 7 × 2        | 12                       |
+| Cards      | `--space-card`            | 21      | 7 × 3      | Material card 16              | 14    | 7 × 2        | Material list item 12    |
+| Cards      | `--space-card-gap`        | 14      | 7 × 2      | Material card gap 8           | 7     | 7            | 4                        |
+| Cards      | `--space-card-stack`      | 7       | 7          | Title to body 4               | 7     | 7            | 4                        |
+| Controls   | `--space-control-x`       | 17      | prime      | Material small button 16      | 12    | 3 × 4        | Material dense button 12 |
+| Controls   | `--space-field-x`         | 17      | prime      | Material text field 16        | 12    | 3 × 4        | 12                       |
+| Controls   | `--space-control-gap`     | 9       | 3 × 3      | Material icon to label 8      | 7     | 7            | 6                        |
+| Controls   | `--space-control-between` | 9       | 3 × 3      | Material target spacing 8     | 9     | 3 × 3        | 8, no dense step         |
+| Chips      | `--space-chip-x`          | 12      | 3 × 4      | Material chip 12              | 9     | 3 × 3        | Material chip 8          |
+| Pills      | `--space-pill-x`          | 9       | 3 × 3      | 8                             | 5     | prime        | Material badge 4         |
+| Pills      | `--space-pill-gap`        | 5       | prime      | 4                             | 3     | prime, 3 × 1 | 2                        |
+
+Where the dense column reads "—", the default is the floor at every density.
+
+## The hit-area floors
+
+A control's hit region is a floor of its own. It depends on the pointer, not on the layer or the
+density.
+
+| Token            | Touch            | Desktop       | Built from    | Applies to                                                                                                |
+| ---------------- | ---------------- | ------------- | ------------- | --------------------------------------------------------------------------------------------------------- |
+| `--target-floor` | 2.8125rem (45px) | 1.5rem (24px) | 3 × 15, 3 × 8 | Touch is a coarse pointer, or any window under 64rem. Desktop is a fine pointer with hover, 64rem and up. |
+
+WCAG 2.5.5 and Apple ask for 44 on touch, and 45 is the nearest Mzizi number above it. WCAG 2.5.8
+asks for 24 on a desktop, and 24 is 3 × 8.
+
+## Control heights on the rule
+
+Three control heights are off the rule and round up to the next Mzizi number. The other heights
+already on the rule stay as they are.
+
+| Token                | Was | Now | Built from |
+| -------------------- | --- | --- | ---------- |
+| `spacing-control-sm` | 32  | 33  | 3 × 11     |
+| `spacing-control-lg` | 40  | 42  | 3 × 14     |
+| `--touch-target-sm`  | 40  | 42  | 3 × 14     |
+
+Already valid: 36, 28, 48 and 56.
+
+## What changed from today
+
+| Earlier                             | From the 19 November ruling                                                                 |
+| ----------------------------------- | ------------------------------------------------------------------------------------------- |
+| Touch hit region 49px               | 45px (3 × 15)                                                                               |
+| Desktop hit region 28px             | 24px (3 × 8)                                                                                |
+| One 14px inset floor for everything | A default and a dense value for each layer, listed above                                    |
+| 14px inline inset on status pills   | `--space-pill-x`: 9px default, 5px dense                                                    |
+| Chips on the 14px inset             | `--space-chip-x`: 12px default, 9px dense (replaces `--space-control-x-sm`)                 |
+| 7px gap between adjacent controls   | 9px default (`--space-control-between`), 7px dense for the control gap                      |
+| 7px gap floor                       | 7px only as the card stack (`--space-card-stack`), title to body, and as the dense card gap |
+| Gap between cards, at least 7px     | 14px default (`--space-card-gap`)                                                           |
+| Page edge with no value of its own  | 17px on phones (`--space-page-x`), 28px wide (`--space-page-x-wide`)                        |
+
+Body text, captions, contrast and line height do not change. Body stays at 17px on touch and 15px
+on a desktop, captions at 14px, contrast at 7:1 for body text, 4.5:1 for other text and 3:1 for UI,
+and the body line height at 1.5.
+
+Screens built on the old values get slightly roomier when they update. Nothing breaks.
+
+<Note>
+**Not set by this ruling.** The earlier floors also named a 7px gap between a label and its field,
+and a 7px gap between sibling items. The 19 November ruling gives those no layer, so this page
+does not state a floor for either. Use `--space-card-stack` (7px) between a title and its body, and
+`--space-control-between` (9px) between controls.
+</Note>
+
+## Until the release ships
+
+The registry PR builds these values and generates them to CSS, Rust and React Native. Until it
+ships, the earlier values stay in force.
+
+| Surface                                                                     | Serves today                                                                                                         | Serves after the release                                               |
+| --------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| Tokens (`mzizi-tokens-globals.css`)                                         | `--inset-floor` 14px, `--gap-floor` 7px, `--leading-floor` 1.5, `--target-floor` 49px on touch and 28px on a desktop | The layer tokens above, both densities, `--target-floor` 45px and 24px |
+| [`GET /v1/brand`](https://api.mzizi.dev/v1/brand), `accessibility` block    | `minInset` 14, `minControlGap` 7, `minLabelGap` 7, `minItemGap` 7, `minBodyLeading` 1.5                              | The layer values, with the label and item gaps still unset             |
+| MCP `get_tokens` (`family=floors`) and `get_doctrine` (`topic=bundu-floor`) | The earlier floors                                                                                                   | The new floors                                                         |
+| `mzizi check` in `@nyuchi/mzizi-cli` 0.8.0                                  | Fails padding under 14px, gaps under 7px, negative margins and line heights under 1.5                                | Checks the layer values, once a release carries them                   |
+
+The registry's tests on `main` hold the earlier values today: the token test fails when the numbers
+differ between `BUNDU_FLOOR`, canon, `/v1/tokens` and the stylesheet, and the base-layer rules give a
+bare element the 14px inset and the 7px gap. The contract and geometry tests for spacing are design
+intent and are not on `main`; they are tracked in
+[mzizi-registry#617](https://github.com/mzizi-dev/mzizi-registry/issues/617).
+
+## The base layer and the legacy opt-out
+
+Until the release ships, a bare `button`, `select`, `textarea` or text `input` takes the 14px inset
+on its inline axis, a bare text surface takes it on both axes, and a list, group, toolbar or tablist
+takes the 7px gap. The line height of `body` is at least the 1.5 floor.
+
+`data-mzizi-sizes="legacy"` on the root element sets the inset, gap and leading floors to 0, 0 and 1
+today, so the base-layer rules do nothing. It steps out of the floor, and the release decides how it
+treats the layer tokens. Use it only to take the registry version before you have moved your
+layouts, and remove it when you have. See [the Bundu floor](/foundations/bundu-floor#the-legacy-alias).
+
+## In an app: the CLI
+
+`@nyuchi/mzizi-cli` 0.8.0 adds `mzizi check [path...]`. It reads the values written in your source
+and does not resolve `var()` or `calc()`. Until a release moves it to the layer values, it checks
+against the earlier 14px and 7px numbers.
+
+```bash
+npx @nyuchi/mzizi-cli check src          # exit 1 on a violation, with file:line:column
+npx @nyuchi/mzizi-cli check src --json   # one report: violations, exempted, notices, floor, ok
+```
+
+A violation that is deliberate carries a comment with a reason, on the same line or the line before:
+
+```css
+/* mzizi-spacing-exempt: dense data table, the cells carry their own inset */
+.data-row {
+  padding: 0;
+}
+```
+
+A comment with no reason is not an exception. The report lists each exception, so a reviewer can see
+it. The first 20 lines of a file take a `-file` form that covers the whole file.
+
+## Sources
+
+The owner's ruling of 19 November 2026 sets these values, with a second ruling the same day on the
+dense step and the pill and chip tokens. The spec and its specimen are in the owner's workspace and
+are not published here. The earlier floor was tracked in
+[mzizi-registry#617](https://github.com/mzizi-dev/mzizi-registry/issues/617). The rule and its tests
+are in the registry's
+[`sizes-and-density.md`](https://github.com/mzizi-dev/mzizi-registry/blob/main/docs/sizes-and-density.md).
