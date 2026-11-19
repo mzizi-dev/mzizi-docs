@@ -50,15 +50,16 @@ The design system publishes a named spacing scale — see
 | `16`  | 64px  | Page section separation    |
 | `24`  | 96px  | Hero spacing               |
 
-### The spacing floor
+### The spacing layers
 
-Whatever the scale offers, nothing goes under 14px of padding between text and its container
-edge, 7px between adjacent controls, labels and fields and sibling items, or a 1.5 body line
-height. In the table above, `p-3` (12px) is under the inset floor for a text surface, and `1` (4px) is
-under the 7px gap floor, so do not use it between controls, labels and fields or list items
-(icon to text inside one control is not a gap between controls). The rhythm below is a layout
-guide, not a licence to go under a floor. See
-[the spacing floor](/foundations/spacing-floor).
+Whatever the scale offers, each layer of a screen has a floor. A control keeps 17px of inline
+padding (12px for a chip, 9px for a pill), a card keeps 21px and a container keeps 28px, adjacent controls sit 9px
+apart, a label and its field sit 7px apart, a card's title and its body sit 7px apart, sibling items in a list sit 14px apart, and body text has a 1.5
+line height. In the table above, `p-3` (12px) is padding, and it is under the 17px control floor, so give a
+control its layer's padding token instead. `gap-1` (4px) is a gap, and it is under the 9px gap
+between controls, so do not use it between controls. Icon to
+text inside one control is not a gap between controls. The rhythm below is a layout guide, not a
+licence to go under a floor. See [the spacing layers](/foundations/spacing-layers).
 
 ### Rhythm
 
@@ -137,7 +138,7 @@ not.
 
 ## Mobile considerations
 
-- **Touch targets** — a 49px hit region on every interactive element on touch, 28px on a desktop with a mouse.
+- **Touch targets** — a 45px hit region on every interactive element on touch, 24px on a desktop with a mouse.
 - **Thumb zones** — put primary actions in the lower half of the screen.
 - **Bottom navigation** — `mzizi-bottom-nav` for app-level navigation on mobile.
 - **Sheet rather than dialog** — a bottom sheet is easier to reach and dismiss than a centred

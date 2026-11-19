@@ -211,11 +211,12 @@ way:
 
 | Component | Default height | Small | Minimum touch target | Radius |
 | --------- | -------------- | ----- | -------------------- | ------ |
-| Button    | 49px           | 49px  | 49px                 | 9999   |
-| Input     | 49px           | 49px  | 49px                 | 9999   |
-| Avatar    | 40px           | 32px  | 49px                 | 9999   |
-| Badge     | 22px           | —     | 49px                 | 9999   |
+| Button    | 49px           | 49px  | 45px                 | 9999   |
+| Input     | 49px           | 49px  | 45px                 | 9999   |
+| Avatar    | 40px           | 32px  | 45px                 | 9999   |
+| Badge     | 22px           | —     | 45px                 | 9999   |
 
-The hit region (49px on touch, 28px on a desktop) is not negotiable; see [the Bundu floor](/foundations/bundu-floor). The
-large button is 56px. These are the `componentSpecs` that `/v1/brand` serves at the registry
-pin of 3 November 2026; a desktop control is drawn smaller and its drawn box (28px or more) is the hit region.
+The hit region (45px on touch, 24px on a desktop) is not negotiable; see [the Bundu floor](/foundations/bundu-floor). The
+large button is 56px. These are the `componentSpecs` from registry 4.45 and later, with the minimum touch target at the
+Bundu floor of 45px. A desktop control is drawn smaller, and its drawn box (at least the 24px desktop
+floor) is the hit region.
