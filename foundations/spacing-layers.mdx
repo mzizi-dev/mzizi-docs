@@ -162,13 +162,14 @@ version before you have moved your layouts, and remove it when you have. See
 
 ## In an app: the CLI
 
-`@nyuchi/mzizi-cli` adds `mzizi check [path...]`. It reads the values written in your source and
+`mz`, the Mzizi CLI, has `mz floor [path...]` (called `mzizi check` before `0.14.0`). It
+reads the values written in your source and
 does not resolve `var()` or `calc()`. Version 0.8.0 checks against the earlier 14px and 7px numbers,
 and the layer values follow the layer-aware checker.
 
 ```bash
-npx @nyuchi/mzizi-cli check src          # exit 1 on a violation, with file:line:column
-npx @nyuchi/mzizi-cli check src --json   # one report: violations, exempted, notices, floor, ok
+npx @nyuchi/mzizi-cli floor src          # exit 1 on a violation, with file:line:column
+npx @nyuchi/mzizi-cli floor src --json   # one report: violations, exempted, notices, floor, ok
 ```
 
 A violation that is deliberate carries a comment with a reason, on the same line or the line before:

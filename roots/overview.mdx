@@ -205,7 +205,7 @@ The Rust build is one of three under one contract,
 [`contracts/ui/markdown-renderer`](https://github.com/mzizi-dev/mzizi-registry/blob/main/contracts/ui/markdown-renderer.contract.json)
 (1.1.0): the React build and a pure Astro build are held to the same states, including a hostile
 one, and the TypeScript and Rust suites run the same 55 shared cases. The Astro build installs
-from the registry (`mzizi add markdown-renderer --target astro`); the contract names
+from the registry (`mz add markdown-renderer --target astro`); the contract names
 `@bundu/ui/MarkdownRenderer.astro` from `@bundu/ui` 0.6.0, which is not on npm yet (`0.5.0` was
 the latest on 7 October 2026). The Rust source is at [`/v1/rs/markdown-renderer`](https://api.mzizi.dev/v1/rs/markdown-renderer). When it was checked on 17 November 2026 it still named `mzizi-ui` as the crate, while the 0.8.0 source has the renderer in `mzizi-roots`. `api.mzizi.dev` serves the safe React and Astro builds too.
 
