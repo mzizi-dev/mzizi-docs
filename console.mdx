@@ -52,6 +52,16 @@ Until that work lands, the page above describes what runs today.
 `app.mzizi.dev` is **live**, behind WorkOS AuthKit sign-in (checked 29 September 2026: the
 host answers 200). Report a security problem in the console to `security@nyuchi.com`.
 
+Every console page needs sign-in. On 23 November 2026 the Overview, Components, Tokens and
+Architecture pages each showed "Sign in to use the console." until you sign in, and the console
+needs JavaScript to sign in at all. The account is a **Mukoko Account**: **Sign in** goes
+through `auth.mukoko.com` to "Sign in to Mukoko Account" at `accounts.mukoko.com`, which signs
+in with an email address and offers to create an account.
+
+You do not need the console to read the registry. The same components, tokens and helix are
+public, with no sign-in, at [`mzizi.dev`](https://mzizi.dev),
+[`api.mzizi.dev/v1`](/platform/api-gateway) and [the MCP server](/toolchain/mcp).
+
 ## What it replaces
 
 `@nyuchi/mzizi-console-app` — an earlier mini-app, last at `0.2.0-beta.1`, which the Nyuchi

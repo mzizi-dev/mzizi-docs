@@ -21,6 +21,8 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
+- **Fixed:** Say which account the sign-in uses. `console`, `toolchain/mcp` and `toolchain/connect` now say that the console and the MCP server's sign-in operations sign in with a Mukoko Account at `accounts.mukoko.com`, which offers to create one. `console` also says every console page needs sign-in and JavaScript, and that the same registry data is public on `mzizi.dev`, `api.mzizi.dev` and the MCP server.
+
 - **Fixed:** Sync compiler size, standard kernel and UI tracker rows, and backend benchmark arm availability with language main. Detect benchmark arms from their manifests.
 
 - **Fixed:** Document the published Roots 0.11.0 and API types crates. Reuse the MCP version matcher and keep historical changelog entries out of the current crate availability check.
