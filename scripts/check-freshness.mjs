@@ -250,8 +250,11 @@ await check("mzizi-dev/mzizi charter, tracker and arms", async () => {
       else console.log(`ok     ${path} says what the tracker leaves unbuilt, as the tracker marks it`);
     }
 
-    // The arms: benchmark.mdx says "Exists" for exactly the directories in benchmarks/arms/.
-    const present = new Set(git("ls-tree", "--name-only", "HEAD", "benchmarks/arms/").split("\n").filter(Boolean).map((p) => p.split("/").pop()));
+    // An arm has its own manifest. Shared scripts and metadata are not arms.
+    const armPaths = git("ls-tree", "-r", "--name-only", "HEAD", "benchmarks/arms/");
+    const present = new Set(
+      [...armPaths.matchAll(/^benchmarks\/arms\/([^/]+)\/arm\.toml$/gm)].map((match) => match[1]),
+    );
     if (present.size === 0) throw new Error("benchmarks/arms/ is empty or missing");
     const bench = page("benchmark.mdx");
     const table = bench.slice(bench.indexOf("## The arms"), bench.indexOf("## What it measures"));
@@ -270,8 +273,7 @@ await check("mzizi-dev/mzizi charter, tracker and arms", async () => {
 });
 
 // api.mzizi.dev and mcp.mzizi.dev: the registry commit each is built from. Neither pin is stated
-// on a page as current any more: the gateway's moves by itself through an hourly bot pull
-// request, so the pages say how to read it and quote dated examples only. What is checked is
+// on a page as current. The pages explain how to read the pin and quote dated examples only. What is checked is
 // that the header still has the shape the gateway page documents, and, as warnings, that the
 // gateway has caught up with registry main and that the MCP server is on the same commit.
 let gatewayPin;

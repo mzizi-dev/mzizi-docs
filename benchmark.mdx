@@ -42,7 +42,7 @@ gateway, and every fact is checked at the HTTP boundary, so no language's syntax
 
 What Mzizi is measured against, from RFC-0009 §1, with each arm's state as
 [`benchmarks/arms/`](https://github.com/mzizi-dev/mzizi/tree/main/benchmarks/arms) holds it at
-language `main` `f9bea2b` (the set of arms is unchanged since `951e36c`, `v0.7.0`; only a comment in `mzizi-be/arm.toml` and a lockfile changed). The benchmark's design, not a result: nothing has been measured
+language `main` `00a1f49`. The five backend comparison arms have manifests and runner scripts. No benchmark result has been published
 against TypeScript, Python, Go, C++ or a Rust backend.
 
 | Arm        | Family  | Language and framework                              | State                                                                                                                                                                                                        |
@@ -52,11 +52,11 @@ against TypeScript, Python, Go, C++ or a Rust backend.
 | `leptos`   | UI      | Rust, Leptos `=0.8.21`                              | Exists; never run                                                                                                                                                                                            |
 | `react`    | UI      | TypeScript, React, `class-variance-authority`       | Exists; ran in pilots 3 and 4 (`button`, `badge`, `card`). Pinned from the registry's lockfile (`pnpm-lock.yaml` at `3afeb752`, 7 October 2026)                                                              |
 | `mzizi-be` | backend | Mzizi, a `service` (RFC-0011)                       | Exists, with the probe crate `mzprobe` and task B1; never run: the runner does not score with probes yet                                                                                                     |
-| `ts`       | backend | TypeScript, Hono on Node                            | Not added yet                                                                                                                                                                                                |
-| `python`   | backend | Python, FastAPI with pydantic v2, served by uvicorn | Not added yet                                                                                                                                                                                                |
-| `go`       | backend | Go, `net/http` from the standard library            | Not added yet                                                                                                                                                                                                |
-| `cpp`      | backend | C++20, `cpp-httplib` and `nlohmann/json`            | Not added yet                                                                                                                                                                                                |
-| `rust`     | backend | Rust, axum on tokio, serde                          | Not added yet                                                                                                                                                                                                |
+| `ts`       | backend | TypeScript, Hono on Node                            | Exists; no published result                                                                                                                                                                                  |
+| `python`   | backend | Python, FastAPI with pydantic v2, served by uvicorn | Exists; no published result                                                                                                                                                                                  |
+| `go`       | backend | Go, `net/http` from the standard library            | Exists; no published result                                                                                                                                                                                  |
+| `cpp`      | backend | C++20, `cpp-httplib` and `nlohmann/json`            | Exists; no published result                                                                                                                                                                                  |
+| `rust`     | backend | Rust, axum on tokio, serde                          | Exists; no published result                                                                                                                                                                                  |
 
 Task B1's reference implementations, one in Mzizi and one in plain axum, both hold all 59 of
 its facts; a reference is not an arm. The public suites (MultiPL-E, EvalPlus, Aider polyglot,
