@@ -74,9 +74,9 @@ Facts that inherited prose often gets wrong:
   `fundi` operation and for filing an issue; an anonymous `tools/list` answered three tools on
   17 November 2026. Its MCP Registry name is
   `io.github.mzizi-dev/mzizi-mcp`.
-- **The CLI is free.** `mzizi add` is published from `@nyuchi/mzizi-cli` (0.8.0 on
-  4 November 2026, which adds `mzizi check`); 0.6.0's binaries printed nothing, so pages say
-  "0.6.1 or later".
+- **The CLI is free.** `mz add` is published from `@nyuchi/mzizi-cli` and
+  `cargo install mzizi-cli` (0.14.1 on 23 November 2026; the Rust CLI, whose spacing check is
+  `mz floor`). 0.14.0's npm binaries were not executable, so pages say "0.14.1 or later".
 - **Twelve skills, in four categories.** `@nyuchi/mzizi-skills` 0.8.0 cut the bundle to five,
   `mzizi-language`, `mzizi-roots`, `mzizi-design`, `mzizi-backend` and `discoverability`, with
   no aliases for the old names. 0.9.0 (5 October 2026) added the `dev` skill

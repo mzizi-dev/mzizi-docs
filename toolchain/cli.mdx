@@ -1,13 +1,15 @@
 ---
 title: "The CLI"
-description: "@nyuchi/mzizi-cli: the mzizi add installer, Rust first, and the fundi commands that explore a project and plan wiring Mzizi in. Free, with no gate."
+description: "mz, the Mzizi CLI: mz add installs components from the registry, Rust first, mz floor checks the spacing layers, and the fundi commands explore a project and plan wiring Mzizi in. One Rust binary. Free, with no gate."
 sidebarTitle: "CLI"
 icon: "square-terminal"
 ---
 
 <Note>
-  This is the CLI for working with Mzizi's **components and doctrine** in a project. The
-  language's own command-line tool is `mz`; see [the compiler](/compiler).
+  This is the CLI for working with Mzizi's **components and doctrine** in a project. It is one Rust
+  binary, `mz`, which also carries the language's own commands (`mz check`, `mz build`, `mz run`;
+  see [the compiler](/compiler)). The registry and agent commands below live next to them. The
+  source is [mzizi-dev/mzizi-cli](https://github.com/mzizi-dev/mzizi-cli).
 </Note>
 
 The CLI is **free, with no gate**. That is the owner's decision of 29 September 2026: gating
@@ -15,73 +17,78 @@ starts only at Fundi, which ties into the console.
 
 ## Install
 
+Pick one route. They all give you the same `mz`. The latest published version is `0.14.1`,
+checked on npm and crates.io on 23 November 2026.
+
 ```bash
-pnpm add -D @nyuchi/mzizi-cli
+npx @nyuchi/mzizi-cli add button     # npm, one shot (Node 18 or later)
+npm i -g @nyuchi/mzizi-cli           # npm, global; then: mz --help
+cargo install mzizi-cli --locked     # from crates.io; installs mz
 ```
 
-The package is [`@nyuchi/mzizi-cli`](https://www.npmjs.com/package/@nyuchi/mzizi-cli). It
-installs two names for the same program, `mzizi` and `fundi`. The latest published version
-is `0.14.0`, checked on npm on 23 November 2026. It needs Node 18 or later.
+The npm package [`@nyuchi/mzizi-cli`](https://www.npmjs.com/package/@nyuchi/mzizi-cli) is a
+small launcher with the binary for your platform inside it (macOS on arm64 and x64, Linux on
+arm64 and x64 with glibc or musl, Windows on x64). It has no CLI logic of its own.
+`mzizi` and `fundi`, the names of the old TypeScript CLI, still work and print a deprecation
+note; use `mz`.
 
 <Warning>
-  **Use `0.6.1` or later, not `0.6.0`.** In `0.6.0` both binaries printed nothing and exited
-  `0`, because the entry-point check compared a symlinked path with the resolved file.
-  `0.6.1` fixes it.
+  **Use `0.14.1` or later, not `0.14.0`.** The `0.14.0` npm package shipped its binaries without the
+  execute bit, so `mz` failed with `EACCES` after `npm install`. `0.14.1` fixes it, and `cargo
+  install` was never affected.
 </Warning>
 
-What changed since `0.6.1`:
+What changed in the Rust CLI, and before it:
 
-| Version  | Change                                                                                                                                                                                                                                                |
-| -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `0.6.2`  | The request the CLI makes to crates.io names the project's support address, `support@bundu.org`, in its `User-Agent`. Earlier versions sent a person's own address there                                                                              |
-| `0.6.3`  | Depends on `@nyuchi/mzizi-skills` `^0.8.0`, so the CLI bundles [the five `0.8.x` skills](/toolchain/skills) rather than the `0.7.x` set                                                                                                               |
-| `0.7.0`  | Adds `--target astro`, and infers it in an Astro project (see [the target](#mzizi-add-the-registry-installer)). Depends on `@nyuchi/mzizi-skills` `^0.11.0`, so the CLI bundles [all seven skills](/toolchain/skills)                                 |
-| `0.8.0`  | Adds `mzizi check [path...]` (see [the spacing layers](/foundations/spacing-layers)). Depends on `@nyuchi/mzizi-skills` `^0.17.0`, so the CLI bundles the skills of that release                                                                      |
-| `0.9.0`  | `mzizi add` takes `--type` (`--target` is the same flag) and installs five types: `mzizi`, `tsx`, `astro`, `swift` and `kotlin`, with `rust` and `typescript` accepted as spellings of `mzizi` and `tsx`. Depends on `@nyuchi/mzizi-skills` `^0.19.0` |
-| `0.10.0` | A dependency refresh: no command, flag or behaviour changes                                                                                                                                                                                           |
-| `0.11.0` | Calls `mzizi_execute` for the MCP operations it uses, to match the three-tool MCP surface (see [the MCP server](/toolchain/mcp)).                                                                                                                     |
+| Version  | Change                                                                                                                                                                                                                                          |
+| -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `0.14.1` | The npm launcher repairs a binary that lost its execute bit; the release is smoke-tested from npm and crates.io                                                                                                                                 |
+| `0.14.0` | The CLI is a Rust binary, `mz`, ported from the TypeScript CLI with no behaviour change except the names. `mzizi check` is `mz floor`, because `mz check` belongs to the language compiler. The floor thresholds are read from the Mzizi tokens |
+| `0.13.0` | The last TypeScript release                                                                                                                                                                                                                     |
+| `0.9.0`  | `add` takes `--type` and installs five types: `mzizi`, `tsx`, `astro`, `swift` and `kotlin`, with `rust` and `typescript` accepted as spellings of `mzizi` and `tsx`                                                                            |
+| `0.8.0`  | Adds the spacing check, now `mz floor` (see [the spacing layers](/foundations/spacing-layers))                                                                                                                                                  |
+| `0.7.0`  | Adds `--target astro`, and infers it in an Astro project                                                                                                                                                                                        |
 
 ## Commands
 
-| Command                             | What it does                                                                                                                                                             |
-| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `mzizi add <name...>`               | Installs components from the registry, with their dependencies. Rust first. No API key and no sign-in                                                                    |
-| `mzizi check [path...]`             | Checks your source against [the spacing layers](/foundations/spacing-layers): exit code 1 on a violation. `--json` for a report. From `0.8.0`                            |
-| `fundi explore`                     | Reads a few files (`package.json`, `tsconfig.json`, the global stylesheet, the Tailwind config, `components.json`) and prints a project snapshot. Offline. No model call |
-| `fundi plan <goal>`                 | **Read-only.** Plans the minimal edits to wire Mzizi in, and prints them as a dry run                                                                                    |
-| `fundi chat <message>`              | One-shot chat scoped to Mzizi doctrine                                                                                                                                   |
-| `fundi login` / `logout` / `whoami` | Save, clear or show a console token. Only the sign-in operations need one                                                                                                |
-
-Every command works under either name: `fundi add` and `mzizi add` are the same.
+| Command                          | What it does                                                                                                                                                             |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `mz add <name...>`               | Installs components from the registry, with their dependencies. Rust first. No API key and no sign-in                                                                    |
+| `mz floor [path...]`             | Checks your source against [the spacing layers](/foundations/spacing-layers): exit code 1 on a violation. `--json` for a report. Was `mzizi check`                       |
+| `mz explore`                     | Reads a few files (`package.json`, `tsconfig.json`, the global stylesheet, the Tailwind config, `components.json`) and prints a project snapshot. Offline. No model call |
+| `mz plan <goal>`                 | **Read-only.** Plans the minimal edits to wire Mzizi in, and prints them as a dry run                                                                                    |
+| `mz chat <message>`              | One-shot chat scoped to Mzizi doctrine                                                                                                                                   |
+| `mz login` / `logout` / `whoami` | Save, clear or show a console token (kept in the OS keychain when there is one). Only the sign-in operations need one                                                    |
 
 <Note>
-  **`mzizi check [path...]`, from `0.8.0`.** It fails with exit code 1 on padding, gaps,
-  negative margins and line heights under [the spacing layers](/foundations/spacing-layers), and
-  takes `--json`. `0.7.0` and earlier have no `check` command.
+  **`mz floor [path...]`.** It fails with exit code 1 on padding, gaps, negative margins and line
+  heights under [the spacing layers](/foundations/spacing-layers), and takes `--json`. Its
+  thresholds are read from the Mzizi tokens, not typed into the tool. Under the old names (`mzizi`,
+  `fundi`) the command is still spelled `check`.
 </Note>
 
-## `mzizi add`: the registry installer
+## `mz add`: the registry installer
 
 ```bash
-mzizi add button --type mzizi      # Mzizi (Rust only), explicitly
-mzizi add button --type tsx        # the TypeScript (React) build
-mzizi add app-data-table --type astro  # the pure Astro build, into src/components/mzizi/
-mzizi add mzizi-tokens-swift       # native: the only type it has, so no flag
-mzizi add button                   # infer the type from the project
-mzizi add address-input --dry-run  # print the plan, write nothing
-mzizi add card --overwrite         # replace files that already exist
+mz add button --type mzizi      # Mzizi (Rust only), explicitly
+mz add button --type tsx        # the TypeScript (React) build
+mz add app-data-table --type astro  # the pure Astro build, into src/components/mzizi/
+mz add mzizi-tokens-swift       # native: the only type it has, so no flag
+mz add button                   # infer the type from the project
+mz add address-input --dry-run  # print the plan, write nothing
+mz add card --overwrite         # replace files that already exist
 ```
 
 It resolves a component and its registry dependencies from `api.mzizi.dev` and needs no
 account and no API key. It does not touch the MCP server.
 
-**Rust first.** For a Rust project, `mzizi add` does not copy `.rs` sources in. It names the
+**Rust first.** For a Rust project, `mz add` does not copy `.rs` sources in. It names the
 crate that holds the component and prints the `cargo add` to run, because the crates are on
 crates.io (see [Mzizi Roots](/roots/overview#install)). In a project with only a
 `Cargo.toml`:
 
 ```text
-$ mzizi add button
+$ mz add button
 button: type mzizi (Cargo.toml present and no package.json); available: …
 …
 crate dependency: mzizi-ui (crates.io)
@@ -91,8 +98,8 @@ Still to do — add the crate dependency:
 ```
 
 The crate name comes from the `crate` field of the API's `/v1/rs/{name}` response, which
-names each component's own crate: `mzizi add mzizi-alert-banner` records `mzizi-brand`, and
-`mzizi add mzizi-footer` records `mzizi-shell`.
+names each component's own crate: `mz add mzizi-alert-banner` records `mzizi-brand`, and
+`mz add mzizi-footer` records `mzizi-shell`.
 [The Roots crate list](/roots/overview#what-exists-today) says what each crate holds, and
 `mzizi-roots` brings the UI crates in one dependency.
 
@@ -115,7 +122,7 @@ separate implementations served from their own files. From `0.9.0` the types are
 Otherwise the project's own files decide: `Cargo.toml` alone is `mzizi`; `components.json`,
 or `react` or `next` in `package.json`, is `tsx`; `astro.config.*` or `astro` in the
 dependencies is `astro` (even with React islands); `Package.swift` is `swift`; a Gradle build file
-is `kotlin`. If the project has none of these, `mzizi add` takes the only type the component has,
+is `kotlin`. If the project has none of these, `mz add` takes the only type the component has,
 and otherwise refuses and asks for `--type` rather than guess. A project with both a `Cargo.toml`
 and a `package.json` is ambiguous, so it refuses too.
 
@@ -135,36 +142,25 @@ project snapshot plus the Mzizi skills that match your goal, for that agent to p
 
 `plan` and `chat` read the registry through [the MCP server](/toolchain/mcp), which serves
 every operation but the sign-in ones without sign-in. So `explore`, `plan`, `chat` and `add` need no
-account. `fundi login` exists only for the sign-in operations, which act as a Mzizi console user.
+account. `mz login` exists only for the sign-in operations, which act as a Mzizi console user.
 
 ## Safety
 
 - **Planning is read-only.** Writing a file and running a shell command are blocked while
   planning, and reachable only through an explicit non-dry-run apply.
-- **Everything is sandboxed to the project root.** A path that escapes it is rejected, in
-  planning and in apply.
-- **`mzizi add` does not overwrite by default.** A file that already exists is not replaced unless you
+- **Everything is sandboxed to the project root.** A path that escapes it, or that goes through a
+  symlink, is rejected, in planning, in apply and in `mz add`. Registry documents may only name
+  files on `api.mzizi.dev`.
+- **`mz add` does not overwrite by default.** A file that already exists is not replaced unless you
   pass `--overwrite`.
 - **The CLI never holds a machine credential.** It reaches Fundi only through the MCP server,
   which acts for a signed-in user.
 
-## As a library
+## Not a library any more
 
-```ts
-import { createFundi } from "@nyuchi/mzizi-cli"
-
-const fundi = await createFundi({
-  projectRoot: process.cwd(),
-  anthropicApiKey: process.env.ANTHROPIC_API_KEY!,
-})
-
-const snapshot = await fundi.explore()
-const plan = await fundi.plan("add the Mzizi token layer and a button", snapshot)
-await plan.apply({ dryRun: true })
-```
-
-The SDK reads no environment variables itself; the CLI wires them in. As a library,
-`createFundi()` still takes a key.
+The TypeScript CLI (up to `0.13.0`) also exported `createFundi()`. The Rust CLI is a program, not a
+library, and the npm package no longer exports it. Use the commands above, or the
+[MCP server](/toolchain/mcp), which serves the same registry and doctrine to any agent.
 
 ## Two things called fundi
 
@@ -173,11 +169,11 @@ The name appears twice, and they are different things.
 <CardGroup cols={2}>
   <Card title="Fundi, the agent behind the console" icon="activity">
     The self-healing agent and issue desk, run under Nyuchi and tied into the console. Its
-    architecture counterpart is the N9 fundi rung of [the helix](/architecture/overview).
-    It runs as a service, not as something you install.
+    architecture counterpart is the N9 fundi rung of [the helix](/architecture/overview). It runs as
+    a service, not as something you install.
   </Card>
-  <Card title="`fundi`, the CLI binary" icon="terminal">
-    The binary in `@nyuchi/mzizi-cli`, described on this page. You install it in your own
-    project and it helps you set Mzizi up there. It does not run the self-healing loop.
+  <Card title="`fundi`, the CLI commands" icon="terminal">
+    The `fundi` commands of `mz` (`explore`, `plan`, `chat`), described on this page. You install it
+    in your own project and it helps you set Mzizi up there. It does not run the self-healing loop.
   </Card>
 </CardGroup>
