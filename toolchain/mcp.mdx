@@ -140,6 +140,11 @@ OAuth challenge, so a client can offer sign-in. A client that cannot run the flo
 to `https://mcp.mzizi.dev/mcp/signin` instead, which asks you to sign in and then serves every
 tool.
 
+You sign in with a **Mukoko Account**, the same account [the console](/console) uses. On
+23 November 2026, approving a client on the server's sign-in page sent it to "Sign in to Mukoko
+Account" at `accounts.mukoko.com`, which signs in with an email address and offers to create an
+account. Nothing on this page except `fundi` and filing an issue needs it.
+
 Anonymous requests are rate-limited to 120 per 60 seconds per IP address, according to the
 server's `catalogue.json`. Signed-in requests are not.
 
