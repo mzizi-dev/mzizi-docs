@@ -30,7 +30,7 @@ z-index, icon sizes, touch targets, density. N1 is the only node allowed to _def
 - Must carry a `data-slot` attribute.
 - Must compose classes through `cn()`.
 - Must not reference mineral colours directly — semantic tokens only.
-- A hit region of 49px on touch and 28px on a desktop (56px on touch for the large button), 17px body text on touch and 15px on a desktop, and
+- A hit region of 45px on touch and 24px on a desktop (56px on touch for the large button), 17px body text on touch and 15px on a desktop, and
   nothing readable under 14px.
 - Pill-shaped categories (button, input, avatar, badge, toggle) use a `9999` radius.
 
@@ -40,7 +40,7 @@ z-index, icon sizes, touch targets, density. N1 is the only node allowed to _def
   names redirect to their `mzizi-*` names.)
 - Imports `useMziziHarness` and destructures `{ log, motion, LiveRegion }`.
 - Carries an animation style that respects `prefers-reduced-motion`.
-- ARIA, `data-slot`, `focus-visible`, the floor's hit region (49px on touch, 28px on a desktop).
+- ARIA, `data-slot`, `focus-visible`, the floor's hit region (45px on touch, 24px on a desktop).
 
 **Is it a verification check, content gate or security boundary?** → **N4 safety**
 
@@ -86,7 +86,8 @@ Component source is **files in the repository**, under
 
 - All CSS values are defined at N1. Every other node consumes them through `var()`.
 - No raw Tailwind palette classes (`bg-red-500`) outside N1.
-- No inline hex, except documented third-party brand marks.
+- No inline hex, except documented third-party brand marks (a payment or sign-in provider's own
+  mark, such as EcoCash, Google or Ethereum).
 - N6 pages use semantic CSS variables only.
 - Use logical properties (`margin-inline-start`, `padding-inline-end`) rather than physical
   ones, so right-to-left layouts work without a second stylesheet.
@@ -97,6 +98,8 @@ Component source is **files in the repository**, under
   `lucide-react` directly — the indirection is what lets the icon library be swapped, and the
   icon library is one of the three declared fork seams on the `swappable` strand.
 - Size from the token scale rather than ad-hoc values. See [icons](/foundations/icons).
+- Ask for an icon by meaning where a semantic name exists: `<Icon name="success" />` rather than
+  importing `CheckCircle`. See [semantic icons](/foundations/icons#semantic-icons).
 - Mark directional icons with `data-rtl-mirror="true"` when they should flip in RTL contexts.
 
 ## Accessibility

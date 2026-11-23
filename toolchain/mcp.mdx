@@ -1,6 +1,6 @@
 ---
 title: "The MCP server"
-description: "mcp.mzizi.dev: the registry, tokens, doctrine and skills from bundled files, plus the docs as federated docs_* tools. Free with no sign-in, except the Fundi tools."
+description: "mcp.mzizi.dev: three tools (search, execute, feedback) over the registry, tokens, doctrine, skills and these docs. Free with no sign-in, except the sign-in operations."
 sidebarTitle: "MCP server"
 icon: "plug"
 ---
@@ -8,12 +8,14 @@ icon: "plug"
 The Mzizi MCP server gives agents the registry, the brand tokens, the architecture model,
 the doctrine, the agent skills and these docs over the
 [Model Context Protocol](https://modelcontextprotocol.io). It is the `mzizi-mcp` Cloudflare
-Worker, published as [`@nyuchi/mzizi-mcp`](https://www.npmjs.com/package/@nyuchi/mzizi-mcp)
-(`0.20.0`, read from npm on 13 November 2026; the hosted server answered `initialize` with
-the same version, and the MCP Registry lists it). In the
+Worker, published as [`@nyuchi/mzizi-mcp`](https://www.npmjs.com/package/@nyuchi/mzizi-mcp).
+The latest published version is `0.26.0`, checked on npm on 23 November 2026. In the
 [MCP Registry](https://registry.modelcontextprotocol.io) it is
-`io.github.mzizi-dev/mzizi-mcp`, listing both the hosted endpoint and the npm package. The
-earlier entry under the nyuchi namespace is deleted.
+`io.github.mzizi-dev/mzizi-mcp`, listing both the hosted endpoint and the npm package.
+
+From 17 November 2026 the server exposes **three tools**. Every operation it used to offer as
+its own tool is now run through one of them. The earlier tool names still work until 1.0.0;
+see [the earlier tool names](#the-earlier-tool-names).
 
 ## Connecting
 
@@ -32,10 +34,7 @@ Streamable HTTP. `mzizi.dev/mcp` answers `308` to this endpoint, so old clients 
 working, but point new ones here directly.
 
 Each client writes this in its own format. [Connect a client](/toolchain/connect) has the
-current one for Claude.ai, Claude Desktop, Claude Code, the Claude API, ChatGPT, Codex, the
-OpenAI API and Agents SDK, Z.ai's coding plan, OpenCode, Cursor, VS Code, Antigravity, Gemini
-CLI, Devin Desktop (formerly Windsurf), Zed, Cline, Kiro and JetBrains, and says how the skills
-reach each.
+current one for each client, and says how the skills reach each.
 
 To run it locally over stdio, with no network for anything but the docs tools:
 
@@ -54,84 +53,134 @@ To run it locally over stdio, with no network for anything but the docs tools:
 The stdio build takes no environment and holds no credential. The registry data and skills
 ship inside the package.
 
+## The three tools
+
+| Tool             | Arguments                    | What it does                                                                                                                                                                                                                                       |
+| ---------------- | ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `mzizi_search`   | `query`, `limit?`, `offset?` | Searches components, conventions, releases, the toolchain, the Rust crates, the skills and the docs. Returns the hits, the docs matches, and the **operations** you may run, each with its JSON Schema `arguments`, its `permission` and `mayRun`. |
+| `mzizi_execute`  | `operation`, `arguments?`    | Runs one operation by name with its arguments. The result is that operation's own answer.                                                                                                                                                          |
+| `mzizi_feedback` | `target?`, and report fields | Files an issue on your issue desk, which needs sign-in. With `target: "docs"` it reports a problem with a docs page, which is free.                                                                                                                |
+
+The pattern is always the same: **search, then execute**. `mzizi_search` tells you what
+exists and what each operation takes. `mzizi_execute` runs it.
+
+### Search, then execute
+
+This is a real exchange, as the server answered on 17 November 2026. First, search for a
+word:
+
+```json
+{ "name": "mzizi_search", "arguments": { "query": "button", "limit": 3 } }
+```
+
+The first hit is the `button` component. Its `rustCrate` is `mzizi-ui`, so it has a Mzizi
+Roots (Rust) implementation, and that is the lead. The same response lists the operations
+the caller may run, including `get_component`, with the arguments it takes.
+
+Then run the operation you chose:
+
+```json
+{
+  "name": "mzizi_execute",
+  "arguments": {
+    "operation": "get_component",
+    "arguments": { "name": "button" }
+  }
+}
+```
+
+The answer is the component's full document, Rust first. The same two calls work for any
+hit. Use `mzizi_search` to find the name and `mzizi_execute` to read it.
+
+### The operations
+
+These need no account:
+
+| Operation                          | What it answers                                                                                                                                                                             |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `get_component`                    | One component in full, Rust first, then Astro, then React; optional docs and version history                                                                                                |
+| `list_components`                  | The paged index, filterable by node, owner, collection, type, `rust` and `astro`                                                                                                            |
+| `get_tokens`                       | The brand system, including all 21 colour families. `family=floors` gives the floor                                                                                                         |
+| `get_architecture`                 | The DNA helix, or one node or rung                                                                                                                                                          |
+| `get_doctrine`                     | Ubuntu pillars and principles, the seven engineering constraints (`topic=engineering-constraints`, 0.24.0 and later), conventions, AI instruction sets. `topic=bundu-floor` gives the floor |
+| `get_skills`                       | The agent skills: listed, one in full, or one category in full                                                                                                                              |
+| `check_accessibility`              | Contrast against the Mzizi floor, computed locally, with optional spacing inputs                                                                                                            |
+| `list_crates`                      | Every Mzizi Roots crate, with its version, dependencies and components                                                                                                                      |
+| `describe`                         | This server's operations, what each replaces, and its data sources                                                                                                                          |
+| `docs_search_mzizi`                | Search these docs (federated)                                                                                                                                                               |
+| `docs_query_docs_filesystem_mzizi` | Read-only `rg`, `cat` and `tree` over these docs' pages (federated)                                                                                                                         |
+| `docs_submit_feedback`             | Report a problem with these docs (federated)                                                                                                                                                |
+
+The sign-in operation is `fundi`. It needs a signed-in console user, and a refused call says
+how to sign in.
+
+`mzizi_search` returns each operation's own `arguments`, so the table above does not have to
+be kept in step with the server. Ask the server, not a page.
+
 ## Who can use it
 
-The MCP server is free, with no gate, as the owner decided on 29 September 2026. Every tool
-except the Fundi tools is served without sign-in. On 7 October 2026 an anonymous
-`initialize` and `tools/list` on `https://mcp.mzizi.dev/mcp` returned all fourteen tools,
-anonymous calls to `mzizi_get_component` and `mzizi_get_skills` returned results, and an
-anonymous `mzizi_report_issue` answered with how to sign in.
+The MCP server is free, with no gate, as the owner decided on 29 September 2026. Every
+operation except `fundi` is served without sign-in, and so is `mzizi_feedback` with
+`target: "docs"`.
 
-| Tools                                          | Sign-in                                        |
-| ---------------------------------------------- | ---------------------------------------------- |
-| Every `mzizi_*` read tool, every `docs_*` tool | **None.** Free                                 |
-| `mzizi_fundi`, `mzizi_report_issue`            | A signed-in console user, through WorkOS OAuth |
+| Call                                                        | Sign-in                                        |
+| ----------------------------------------------------------- | ---------------------------------------------- |
+| `mzizi_search`, `mzizi_execute` (free operations), `docs_*` | **None.** Free                                 |
+| `mzizi_feedback` with `target: "docs"`                      | **None.** Free                                 |
+| `mzizi_execute` with `operation: "fundi"`                   | A signed-in console user, through WorkOS OAuth |
+| `mzizi_feedback` filing an issue                            | A signed-in console user, through WorkOS OAuth |
 
-The Fundi tools stay gated because they tie into the console at `app.mzizi.dev`:
-`mzizi_report_issue` files into the Fundi issue desk, and `mzizi_fundi` delegates work to
-Fundi on a user's behalf. Both need to know who the user is. The server advertises its OAuth
-metadata at
+The sign-in calls stay gated because they tie into the console at `app.mzizi.dev`. Filing an
+issue and running `fundi` both act for a user, so the server needs to know who that is. The
+server advertises its OAuth metadata at
 [`/.well-known/oauth-protected-resource`](https://mcp.mzizi.dev/.well-known/oauth-protected-resource),
-so MCP clients can run the sign-in flow for those tools themselves. Called without sign-in,
-a Fundi tool answers with how to sign in rather than failing silently. A client that cannot
-run the flow can connect to `https://mcp.mzizi.dev/mcp/signin` instead, which asks you to sign
-in and then serves every tool.
+so MCP clients can run the sign-in flow themselves. Called without sign-in, a gated call
+answers with how to sign in rather than failing silently. An anonymous issue report is not lost: the answer carries a pre-filled GitHub issue link you can submit, for `mzizi-dev/mzizi-registry`. Over HTTP the server also answers with an
+OAuth challenge, so a client can offer sign-in. A client that cannot run the flow can connect
+to `https://mcp.mzizi.dev/mcp/signin` instead, which asks you to sign in and then serves every
+tool.
+
+You sign in with a **Mukoko Account**, the same account [the console](/console) uses. On
+23 November 2026, approving a client on the server's sign-in page sent it to "Sign in to Mukoko
+Account" at `accounts.mukoko.com`, which signs in with an email address and offers to create an
+account. Nothing on this page except `fundi` and filing an issue needs it.
 
 Anonymous requests are rate-limited to 120 per 60 seconds per IP address, according to the
 server's `catalogue.json`. Signed-in requests are not.
 
-## Discovering the tools
+## The earlier tool names
 
-**Ask the server, not a page.** A list written down anywhere, this one included, is only as
-fresh as its last edit.
+The server first shipped with one tool per operation, named `mzizi_get_component`,
+`mzizi_get_tokens` and so on. Those names still work, both as direct tool calls and as
+`mzizi_execute` operation names, **until 1.0.0**, when they are removed. A direct call to an
+old name returns `_meta.deprecated`, which names the new call. Clients written against them
+do not need to change yet. New clients should use the three tools.
 
-- `tools/list` over MCP is the live answer.
-- [`https://mcp.mzizi.dev/catalogue.json`](https://mcp.mzizi.dev/catalogue.json) is the same
-  list over plain HTTP, with no sign-in, including which older tools each one replaces.
-- The `mzizi_mcp_describe` tool, and the `mzizi://tools` resource, describe the tools and
-  the data sources.
+| Earlier name                                                                    | Now                                                     |
+| ------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| `mzizi_get_component`                                                           | `mzizi_execute` with `operation: "get_component"`       |
+| `mzizi_list_components`                                                         | `mzizi_execute` with `operation: "list_components"`     |
+| `mzizi_get_tokens`                                                              | `mzizi_execute` with `operation: "get_tokens"`          |
+| `mzizi_get_doctrine`                                                            | `mzizi_execute` with `operation: "get_doctrine"`        |
+| `mzizi_get_architecture`                                                        | `mzizi_execute` with `operation: "get_architecture"`    |
+| `mzizi_get_skills`                                                              | `mzizi_execute` with `operation: "get_skills"`          |
+| `mzizi_check_accessibility`                                                     | `mzizi_execute` with `operation: "check_accessibility"` |
+| `mzizi_mcp_describe`                                                            | `mzizi_execute` with `operation: "describe"`            |
+| `mzizi_fundi` and its three variants                                            | `mzizi_execute` with `operation: "fundi"`               |
+| `mzizi_report_issue`                                                            | `mzizi_feedback`                                        |
+| `docs_search_mzizi`, `docs_query_docs_filesystem_mzizi`, `docs_submit_feedback` | The same names, as `mzizi_execute` operations           |
 
-On 7 October 2026, `catalogue.json` and an anonymous `tools/list` both listed fourteen
-tools:
-
-| Tool                               | What it answers                                                                              |
-| ---------------------------------- | -------------------------------------------------------------------------------------------- |
-| `mzizi_search`                     | Word search over components, conventions, AI instruction sets and releases                   |
-| `mzizi_get_component`              | One component in full, Rust first, then Astro, then React; optional docs and version history |
-| `mzizi_list_components`            | The paged index, filterable by node, owner, collection, type, `rust` and `astro`             |
-| `mzizi_get_tokens`                 | The brand system, including all 21 colour families                                           |
-| `mzizi_get_architecture`           | The DNA helix, or one node or rung                                                           |
-| `mzizi_get_doctrine`               | Ubuntu pillars and principles, conventions, AI instruction sets                              |
-| `mzizi_get_skills`                 | The seven agent skills: listed, one in full, or one category in full                         |
-| `mzizi_check_accessibility`        | Contrast against the Mzizi floor, computed locally                                           |
-| `mzizi_report_issue`               | Files into the Fundi issue desk. **Gated**                                                   |
-| `mzizi_fundi`                      | Delegates a run to Fundi. **Gated**                                                          |
-| `mzizi_mcp_describe`               | This server's tools, what each replaces, and its data sources                                |
-| `docs_search_mzizi`                | Search these docs (federated)                                                                |
-| `docs_query_docs_filesystem_mzizi` | Read-only `rg`, `cat` and `tree` over these docs' pages (federated)                          |
-| `docs_submit_feedback`             | Report a problem with these docs (federated)                                                 |
-
-Start with `mzizi_search` when you do not know the name of the thing you want, and
-`mzizi_get_component` when you do.
-
-<Note>
-  **The floor tools:** `mzizi_get_tokens` with `family=floors`, `mzizi_get_doctrine` with
-  `topic=bundu-floor`, and optional spacing inputs on `mzizi_check_accessibility` (inset, gaps,
-  line height), all read from the registry's `/v1/brand` `accessibility` block. The server
-  served them on 4 November 2026 (`0.17.0`; `catalogue.json` has a `floors` entry). They are
-  written up for [the spacing floor](/foundations/spacing-floor).
-</Note>
+Pages on this site that show a call use the new form.
 
 ## Components, Rust first
 
-From `0.11.0` the component tools lead with [Mzizi Roots](/roots/overview), the Rust
-implementation, wherever one exists. From `0.12.0` the pure Astro build comes next, where there
-is one. The React (TSX) components are the React build: they keep working, but they are
-deprioritised and come last.
+The component operations lead with [Mzizi Roots](/roots/overview), the Rust implementation,
+wherever one exists. The pure Astro build comes next, where there is one. The React (TSX)
+components are the React build: they keep working, but they are deprioritised and come last.
 
-`mzizi_get_component` takes `name` (a former `nyuchi-*` name resolves to its `mzizi-*`
-successor) and an optional `include` of `"docs"`, `"versions"` or both. It answers with these
-fields, in this order:
+`get_component` takes `name` (a former `nyuchi-*` name resolves to its `mzizi-*` successor)
+and an optional `include` of `"docs"`, `"versions"` or both. It answers with these fields, in
+this order:
 
 | Field         | What it holds                                                                                                             |
 | ------------- | ------------------------------------------------------------------------------------------------------------------------- |
@@ -140,7 +189,7 @@ fields, in this order:
 | `lead`        | `"rust"` when the component has a Rust implementation, otherwise `"react"`                                                |
 | `note`        | Which build to use, in words                                                                                              |
 | `rust`        | The Roots implementation, or `null` when there is none                                                                    |
-| `astro`       | From `0.12.0`: the pure Astro build, or `null` when there is none                                                         |
+| `astro`       | The pure Astro build, or `null` when there is none                                                                        |
 | `react`       | The React build: `build: "react"`, `status: "deprioritised"`, an `install` line, then the registry's `/v1/ui/{name}` body |
 | `docs`        | With `include: ["docs"]`: use cases, variants and accessibility                                                           |
 | `versions`    | With `include: ["versions"]`: version history, from the registry's changelog                                              |
@@ -168,14 +217,12 @@ refuses the React build but Rust exists, `react` is `{ build, error }` and the R
   `renamedFrom` moved to the top level.
 </Warning>
 
-`mzizi_list_components` rows carry `rustCrate` when the component has Rust, the response
-carries `withRust` (how many of `total` have it), and `rust: true` or `rust: false` filters on
-it. From `0.12.0` the same goes for Astro: rows carry `astroFile`, the response carries
-`withAstro`, and `astro: true` or `astro: false` filters on it. On 7 October 2026, `rust: true`
-listed 59 components and `astro: true` listed 89, at the server's registry pin, which is older
-than the API's (see [where its data comes from](#where-its-data-comes-from)). `mzizi_search`
-component hits carry `rustCrate` and `astroFile` the same way, and at an equal score a
-component with Rust ranks first; a better word match still wins.
+`list_components` rows carry `rustCrate` when the component has Rust, the response carries
+`withRust` (how many of `total` have it), and `rust: true` or `rust: false` filters on it. The
+same goes for Astro: rows carry `astroFile`, the response carries `withAstro`, and
+`astro: true` or `astro: false` filters on it. `search` component hits carry `rustCrate` and
+`astroFile` the same way, and at an equal score a component with Rust ranks first; a better
+word match still wins.
 
 ## Where its data comes from
 
@@ -185,79 +232,64 @@ component with Rust ranks first; a better word match still wins.
 | ------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
 | Components, docs, tokens, the helix, doctrine, conventions, changelog, renames | [`mzizi-dev/mzizi-registry`](https://github.com/mzizi-dev/mzizi-registry) at a pinned commit | Generated at build time by running the registry's API handlers, then bundled |
 | Agent skills                                                                   | The `@nyuchi/mzizi-skills` bundle                                                            | Generated at build time and bundled                                          |
-| Documentation                                                                  | The Mintlify MCP at `https://docs.mzizi.dev/mcp`                                             | Federated live as `docs_*` tools                                             |
+| Documentation                                                                  | The Mintlify MCP at `https://docs.mzizi.dev/mcp`                                             | Federated live as `docs_*` operations                                        |
 
-Because the generator runs the registry's API handlers rather than re-deriving their output,
-a tool answers with the payload `api.mzizi.dev/v1` would give at the same commit. The registry
-no longer carries those handlers: it removed its Next.js app, `app/api/v1/**` included, on
-2 October 2026 (mzizi-registry #389 and #391). `mzizi-mcp` keeps the eleven it calls in
-`mzizi-mcp/scripts/registry-handlers/`, ported unchanged from registry commit `270af9f`, the
-last with them (agent-tools #172). They run at build time only and are not part of the
-Worker's bundle. They still read through the registry's own `lib/` modules, which resolve into
-the checkout at the pinned commit, so the data is that commit's. The generator replaces every
-npm import those handlers make with a module that throws when used (`next/server` gets a small
-response shim instead), so a handler that reaches for a database or a service fails the build
-rather than shipping an empty answer.
-`catalogue.json` names the pinned registry commit in `source.registry`, and
-`mzizi_mcp_describe` reports it. Read the live pin there rather than from this page, and
-compare it with the pin [`api.mzizi.dev`](/platform/api-gateway) reports in its
-`X-Mzizi-Source` header. The two are meant to be the same commit, but they move separately, so
-they can differ for a while after one of them moves. For example, `0.11.2` moved the pin by
-hand on 30 September 2026 to registry commit `e1c1c89`, which was then also the API's; that is
-an example, not the current value. Moving to newer registry content is a change to that pin,
-made in a pull request that CI checks.
+`catalogue.json` names the pinned registry commit in `source.registry`, and the `describe`
+operation reports it. Read the live pin there rather than from this page, and compare it with
+the pin [`api.mzizi.dev`](/platform/api-gateway) reports in its `X-Mzizi-Source` header. The
+two are meant to be the same commit, but they move separately, so they can differ for a
+while after one of them moves. Moving to newer registry content is a change to that pin, made
+in a pull request that CI checks.
 
 The pin, `ref` in `mzizi-mcp/registry.pin.json`, has the same bot as
-[the API gateway's](/platform/api-gateway#how-the-pin-moves). Every hour it compares the pin
-with registry `main` and keeps one pull request, from the branch `bot/registry-pin`, that
-moves it. That pull request merges itself (rebase) only when every check on it is green, and
-otherwise waits for review. The bot is live on the `RELEASE_BUMP_TOKEN` secret (it opened
-agent-tools #169 on 2 October 2026), and a bump by hand still works.
+[the API gateway's](/platform/api-gateway#how-the-pin-moves). It compares the pin with registry
+`main` and keeps one pull request that moves it. That pull request merges itself only when
+every check on it is green, and otherwise waits for review. A bump by hand still works.
 
 The server holds no database credential. Former `nyuchi-*` component names resolve to their
 `mzizi-*` names through the registry's rename map, bundled with the rest.
 
 ### The skills
 
-`mzizi_get_skills` serves the twelve skills of [`@nyuchi/mzizi-skills`](/toolchain/skills),
-bundled from the skills' source when the server is built, so it answers with the same version
-as npm (`0.20.0` on 12 November 2026, from `catalogue.json`). A client can fetch the skills
-here instead of installing the npm package. From `0.13.0` it takes `category`: `dev`, `design`,
-`language` or `build` returns every skill in that category in full, and `category: "dev"`
-(`digital-hygiene`, `progress-report`, `ship-release`, `registry-propagation` and `pr-gates`) is what every Mzizi repository's `AGENTS.md` asks an
-agent to load before it starts. Every answer carries each skill's `category`, and asking for a
-`name` outside the `category` you named is an error. From `0.11.1`, each skill's `source` names
-where it is authored, `mzizi-dev/agent-tools/mzizi-skills/skills/<name>`. The skills renamed or
-removed in `0.8.0` have no aliases; see [renamed and removed
-skills](/toolchain/skills#renamed-and-removed-skills).
+`get_skills` serves the skills of [`@nyuchi/mzizi-skills`](/toolchain/skills), bundled from the
+skills' source when the server is built. It takes `category`: `dev`, `design`, `language` or
+`build` returns every skill in that category in full. `category: "dev"` is what every Mzizi
+repository's `AGENTS.md` asks an agent to load before it starts. Asking for a `name` outside
+the `category` you named is an error. The skills renamed or removed in `0.8.0` of the bundle
+have no aliases; see [renamed and removed skills](/toolchain/skills#renamed-and-removed-skills).
 
-### The docs tools
+```json
+{ "name": "mzizi_execute", "arguments": { "operation": "get_skills", "arguments": { "category": "dev" } } }
+```
+
+### The docs operations
 
 These docs run their own MCP server, which Mintlify hosts at `https://docs.mzizi.dev/mcp`.
-It is public and needs no sign-in. The Mzizi MCP server lists its tools under a `docs_`
-prefix and forwards each call unchanged:
+It is public and needs no sign-in. The Mzizi MCP server runs its tools as `docs_*`
+operations and forwards each call unchanged:
 
 - it caches the upstream tool list for five minutes;
 - if a refresh fails it reuses the last good list, and with nothing cached it falls back to
   a built-in snapshot of the upstream definitions;
-- a failed call comes back as a tool error naming the docs server and the reason.
+- a failed call comes back as an error naming the docs server and the reason.
 
 The `docs_*` names mirror whatever `docs.mzizi.dev/mcp` lists, so they can change when these
 docs change. You can also connect to `https://docs.mzizi.dev/mcp` directly.
 
-## The Fundi tools
+## The sign-in operations
 
-Fundi is the self-healing agent behind the console, run under Nyuchi. Two tools reach it.
+**`mzizi_feedback`** files an issue on your issue desk. The desk reproduces the problem,
+drafts an issue with what the reproduction returned, and logs it to Fundi. Fundi files the
+GitHub issue and tracks it. `action: "get"` shows where your report got to, and `"list"`
+shows your reports. Filing needs sign-in. Without it, you get the pre-filled GitHub issue
+described above. With `target: "docs"`, it reports a problem with a page on docs.mzizi.dev, and
+needs no account.
 
-**`mzizi_report_issue`** reproduces and drafts an issue, then logs it to Fundi's issue desk.
-Fundi files the GitHub issue with its healing plan, and records the issue's lifecycle, which
-is how the desk and the console can tell you whether your report was picked up.
-
-**`mzizi_fundi`** delegates long runs, such as a security, chaos or accessibility run, to
-Fundi over the Agent2Agent (A2A) protocol. A run is a **task** with a lifecycle, not a
-blocking tool call: you submit it and get a task id back at once, then poll its status or
-cancel it. It replaces the older `fundi_status`, `fundi_submit_test`, `fundi_task_status`
-and `fundi_cancel_task` tools.
+**`fundi`**, run through `mzizi_execute`, delegates long runs, such as a security, chaos or
+accessibility run, to Fundi, the self-healing agent behind the console, which runs under
+Nyuchi. It uses the Agent2Agent (A2A) protocol. A run is a **task** with a lifecycle, not a
+blocking call: you submit it and get a task id back at once, then poll its status or cancel
+it.
 
 <Note>
   The A2A bridge is built through its second stage: the agent card, task submission, status
@@ -265,25 +297,27 @@ and `fundi_cancel_task` tools.
   design. A submitted task can come back parked as accepted but not executed.
 </Note>
 
-Both tools act for a real, signed-in console user. The server never hands a machine
-credential to a client or to the CLI.
+Both act for a real, signed-in console user. The server never hands a machine credential to a
+client or to the CLI.
 
 ## Use cases
 
 ### Building against the registry
 
-1. `mzizi_list_components`, filtered to the node you are building at.
-2. `mzizi_get_component` for the full document of anything that looks right. Where a Rust
-   implementation exists, it leads: depend on the crate in `rust.install` (see
-   [Mzizi Roots](/roots/overview)). `mzizi_list_components` with `rust: true` lists only those.
+1. `mzizi_search` for the name, or `list_components` through `mzizi_execute`, filtered to the
+   node you are building at.
+2. `mzizi_execute` with `get_component` for the full document of anything that looks right.
+   Where a Rust implementation exists, it leads: depend on the crate in `rust.install` (see
+   [Mzizi Roots](/roots/overview)).
 3. Install it (see [consuming the registry](/registry/consuming)).
 
 ### Reviewing a change
 
-1. `mzizi_get_tokens` to check a component uses published tokens, not raw values.
-2. `mzizi_get_architecture` to check it sits where its imports say it does.
-3. `mzizi_check_accessibility` for contrast on any new colour pairing.
+1. `get_tokens` to check a component uses published tokens, not raw values.
+2. `get_architecture` to check it sits where its imports say it does.
+3. `check_accessibility` for contrast on any new colour pairing.
 
 ### Answering a question about Mzizi
 
-`docs_search_mzizi`, then `docs_query_docs_filesystem_mzizi` to read the page it found.
+`mzizi_search` finds the docs match. Then `mzizi_execute` with `docs_query_docs_filesystem_mzizi`
+reads the page it found.

@@ -27,6 +27,101 @@ No issue: bootstrap proposal from `nyuchi/.github`. Documentation files only; no
 
 - Adds the org-standard `CODE_OF_CONDUCT.md`, `CONTRIBUTING.md` and `.github/PULL_REQUEST_TEMPLATE.md` where they were absent.
 
+- **Changed:** The CLI page and every command it names follow the Rust CLI (mzizi-cli 0.14.1, owner decisions 2026-11-17 to 2026-11-23). `toolchain/cli.mdx` now installs `mz` with `npx @nyuchi/mzizi-cli`, `npm i -g @nyuchi/mzizi-cli` or `cargo install mzizi-cli`, lists the commands as `mz add`, `mz floor`, `mz explore`, `mz plan`, `mz chat` and `mz login`, says `mzizi` and `fundi` are deprecated names, warns off `0.14.0` (its npm binaries were not executable), and drops the `createFundi()` library section (the package no longer exports it). `mzizi check` is `mz floor` on `foundations/spacing-layers`; `mzizi add` is `mz add` on `cookbook`, `registry/consuming`, `roots/overview`, `patterns/discover-standard` and `toolchain/overview`; `AGENTS.md` states the new version. Install commands were checked against the published packages: `npx @nyuchi/mzizi-cli --version` prints `0.14.1`.
+
+- **Changed:** Write every brand wordmark with an initial capital (owner decision, 2026-11-23): Mukoko, Nyuchi, Shamwari, Bundu, Mzizi, Kweli. `AGENTS.md` no longer says the other wordmarks stay lowercase, and also records the same day's rulings that there are no "sister brands" (the ecosystem has pillars, initiatives, projects and Mukoko apps) and that Shamwari is open-weight AI, not "sovereign AI". `toolchain/skills.mdx` no longer describes the `mukoko-design` wordmark as always lowercase. The brand tables on `foundations/tokens` and `patterns/dashboard-standard`, the narrative spine and the closing lines on `ecosystem`, the image descriptions on `patterns/dashboard-standard` and `patterns/discover-standard`, and `patterns/kweli-address` write the brand names with a capital. The `patterns/kweli-address` heading is now "The Kweli mark and lockup", so its anchor is `#the-kweli-mark-and-lockup` as before. Code identifiers (package names, repository names, domains, slugs) are unchanged.
+
+- **Fixed:** Say which account the sign-in uses. `console`, `toolchain/mcp` and `toolchain/connect` now say that the console and the MCP server's sign-in operations sign in with a Mukoko Account at `accounts.mukoko.com`, which offers to create one. `console` also says every console page needs sign-in and JavaScript, and that the same registry data is public on `mzizi.dev`, `api.mzizi.dev` and the MCP server.
+
+- **Fixed:** Sync compiler size, standard kernel and UI tracker rows, and backend benchmark arm availability with language main. Detect benchmark arms from their manifests.
+
+- **Fixed:** Document the published Roots 0.11.0 and API types crates. Reuse the MCP version matcher and keep historical changelog entries out of the current crate availability check.
+
+- **Fixed:** Refresh the CLI, MCP and skills package versions on their toolchain pages and check the same version wording for all three.
+
+### Added — design-system content moved in from Bundu Docs and Nyuchi Docs (2026-11-23)
+
+docs.mzizi.dev is the one home of the design system's documentation. Bundu Docs is retiring its
+old copy of the Mzizi pages, so the design-system facts it held that these pages did not are
+now here, checked against the registry and the API on 23 November 2026. Nothing stale came
+across: the five-mineral palette, six of the eight old status categories, the ten-node model and the
+database-backed tokens stay retired.
+
+- **`foundations/typography`:** the type scale `/v1/brand` publishes (Display 72px to Code
+  14px, with weights and fonts), and the fluid sizes, letter spacing and `tabular-nums` the
+  registry's brand source carries for it. `next/font/google` for loading the fonts.
+- **`foundations/motion`:** the motion tokens: four duration tiers (100, 200, 350, 500ms), four
+  easing curves, the list staggers, and how `mzizi-motion`'s `useMotion()` handles reduced
+  motion. A `motion-reduce` example.
+- **`foundations/tokens`:** the trust token families (`--assurance-*`, `--attestation-*` and
+  the legacy `--tier-*`), which the warning there said were not defined; the spacing scale up
+  to the 128px page hero; the toggle, checkbox, tabs, card and dialog specifications, and
+  toggles in the pill-shaped rule; elevation and z-index tokens; `adopterType` on the
+  ecosystem rows.
+- **`foundations/icons`:** semantic icons (`<Icon name="success" />`) and their size presets
+  from `mzizi-icons`, and the ecosystem's common icons.
+- **`foundations/accessibility`:** why lightness survives colour-vision deficiency where hue
+  does not, the registry's high-contrast values and their status, an APCA calculator, and how
+  to turn the screen readers on.
+- **`foundations/internationalization`:** Tifinagh and Bamum coverage, the CSS logical
+  properties by name, and the `rtl-conformity-check` assurance component.
+- **`foundations/bundu-floor`:** the published standard at `standards.bundu.org/bundu-floor`
+  (1.1.0) and its `floor.json` data.
+- **`patterns/architecture`:** the layer rules, and what a server page wrapper does.
+- **`architecture/nodes`:** examples of the third-party marks that may carry their own hex, and
+  semantic icon names.
+- **Content style:** rainy and dry seasons and shared metaphors (`content/writing`), the
+  population and economic-status wording (`content/inclusive-language`), and the `sonner`
+  toast for non-blocking errors (`content/error-messages`).
+
+### Changed — the Bundu floor moves to 45px and 24px, and spacing becomes layered (2026-11-19)
+
+The owner's rulings of 19 November 2026 set the hit regions and the spacing. They ship with the registry release that carries these tokens. Touch is 45px, the desktop is 24px, and the layer values replace the 14px inset and 7px gaps.
+
+- **Hit regions.** Touch goes from 49px to 45px (3 × 15, above WCAG 2.5.5 and Apple's 44). Desktop goes from 28px to 24px (3 × 8, WCAG 2.5.8). Every page that stated 49px or 28px now states the new values.
+- **Spacing layers.** `foundations/spacing-floor` is now `foundations/spacing-layers` (the old URL redirects). It sets a default and a dense value for each layer: controls, chips, pills, cards, containers and layout, with the `--space-*` and `-dense` tokens. Both values are floors, and nothing goes below dense.
+- **Density.** The spacing layers page explains density: white space where it serves the reader, dense where the content needs it. Dense controls keep the full hit region.
+- **Label and sibling gaps.** `--space-label-gap` is 7px, dense 5px, the gap between a label and its field. Sibling items in a list, grid or toolbar take `--space-card-gap`: 14px, dense 7px.
+- **Control heights.** `spacing-control-sm` rounds from 32 to 33, `spacing-control-lg` and `--touch-target-sm` from 40 to 41 (the nearest Mzizi number, 41 is prime), `spacing-control-dense` and `spacing-field-sm` from 32 to 33.
+- **Pages updated for the new values:** `foundations/bundu-floor`, `foundations/spacing-layers`, `foundations/overview`, `foundations/accessibility`, `foundations/layout`, `foundations/tokens`, `foundations/icons`, `patterns/dashboard-standard`, `patterns/discover-standard`, `patterns/kweli-address` (its two 44px links are 45px), `patterns/mobile-first`, `registry/contracts`, `registry/contributing`, `architecture/nodes`, `content/writing`, `roots/overview`, `toolchain/cli` and `toolchain/skills`.
+
+### Added — the standards comparison (2026-11-19)
+
+- **Added: `foundations/standards-comparison`.** The Bundu floor beside WCAG 2.2, Apple's Human Interface Guidelines, Material 3 and Anthropic's brand guidelines: the numbers, the contrast of Anthropic's accents on its own backgrounds, each system's principles, and the sources. It is in the Foundations navigation.
+
+### Changed — who Mzizi belongs to (2026-11-17)
+
+- **The home page's Ownership section says Mzizi is a Bundu Foundation project, built by Nyuchi,
+  and that Nyuchi runs its cyber section (the console and active cyber testing).** It said Mzizi
+  owned and operated itself. The owner set this wording on 2026-11-17; mzizi.dev says the same.
+  The console page says the same, and the charter page carries a note that this wording
+  supersedes its owner line until `CHARTER.md` is amended.
+
+### Fixed — the doctrine constraints are served over MCP 0.24.0; the MCP page lists the new topic (2026-11-17, Refs mzizi-dev/agent-tools#413)
+
+- **`foundations/doctrine` now says the seven engineering constraints are served by `get_doctrine`** with `topic: "engineering-constraints"`, from MCP server 0.24.0. It said they were not served over MCP or the API. The HTTP API still has no constraints route (`/api/v1/doctrine` and the other doctrine paths return 404), so the page says so.
+- **`toolchain/mcp` names 0.24.0** as the published version and lists `engineering-constraints` among the `get_doctrine` topics.
+- **Two small corrections:** `toolchain/connect` says stdio has no `fundi` operation, not `mzizi_fundi`, and `roots/overview` links registry #710 at its issue page, not as a pull request.
+
+### Added — the Ubuntu doctrine page; the organisation process (2026-11-17, refresh)
+
+Refs mzizi-dev/agent-tools#413. The doctrine text comes from `content/doctrine/` in `mzizi-dev/mzizi-registry` at `staging`; the process text from `nyuchi/.github` at `main`.
+
+- **Added: `foundations/doctrine`.** The five Ubuntu pillars (Family, Community, Society, Environment, Spirituality), the five Ubuntu principles (Survival, Solidarity, Compassion, Respect, Dignity) and the seven engineering constraints (Outdoor readability, Connectivity-gradient design, Multilingual parity, Shared-device awareness, Personal data sovereignty, No surveillance business model, The Bundu floor), in the registry's order and wording. The page is in the Foundations group. The four design pillars on `foundations/overview` are the design system's own and are not the Ubuntu pillars.
+- **Added: "How Mzizi is built and released"** on `registry/contributing`: the versioning policy (a merge into `staging` is a PATCH, `staging` to `main` is a MINOR, a MAJOR only when a person runs it, and agents never release one), the squash-or-rebase merge rule, the all-green rule (nothing merges while any check is red or pending; making the gate required in every repository is still pending), and the tooling order as the owner's direction of 17 November 2026, not yet in any repository.
+
+### Changed — the MCP surface is three tools; the runtime and the crates (2026-11-17, refresh)
+
+- **Changed: `toolchain/mcp`.** The server exposes three tools: `mzizi_search`, `mzizi_execute` and `mzizi_feedback`. The page has a search-then-execute example and a table of the earlier names. Those names still work until 1.0.0. `@nyuchi/mzizi-mcp` is 0.23.0.
+- **Changed: `toolchain/connect`, `toolchain/overview`, `toolchain/skills`, `toolchain/cli`, `foundations/accessibility`, `foundations/spacing-floor`, `patterns/dashboard-standard`.** Tool calls are written as `mzizi_execute` operations. `toolchain/cli` lists `0.11.0`, which calls `mzizi_execute`.
+- **Changed: `platform/api-gateway`.** `api.mzizi.dev` is a Rust Worker (`workers-rs`) since 17 November 2026. It serves the same routes; strict parity was 1669 of 1669 responses identical against the TypeScript Worker. Shared types are in the `mzizi-api-types` crate, not yet on crates.io.
+- **Changed: `roots/overview`.** The fourteen Roots crates are at `0.8.0`, and the Markdown renderer is in `mzizi-roots` from that release (install with `version = "0.8"`). `mzizi-tokens` exports `Family` and `FAMILIES`; `mzizi-discovery`'s `SeoConfig` takes a site's own identity. The core of `mzizi-roots` no longer depends on Dioxus. Eight components render unstyled from `mzizi-roots`. Removing Dioxus from the rest is ongoing, not finished. The page describes the unstyled pattern: `data-*` hooks, `tokens.css`, `floor.css` and an opt-in `mzizi-theme.css`. Tailwind is not yet removed from the other components.
+- **Changed: `AGENTS.md`, `README.md`.** The API runtime is Rust; the MCP sign-in statement and the Roots version match the pages.
+- **Changed: `ecosystem`.** Adds "The Bundu ecosystem": the narrative spine, the four pillars (Bundu Labs, Nyuchi Africa, Mukoko, Shamwari AI) from the ecosystem record, links to bundu.org's ecosystem page and newsroom, and `.cell` as a proposed Bundu Labs project (not adopted). The Mukoko tokens are stated as a proposed project, not on the current roadmap. `api.mzizi.dev` is a Rust Worker.
+- **Changed: `registry/contributing`.** The tooling order reads "Rust first, then Deno or Vite+ (vp), never Node by default", labelled as owner direction of 17 November 2026.
+- **Changed: `foundations/tokens`.** A banned phrase in foundations/tokens is replaced by 'the other brands'.
+- **Not changed yet.** Nothing else is held back.
+
 ### Changed — Dependabot proposes no semver-major action updates; release actions at nyuchi/.github 0.9.0 (2026-11-14)
 
 No issue: records the CI changes already on `staging` (`42e31e1`, `33ac0d7`), so the release that carries them has notes.

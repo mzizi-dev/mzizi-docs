@@ -1,25 +1,28 @@
 ---
 title: "The API gateway"
-description: "api.mzizi.dev is a Hono Cloudflare Worker that serves the registry's files, generated at a pinned registry commit and bundled at build time. No origin, no database."
+description: "api.mzizi.dev is a Rust Cloudflare Worker (workers-rs) that serves the registry's files, generated at a pinned registry commit and bundled at build time. No origin, no database."
 sidebarTitle: "API gateway"
 icon: "server"
 ---
 
 [`api.mzizi.dev`](https://api.mzizi.dev/v1) is the registry API. It is served by
 [`mzizi-dev/mzizi-api`](https://github.com/mzizi-dev/mzizi-api) (formerly `mzizi-api-gateway`), a
-[Hono](https://hono.dev) Cloudflare Worker written in TypeScript. It has **no origin, no
-database and no Supabase**. Everything it serves is a file from the registry repository,
+Cloudflare Worker written in Rust with [`workers-rs`](https://github.com/cloudflare/workers-rs).
+It has **no origin, no database and no Supabase**. Everything it serves is a file from the registry repository,
 bundled into the Worker when it is built.
 
 It has served `api.mzizi.dev` since **29 September 2026**, when it took over from the
 registry's own Worker.
 
 <Note>
-  An earlier plan for this repository was a pure-Rust `workers-rs` proxy in front of the
-  registry's own API handlers. That proxy is retired, and so are the handlers: the registry
-  removed its Next.js app, `/api/*` handlers included, on 2 October 2026. The gateway is Hono,
-  and it implements the whole public `/v1` API itself, from files.
+  **Since 17 November 2026 the gateway is a Rust Worker.** It serves the same routes with the same
+  responses. Strict parity was 1669 of 1669 responses identical against the TypeScript Worker it
+  replaced, which was built on [Hono](https://hono.dev). Shared types are in the `mzizi-api-types`
+  crate, available on [crates.io](https://crates.io/crates/mzizi-api-types).
 </Note>
+
+The gateway implements the whole public `/v1` API itself, from files. The registry removed its
+Next.js app, `/api/*` handlers included, on 2 October 2026.
 
 ## Using it
 

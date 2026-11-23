@@ -67,15 +67,16 @@ Facts that inherited prose often gets wrong:
 - **The DNA helix, not axes or layers.** Eight nodes, six strands, four rungs.
   `/v1/architecture/frontend/axes` and `/layers` answer **410 Gone**, deliberately.
 - **No database outside the console.** The registry is files; `api.mzizi.dev`
-  (`mzizi-dev/mzizi-api`, formerly `mzizi-api-gateway`, a **Hono** Worker, not Rust) and `mcp.mzizi.dev` bundle those files
+  (`mzizi-dev/mzizi-api`, formerly `mzizi-api-gateway`, a **Rust** (`workers-rs`) Worker since 17 November 2026; a **Hono** Worker before that) and `mcp.mzizi.dev` bundle those files
   at build time from a pinned registry commit. Only `mzizi-console` uses Supabase.
 - **One MCP server**, at `mcp.mzizi.dev/mcp`. `mzizi.dev/mcp` is a 308 to it. It is free
-  with no sign-in except the Fundi tools (`mzizi_fundi`, `mzizi_report_issue`); an anonymous
-  `tools/list` answered on 7 October 2026. Its MCP Registry name is
+  as three tools (`mzizi_search`, `mzizi_execute`, `mzizi_feedback`). Sign-in is needed only for the
+  `fundi` operation and for filing an issue; an anonymous `tools/list` answered three tools on
+  17 November 2026. Its MCP Registry name is
   `io.github.mzizi-dev/mzizi-mcp`.
-- **The CLI is free.** `mzizi add` is published from `@nyuchi/mzizi-cli` (0.8.0 on
-  4 November 2026, which adds `mzizi check`); 0.6.0's binaries printed nothing, so pages say
-  "0.6.1 or later".
+- **The CLI is free.** `mz add` is published from `@nyuchi/mzizi-cli` and
+  `cargo install mzizi-cli` (0.14.1 on 23 November 2026; the Rust CLI, whose spacing check is
+  `mz floor`). 0.14.0's npm binaries were not executable, so pages say "0.14.1 or later".
 - **Twelve skills, in four categories.** `@nyuchi/mzizi-skills` 0.8.0 cut the bundle to five,
   `mzizi-language`, `mzizi-roots`, `mzizi-design`, `mzizi-backend` and `discoverability`, with
   no aliases for the old names. 0.9.0 (5 October 2026) added the `dev` skill
@@ -90,7 +91,7 @@ Facts that inherited prose often gets wrong:
 - **Mzizi's brand mineral is hematite**, a heritage tone, not one of the Seven African
   Minerals. It is the default `--primary` of the registry's `mzizi-tokens-globals.css`;
   `/v1/brand`'s semantic `--primary` is still tanzanite.
-- **The Roots crates are on crates.io**: fourteen crates at 0.7.0 (read on 4 November 2026),
+- **The Roots crates are on crates.io**: fourteen crates at 0.8.0 (read on 17 November 2026),
   installed with `cargo add mzizi-roots`.
 - **`nyuchi-*` components are `mzizi-*`**, and the old names 308 to the new ones.
 
@@ -161,8 +162,15 @@ An owner rule, 2026-09-30: "changelogs are super important".
 
 ## Terminology
 
-- Write the wordmark as **Mzizi**. The other wordmarks stay lowercase: nyuchi, mukoko,
-  shamwari, bundu. npm packages keep the `@nyuchi/` scope.
+- Every wordmark takes an initial capital (owner decision, 2026-11-23): **Mzizi**, Mukoko,
+  Nyuchi, Shamwari, Bundu, Kweli, in headings, labels and running text alike
+  (`foundations/typography.mdx`). Code identifiers keep their own
+  spelling: npm packages keep the `@nyuchi/` scope, and repository names, domains, slugs and
+  anything in backticks stay lowercase.
+- There are no "sister brands" (owner decision, 2026-11-23). The Bundu ecosystem has pillars
+  (Bundu Labs, Nyuchi Africa, Mukoko and Shamwari AI), and under them initiatives and
+  projects; Mzizi is a shared foundation, and Kweli, Mukoko Events, Lingo and Circles are
+  Mukoko apps. Shamwari is "open-weight AI" or "AI with open weights", never "sovereign AI".
 - **The language** (older pages say "Mzizi-lang") for the research project, and **the
   registry** or **the components** for what `api.mzizi.dev` serves. They are different
   things; `ecosystem.mdx` holds the line.
@@ -175,8 +183,9 @@ An owner rule, 2026-09-30: "changelogs are super important".
   never link it. Check a host before writing it as live — this list moves.
 - **`mz`** is the compiler binary. **Primitives** are `.mz` source copied into a project, not
   crates.
-- **Ownership.** Mzizi owns and operates the framework, language, registry, design system,
-  docs and API. Nyuchi operates the console and the revenue products. Copyright notices name
+- **Ownership (owner, 17 November 2026).** Mzizi is a Bundu Foundation project, built by
+  Nyuchi: the framework, language, registry, design system, docs and API. Nyuchi runs its cyber
+  section (the console and active cyber testing) and the revenue products. Copyright notices name
   the **Bundu Foundation** as the parent copyright holder; Mzizi is not a separate legal
   entity.
 - **Security contact.** `security@nyuchi.com`, for the console and everything else Mzizi,
@@ -330,7 +339,7 @@ Any substantial build, migration, investigation or multi-step task gets a GitHub
 
 ## Dev skills, progress reports and the merge gate
 
-Load the Mzizi **dev skills** before starting work: `mzizi_get_skills category=dev` on the Mzizi MCP (`mcp.mzizi.dev`), or `@nyuchi/mzizi-skills` from npm. They are `digital-hygiene` and `progress-report`.
+Load the Mzizi **dev skills** before starting work: `mzizi_execute` with `get_skills` and `category: dev` on the Mzizi MCP (`mcp.mzizi.dev`), or `@nyuchi/mzizi-skills` from npm. They are `digital-hygiene` and `progress-report`.
 
 - **Digital hygiene.** Check free disk before starting, clone only under `$TMPDIR`, share build caches, and audit, then delete, your clones once the work merges (`digital-hygiene` skill).
 - **Clone isolation.** Clone only into a directory unique to you; never touch another agent's.

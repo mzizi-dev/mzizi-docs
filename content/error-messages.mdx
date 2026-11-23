@@ -7,7 +7,8 @@ icon: "triangle-alert"
 
 An error message is a touchpoint at the worst moment. A good one turns a frustrating
 experience into a recoverable one; a bad one converts a small failure into an abandoned
-session.
+session. Where readers may have limited connectivity and varying technical literacy, clear
+error wording matters more, not less.
 
 ## Structure
 
@@ -108,6 +109,8 @@ Put the message in the schema, not in the component. One definition, one wording
 the field appears.
 
 ### Toasts
+
+Use the `sonner` toast for feedback that should not block the reader:
 
 ```tsx
 toast.error("Could not save changes", {

@@ -20,9 +20,9 @@ Tracking: [mzizi-registry#413](https://github.com/mzizi-dev/mzizi-registry/issue
   The standard is new. The components ship in the next `@bundu/ui` release; npm serves 0.2.0
   until the owner publishes it. Every component has a pure `.astro` and a `.tsx` in the
   registry, both held to its contract, so the Next.js apps (news, events, weather) adopt it
-  through the registry's React build (`mzizi add discover-card --target tsx`, or
+  through the registry's React build (`mz add discover-card --target tsx`, or
   `npx shadcn add https://api.mzizi.dev/v1/ui/discover-card`), and Astro sites through
-  `@bundu/ui` or `mzizi add --target astro`. The page for one item is the
+  `@bundu/ui` or `mz add --target astro`. The page for one item is the
   [Discover detail pattern](/patterns/discover-detail).
 </Note>
 
@@ -35,7 +35,7 @@ template.
 <Frame caption="Home at 1280px: header, hero with search and actions, a featured section, category chips, more circles with &quot;See every circle&quot;.">
   <img
     src="/images/discover-standard/home-1280-light.png"
-    alt="The Mukoko Circles home page at 1280 pixels in light mode: a header with the mukoko circles mark, All circles, Fediverse and About links and a Create a circle button; a hero reading Find your people. Keep them close, with a search box and actions; a Featured section of three circle cards with a letter monogram, a Public badge, a summary, the member count and categories; category chips with counts; and a grid of more circles."
+    alt="The Mukoko Circles home page at 1280 pixels in light mode: a header with the Mukoko Circles mark, All circles, Fediverse and About links and a Create a circle button; a hero reading Find your people. Keep them close, with a search box and actions; a Featured section of three circle cards with a letter monogram, a Public badge, a summary, the member count and categories; category chips with counts; and a grid of more circles."
   />
 </Frame>
 
@@ -156,8 +156,8 @@ Each Discover contract has a `template` state with placeholders where this matte
 ## Density, brand and accessibility
 
 Discover pages are public and touch-first. The search field is 49px on touch and 36px on a mouse,
-and its button is 49px on touch and drawn at 36px on a mouse, where the drawn box is the 28px
-hit region (the two tiers of the [Bundu floor](/foundations/bundu-floor)). "See all", "Load more", "Open in Mukoko", the
+and its button is 49px on touch and drawn at 36px on a mouse, where the drawn box is the hit
+region, above the 24px desktop floor (the two tiers of the [Bundu floor](/foundations/bundu-floor)). "See all", "Load more", "Open in Mukoko", the
 category chips, the navigation links and the home link are links that predate the floor: their
 contracts record them as gaps until they move onto a size role or take the `hit-area` class,
 so do not copy their heights.

@@ -89,7 +89,7 @@ summarised on [What still has to be built](/tracker).
 | Workers, Containers or WebAssembly targets           | **Not started**                                                                                                                            | `LANGUAGE-TRACKER.md` P11                                                      |
 | Rendering, any target                                | **Not started.** Phase 1                                                                                                                   | —                                                                              |
 
-The compiler source is 33,540 lines across `compiler/src`. The workspace has **765 tests in 29 suites**,
+The compiler source is 35,315 lines across `compiler/src` at `00a1f49`. The workspace has **765 tests in 29 suites**,
 634 of them in the compiler crate and the rest in the benchmark harness, runner and probe crate
 (the counts the language's README states at `f9bea2b`, where `compiler/` is the same as at `v0.12.0`). A full `cargo test --workspace` run at `f9bea2b` on Linux, 12 November 2026, found 771 tests across 38 result blocks, 636 of them in the compiler crate: 770 passed, none failed, and one is ignored because it needs `axum` and `tokio` in the cargo cache. The README lags that run. CI gates on
 `cargo fmt --check`, `cargo clippy --all-targets -D warnings`, `cargo test`, `mz check` and

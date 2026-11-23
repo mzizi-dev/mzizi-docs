@@ -6,9 +6,8 @@ icon: "layout-dashboard"
 ---
 
 <Note>
-  The console is **run under Nyuchi**. The line is ownership, not naming: the language, its
-  toolchain, its components and its logic are Mzizi IP; the console, paid plans, billing and active cyber
-  testing are Nyuchi's. [The ecosystem page](/ecosystem) follows it repository by repository.
+  The console is **run by Nyuchi**. Mzizi is a Bundu Foundation project, built by Nyuchi, and
+  Nyuchi runs its cyber section: the console, paid plans, billing and active cyber testing. [The ecosystem page](/ecosystem) follows it repository by repository.
 </Note>
 
 [`mzizi-dev/mzizi-console`](https://github.com/mzizi-dev/mzizi-console) is the Mzizi console,
@@ -22,7 +21,7 @@ It is the one part of Mzizi meant to keep state: accounts, component version his
 telemetry and the Fundi issue desk belong to it. Today it keeps no database of its own: the
 repository has no Supabase client, environment variable or migration, its data comes from the
 public API, and sign-in is WorkOS AuthKit. Decided, not built: any state it keeps goes in
-Cloudflare D1. See [where data lives](/platform/data). The console is where the gated [Fundi tools](/toolchain/mcp#the-fundi-tools)
+Cloudflare D1. See [where data lives](/platform/data). The console is where the gated [sign-in operations](/toolchain/mcp#the-sign-in-operations)
 get their signed-in user.
 
 ## The split
@@ -52,6 +51,16 @@ Until that work lands, the page above describes what runs today.
 
 `app.mzizi.dev` is **live**, behind WorkOS AuthKit sign-in (checked 29 September 2026: the
 host answers 200). Report a security problem in the console to `security@nyuchi.com`.
+
+Every console page needs sign-in. On 23 November 2026 the Overview, Components, Tokens and
+Architecture pages each showed "Sign in to use the console." until you sign in, and the console
+needs JavaScript to sign in at all. The account is a **Mukoko Account**: **Sign in** goes
+through `auth.mukoko.com` to "Sign in to Mukoko Account" at `accounts.mukoko.com`, which signs
+in with an email address and offers to create an account.
+
+You do not need the console to read the registry. The same components, tokens and helix are
+public, with no sign-in, at [`mzizi.dev`](https://mzizi.dev),
+[`api.mzizi.dev/v1`](/platform/api-gateway) and [the MCP server](/toolchain/mcp).
 
 ## What it replaces
 

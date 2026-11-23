@@ -1,0 +1,61 @@
+---
+title: "Ubuntu doctrine and engineering constraints"
+description: "The five Ubuntu pillars, the five Ubuntu principles and the seven engineering constraints, as the registry states them."
+sidebarTitle: "Doctrine"
+icon: "scale-balanced"
+---
+
+Mzizi's doctrine is data in [`mzizi-dev/mzizi-registry`](https://github.com/mzizi-dev/mzizi-registry),
+under `content/doctrine/`. It has three parts, each listed below in the order the registry
+sorts it. The names, Shona words and meanings are the registry's own wording. `get_doctrine` serves the pillars and principles, and, with `topic: "engineering-constraints"` (MCP server 0.24.0 and later), the seven engineering constraints. The HTTP API does not yet have a constraints route: `/api/v1/ubuntu/pillars` and `/api/v1/ubuntu/principles` serve the first two parts only.
+
+These are not the four design pillars in [the foundations overview](/foundations/overview).
+Those are the design system's own decisions. The Ubuntu pillars below are the doctrine they
+rest on.
+
+## The five Ubuntu pillars
+
+Doctrine version `4.1.0`. Source: Mugumbate et al. (2023). The first four are the horizontal
+pillars; spirituality is the vertical one.
+
+| #   | Pillar       | Shona            | What it means                                                                                                                                                                                                                          |
+| --- | ------------ | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Family       | Mhuri            | The first sphere of Ubuntu — the household and kin who form a person's primary web of belonging. Ubuntu begins here: identity is given by family before it is given by any institution.                                                |
+| 2   | Community    | Nharaunda        | The extended sphere of neighbours, peers, and chosen kin. Where the family ends, the community begins; the two are continuous, not opposed. Ubuntu treats community as the medium through which a person grows into society.           |
+| 3   | Society      | Vanhu            | The broader human web — strangers, institutions, the polity. Ubuntu does not stop at the village wall; vanhu means people, all people. A person who treats strangers as strangers has not yet practised Ubuntu.                        |
+| 4   | Environment  | Zvakatipoteredza | The natural world that holds all relationships. Ubuntu is ecological before it is social — soil, water, and weather are kin too. A person who exhausts the environment has broken Ubuntu, even if they have wronged no human directly. |
+| 5   | Spirituality | Unhu             | The vertical axis of being human — meaning, purpose, ancestry, and the sacred. Unhu names the inner quality from which Ubuntu flows outward. Without unhu, the four horizontal pillars are scaffolding without a soul.                 |
+
+## The five Ubuntu principles
+
+Doctrine version `4.1.0`.
+
+| #   | Principle  | Shona       | What it means                                                                                                                                                                                                        | Source                                                                        |
+| --- | ---------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| 1   | Survival   | Kurarama    | Collective endurance. No one survives alone; basic needs are met through one another. Reciprocal care sustains the community before any individual can flourish.                                                     | Mbigi (1997), Collective Fingers Theory                                       |
+| 2   | Solidarity | Kubatana    | A firm and persevering commitment to the common good. Not vague compassion but active allegiance to the welfare of the whole — kubatana means to hold together.                                                      | Mbigi (1997), Collective Fingers Theory                                       |
+| 3   | Compassion | Tsitsi      | Active care, sympathy, and concern shown through helping, sharing, and welcoming. Tsitsi extends beyond kin to all — a stranger in need is not a stranger to compassion. (Also: Du Toit, Poovan & Engelbretch 2006.) | Mbigi (1997), Collective Fingers Theory; Du Toit, Poovan & Engelbretch (2006) |
+| 4   | Respect    | Ruremekedzo | Unprejudiced consideration of another's privileges, beliefs, and norms. Encompasses elder-respect (ukuhlonipha) but applies to every person, every age, every belief. (Also: Poovan et al. 2006.)                    | Mbigi (1997), Collective Fingers Theory; Poovan et al. (2006)                 |
+| 5   | Dignity    | Chiremerera | Inherent worth held by virtue of existence — irrespective of status, ethnicity, age, or background. Humanity is sacred. Dignity is not earned and cannot be revoked. (Also: Ramose 2002.)                            | Mbigi (1997), Collective Fingers Theory; Ramose (2002)                        |
+
+## The seven engineering constraints
+
+Doctrine version `4.2.0`. The owner added these on 17 November 2026
+([mzizi-registry#723](https://github.com/mzizi-dev/mzizi-registry/pull/723)). Each one has a
+check, which is how it is held to account.
+
+| #   | Constraint                     | What it means                                                                                                                                                                            | How it is checked                                                                                                                                                |
+| --- | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Outdoor readability            | Every surface is read in direct sunlight on a budget phone, not only at a desk.                                                                                                          | Contrast is checked against the Mzizi floor in light and dark themes (`mzizi_check_accessibility`); a pair under the floor fails.                                |
+| 2   | Connectivity-gradient design   | Design for the whole range of connections, from none to fibre. Offline-first is the enforced minimum: core tasks work with no connection, and better connectivity adds to that baseline. | A surface whose core tasks do not work offline fails. Core tasks are also tested on a throttled 2G profile.                                                      |
+| 3   | Multilingual parity            | Shona, Ndebele and English are equal. No language is a translation of another, and none ships later.                                                                                     | A missing translation fails the build.                                                                                                                           |
+| 4   | Shared-device awareness        | One phone often serves a household. A person's data belongs to that person, not to the device.                                                                                           | Sign-out leaves no personal data on the device; a second account on the same device cannot read the first's.                                                     |
+| 5   | Personal data sovereignty      | A person owns their data. It lives on their device first, syncs to their own isolated cloud space, and moves to pods in the Nyuchi Honeycomb without being reshaped.                     | Personal data is stored on the device and in the person's isolated space only; a person can export and delete all of it.                                         |
+| 6   | No surveillance business model | We do not earn money from attention or personal data.                                                                                                                                    | No third-party tracking, data sale or engagement-maximising pattern is present; review fails a change that adds one.                                             |
+| 7   | The Bundu floor                | The minimums nothing can go under: text size, contrast, hit regions and spacing, so that nobody is punished for their eyesight or their device.                                          | The existing `bundu-floor` doctrine (`get_doctrine` with `topic: bundu-floor`) and `mzizi_check_accessibility`. See [the Bundu floor](/foundations/bundu-floor). |
+
+Check names are the registry's. Over MCP, call `mzizi_execute` with `operation: "check_accessibility"`.
+
+Each constraint also names the principles it rests on in the registry. Survival and
+connectivity, respect and multilingual parity, and dignity and personal data sovereignty are
+examples of that link. The registry holds the full mapping.

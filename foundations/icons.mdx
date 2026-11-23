@@ -21,6 +21,36 @@ not a seam.
 
 Import specific icons, never the whole library, so tree-shaking works.
 
+`lucide-react` arrives as a dependency when you install a registry component that uses icons.
+The registry's icon module is the N1 component `mzizi-icons`
+([`GET /v1/ui/mzizi-icons`](https://api.mzizi.dev/v1/ui/mzizi-icons)), which installs to
+`lib/icons/index.tsx`.
+
+## Semantic icons
+
+`mzizi-icons` also maps domain concepts to icons, so a component asks for _what it means_
+rather than _which glyph_:
+
+```tsx
+import { Icon } from "@/lib/icons"
+
+<Icon name="success" size="md" />
+```
+
+When the meaning of an icon changes, the mapping changes once and every component follows.
+The names, read from the registry on 23 November 2026:
+
+| Group           | Names                                                                                                |
+| --------------- | ---------------------------------------------------------------------------------------------------- |
+| Status          | `success`, `error`, `warning`, `info`, `help`, `loading`                                             |
+| Security, trust | `security`, `verified`, `locked`, `unlocked`                                                         |
+| Connectivity    | `online`, `offline`, `cloud`, `cloudOff`                                                             |
+| Fintech         | `send`, `receive`, `wallet`                                                                          |
+| Platform        | `notification`, `chat`, `community`, `location`, `search`, `home`, `settings`, `profile`, `favorite` |
+
+`size` takes a preset: `xs` 12px, `sm` 16px, `md` 20px (the default), `lg` 24px and `xl`
+32px. `sizeOverride` sets an exact pixel size where no preset fits.
+
 ## Sizing
 
 | Context      | Class     | Pixels | Usage                          |
@@ -69,6 +99,16 @@ and `w-*` classes that can drift apart.
 | `Info`          | Informational                        |
 | `Loader2`       | Loading spinner, with `animate-spin` |
 
+### Across the ecosystem
+
+| Icon           | Usage                 |
+| -------------- | --------------------- |
+| `Sun` / `Moon` | Theme toggle          |
+| `Github`       | GitHub link           |
+| `Bell`         | Notifications         |
+| `Settings`     | Settings, preferences |
+| `User`         | Account menu          |
+
 ## Accessibility
 
 ### Icon-only controls
@@ -88,7 +128,7 @@ An icon without visible text needs an accessible name:
 </Button>
 ```
 
-Remember the hit region (49px on touch, 28px on a desktop) applies to icon buttons too — the icon is 16px, the control is
+Remember the hit region (45px on touch, 24px on a desktop) applies to icon buttons too — the icon is 16px, the control is
 not.
 
 ### Decorative icons
