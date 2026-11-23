@@ -9,6 +9,10 @@ Accessibility in this design system is a constraint, not a review step. Componen
 usable in bright sunlight on a cracked screen as readily as on a desktop in an office, and the
 thresholds below are what makes that checkable rather than aspirational.
 
+It matters more, not less, for the people these products are built for. Assistive technology
+adoption varies widely across the continent, and many readers are on older devices, on low
+bandwidth and outdoors.
+
 ## Contrast: WCAG minimums and APCA
 
 Two bars apply together, and both are enforced in the registry's token build. The WCAG 2
@@ -63,7 +67,9 @@ that pushes both values to mid-tone and serves neither theme.
 ### Testing a new pairing
 
 1. Test in both light and dark.
-2. Check the WCAG ratio against the tier above and the APCA Lc against its row.
+2. Check the WCAG ratio against the tier above and the APCA Lc against its row. For APCA, use
+   an APCA calculator such as [apcacontrast.com](https://apcacontrast.com/), not a WCAG 2 ratio
+   checker.
 3. Check the pairings that actually ship — `--muted-foreground` on `--muted`,
    `--foreground` on `--card` — not only foreground on background.
 
@@ -162,8 +168,8 @@ N3 brand components get a `LiveRegion` from the harness rather than building the
 
 ### Testing
 
-Test with at least one screen reader: VoiceOver on macOS and iOS, NVDA on Windows, TalkBack on
-Android.
+Test with at least one screen reader: VoiceOver on macOS (built in; Cmd+F5 turns it on) and
+iOS, NVDA on Windows (free), TalkBack on Android.
 
 ## Colour independence
 
@@ -173,6 +179,21 @@ email", not a red border alone), an icon, or a pattern.
 The mineral palette was chosen with common colour-vision deficiencies in mind, which reduces
 the problem but does not remove it — two minerals that are distinguishable to you may not be
 to a reader.
+
+Lightness survives where hue does not. A pair at 7:1 or more stays distinguishable under the
+common colour-vision deficiencies, because it differs in lightness rather than in hue. The pairs
+that depend on hue, above all red against green for error against success, are the ones that
+must carry an icon or a label as well.
+
+### High-contrast values
+
+The registry's brand source, `lib/tokens/brand.source.ts` in
+[`mzizi-dev/mzizi-registry`](https://github.com/mzizi-dev/mzizi-registry), carries
+`hcLightValue` and `hcDarkValue` overrides on 10 of the 14 semantic colours, for a high-contrast mode:
+`border` is `#000000` in light and `#FFFFFF` in dark, for example, and `null` means "use the
+standard value". On 23 November 2026 `/v1/brand` did not serve these fields, and the token
+stylesheet had no high-contrast block that applies them, so treat them as authored values
+waiting for a consumer, not as a mode you can switch on.
 
 ## Checklist
 

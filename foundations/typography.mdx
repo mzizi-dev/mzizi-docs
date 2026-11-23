@@ -21,6 +21,9 @@ The language-coverage reason is the load-bearing one and is covered in
 
 ### Loading them
 
+In a Next.js app, load them with `next/font/google`, which subsets the files and serves them
+from your own origin:
+
 ```tsx
 const fontSans = Noto_Sans({ subsets: ["latin"], variable: "--font-sans" })
 const fontSerif = Noto_Serif({ subsets: ["latin"], variable: "--font-serif" })
@@ -43,7 +46,8 @@ Apply the variables to `<html>` and set the default with `font-sans` on `<body>`
 | Caption    | `text-sm`   | 14px | 1.5         | Secondary text, labels |
 | Footnote   | `text-xs`   | 14px | 1.5         | Metadata, timestamps   |
 
-The published scale also defines a 72px display step for hero type on marketing surfaces.
+This is the scale as Tailwind classes. The brand system publishes its own named scale, from a
+72px display step down to 14px captions; see [the published scale](#the-published-scale).
 
 ### The floor under the scale
 
@@ -57,6 +61,39 @@ come from and how to migrate from the 16px body and 12px footnote.
 Write body copy as `text-body`. The token layer registers a `text-base` step at 17px too, but
 a theme that also defines a colour named `base` (`--color-base`) can make the class ambiguous,
 and the registry has not yet decided how to settle it, so prefer `text-body` for now.
+
+## The published scale
+
+`GET https://api.mzizi.dev/v1/brand` publishes the brand's type scale under
+`typography.scale`. Read on 23 November 2026:
+
+| Step          | Size | Line height | Weight | Font  | Usage                                |
+| ------------- | ---- | ----------- | ------ | ----- | ------------------------------------ |
+| Display       | 72px | 1.1         | 700    | Serif | Hero headlines, landing pages        |
+| Display Small | 60px | 1.1         | 700    | Serif | Secondary hero headlines             |
+| H1            | 48px | 1.15        | 700    | Serif | Page titles                          |
+| H2            | 36px | 1.2         | 600    | Serif | Section headings                     |
+| H3            | 30px | 1.25        | 600    | Serif | Sub-section headings                 |
+| H4            | 24px | 1.3         | 600    | Sans  | Card titles, group headings          |
+| H5            | 20px | 1.4         | 600    | Sans  | Small headings                       |
+| H6            | 17px | 1.4         | 600    | Sans  | Nested headings in long-form content |
+| Body Large    | 18px | 1.6         | 400    | Sans  | Lead paragraphs                      |
+| Body          | 17px | 1.6         | 400    | Sans  | Default body text                    |
+| Body Small    | 14px | 1.5         | 400    | Sans  | Secondary text, descriptions         |
+| Caption       | 14px | 1.5         | 400    | Sans  | Labels, metadata, timestamps         |
+| Code          | 14px | 1.6         | 400    | Mono  | Code blocks, terminal output         |
+
+The registry's source for it, `lib/tokens/brand.source.ts` in
+[`mzizi-dev/mzizi-registry`](https://github.com/mzizi-dev/mzizi-registry), carries three more
+fields per step that `/v1/brand` does not serve yet:
+
+- **Fluid sizes.** Display to H3 scale with the viewport between a minimum and a maximum, so a
+  headline does not break to one word per line on a phone: Display 40 to 72px, Display Small 36
+  to 60px, H1 32 to 48px, H2 28 to 36px, H3 24 to 30px. H4 and below are fixed.
+- **Letter spacing.** Negative on the large steps (Display -0.025em, Display Small and H1
+  -0.02em, H2 -0.015em, H3 -0.01em, H4 -0.005em), normal for H5 to Body Small, and a small
+  positive tracking on Caption (0.02em).
+- **Font features.** Code sets `tabular-nums`, so numbers line up in columns and tables.
 
 ## Serif or sans
 

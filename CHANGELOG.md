@@ -27,6 +27,41 @@ entries move under it. Mintlify does not publish this file.
 
 - **Fixed:** Refresh the CLI, MCP and skills package versions on their toolchain pages and check the same version wording for all three.
 
+### Added — design-system content moved in from Bundu Docs and Nyuchi Docs (2026-11-23)
+
+docs.mzizi.dev is the one home of the design system's documentation. Bundu Docs is retiring its
+old copy of the Mzizi pages, so the design-system facts it held that these pages did not are
+now here, checked against the registry and the API on 23 November 2026. Nothing stale came
+across: the five-mineral palette, six of the eight old status categories, the ten-node model and the
+database-backed tokens stay retired.
+
+- **`foundations/typography`:** the type scale `/v1/brand` publishes (Display 72px to Code
+  14px, with weights and fonts), and the fluid sizes, letter spacing and `tabular-nums` the
+  registry's brand source carries for it. `next/font/google` for loading the fonts.
+- **`foundations/motion`:** the motion tokens: four duration tiers (100, 200, 350, 500ms), four
+  easing curves, the list staggers, and how `mzizi-motion`'s `useMotion()` handles reduced
+  motion. A `motion-reduce` example.
+- **`foundations/tokens`:** the trust token families (`--assurance-*`, `--attestation-*` and
+  the legacy `--tier-*`), which the warning there said were not defined; the spacing scale up
+  to the 128px page hero; the toggle, checkbox, tabs, card and dialog specifications, and
+  toggles in the pill-shaped rule; elevation and z-index tokens; `adopterType` on the
+  ecosystem rows.
+- **`foundations/icons`:** semantic icons (`<Icon name="success" />`) and their size presets
+  from `mzizi-icons`, and the ecosystem's common icons.
+- **`foundations/accessibility`:** why lightness survives colour-vision deficiency where hue
+  does not, the registry's high-contrast values and their status, an APCA calculator, and how
+  to turn the screen readers on.
+- **`foundations/internationalization`:** Tifinagh and Bamum coverage, the CSS logical
+  properties by name, and the `rtl-conformity-check` assurance component.
+- **`foundations/bundu-floor`:** the published standard at `standards.bundu.org/bundu-floor`
+  (1.1.0) and its `floor.json` data.
+- **`patterns/architecture`:** the layer rules, and what a server page wrapper does.
+- **`architecture/nodes`:** examples of the third-party marks that may carry their own hex, and
+  semantic icon names.
+- **Content style:** rainy and dry seasons and shared metaphors (`content/writing`), the
+  population and economic-status wording (`content/inclusive-language`), and the `sonner`
+  toast for non-blocking errors (`content/error-messages`).
+
 ### Changed — the Bundu floor moves to 45px and 24px, and spacing becomes layered (2026-11-19)
 
 The owner's rulings of 19 November 2026 set the hit regions and the spacing. They ship with the registry release that carries these tokens. Touch is 45px, the desktop is 24px, and the layer values replace the 14px inset and 7px gaps.

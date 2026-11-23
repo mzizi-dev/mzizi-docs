@@ -63,7 +63,12 @@ Each brand in the Bundu ecosystem has a brand mineral, listed in the `ecosystem`
 | shamwari | Sodalite      | African Minerals |
 | events   | Malachite     | African Minerals |
 
-The mukoko mini-apps and the other brands carry their own rows in the same array. `events` is
+The mukoko mini-apps and the other brands carry their own rows in the same array. Each row
+has an `adopterType`; every row in the registry's source is `ecosystem_brand`, a brand that picks
+its mineral from the shared palette and inherits the rest of the token layer. An organisation
+outside the ecosystem that adopts Mzizi forks the `swappable` strand instead (its own palette,
+primary and icons) and keeps the `core-guarantee` nodes unchanged; see
+[the helix](/architecture/overview). `events` is
 Mukoko Events: the row was `nhimbe` until the brand was retired on 4 October 2026, and canon
 keeps `nhimbe` as a deprecated alias of it.
 
@@ -128,12 +133,31 @@ those names:
 They are **not a second palette** — they are a naming layer, declared in both the light and
 dark blocks so a utility class generates for each.
 
+### Trust tokens
+
+The stylesheet also defines the trust families that verification badges and trust meters draw
+from. Each is a family of four: the tone itself, a `-container` fill, an `-on-container` ink and
+a `-text` colour for running text. Read from
+[`GET /v1/ui/mzizi-tokens-globals`](https://api.mzizi.dev/v1/ui/mzizi-tokens-globals) on
+23 November 2026:
+
+| Family                     | Levels, and the mineral each is drawn from                                                             |
+| -------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `--assurance-*`            | `none` (neutral), `otp` (cobalt), `documented` (sodalite), `government` (gold), `licensed` (tanzanite) |
+| `--attestation-*`          | `community` (terracotta), `business` (malachite), `domain` (copper)                                    |
+| `--tier-*`, the legacy set | `unverified`, `community`, `otp`, `government`, `licensed`, aliased onto the two families above        |
+
+The legacy tiers climb terracotta, cobalt, gold, tanzanite in ascending trust, and
+`--tier-unverified` is `--assurance-none`. New work uses the assurance level and its
+attestations; `--tier-*` stays so the older `tier` prop keeps rendering.
+
 <Warning>
-  Earlier documentation listed eight semantic status *categories* — `--severity-*`,
+  Earlier documentation listed eight semantic status *categories*: `--status-*`, `--severity-*`,
   `--notification-*`, `--connection-*`, `--tier-*`, `--crypto-*`, `--moderation-*` and
-  `--health-*` alongside `--status-*`. Only `--status-*` is defined in the published token
-  layer. Connection and health states are covered by the semantic tokens above (`--syncing`,
-  `--offline`, `--success`, `--warning`, `--error`) rather than by prefixed sets of their own.
+  `--health-*`. Of those, only `--status-*` and `--tier-*` are defined in the published token
+  layer, and `--tier-*` is now the legacy alias described above. Connection and health states
+  are covered by the semantic tokens above (`--syncing`, `--offline`, `--success`, `--warning`,
+  `--error`) rather than by prefixed sets of their own.
 </Warning>
 
 ## Backgrounds
@@ -163,7 +187,7 @@ Five numbers, all from a 7px unit, and one identity rule.
 | `xl` / `2xl`  | 17px   |
 | `full`        | 9999px |
 
-**Buttons are always pill-shaped**, and so are inputs, avatars and badges. That is a brand
+**Buttons are always pill-shaped**, and so are inputs, avatars, badges and toggles. That is a brand
 identity decision rather than a styling preference, and it is why those categories carry
 `borderRadius: 9999` rather than a scale value.
 
@@ -187,6 +211,50 @@ The scale runs from a 2px hairline upward, with names rather than raw numbers:
 | `md`        | 12px  | Compact component padding                            |
 | `base`      | 16px  | Default component padding — cards, inputs            |
 | `base-plus` | 20px  | Comfortable component padding                        |
+| `lg`        | 24px  | Section padding, card gaps                           |
+| `xl`        | 32px  | Page margins, large gaps                             |
+| `xl-plus`   | 40px  | Section header to content, large card spacing        |
+| `2xl`       | 48px  | Section margins                                      |
+| `2xl-plus`  | 56px  | Between major content blocks                         |
+| `3xl`       | 64px  | Page section spacing                                 |
+| `4xl`       | 80px  | Page section spacing on desktop                      |
+| `5xl`       | 96px  | Hero section spacing                                 |
+| `6xl`       | 128px | Page hero spacing, full-viewport feature sections    |
+
+This is the scale `/v1/brand` publishes, from the 2px hairline to the 128px page hero. It is a
+set of values to reach for, not a floor: the minimum each layer of a screen keeps is on
+[the spacing layers](/foundations/spacing-layers).
+
+## Elevation and stacking
+
+Shadows and stacking order are N1 values too, so no component invents its own. Read from the
+stylesheet on 23 November 2026:
+
+| Token                 | Value                                                |
+| --------------------- | ---------------------------------------------------- |
+| `--shadow-none`       | `none`                                               |
+| `--shadow-xs`         | `0 1px 2px rgba(20, 20, 19, 0.04)`                   |
+| `--shadow-sm`         | `0 1px 2px rgba(0, 0, 0, 0.15)`                      |
+| `--shadow-md`         | `0 4px 12px rgba(0, 0, 0, 0.2)`                      |
+| `--shadow-lg`         | `0 8px 24px rgba(0, 0, 0, 0.25)`                     |
+| `--shadow-xl`         | `0 20px 60px rgba(0, 0, 0, 0.4)`                     |
+| `--shadow-inner`      | `inset 0 2px 4px rgba(20, 20, 19, 0.06)`             |
+| `--shadow-focus-ring` | `0 0 0 2px var(--background), 0 0 0 4px var(--ring)` |
+
+Each `--shadow-*` is an alias of an `--elevation-*` token of the same name.
+
+| Token          | Value |
+| -------------- | ----- |
+| `--z-base`     | 0     |
+| `--z-dropdown` | 10    |
+| `--z-sticky`   | 20    |
+| `--z-overlay`  | 30    |
+| `--z-modal`    | 40    |
+| `--z-toast`    | 50    |
+| `--z-tooltip`  | 60    |
+
+Take a layer from the scale rather than writing `z-[999]`: a toast sits above a modal, and a
+tooltip above both, only while everything uses the same numbers.
 
 ## How a value reaches a component
 
@@ -215,6 +283,17 @@ way:
 | Input     | 49px           | 49px  | 45px                 | 9999   |
 | Avatar    | 40px           | 32px  | 45px                 | 9999   |
 | Badge     | 22px           | —     | 45px                 | 9999   |
+| Toggle    | 24px           | —     | 45px                 | 9999   |
+| Checkbox  | 20px           | —     | 45px                 | 7      |
+| Tabs      | 49px           | —     | 45px                 | 17     |
+| Card      | auto           | —     | 45px                 | 14     |
+| Dialog    | auto           | —     | 45px                 | 17     |
+
+A card is padded `py-6` and `px-6` (24px) on its header and content, above the cards layer's
+21px default, with a full 1px border; a dialog is padded `p-6` (24px). A checkbox is drawn at
+20px, and its hit region comes from the padding around it, usually its label; see
+[accessibility](/foundations/accessibility#touch-targets). The avatar also has `xs` (24px), `lg`
+(48px) and `xl` (64px) sizes.
 
 The hit region (45px on touch, 24px on a desktop) is not negotiable; see [the Bundu floor](/foundations/bundu-floor). The
 large button is 56px. These are the `componentSpecs` from registry 4.45 and later, with the minimum touch target at the

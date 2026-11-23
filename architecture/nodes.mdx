@@ -86,7 +86,8 @@ Component source is **files in the repository**, under
 
 - All CSS values are defined at N1. Every other node consumes them through `var()`.
 - No raw Tailwind palette classes (`bg-red-500`) outside N1.
-- No inline hex, except documented third-party brand marks.
+- No inline hex, except documented third-party brand marks (a payment or sign-in provider's own
+  mark, such as EcoCash, Google or Ethereum).
 - N6 pages use semantic CSS variables only.
 - Use logical properties (`margin-inline-start`, `padding-inline-end`) rather than physical
   ones, so right-to-left layouts work without a second stylesheet.
@@ -97,6 +98,8 @@ Component source is **files in the repository**, under
   `lucide-react` directly — the indirection is what lets the icon library be swapped, and the
   icon library is one of the three declared fork seams on the `swappable` strand.
 - Size from the token scale rather than ad-hoc values. See [icons](/foundations/icons).
+- Ask for an icon by meaning where a semantic name exists: `<Icon name="success" />` rather than
+  importing `CheckCircle`. See [semantic icons](/foundations/icons#semantic-icons).
 - Mark directional icons with `data-rtl-mirror="true"` when they should flip in RTL contexts.
 
 ## Accessibility
