@@ -64,15 +64,16 @@ async function check(name, fn) {
 
 // npm: the three published toolchain packages.
 const npm = [
-  ["@nyuchi/mzizi-cli", "toolchain/cli.mdx", /latest published version\s+is `([0-9.]+)`/],
-  ["@nyuchi/mzizi-mcp", "toolchain/mcp.mdx", /\(`([0-9.]+)`, read from npm/],
-  ["@nyuchi/mzizi-skills", "toolchain/skills.mdx", /at version `([0-9.]+)` \(the latest on npm/],
+  ["@nyuchi/mzizi-cli", "toolchain/cli.mdx"],
+  ["@nyuchi/mzizi-mcp", "toolchain/mcp.mdx"],
+  ["@nyuchi/mzizi-skills", "toolchain/skills.mdx"],
 ];
-for (const [pkg, path, re] of npm) {
+const publishedVersion = /latest published version\s+is `([0-9.]+)`/i;
+for (const [pkg, path] of npm) {
   await check(pkg, async () => {
-    const [docs] = stated(path, re, `the ${pkg} version`) ?? [];
-    const { body } = await get(`https://registry.npmjs.org/${pkg}`);
-    compare(`${pkg} (${path})`, docs, body["dist-tags"].latest);
+    const [docs] = stated(path, publishedVersion, `the ${pkg} version`) ?? [];
+    const { body } = await get(`https://registry.npmjs.org/${encodeURIComponent(pkg)}/latest`);
+    compare(`${pkg} (${path})`, docs, body.version);
   });
 }
 

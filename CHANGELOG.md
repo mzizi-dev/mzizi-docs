@@ -21,6 +21,8 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
+- **Fixed:** Refresh the CLI, MCP and skills package versions on their toolchain pages and check the same version wording for all three.
+
 ### Changed — the Bundu floor moves to 45px and 24px, and spacing becomes layered (2026-11-19)
 
 The owner's rulings of 19 November 2026 set the hit regions and the spacing. They ship with the registry release that carries these tokens. Touch is 45px, the desktop is 24px, and the layer values replace the 14px inset and 7px gaps.
