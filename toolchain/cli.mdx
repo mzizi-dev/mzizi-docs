@@ -6,10 +6,10 @@ icon: "square-terminal"
 ---
 
 <Note>
-  This is the CLI for working with Mzizi's **components and doctrine** in a project. It is one
-  Rust binary, `mz`, which also carries the language's own commands (`mz check`, `mz build`,
-  `mz run`; see [the compiler](/compiler)). The registry and agent commands below live next to
-  them. The source is [mzizi-dev/mzizi-cli](https://github.com/mzizi-dev/mzizi-cli).
+  This is the CLI for working with Mzizi's **components and doctrine** in a project. It is one Rust
+  binary, `mz`, which also carries the language's own commands (`mz check`, `mz build`, `mz run`;
+  see [the compiler](/compiler)). The registry and agent commands below live next to them. The
+  source is [mzizi-dev/mzizi-cli](https://github.com/mzizi-dev/mzizi-cli).
 </Note>
 
 The CLI is **free, with no gate**. That is the owner's decision of 29 September 2026: gating
@@ -33,38 +33,38 @@ arm64 and x64 with glibc or musl, Windows on x64). It has no CLI logic of its ow
 note; use `mz`.
 
 <Warning>
-  **Use `0.14.1` or later, not `0.14.0`.** The `0.14.0` npm package shipped its binaries
-  without the execute bit, so `mz` failed with `EACCES` after `npm install`. `0.14.1` fixes it,
-  and `cargo install` was never affected.
+  **Use `0.14.1` or later, not `0.14.0`.** The `0.14.0` npm package shipped its binaries without the
+  execute bit, so `mz` failed with `EACCES` after `npm install`. `0.14.1` fixes it, and `cargo
+  install` was never affected.
 </Warning>
 
 What changed in the Rust CLI, and before it:
 
-| Version    | Change                                                                                                                                                                                                                                               |
-| ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `0.14.1`   | The npm launcher repairs a binary that lost its execute bit; the release is smoke-tested from npm and crates.io                                                                                                                                      |
-| `0.14.0`   | The CLI is a Rust binary, `mz`, ported from the TypeScript CLI with no behaviour change except the names. `mzizi check` is `mz floor`, because `mz check` belongs to the language compiler. The floor thresholds are read from the Mzizi tokens |
-| `0.13.0`   | The last TypeScript release                                                                                                                                                                                                                          |
-| `0.9.0`    | `add` takes `--type` and installs five types: `mzizi`, `tsx`, `astro`, `swift` and `kotlin`, with `rust` and `typescript` accepted as spellings of `mzizi` and `tsx`                                                                                  |
-| `0.8.0`    | Adds the spacing check, now `mz floor` (see [the spacing layers](/foundations/spacing-layers))                                                                                                                                                      |
-| `0.7.0`    | Adds `--target astro`, and infers it in an Astro project                                                                                                                                                                                              |
+| Version  | Change                                                                                                                                                                                                                                          |
+| -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `0.14.1` | The npm launcher repairs a binary that lost its execute bit; the release is smoke-tested from npm and crates.io                                                                                                                                 |
+| `0.14.0` | The CLI is a Rust binary, `mz`, ported from the TypeScript CLI with no behaviour change except the names. `mzizi check` is `mz floor`, because `mz check` belongs to the language compiler. The floor thresholds are read from the Mzizi tokens |
+| `0.13.0` | The last TypeScript release                                                                                                                                                                                                                     |
+| `0.9.0`  | `add` takes `--type` and installs five types: `mzizi`, `tsx`, `astro`, `swift` and `kotlin`, with `rust` and `typescript` accepted as spellings of `mzizi` and `tsx`                                                                            |
+| `0.8.0`  | Adds the spacing check, now `mz floor` (see [the spacing layers](/foundations/spacing-layers))                                                                                                                                                  |
+| `0.7.0`  | Adds `--target astro`, and infers it in an Astro project                                                                                                                                                                                        |
 
 ## Commands
 
-| Command                           | What it does                                                                                                                                                             |
-| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `mz add <name...>`                | Installs components from the registry, with their dependencies. Rust first. No API key and no sign-in                                                                    |
-| `mz floor [path...]`              | Checks your source against [the spacing layers](/foundations/spacing-layers): exit code 1 on a violation. `--json` for a report. Was `mzizi check`                      |
-| `mz explore`                      | Reads a few files (`package.json`, `tsconfig.json`, the global stylesheet, the Tailwind config, `components.json`) and prints a project snapshot. Offline. No model call |
-| `mz plan <goal>`                  | **Read-only.** Plans the minimal edits to wire Mzizi in, and prints them as a dry run                                                                                    |
-| `mz chat <message>`               | One-shot chat scoped to Mzizi doctrine                                                                                                                                   |
-| `mz login` / `logout` / `whoami`  | Save, clear or show a console token (kept in the OS keychain when there is one). Only the sign-in operations need one                                                    |
+| Command                          | What it does                                                                                                                                                             |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `mz add <name...>`               | Installs components from the registry, with their dependencies. Rust first. No API key and no sign-in                                                                    |
+| `mz floor [path...]`             | Checks your source against [the spacing layers](/foundations/spacing-layers): exit code 1 on a violation. `--json` for a report. Was `mzizi check`                       |
+| `mz explore`                     | Reads a few files (`package.json`, `tsconfig.json`, the global stylesheet, the Tailwind config, `components.json`) and prints a project snapshot. Offline. No model call |
+| `mz plan <goal>`                 | **Read-only.** Plans the minimal edits to wire Mzizi in, and prints them as a dry run                                                                                    |
+| `mz chat <message>`              | One-shot chat scoped to Mzizi doctrine                                                                                                                                   |
+| `mz login` / `logout` / `whoami` | Save, clear or show a console token (kept in the OS keychain when there is one). Only the sign-in operations need one                                                    |
 
 <Note>
-  **`mz floor [path...]`.** It fails with exit code 1 on padding, gaps, negative margins and
-  line heights under [the spacing layers](/foundations/spacing-layers), and takes `--json`. Its
-  thresholds are read from the Mzizi tokens, not typed into the tool. Under the old names
-  (`mzizi`, `fundi`) the command is still spelled `check`.
+  **`mz floor [path...]`.** It fails with exit code 1 on padding, gaps, negative margins and line
+  heights under [the spacing layers](/foundations/spacing-layers), and takes `--json`. Its
+  thresholds are read from the Mzizi tokens, not typed into the tool. Under the old names (`mzizi`,
+  `fundi`) the command is still spelled `check`.
 </Note>
 
 ## `mz add`: the registry installer
@@ -169,8 +169,8 @@ The name appears twice, and they are different things.
 <CardGroup cols={2}>
   <Card title="Fundi, the agent behind the console" icon="activity">
     The self-healing agent and issue desk, run under Nyuchi and tied into the console. Its
-    architecture counterpart is the N9 fundi rung of [the helix](/architecture/overview).
-    It runs as a service, not as something you install.
+    architecture counterpart is the N9 fundi rung of [the helix](/architecture/overview). It runs as
+    a service, not as something you install.
   </Card>
   <Card title="`fundi`, the CLI commands" icon="terminal">
     The `fundi` commands of `mz` (`explore`, `plan`, `chat`), described on this page. You install it
