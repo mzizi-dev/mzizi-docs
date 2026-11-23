@@ -23,7 +23,7 @@ The move was decided in
 [`mzizi-registry#324`](https://github.com/mzizi-dev/mzizi-registry/pull/324), "Mzizi
 documentation moves to mzizi-docs / docs.mzizi.dev", merged 2026-09-25.
 [docs.bundu.org](https://docs.bundu.org) remains Bundu's own product documentation and
-[docs.nyuchi.com](https://docs.nyuchi.com) nyuchi's engineering documentation; neither is
+[docs.nyuchi.com](https://docs.nyuchi.com) Nyuchi's engineering documentation; neither is
 where Mzizi's docs live.
 
 ## What it documents

@@ -21,6 +21,8 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
+- **Changed:** Write every brand wordmark with an initial capital (owner decision, 2026-11-23): Mukoko, Nyuchi, Shamwari, Bundu, Mzizi, Kweli. `AGENTS.md` no longer says the other wordmarks stay lowercase, and also records the same day's rulings that there are no "sister brands" (the ecosystem has pillars, initiatives, projects and Mukoko apps) and that Shamwari is open-weight AI, not "sovereign AI". `toolchain/skills.mdx` no longer describes the `mukoko-design` wordmark as always lowercase. The brand tables on `foundations/tokens` and `patterns/dashboard-standard`, the narrative spine and the closing lines on `ecosystem`, the image descriptions on `patterns/dashboard-standard` and `patterns/discover-standard`, and `patterns/kweli-address` write the brand names with a capital. The `patterns/kweli-address` heading is now "The Kweli mark and lockup", so its anchor is `#the-kweli-mark-and-lockup` as before. Code identifiers (package names, repository names, domains, slugs) are unchanged.
+
 - **Fixed:** Say which account the sign-in uses. `console`, `toolchain/mcp` and `toolchain/connect` now say that the console and the MCP server's sign-in operations sign in with a Mukoko Account at `accounts.mukoko.com`, which offers to create one. `console` also says every console page needs sign-in and JavaScript, and that the same registry data is public on `mzizi.dev`, `api.mzizi.dev` and the MCP server.
 
 - **Fixed:** Sync compiler size, standard kernel and UI tracker rows, and backend benchmark arm availability with language main. Detect benchmark arms from their manifests.
