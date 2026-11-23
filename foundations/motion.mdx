@@ -37,6 +37,37 @@ attention; it does not decorate.
 <div className="transition-colors duration-150 ease-out hover:bg-muted">Hover me</div>
 ```
 
+## Motion tokens
+
+The Tailwind classes above are the everyday tools. The token layer also defines a named motion
+system, so every brand app moves the same way even where it looks different. It is in the
+registry's stylesheet
+([`GET /v1/ui/mzizi-tokens-globals`](https://api.mzizi.dev/v1/ui/mzizi-tokens-globals)) and in
+the N1 `mzizi-motion` library
+([`GET /v1/ui/mzizi-motion`](https://api.mzizi.dev/v1/ui/mzizi-motion)). Read on 23 November 2026.
+
+| Duration tier | Token               | Value | Usage                                             |
+| ------------- | ------------------- | ----- | ------------------------------------------------- |
+| Quick         | `--motion-quick`    | 100ms | Micro-interactions — a button press, a toggle     |
+| Standard      | `--motion-standard` | 200ms | Most transitions — a card appearing, a tab switch |
+| Emphasis      | `--motion-emphasis` | 350ms | Important state changes — a modal opening, a page |
+| Dramatic      | `--motion-dramatic` | 500ms | Hero animations — a meter filling, onboarding     |
+
+| Easing   | Token               | Curve                               | Usage                                      |
+| -------- | ------------------- | ----------------------------------- | ------------------------------------------ |
+| Entrance | `--easing-entrance` | `cubic-bezier(0, 0, 0.2, 1)`        | Elements arriving; decelerates             |
+| Exit     | `--easing-exit`     | `cubic-bezier(0.4, 0, 1, 1)`        | Elements leaving; accelerates              |
+| Standard | `--easing-standard` | `cubic-bezier(0.4, 0, 0.2, 1)`      | Moving between states                      |
+| Spring   | `--easing-spring`   | `cubic-bezier(0.34, 1.56, 0.64, 1)` | Interactive overshoot, such as a FAB press |
+
+Lists stagger their items: `--motion-stagger-tight` (30ms), `--motion-stagger-base` (50ms)
+and `--motion-stagger-loose` (80ms). `mzizi-motion` staggers at 50ms per item and stops
+staggering after eight items, so a long list does not keep the reader waiting.
+
+Under `prefers-reduced-motion`, `mzizi-motion`'s `useMotion()` hook collapses every duration to
+0ms and every easing to linear, and its presets become plain opacity fades with no movement. A
+component that takes its motion from the hook gets reduced motion without checking for it.
+
 ## Enter and exit
 
 ### Fade
@@ -107,9 +138,13 @@ conditions — as well as preference. Honour it.
 In Tailwind, use the `motion-safe` and `motion-reduce` variants:
 
 ```tsx
+{/* Animate only when motion is acceptable */}
 <div className="motion-safe:transition-transform motion-safe:duration-200 motion-safe:hover:-translate-y-1">
   Card
 </div>
+
+{/* Or switch a transition off when the user asks */}
+<div className="motion-reduce:transition-none">Content</div>
 ```
 
 N3 brand components read motion configuration from the harness — `const { motion } =

@@ -81,6 +81,31 @@ See [error boundaries](/patterns/error-boundaries).
 `app/[route]/page.tsx`. Data fetching and the route-level composition. This is where the
 network lives, so it is the layer where a failure is expected rather than exceptional.
 
+A page wrapper sets the route's SEO metadata, fetches its data on the server and passes props
+down to the orchestrator. In the Next.js App Router these are React Server Components by
+default, and a fetch can say how long its result may be cached:
+
+```tsx
+// app/dashboard/page.tsx
+async function getWeatherData() {
+  const res = await fetch("https://example.com/weather", {
+    next: { revalidate: 900 }, // cache for 15 minutes
+  })
+  return res.json()
+}
+```
+
+## Rules
+
+- A component imports from the layer below, never sideways or upward.
+- Each component is a standalone file, installable from the registry on its own.
+- Orchestrators never hardcode rendering logic; they compose imported components.
+- Colours and styles come from CSS custom properties in the global stylesheet, never from a
+  hex code in a component.
+- Every page section is wrapped in a `SectionErrorBoundary`. It is mandatory, not optional.
+- Components are server components by default. Add `"use client"` only when a component uses
+  hooks, event handlers or browser APIs.
+
 ## Why downward only
 
 The rule is what buys the isolation. An L1 button that imported an L3 dashboard section would

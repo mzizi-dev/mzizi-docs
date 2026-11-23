@@ -27,6 +27,9 @@ Noto Sans handles:
 - **Swahili** — standard Latin script
 - **Amharic and Tigrinya** — Ge'ez script, via Noto Sans Ethiopic
 - **Arabic** — via Noto Sans Arabic, with right-to-left support
+- **Tifinagh and Bamum** — via Noto Sans Tifinagh and Noto Sans Bamum
+
+That is coverage of the Latin, Arabic, Ethiopic, Tifinagh and Bamum scripts.
 
 ```css
 --font-sans:  "Noto Sans", sans-serif;
@@ -52,12 +55,24 @@ every primitive:
 
 When building RTL-aware layouts:
 
-- Use **logical properties** — `ms-4` rather than `ml-4`, `ps-4` rather than `pl-4`.
+- Use **logical properties** — `ms-4` rather than `ml-4`, `ps-4` rather than `pl-4`. In CSS,
+  that is `margin-inline-start`, `padding-inline-end`, `inset-inline-start` and
+  `border-inline-end` rather than `margin-left`, `padding-right`, `left` and `border-right`.
 - Use `start` and `end` rather than `left` and `right` — `text-start`, `justify-end`.
-- Mark directional icons with `data-rtl-mirror="true"` where they should flip. See
-  [icons](/foundations/icons).
+- Mark directional icons (arrows, chevrons, undo and redo) with `data-rtl-mirror="true"` where
+  they should flip. See [icons](/foundations/icons).
 
 Radix components handle RTL arrow-key navigation without further configuration.
+
+### Checking it at runtime
+
+`rtl-conformity-check` is an N8 assurance component
+([`GET /v1/ui/rtl-conformity-check`](https://api.mzizi.dev/v1/ui/rtl-conformity-check)). It
+audits a rendered page against five rules (`logical-properties`, `bidi-text`, `icon-mirroring`,
+`text-alignment` and `direction-attribute`) and reports each violation with a level (critical,
+serious, moderate or minor), the element and a suggested fix, plus a score out of 100. Run it
+once with `runRtlConformityCheck()`, or continuously with the `useRtlConformity()` hook. Icons
+that must never mirror, such as search, play, pause and volume, are skipped by default.
 
 ## Number formatting
 
