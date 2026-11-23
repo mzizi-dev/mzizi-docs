@@ -162,8 +162,15 @@ An owner rule, 2026-09-30: "changelogs are super important".
 
 ## Terminology
 
-- Write the wordmark as **Mzizi**. The other wordmarks stay lowercase: nyuchi, mukoko,
-  shamwari, bundu. npm packages keep the `@nyuchi/` scope.
+- Every wordmark takes an initial capital (owner decision, 2026-11-23): **Mzizi**, Mukoko,
+  Nyuchi, Shamwari, Bundu, Kweli, in headings, labels and running text alike
+  (`foundations/typography.mdx`). Code identifiers keep their own
+  spelling: npm packages keep the `@nyuchi/` scope, and repository names, domains, slugs and
+  anything in backticks stay lowercase.
+- There are no "sister brands" (owner decision, 2026-11-23). The Bundu ecosystem has pillars
+  (Bundu Labs, Nyuchi Africa, Mukoko and Shamwari AI), and under them initiatives and
+  projects; Mzizi is a shared foundation, and Kweli, Mukoko Events, Lingo and Circles are
+  Mukoko apps. Shamwari is "open-weight AI" or "AI with open weights", never "sovereign AI".
 - **The language** (older pages say "Mzizi-lang") for the research project, and **the
   registry** or **the components** for what `api.mzizi.dev` serves. They are different
   things; `ecosystem.mdx` holds the line.
