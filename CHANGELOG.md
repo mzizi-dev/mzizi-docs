@@ -21,6 +21,12 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
+### Added — org-standard community files (2026-11-24)
+
+No issue: bootstrap proposal from `nyuchi/.github`. Documentation files only; no package or code change, and nothing changes for a reader of the docs.
+
+- Adds the org-standard `CODE_OF_CONDUCT.md`, `CONTRIBUTING.md` and `.github/PULL_REQUEST_TEMPLATE.md` where they were absent.
+
 ### Changed — Dependabot proposes no semver-major action updates; release actions at nyuchi/.github 0.9.0 (2026-11-14)
 
 No issue: records the CI changes already on `staging` (`42e31e1`, `33ac0d7`), so the release that carries them has notes.
