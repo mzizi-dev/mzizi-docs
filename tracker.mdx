@@ -20,7 +20,7 @@ the root of `mzizi-dev/mzizi`, is the one list of what Mzizi still needs before 
 called a working programming language, stacked against the languages it aims to replace. By
 the owner's decision of 30 September 2026 it is the ultimate tracker: **if a capability is not
 ✅ there, Mzizi does not have it, whatever any other page says.** These docs take every
-capability claim from it. This page summarises it at language `main` `f9bea2b` (tagged `v0.13.0`, 1 November 2026; the file is the same as at `v0.12.0`);
+capability claim from it. This page summarises it at language `main` `00a1f49`;
 read the file for the evidence behind each row.
 
 Status in the tracker is what the code on `main` does, never what an RFC designs:
@@ -154,6 +154,30 @@ on `main` and green.
 
   </Accordion>
 </AccordionGroup>
+
+## Standard kernel and UI renderer
+
+| ID  | Capability                                                                                                                                            | Status |
+| --- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| K1  | A component is a library other files import (this is P1)                                                                                              | ❌     |
+| K2  | Payload enums: a variant that carries fields ([RFC-0013](/rfcs) §11.5)                                                                                | ❌     |
+| K3  | `option(T)` written as a type, and `none` as a value ([RFC-0013](/rfcs) §8)                                                                           | ❌     |
+| K4  | Text to bytes and back (UTF-8): `s.bytes()` and a constructor from bytes                                                                              | ❌     |
+| K5  | Function values: a function type and a named `fn` as a value (built), inline functions that capture nothing (not built), then captures (not designed) | 🟡     |
+| K6  | Time: a clock and a duration type; the components take `now` as an `int`                                                                              | ❌     |
+| K7  | Concurrency: a deadline, a retry with a wait, a bulkhead need tasks and time                                                                          | ❌     |
+| U1  | Element tree as a value, serialised with escaping                                                                                                     | 🟡     |
+| U2  | Children and slots                                                                                                                                    | 📝     |
+| U3  | Pass-through attributes (`aria-*`, `data-*`, `id`), contract first                                                                                    | 📝     |
+| U4  | Event handlers (click, input)                                                                                                                         | ❌     |
+| U5  | Explicit raw output, only a sanitised CSS string in `<style>`                                                                                         | 📝     |
+| U6  | Local state and effects                                                                                                                               | ❌     |
+| U7  | Render as a test oracle for `mz contract`                                                                                                             | 🟡     |
+| U8  | `for each` and callbacks that return content                                                                                                          | ❌     |
+| U9  | Typed props and defaults                                                                                                                              | 🟡     |
+| U10 | Attributes conditional on a prop (`role` from a `bool`)                                                                                               | 🟡     |
+| U11 | Expressions in a view interpolation (`100 - value`)                                                                                                   | 🟡     |
+| U12 | Browser behaviour attach point by `data-slot`                                                                                                         | ❌     |
 
 [The language harness](/language-harness) (H1) is the spine of the language, what the agent
 reads. The agent protocol (`mz check --agent`, `mz fix`) and a first slice of entries exist:

@@ -64,15 +64,16 @@ async function check(name, fn) {
 
 // npm: the three published toolchain packages.
 const npm = [
-  ["@nyuchi/mzizi-cli", "toolchain/cli.mdx", /latest published version\s+is `([0-9.]+)`/],
-  ["@nyuchi/mzizi-mcp", "toolchain/mcp.mdx", /\(`([0-9.]+)`, read from npm/],
-  ["@nyuchi/mzizi-skills", "toolchain/skills.mdx", /at version `([0-9.]+)` \(the latest on npm/],
+  ["@nyuchi/mzizi-cli", "toolchain/cli.mdx"],
+  ["@nyuchi/mzizi-mcp", "toolchain/mcp.mdx"],
+  ["@nyuchi/mzizi-skills", "toolchain/skills.mdx"],
 ];
-for (const [pkg, path, re] of npm) {
+const publishedVersion = /latest published version\s+is `([0-9.]+)`/i;
+for (const [pkg, path] of npm) {
   await check(pkg, async () => {
-    const [docs] = stated(path, re, `the ${pkg} version`) ?? [];
-    const { body } = await get(`https://registry.npmjs.org/${pkg}`);
-    compare(`${pkg} (${path})`, docs, body["dist-tags"].latest);
+    const [docs] = stated(path, publishedVersion, `the ${pkg} version`) ?? [];
+    const { body } = await get(`https://registry.npmjs.org/${encodeURIComponent(pkg)}/latest`);
+    compare(`${pkg} (${path})`, docs, body.version);
   });
 }
 
@@ -102,7 +103,7 @@ if (cratesAllPublished) {
     cwd: new URL("..", import.meta.url),
   })
     .split("\n")
-    .filter(Boolean);
+    .filter((path) => path && path !== "CHANGELOG.md");
   const hits = pages.filter((path) => notPublished.test(page(path).replace(/\s+/g, " ")));
   if (hits.length > 0) drift.push(`a page says a Roots crate is not on crates.io, but all are: ${hits.join(", ")}`);
   else console.log(`ok     no page says a Roots crate is not on crates.io (${pages.length} pages)`);
@@ -249,8 +250,11 @@ await check("mzizi-dev/mzizi charter, tracker and arms", async () => {
       else console.log(`ok     ${path} says what the tracker leaves unbuilt, as the tracker marks it`);
     }
 
-    // The arms: benchmark.mdx says "Exists" for exactly the directories in benchmarks/arms/.
-    const present = new Set(git("ls-tree", "--name-only", "HEAD", "benchmarks/arms/").split("\n").filter(Boolean).map((p) => p.split("/").pop()));
+    // An arm has its own manifest. Shared scripts and metadata are not arms.
+    const armPaths = git("ls-tree", "-r", "--name-only", "HEAD", "benchmarks/arms/");
+    const present = new Set(
+      [...armPaths.matchAll(/^benchmarks\/arms\/([^/]+)\/arm\.toml$/gm)].map((match) => match[1]),
+    );
     if (present.size === 0) throw new Error("benchmarks/arms/ is empty or missing");
     const bench = page("benchmark.mdx");
     const table = bench.slice(bench.indexOf("## The arms"), bench.indexOf("## What it measures"));
@@ -269,8 +273,7 @@ await check("mzizi-dev/mzizi charter, tracker and arms", async () => {
 });
 
 // api.mzizi.dev and mcp.mzizi.dev: the registry commit each is built from. Neither pin is stated
-// on a page as current any more: the gateway's moves by itself through an hourly bot pull
-// request, so the pages say how to read it and quote dated examples only. What is checked is
+// on a page as current. The pages explain how to read the pin and quote dated examples only. What is checked is
 // that the header still has the shape the gateway page documents, and, as warnings, that the
 // gateway has caught up with registry main and that the MCP server is on the same commit.
 let gatewayPin;
@@ -296,8 +299,7 @@ await check("api.mzizi.dev", async () => {
   if (!registryMain.startsWith(gatewayPin)) {
     warnings.push(
       `api.mzizi.dev is pinned at registry ${gatewayPin}; registry main is ${registryMain.slice(0, 12)}. ` +
-        "The gateway's pin bot bumps it within the hour; check its bot/registry-pin pull request, which waits " +
-          "for a person if a check fails.",
+        "The gateway pin moves through a manually opened pull request.",
     );
   } else {
     console.log(`ok     api.mzizi.dev pin is registry main: ${gatewayPin}`);
@@ -306,7 +308,7 @@ await check("api.mzizi.dev", async () => {
 
 // mcp.mzizi.dev: the version it serves matches the version the MCP page states, and its pin.
 await check("mcp.mzizi.dev", async () => {
-  const [docs] = stated("toolchain/mcp.mdx", /\(`([0-9.]+)`, read from npm/, "the MCP version") ?? [];
+  const [docs] = stated("toolchain/mcp.mdx", publishedVersion, "the MCP version") ?? [];
   const { body } = await get("https://mcp.mzizi.dev/catalogue.json");
   compare("mcp.mzizi.dev served version (toolchain/mcp.mdx)", docs, body.version);
   const pin = String(body.source?.registry ?? "").match(/mzizi-registry\/tree\/([0-9a-f]{40})/)?.[1];
@@ -325,7 +327,7 @@ await check("mcp.mzizi.dev", async () => {
 // version the page states.
 await check("MCP Registry", async () => {
   const [name] = stated("toolchain/mcp.mdx", /it is\s+`(io\.github\.[^`]+)`/, "the MCP Registry name") ?? [];
-  const [version] = stated("toolchain/mcp.mdx", /\(`([0-9.]+)`, read from npm/, "the MCP version") ?? [];
+  const [version] = stated("toolchain/mcp.mdx", publishedVersion, "the MCP version") ?? [];
   if (!name) return;
   const { body } = await get(
     `https://registry.modelcontextprotocol.io/v0/servers?search=${encodeURIComponent(name)}`,
