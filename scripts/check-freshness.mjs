@@ -103,7 +103,7 @@ if (cratesAllPublished) {
     cwd: new URL("..", import.meta.url),
   })
     .split("\n")
-    .filter(Boolean);
+    .filter((path) => path && path !== "CHANGELOG.md");
   const hits = pages.filter((path) => notPublished.test(page(path).replace(/\s+/g, " ")));
   if (hits.length > 0) drift.push(`a page says a Roots crate is not on crates.io, but all are: ${hits.join(", ")}`);
   else console.log(`ok     no page says a Roots crate is not on crates.io (${pages.length} pages)`);
@@ -297,8 +297,7 @@ await check("api.mzizi.dev", async () => {
   if (!registryMain.startsWith(gatewayPin)) {
     warnings.push(
       `api.mzizi.dev is pinned at registry ${gatewayPin}; registry main is ${registryMain.slice(0, 12)}. ` +
-        "The gateway's pin bot bumps it within the hour; check its bot/registry-pin pull request, which waits " +
-          "for a person if a check fails.",
+        "The gateway pin moves through a manually opened pull request.",
     );
   } else {
     console.log(`ok     api.mzizi.dev pin is registry main: ${gatewayPin}`);
@@ -307,7 +306,7 @@ await check("api.mzizi.dev", async () => {
 
 // mcp.mzizi.dev: the version it serves matches the version the MCP page states, and its pin.
 await check("mcp.mzizi.dev", async () => {
-  const [docs] = stated("toolchain/mcp.mdx", /\(`([0-9.]+)`, read from npm/, "the MCP version") ?? [];
+  const [docs] = stated("toolchain/mcp.mdx", publishedVersion, "the MCP version") ?? [];
   const { body } = await get("https://mcp.mzizi.dev/catalogue.json");
   compare("mcp.mzizi.dev served version (toolchain/mcp.mdx)", docs, body.version);
   const pin = String(body.source?.registry ?? "").match(/mzizi-registry\/tree\/([0-9a-f]{40})/)?.[1];
@@ -326,7 +325,7 @@ await check("mcp.mzizi.dev", async () => {
 // version the page states.
 await check("MCP Registry", async () => {
   const [name] = stated("toolchain/mcp.mdx", /it is\s+`(io\.github\.[^`]+)`/, "the MCP Registry name") ?? [];
-  const [version] = stated("toolchain/mcp.mdx", /\(`([0-9.]+)`, read from npm/, "the MCP version") ?? [];
+  const [version] = stated("toolchain/mcp.mdx", publishedVersion, "the MCP version") ?? [];
   if (!name) return;
   const { body } = await get(
     `https://registry.modelcontextprotocol.io/v0/servers?search=${encodeURIComponent(name)}`,

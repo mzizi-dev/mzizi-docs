@@ -21,6 +21,8 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
+- **Fixed:** Document the published Roots 0.11.0 and API types crates. Reuse the MCP version matcher and keep historical changelog entries out of the current crate availability check.
+
 - **Fixed:** Refresh the CLI, MCP and skills package versions on their toolchain pages and check the same version wording for all three.
 
 ### Changed — the Bundu floor moves to 45px and 24px, and spacing becomes layered (2026-11-19)
