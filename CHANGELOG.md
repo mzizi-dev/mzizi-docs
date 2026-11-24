@@ -21,6 +21,12 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
+### Added — org-standard community files (2026-11-24)
+
+No issue: bootstrap proposal from `nyuchi/.github`. Documentation files only; no package or code change, and nothing changes for a reader of the docs.
+
+- Adds the org-standard `CODE_OF_CONDUCT.md`, `CONTRIBUTING.md` and `.github/PULL_REQUEST_TEMPLATE.md` where they were absent.
+
 - **Changed:** The CLI page and every command it names follow the Rust CLI (mzizi-cli 0.14.1, owner decisions 2026-11-17 to 2026-11-23). `toolchain/cli.mdx` now installs `mz` with `npx @nyuchi/mzizi-cli`, `npm i -g @nyuchi/mzizi-cli` or `cargo install mzizi-cli`, lists the commands as `mz add`, `mz floor`, `mz explore`, `mz plan`, `mz chat` and `mz login`, says `mzizi` and `fundi` are deprecated names, warns off `0.14.0` (its npm binaries were not executable), and drops the `createFundi()` library section (the package no longer exports it). `mzizi check` is `mz floor` on `foundations/spacing-layers`; `mzizi add` is `mz add` on `cookbook`, `registry/consuming`, `roots/overview`, `patterns/discover-standard` and `toolchain/overview`; `AGENTS.md` states the new version. Install commands were checked against the published packages: `npx @nyuchi/mzizi-cli --version` prints `0.14.1`.
 
 - **Changed:** Write every brand wordmark with an initial capital (owner decision, 2026-11-23): Mukoko, Nyuchi, Shamwari, Bundu, Mzizi, Kweli. `AGENTS.md` no longer says the other wordmarks stay lowercase, and also records the same day's rulings that there are no "sister brands" (the ecosystem has pillars, initiatives, projects and Mukoko apps) and that Shamwari is open-weight AI, not "sovereign AI". `toolchain/skills.mdx` no longer describes the `mukoko-design` wordmark as always lowercase. The brand tables on `foundations/tokens` and `patterns/dashboard-standard`, the narrative spine and the closing lines on `ecosystem`, the image descriptions on `patterns/dashboard-standard` and `patterns/discover-standard`, and `patterns/kweli-address` write the brand names with a capital. The `patterns/kweli-address` heading is now "The Kweli mark and lockup", so its anchor is `#the-kweli-mark-and-lockup` as before. Code identifiers (package names, repository names, domains, slugs) are unchanged.
