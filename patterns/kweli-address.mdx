@@ -14,14 +14,14 @@ They were added to the registry upstream first, before Kweli uses them
 ([mzizi-registry#543](https://github.com/mzizi-dev/mzizi-registry/issues/543)).
 
 <Note>
-  These components are on the registry's `staging` branch through
+  These components are in the registry through
   [mzizi-registry#544](https://github.com/mzizi-dev/mzizi-registry/pull/544) and
   [#546](https://github.com/mzizi-dev/mzizi-registry/pull/546). They reach api.mzizi.dev and
   `@bundu/ui` with the next registry release and the `@bundu/ui` sync that follows it.
 </Note>
 
 Each part has one contract in
-[`contracts/ui/`](https://github.com/mzizi-dev/mzizi-registry/tree/staging/contracts/ui) and
+[`contracts/ui/`](https://github.com/mzizi-dev/mzizi-registry/tree/main/contracts/ui) and
 two builds held to the whole contract by the registry's tests: a pure `.astro` (the default)
 and a `.tsx`. All four are server-rendered with no script. Their colour is semantic only
 (`--card`, `--border`, `--foreground`, `--muted-foreground`, `--primary`, `--ring`), so the

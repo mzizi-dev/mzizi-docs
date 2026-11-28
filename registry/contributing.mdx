@@ -178,15 +178,17 @@ section states the rules as that repository gives them.
 ### Versioning
 
 Owner decision, 4 October 2026 ([nyuchi/.github#80](https://github.com/nyuchi/.github/issues/80)).
-The branch decides the bump. Nobody labels a pull request, and agents add nothing to a pull
-request to choose a version.
+Every repository is trunk-based: there is no `staging` branch, every merge to `main` is a
+release, and the semantic title of the merged pull request decides the bump. Nobody labels a
+pull request, and agents add nothing to a pull request to choose a version.
 
-| Event                                                | Bump  | Example         |
-| ---------------------------------------------------- | ----- | --------------- |
-| A pull request merged into `staging` (the live beta) | PATCH | 0.27.3 → 0.27.4 |
-| `staging` released to `main`                         | MINOR | 0.27.4 → 0.28.0 |
-| A person runs the release with `bump: major`         | MAJOR | 0.28.0 → 1.0.0  |
+| Event                                                  | Bump  | Example         |
+| ------------------------------------------------------ | ----- | --------------- |
+| A pull request titled `fix:`, `chore:`, `docs:`, `ci:` | PATCH | 0.27.3 → 0.27.4 |
+| A pull request titled `feat:`                          | MINOR | 0.27.4 → 0.28.0 |
+| A person runs the release with `bump: major`           | MAJOR | 0.28.0 → 1.0.0  |
 
+- A breaking-change title (`feat!:`) is refused by the release workflow: a major is made by hand, never by a merge.
 - Minor and patch have no upper limit: patch 999 is followed by patch 1000, minor 999 by minor 1000. Versions compare as numbers. Only a major is manual.
 - **Agents never release a major** and never hand-edit a version to one. A major is the
   owner's call, made from the Actions tab.
@@ -194,10 +196,9 @@ request to choose a version.
 
 ### Pull requests and merges
 
-- **Feature pull requests into `staging` are squashed.** `staging` keeps linear history, and the pull request title becomes the commit message.
-- **Promotion is a merge commit.** A release (`staging` into the default branch) and a `hotfix/*` pull request are merged with a merge commit, so the default branch contains `staging`'s history. The default branch does not require linear history.
+- **Every pull request targets `main` and is squashed** through the merge queue. The pull request title becomes the commit message, and the semantic title sets the version.
 
-Source: `nyuchi/.github`, `ORG_SETTINGS.md` and `settings/README.md` (the promotion merge changed on 2026-11-02).
+Source: `nyuchi/.github`, `AGENTS.md` and `ORG_SETTINGS.md`.
 
 ### All checks green
 

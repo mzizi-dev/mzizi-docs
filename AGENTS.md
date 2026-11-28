@@ -268,16 +268,7 @@ Read off the repo settings and the rulesets on 2026-10-21, and the queue ruleset
   (`COMMIT_MESSAGES`), so the per-commit reasoning is preserved. Rebase and merge commits are
   disabled (repo settings and rulesets, 2026-10-21). Org admins can bypass those rulesets;
   agents never do.
-- **The `staging` queue (target configuration, owner, 2026-11-03).** `merge-queue-staging`
-  squashes (`SQUASH`, was `REBASE`) and merges as soon as the checks pass
-  (`min_entries_to_merge_wait_minutes` 0, was 5). It builds and merges up to 5 entries at a
-  time, groups `ALLGREEN`, times a check out after 60 minutes, and `staging` keeps
-  `required_linear_history`. `merge-queue-main` stays `MERGE`. The owner applies this in the
-  repository rulesets; agents cannot write rulesets. Read the live values before relying on
-  it: `gh api repos/mzizi-dev/<repo>/rulesets`. Until `merge-queue-staging` reads `SQUASH`
-  and `0`, it still rebases after a 5-minute wait, and a rebase queue drops a branch that
-  holds a merge commit with `MERGE_CONFLICT`. While that holds, keep branches linear: rebase
-  onto `origin/staging` instead of merging the base in.
+- **The merge queue.** There is one queue, on `main`; there is no `staging` branch or queue. Read the live values before relying on any of it: `gh api repos/mzizi-dev/<repo>/rulesets`.
 - **Branches.** Once the queue squashes, updating a branch with the base (GitHub's "Update
   branch") is fine and the squash keeps the base branch linear. The merge queue tests each PR
   against the latest base. Merged branches are deleted.
@@ -287,20 +278,7 @@ Read off the repo settings and the rulesets on 2026-10-21, and the queue ruleset
   skills, progress reports and the merge gate" below), then enqueue straight away rather than
   waiting for a later pass. Every PR body carries one `Refs #n`, `Closes #n` or `No issue:`
   line, or the "issue attached" check fails.
-- **Releases.** A merge into `main` deploys `docs.mzizi.dev`. The owner approves major releases
-  only. Minor and patch releases (the `staging` → `main` release PR, its tag, and the sync-back
-  into `staging`), and merges of green PRs that have passed review, are done by agents
-  following the repo's playbook, without asking the owner (owner, 2026-11-02). A release is a
-  `release/` branch made of `main` plus `staging`'s exact tree, squashed into `main`. Before
-  cutting one, forward-port any commit that is on `main` but not on `staging` (a bot's, for
-  example) to `staging` through the queue; the release-version-check gate fails a release
-  that would delete it. This repository has no versioned releases.
-- **Sync back after a release.** The squash commit on `main` is never in `staging`'s history,
-  and `staging` cannot be reset (non-fast-forward pushes are blocked). After each release,
-  open a sync PR into `staging` from a branch off `staging` with `origin/main` merged in, and
-  squash it, so the two trees match again before more work lands. Skip it when the trees
-  already match. Expect `main...staging` to keep showing old commits as ahead and behind;
-  compare trees, not counts.
+- **Releases.** A merge into `main` deploys `docs.mzizi.dev`. The owner approves major releases only. Every merge to `main` is a release, tagged from its PR title; minor and patch releases, and merges of green PRs that have passed review, are done by agents following the repo's playbook, without asking the owner (owner, 2026-11-02). This repository has no versioned releases.
 - **Bots' branches.** Never push to a bot's branch (for example `bot/registry-pin` in the API
   and agent-tools repositories) unless taking its change over; any commit the bot didn't make
   hands the branch to people.
@@ -311,11 +289,9 @@ Owner, 2026-11-04: "Every release should have release notes too with a changelog
 
 - **Every GitHub release carries notes built from `CHANGELOG.md`**, never GitHub's auto text:
   the entries added since the previous release (`.github/scripts/release_notes.py`) and a "Full
-  changelog" compare link. That covers the minor release `main-release.yml` makes on `main` and the
-  pre-release for each staging patch tag (`staging-version.yml` tags with the org workflow's
-  `create-release: false`, then its `release` job writes the notes).
+  changelog" compare link. That covers the release `main-release.yml` makes on `main`.
 - **A release with no changelog content fails its job.** A minor release builds its notes
-  before it pushes the tag, so a failure tags nothing. A staging patch whose merge added no
+  before it pushes the tag, so a failure tags nothing. A patch whose merge added no
   entry (the changelog gate exempts CI, lockfiles, lint config and typos) says so in its notes.
 - **Notes are set when the release is created.** `.github/scripts/publish-release.sh` makes a
   draft with the notes and publishes it once. Never `gh release edit` a published release
@@ -343,7 +319,7 @@ Load the Mzizi **dev skills** before starting work: `mzizi_execute` with `get_sk
 
 - **Digital hygiene.** Check free disk before starting, clone only under `$TMPDIR`, share build caches, and audit, then delete, your clones once the work merges (`digital-hygiene` skill).
 - **Clone isolation.** Clone only into a directory unique to you; never touch another agent's.
-- **Progress reports.** All dev work runs on a 10-minute progress-report loop (`progress-report` skill): measured bars, what changed, and a final "Needs you:" line. Report ticks never release a major without the owner's go-ahead. The owner approves major releases only. Minor and patch releases (the `staging` → `main` release PR, its tag, and the sync-back into `staging`), and merges of green PRs that have passed review, are done by agents following the repo's playbook, without asking the owner (owner, 2026-11-02).
+- **Progress reports.** All dev work runs on a 10-minute progress-report loop (`progress-report` skill): measured bars, what changed, and a final "Needs you:" line. Report ticks never release a major without the owner's go-ahead. The owner approves major releases only. Minor and patch releases (every merge to `main`, tagged from its PR title), and merges of green PRs that have passed review, are done by agents following the repo's playbook, without asking the owner (owner, 2026-11-02).
 - **Merge gate.** Merge only when the work is complete, CI is green, it's verified at runtime, and `/code-review` has run with findings resolved.
 
 ## Upstream first (hard rule)

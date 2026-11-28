@@ -21,6 +21,10 @@ entries move under it. Mintlify does not publish this file.
 
 ## [Unreleased]
 
+### Changed — release docs describe trunk releases (2026-11-28)
+
+The playbook change loop, the registry contributing page and `AGENTS.md` say every pull request targets `main` and every merge is a release, with no `staging` branch. Links to the registry's `staging` branch now point at `main`.
+
 ### Added — org-standard community files (2026-11-24)
 
 No issue: bootstrap proposal from `nyuchi/.github`. Documentation files only; no package or code change, and nothing changes for a reader of the docs.
